@@ -30,8 +30,6 @@
 namespace ruby
 {
     class CodeModel;
-    // class CodeProxy;
-    // class CodeDelegate;
 }
 
 class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
@@ -42,39 +40,12 @@ public:
     RubyLanguageSupport( QObject *parent, const QStringList& args = QStringList() );
     virtual ~RubyLanguageSupport();
 
+    virtual KDevelop::ParseJob* createParseJob(const KUrl&);
+    virtual KDevelop::ILanguage* language();
+
     virtual QString name() const;
 
-    void registerExtensions();
-    void unregisterExtensions();
     QStringList extensions() const;
-
-    /*
-    // KDevelop::LanguageSupport implementation
-    virtual KDevelop::CodeModel *codeModel( const KUrl& url ) const;
-    virtual KDevelop::CodeProxy *codeProxy() const;
-    virtual KDevelop::CodeDelegate *codeDelegate() const;
-    virtual KDevelop::CodeRepository *codeRepository() const;
-    virtual KDevelop::ParseJob *createParseJob( const KUrl &url );
-    virtual KDevelop::ParseJob *createParseJob( KDevelop::Document *document );
-    virtual QStringList mimeTypes() const;
-
-    virtual void read( KDevelop::AST *ast, std::ifstream &in );
-    virtual void write( KDevelop::AST *ast, std::ofstream &out );
-    */
-
-private slots:
-    /*
-    void documentLoaded( KDevelop::Document *document );
-    void documentClosed( KDevelop::Document *document );
-    void documentActivated( KDevelop::Document *document );
-    void projectOpened();
-    void projectClosed();
-    */
-
-private:
-    /*
-    QStringList m_mimetypes;
-    */
 };
 
 #endif

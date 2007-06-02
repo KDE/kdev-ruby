@@ -1,15 +1,14 @@
 add_subdirectory(parser)
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/lib
-    ${CMAKE_SOURCE_DIR}/lib/interfaces
-    ${CMAKE_SOURCE_DIR}/lib/language/interfaces
-    ${CMAKE_SOURCE_DIR}/lib/project
+    ${KDEVPLATFORM_INCLUDES}
+    ${KDE4_INCLUDES}
+    ${KDE4_INCLUDE_DIR}/threadweaver
     ${CMAKE_CURRENT_SOURCE_DIR}/parser
     ${CMAKE_CURRENT_BINARY_DIR}/parser
 )
 
-
+link_directories( ${KDE4_LIB_DIR} )
 ########### next target ###############
 
 set(kdevrubylanguagesupport_PART_SRCS
@@ -20,8 +19,8 @@ set(kdevrubylanguagesupport_PART_SRCS
 kde4_automoc(${kdevrubylanguagesupport_PART_SRCS})
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
 target_link_libraries(kdevrubylanguagesupport
-    ${QT_QTDESIGNER_LIBRARY}
-    kdevplatforminterfaces
+    ${KDE4_KDEUI_LIBS}
+    ${KDEVPLATFORM_INTERFACES_LIBRARY}
     kdevrubyparser
 )
 

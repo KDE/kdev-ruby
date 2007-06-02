@@ -28,8 +28,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include <kdevcodemodel.h>
-
 #include "Thread.h"
 
 #include <QFile>
@@ -51,15 +49,6 @@ ParseJob::ParseJob( const KUrl &url, RubyLanguageSupport *parent )
         : KDevelop::ParseJob( url, parent )
         , m_session( new ParseSession )
         , m_AST( 0 )
-        , m_model( 0 )
-        , m_readFromDisk( false )
-{}
-
-ParseJob::ParseJob( KDevelop::Document *document, RubyLanguageSupport *parent )
-        : KDevelop::ParseJob( document, parent )
-        , m_session( new ParseSession )
-        , m_AST( 0 )
-        , m_model( 0 )
         , m_readFromDisk( false )
 {}
 

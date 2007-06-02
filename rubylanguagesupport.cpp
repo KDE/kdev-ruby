@@ -29,22 +29,8 @@
 #include <kgenericfactory.h>
 
 #include <QExtensionFactory>
-
-/*
-#include <kdevcore.h>
-#include <kdevproject.h>
-#include <kdevfilemanager.h>
-#include <kdevprojectmodel.h>
-#include <kdevprojectcontroller.h>
-#include <kdevdocumentcontroller.h>
-#include <kdevbackgroundparser.h>
-
-#include <kdevast.h>
-*/
-
 // from the parser subdirectory
 #include <ruby_parser.h>
-#include <ruby_serialize_visitor.h>
 
 #include "parsejob.h"
 
@@ -53,128 +39,28 @@ using namespace ruby;
 typedef KGenericFactory<RubyLanguageSupport> KDevRubySupportFactory;
 K_EXPORT_COMPONENT_FACTORY( kdevrubylanguagesupport, KDevRubySupportFactory( "kdevrubysupport" ) )
 
-KDEV_USE_EXTENSION_INTERFACE_NS( KDevelop, ILanguageSupport, RubyLanguageSupport )
-
 RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
                                           const QStringList& /*args*/ )
         : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
         , KDevelop::ILanguageSupport()
 {
-    /*
-    QString types = QLatin1String("application/x-ruby");
-    m_mimetypes = types.split(",");
-
-    connect(KDevelop::Core::documentController(), SIGNAL(documentLoaded(KDevelop::Document*)),
-        this, SLOT(documentLoaded(KDevelop::Document*)));
-    connect(KDevelop::Core::documentController(), SIGNAL(documentClosed(KDevelop::Document*)),
-        this, SLOT(documentClosed(KDevelop::Document*)));
-    connect(KDevelop::Core::documentController(), SIGNAL(documentActivated(KDevelop::Document*)),
-        this, SLOT(documentActivated(KDevelop::Document*)));
-    connect(KDevelop::Core::projectController(), SIGNAL(projectOpened()),
-        this, SLOT(projectOpened()));
-    connect(KDevelop::Core::projectController(), SIGNAL(projectClosed()),
-        this, SLOT(projectClosed()));
-    */
+    KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
 }
 
 RubyLanguageSupport::~RubyLanguageSupport()
 {
 }
 
-/*
-KDevelop::CodeModel *RubyLanguageSupport::codeModel(const KUrl &url) const
+KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
 {
-    Q_UNUSED( url );
+    // TODO
     return 0;
 }
 
-KDevelop::CodeProxy *RubyLanguageSupport::codeProxy() const
+KDevelop::ILanguage* RubyLanguageSupport::language()
 {
     return 0;
 }
-
-KDevelop::CodeDelegate *RubyLanguageSupport::codeDelegate() const
-{
-    return 0;
-}
-
-KDevelop::CodeRepository *RubyLanguageSupport::codeRepository() const
-{
-    return 0;
-}
-
-KDevelop::ParseJob *RubyLanguageSupport::createParseJob(const KUrl &url)
-{
-    return new ParseJob(url, this);
-}
-
-KDevelop::ParseJob *RubyLanguageSupport::createParseJob(KDevelop::Document *document)
-{
-    return new ParseJob(document, this);
-}
-
-QStringList RubyLanguageSupport::mimeTypes() const
-{
-    return m_mimetypes;
-}
-
-void RubyLanguageSupport::read(KDevelop::AST *ast, std::ifstream &in)
-{
-    //FIXME Need to attach the memory pool to the ast somehow so it is saved
-    parser::memory_pool_type memory_pool;
-
-    // This is how we read the AST from a file
-    if (in.is_open())
-    {
-        serialize::read(&memory_pool, static_cast<ast_node*>(ast), &in);
-    }
-}
-
-void RubyLanguageSupport::write(KDevelop::AST *ast, std::ofstream &out)
-{
-    // This is how we save the AST to a file
-    if (out.is_open())
-    {
-        serialize::write(static_cast<ast_node*>(ast), &out);
-    }
-}
-
-void RubyLanguageSupport::documentLoaded(KDevelop::Document *document)
-{
-    if (supportsDocument(document))
-        KDevelop::Core::backgroundParser()->addDocument(document);
-}
-
-void RubyLanguageSupport::documentClosed(KDevelop::Document *document)
-{
-    if (supportsDocument(document))
-        KDevelop::Core::backgroundParser()->removeDocument(document);
-}
-
-void RubyLanguageSupport::documentActivated(KDevelop::Document *document)
-{
-    Q_UNUSED(document);
-}
-
-void RubyLanguageSupport::projectOpened()
-{
-    KUrl::List documentList;
-    QList<KDevelop::ProjectFileItem*> files = KDevelop::Core::activeProject()->allFiles();
-    foreach (KDevelop::ProjectFileItem *file, files)
-    {
-        if (file->url().fileName().endsWith( ".rb" ))
-        {
-            documentList.append(file->url());
-        }
-    }
-    KDevelop::Core::backgroundParser()->addDocumentList(documentList);
-}
-
-void RubyLanguageSupport::projectClosed()
-{
-    // FIXME This should remove the project files from the backgroundparser
-}
-*/
 
 QString RubyLanguageSupport::name() const
 {

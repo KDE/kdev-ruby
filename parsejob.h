@@ -25,13 +25,12 @@
 #define RUBY_PARSEJOB_H
 
 #include <kurl.h>
-#include <kdevparsejob.h>
+#include <backgroundparser/parsejob.h>
 
 // from the parser subdirectory
 #include <ruby_ast.h>
-#include <ruby_codemodel.h>
+// #include <ruby_codemodel.h>
 
-class KDevelop::CodeModel;
 class RubyLanguageSupport;
 
 namespace ruby
@@ -46,7 +45,6 @@ class ParseJob : public KDevelop::ParseJob
 
 public:
     ParseJob( const KUrl &url, RubyLanguageSupport* parent );
-    ParseJob( KDevelop::Document* document, RubyLanguageSupport* parent );
 
     virtual ~ParseJob();
 
@@ -56,16 +54,12 @@ public:
 
     bool wasReadFromDisk() const;
 
-    virtual KDevelop::AST *AST() const;
-    virtual KDevelop::CodeModel *codeModel() const;
-
 protected:
     virtual void run();
 
 private:
     ParseSession *m_session;
     program_ast *m_AST;
-    CodeModel *m_model;
     bool m_readFromDisk;
 };
 
