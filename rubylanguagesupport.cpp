@@ -32,8 +32,6 @@
 // from the parser subdirectory
 #include <ruby_parser.h>
 
-#include "parsejob.h"
-
 using namespace ruby;
 
 typedef KGenericFactory<RubyLanguageSupport> KDevRubySupportFactory;

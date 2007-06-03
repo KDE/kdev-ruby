@@ -1,4 +1,5 @@
 add_subdirectory(parser)
+add_subdirectory(tests)
 
 include_directories(
     ${KDEVPLATFORM_INCLUDES}
@@ -13,7 +14,6 @@ link_directories( ${KDE4_LIB_DIR} )
 
 set(kdevrubylanguagesupport_PART_SRCS
     rubylanguagesupport.cpp
-#    parsejob.cpp
 )
 
 kde4_automoc(${kdevrubylanguagesupport_PART_SRCS})

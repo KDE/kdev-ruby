@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2006 Alexander Dymo <adymo@kdevelop.org>                    *
+ * Copyright (c) 2007  Michaël Larouche <larouche@kde.org>                   *
  *                                                                           *
  * Permission is hereby granted, free of charge, to any person obtaining     *
  * a copy of this software and associated documentation files (the           *
@@ -20,50 +20,22 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION     *
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
+#ifndef RUBY_FULLTESTSUITE_H
+#define RUBY_FULLTESTSUITE_H
 
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
+#include <QtTest/QtTest>
 
-#include <kurl.h>
-#include <backgroundparser/parsejob.h>
-
-// from the parser subdirectory
-#include <ruby_ast.h>
-
-class RubyLanguageSupport;
-
-namespace ruby
-{
-
-class ParseSession;
-
-
-class ParseJob : public KDevelop::ParseJob
+/**
+ * Test parsing from various Ruby file in tests directory
+ * @author Michaël Larouche <larouche@kde.org>
+ */
+class Ruby_FullTestSuite : public QObject
 {
     Q_OBJECT
-
-public:
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
-
-    virtual ~ParseJob();
-
-    RubyLanguageSupport* ruby() const;
-
-    ParseSession* parseSession() const;
-
-    bool wasReadFromDisk() const;
-
-protected:
-    virtual void run();
-
-private:
-    ParseSession *m_session;
-    program_ast *m_AST;
-    bool m_readFromDisk;
+private slots:
+    void testRuby186TestFile();
+    void testHelloWorld();
 };
-
-} // end of namespace ruby
-
 #endif
 
 // kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on

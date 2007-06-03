@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2006 Alexander Dymo <adymo@kdevelop.org>                    *
+ * Copyright (c) 2007  Michaël Larouche <larouche@kde.org>                   *
  *                                                                           *
  * Permission is hereby granted, free of charge, to any person obtaining     *
  * a copy of this software and associated documentation files (the           *
@@ -20,50 +20,33 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION     *
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
+#include "ruby_fulltestsuite.h"
 
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
+// Qt includes
+#include <QtCore/QLatin1String>
+#include <QtCore/QDebug>
 
-#include <kurl.h>
-#include <backgroundparser/parsejob.h>
+#include "rubytestutils.h"
 
-// from the parser subdirectory
-#include <ruby_ast.h>
-
-class RubyLanguageSupport;
-
-namespace ruby
+void Ruby_FullTestSuite::testRuby186TestFile()
 {
+    QByteArray fileContents = RubyTest_readFile( QLatin1String("ruby186-test.rb") );
 
-class ParseSession;
+    bool hasParsedCorrectly = RubyTest_parseFile(fileContents);
 
+    QVERIFY(hasParsedCorrectly);
+}
 
-class ParseJob : public KDevelop::ParseJob
+void Ruby_FullTestSuite::testHelloWorld()
 {
-    Q_OBJECT
+    QByteArray fileContents = RubyTest_readFile( QLatin1String("test_helloworld.rb") );
 
-public:
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
+    bool hasParsedCorrectly = RubyTest_parseFile(fileContents);
+    QVERIFY(hasParsedCorrectly);
+}
 
-    virtual ~ParseJob();
+QTEST_MAIN(Ruby_FullTestSuite)
 
-    RubyLanguageSupport* ruby() const;
-
-    ParseSession* parseSession() const;
-
-    bool wasReadFromDisk() const;
-
-protected:
-    virtual void run();
-
-private:
-    ParseSession *m_session;
-    program_ast *m_AST;
-    bool m_readFromDisk;
-};
-
-} // end of namespace ruby
-
-#endif
+#include "ruby_fulltestsuite.moc"
 
 // kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on

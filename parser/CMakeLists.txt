@@ -41,6 +41,7 @@ if(KDEVPG_EXECUTABLE)
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ruby_lexer.h"
         COMMAND ${KDEVPG_EXECUTABLE}
         ARGS     --output=ruby
+                 --debug-visitor
                 "${CMAKE_CURRENT_SOURCE_DIR}/ruby.g"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2006 Alexander Dymo <adymo@kdevelop.org>                    *
+ * Copyright (c) 2007  Michaël Larouche <larouche@kde.org>                   *
  *                                                                           *
  * Permission is hereby granted, free of charge, to any person obtaining     *
  * a copy of this software and associated documentation files (the           *
@@ -20,50 +20,71 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION     *
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
+#ifndef RUBYTESTUTILS_H
+#define RUBYTESTUTILS_H
 
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
+// Qt includes
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
+#include <QtCore/QFile>
 
-#include <kurl.h>
-#include <backgroundparser/parsejob.h>
+// Ruby parser
+#include <ruby_parser.h>
 
-// from the parser subdirectory
-#include <ruby_ast.h>
+using namespace ruby;
 
-class RubyLanguageSupport;
-
-namespace ruby
+/**
+ * @brief Read a test ruby file from tests dir
+ *
+ * This function use the RUBY_TESTDIR define to load a test file
+ * from tests subdir. You just need to pass the filename and not
+ * the full path of the test.
+ *
+ * @param baseFile Test filename (ex: ruby_test.rb)
+ * @return The file contents as a QByteArray
+ */
+inline static QByteArray RubyTest_readFile(const QString &baseFile)
 {
+    QFile file( QString(RUBY_TESTDIR) + baseFile );
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        QByteArray contents = file.readAll();
+        file.close();
 
-class ParseSession;
+        return contents;
+    }
 
+    return QByteArray();
+}
 
-class ParseJob : public KDevelop::ParseJob
+/**
+ * @brief Parse a file
+ *
+ * Utility function to setup the parser and return true
+ * if the parser parsed the file correctly.
+ *
+ * @param contents The file contents
+ * @return true if the parsing went well
+ */
+inline static bool RubyTest_parseFile(const QByteArray &contents)
 {
-    Q_OBJECT
+    // Setup parser
+    parser::token_stream_type token_stream;
+    parser::memory_pool_type memory_pool;
 
-public:
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
+    parser ruby_parser;
+    ruby_parser.set_token_stream(&token_stream);
+    ruby_parser.set_memory_pool(&memory_pool);
 
-    virtual ~ParseJob();
+    // Create the tokens
+    ruby_parser.tokenize( const_cast<char*>( contents.data() ));
 
-    RubyLanguageSupport* ruby() const;
+    // Start the parsing process
+    program_ast *ast = 0;
+    bool matched = ruby_parser.parse_program(&ast);
 
-    ParseSession* parseSession() const;
-
-    bool wasReadFromDisk() const;
-
-protected:
-    virtual void run();
-
-private:
-    ParseSession *m_session;
-    program_ast *m_AST;
-    bool m_readFromDisk;
-};
-
-} // end of namespace ruby
-
+    return matched;
+}
 #endif
 
 // kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
