@@ -1,5 +1,7 @@
 
-include_directories( ${KDEVPLATFORM_INCLUDES} )
+find_package(KDevelop-PG)
+
+include_directories( ${KDEVPLATFORM_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_definitions(-fPIC)
 
@@ -16,18 +18,8 @@ set(kdevrubyparser_STAT_SRCS
 
 # autogenerate the lexer, the parser and the KDevelop codemodel
 
-find_program(KDEVPG_EXECUTABLE
-    NAMES kdev-pg
-    PATHS /usr/bin
-    DOC "kdev-pg executable")
-
-find_program(KDEVCMG_EXECUTABLE
-    NAMES kdev-cmg
-    PATHS /usr/bin
-    DOC "kdev-cmg executable")
-
-
-if(KDEVPG_EXECUTABLE)
+if(KDEVPG_FOUND)
+    include_directories(${KDEVPG_INCLUDE_DIR})
     # Add commands to generate the parsers.
     add_custom_command(
         OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
@@ -45,7 +37,7 @@ if(KDEVPG_EXECUTABLE)
                 "${CMAKE_CURRENT_SOURCE_DIR}/ruby.g"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
-else(KDEVPG_EXECUTABLE)
+else(KDEVPG_FOUND)
     # If kdev-pg is not available, copy the pre-generated parser files from SVN.
     add_custom_command(
         OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
@@ -85,7 +77,7 @@ else(KDEVPG_EXECUTABLE)
                 "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
         COMMENT "kdev-pg is not installed, using the pre-generated parser files from SVN."
     )
-endif(KDEVPG_EXECUTABLE)
+endif(KDEVPG_FOUND)
 
 set(kdevrubyparser_STAT_SRCS
     ${kdevrubyparser_STAT_SRCS}
