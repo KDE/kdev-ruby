@@ -1,5 +1,4 @@
 
-find_package(KDevelop-PG)
 
 include_directories( ${QT_INCLUDES} ${KDE4_INCLUDE_DIR} ${KDEVPLATFORM_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 

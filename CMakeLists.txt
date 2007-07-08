@@ -11,6 +11,7 @@ endif( KDEVPG_DATA_DIR )
 
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform REQUIRED)
+find_package(KDevelop-PG)
 
 add_subdirectory(parser)
 add_subdirectory(tests)
@@ -26,6 +27,13 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/parser
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+if(KDEVPG_FOUND)
+    include_directories(${KDEVPG_INCLUDE_DIR})
+else(KDEVPG_FOUND)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/parser/generated)
+endif(KDEVPG_FOUND)
+
 
 link_directories( ${KDE4_LIB_DIR} )
 ########### next target ###############

@@ -1083,7 +1083,6 @@ void parser::tokenize( char *contents )
         t.kind = kind;
         t.begin = m_lexer->tokenBegin();
         t.end = m_lexer->tokenEnd();
-        t.text = contents;
     }
     while (kind != parser::Token_EOF);
 
