@@ -72,7 +72,7 @@ void parser::yy_expected_symbol(int /*expected_symbol*/, char const *name)
     token_stream->start_position(index, &line, &col);
     size_t tokenLength = token.end - token.begin;
     char *tokenValue = new char[tokenLength+1];
-    strncpy(tokenValue, token.text + token.begin, tokenLength);
+    strncpy(tokenValue, tokenText(token.begin), tokenLength);
     tokenValue[tokenLength] = 0;
     std::stringstream s;
     s << " (current token: \"" << (token.kind != 0 ? tokenValue : "EOF") <<

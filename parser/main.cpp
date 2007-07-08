@@ -44,7 +44,7 @@ void print_token_environment(ruby::parser* parser)
     if (done)
       return; // don't print with each call when going up the error path
 
-    decoder dec(parser->token_stream);
+    decoder dec(parser);
 
     std::size_t current_index = parser->token_stream->index() - 1;
     for (std::size_t i = current_index - 5; i < current_index + 5; i++)

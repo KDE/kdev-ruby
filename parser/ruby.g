@@ -56,6 +56,9 @@
 ------------------------------------------------------------
 
 [:
+
+#include "rubyparserexport.h"
+
 namespace ruby
 {
   class Lexer;
@@ -84,6 +87,7 @@ namespace ruby
 
   void report_problem( parser::problem_type type, const char* message );
   void report_problem( parser::problem_type type, std::string message );
+  char* tokenText(std::size_t begin);
 :]
 
 
@@ -106,6 +110,7 @@ namespace ruby
   bool expect_array_or_block_arguments;
 
   Lexer *m_lexer;
+  char* m_contents;
 :]
 
 
@@ -1062,6 +1067,7 @@ namespace ruby {
 
 void parser::tokenize( char *contents )
 {
+    m_contents = contents;
     m_lexer = new Lexer( this, contents );
 
     int kind = parser::Token_EOF;
@@ -1096,6 +1102,12 @@ parser::parser_state *parser::copy_current_state()
 void parser::restore_state( parser::parser_state *state )
 {
     _M_state.ltCounter = state->ltCounter;
+}
+
+
+char* parser::tokenText(std::size_t begin)
+{
+    return &m_contents[begin];
 }
 
 } // end of namespace ruby

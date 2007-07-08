@@ -1,9 +1,7 @@
 
 find_package(KDevelop-PG)
 
-include_directories( ${KDEVPLATFORM_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} )
-
-add_definitions(-fPIC)
+include_directories( ${QT_INCLUDES} ${KDE4_INCLUDE_DIR} ${KDEVPLATFORM_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
 ########### next target ###############
 
@@ -154,7 +152,8 @@ set(kdevrubyparser_STAT_SRCS
 
 
 kde4_automoc(${kdevrubyparser_STAT_SRCS})
-kde4_add_library(kdevrubyparser STATIC ${kdevrubyparser_STAT_SRCS})
+kde4_add_library(kdevrubyparser SHARED ${kdevrubyparser_STAT_SRCS})
+target_link_libraries(kdevrubyparser ${QT_QTCORE_LIBRARY})
 
 # generate the command-line parser
 add_executable(ruby-parser main.cpp)

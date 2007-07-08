@@ -25,14 +25,14 @@
 #include <QtCore/QByteArray>
 
 #include "ruby_parser.h"
-
+#include "rubyparserexport.h"
 
 namespace ruby
 {
 
 /// Contains everything needed to keep an AST useful once the rest of the parser
 /// has gone away.
-class ParseSession
+class KDEVRUBYPARSER_EXPORT ParseSession
 {
 public:
   ParseSession();

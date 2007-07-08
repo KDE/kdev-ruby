@@ -10,16 +10,21 @@ else( KDEVPG_DATA_DIR )
 endif( KDEVPG_DATA_DIR )
 
 find_package(KDE4 REQUIRED)
+find_package(KDevPlatform REQUIRED)
 
 add_subdirectory(parser)
 add_subdirectory(tests)
 
 include_directories(
-    ${KDEVPLATFORM_INCLUDES}
+    ${KDEVPLATFORM_INCLUDE_DIR}/interfaces
+    ${KDEVPLATFORM_INCLUDE_DIR}/language
+    ${KDEVPLATFORM_INCLUDE_DIR}/language/backgroundparser
+    ${KDEVPLATFORM_INCLUDE_DIR}/language/interfaces
     ${KDE4_INCLUDES}
     ${KDE4_INCLUDE_DIR}/threadweaver
     ${CMAKE_CURRENT_SOURCE_DIR}/parser
     ${CMAKE_CURRENT_BINARY_DIR}/parser
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 link_directories( ${KDE4_LIB_DIR} )
