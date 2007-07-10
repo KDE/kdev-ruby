@@ -42,7 +42,6 @@ set(kdevrubylanguagesupport_PART_SRCS
     rubylanguagesupport.cpp
 )
 
-kde4_automoc(${kdevrubylanguagesupport_PART_SRCS})
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
 target_link_libraries(kdevrubylanguagesupport
     ${KDE4_KDEUI_LIBS}

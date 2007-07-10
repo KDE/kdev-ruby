@@ -150,7 +150,6 @@ set(kdevrubyparser_STAT_SRCS
 )
 
 
-kde4_automoc(${kdevrubyparser_STAT_SRCS})
 kde4_add_library(kdevrubyparser SHARED ${kdevrubyparser_STAT_SRCS})
 target_link_libraries(kdevrubyparser ${QT_QTCORE_LIBRARY})
 install(TARGETS kdevrubyparser DESTINATION ${LIB_INSTALL_DIR})
