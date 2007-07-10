@@ -9,8 +9,9 @@
 namespace ruby
   {
 
-  class default_visitor: public visitor
+  class default_visitor:  public visitor
     {
+
     public:
       virtual void visit_additiveExpression(additiveExpression_ast *node);
       virtual void visit_aliasParameter(aliasParameter_ast *node);

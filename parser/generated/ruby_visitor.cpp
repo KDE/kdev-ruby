@@ -6,7 +6,7 @@
 namespace ruby
   {
 
-  visitor::parser_fun_t visitor::_S_parser_table[] = {
+  visitor::parser_fun_t visitor::_S_parser_table[] =  {
         reinterpret_cast<parser_fun_t>(&visitor::visit_additiveExpression),
         reinterpret_cast<parser_fun_t>(&visitor::visit_aliasParameter),
         reinterpret_cast<parser_fun_t>(&visitor::visit_andExpression),

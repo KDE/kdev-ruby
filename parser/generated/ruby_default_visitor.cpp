@@ -418,15 +418,17 @@ namespace ruby
 
   void default_visitor::visit_statements(statements_ast *node)
   {
-    if (node->statement_sequence)
+    if  (node->statement_sequence)
       {
-        const list_node<statement_ast*> *__it = node->statement_sequence->to_front(), *__end = __it;
+        const list_node<statement_ast*> *__it =  node->statement_sequence->to_front(),  *__end =  __it;
+
         do
           {
             visit_node(__it->element);
-            __it = __it->next;
+            __it =  __it->next;
           }
-        while (__it != __end);
+
+        while  (__it !=  __end);
       }
   }
 

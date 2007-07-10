@@ -36,7 +36,7 @@ using namespace ruby;
 /**
  * @brief Read a test ruby file from tests dir
  *
- * This function use the RUBY_TESTDIR define to load a test file
+ * This function use the KDESRCDIR define to load a test file
  * from tests subdir. You just need to pass the filename and not
  * the full path of the test.
  *
@@ -45,7 +45,7 @@ using namespace ruby;
  */
 inline static QByteArray RubyTest_readFile(const QString &baseFile)
 {
-    QFile file( QString(RUBY_TESTDIR) + baseFile );
+    QFile file( QString(KDESRCDIR) + baseFile );
     if( file.open( QIODevice::ReadOnly ) )
     {
         QByteArray contents = file.readAll();

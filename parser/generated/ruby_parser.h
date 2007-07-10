@@ -14,20 +14,23 @@ namespace ruby
 
   class parser
     {
+
     public:
       typedef kdev_pg_token_stream token_stream_type;
       typedef kdev_pg_token_stream::token_type token_type;
       kdev_pg_token_stream *token_stream;
       int yytoken;
 
-      inline token_type LA(std::size_t k = 1) const
+      inline token_type LA(std::size_t k =  1) const
         {
-          return token_stream->token(token_stream->index() - 1 + k - 1);
+          return  token_stream->token(token_stream->index() -  1 +  k -  1);
         }
+
       inline int yylex()
       {
-        return (yytoken = token_stream->next_token());
+        return  (yytoken =  token_stream->next_token());
       }
+
       inline void rewind(std::size_t index)
       {
         token_stream->rewind(index);
@@ -37,19 +40,19 @@ namespace ruby
       // token stream
       void set_token_stream(kdev_pg_token_stream *s)
       {
-        token_stream = s;
+        token_stream =  s;
       }
 
       // error handling
-      void yy_expected_symbol(int kind, char const *name);
-      void yy_expected_token(int kind, std::size_t token, char const *name);
+      void yy_expected_symbol(int kind,  char const *name);
+      void yy_expected_token(int kind,  std::size_t token,  char const *name);
 
       bool yy_block_errors;
       inline bool block_errors(bool block)
       {
-        bool previous = yy_block_errors;
-        yy_block_errors = block;
-        return previous;
+        bool previous =  yy_block_errors;
+        yy_block_errors =  block;
+        return  previous;
       }
 
       // memory pool
@@ -58,164 +61,166 @@ namespace ruby
       kdev_pg_memory_pool *memory_pool;
       void set_memory_pool(kdev_pg_memory_pool *p)
       {
-        memory_pool = p;
+        memory_pool =  p;
       }
-      template <class T>
+
+      template  <class T>
       inline T *create()
       {
-        T *node = new (memory_pool->allocate(sizeof(T))) T();
-        node->kind = T::KIND;
-        return node;
+        T *node =  new (memory_pool->allocate(sizeof(T))) T();
+        node->kind =  T::KIND;
+        return  node;
       }
 
       enum token_type_enum
       {
-        Token_ALIAS = 1000,
-        Token_AND = 1001,
-        Token_ASCII_VALUE = 1002,
-        Token_ASSIGN = 1003,
-        Token_ASSIGN_WITH_NO_LEADING_SPACE = 1004,
-        Token_ASSOC = 1005,
-        Token_BAND = 1006,
-        Token_BAND_ASSIGN = 1007,
-        Token_BEGIN = 1008,
-        Token_BEGIN_UPCASE = 1009,
-        Token_BINARY = 1010,
-        Token_BLOCK_ARG_PREFIX = 1011,
-        Token_BNOT = 1012,
-        Token_BOR = 1013,
-        Token_BOR_ASSIGN = 1014,
-        Token_BREAK = 1015,
-        Token_BXOR = 1016,
-        Token_BXOR_ASSIGN = 1017,
-        Token_CASE = 1018,
-        Token_CASE_EQUAL = 1019,
-        Token_CLASS = 1020,
-        Token_CLASS_VARIABLE = 1021,
-        Token_COLON = 1022,
-        Token_COLON_WITH_NO_FOLLOWING_SPACE = 1023,
-        Token_COMMA = 1024,
-        Token_COMMAND_OUTPUT = 1025,
-        Token_COMMAND_OUTPUT_BEFORE_EXPRESSION_SUBSTITUTION = 1026,
-        Token_COMMENT = 1027,
-        Token_COMPARE = 1028,
-        Token_CONSTANT = 1029,
-        Token_DEF = 1030,
-        Token_DEFINED = 1031,
-        Token_DIV = 1032,
-        Token_DIV_ASSIGN = 1033,
-        Token_DO = 1034,
-        Token_DOT = 1035,
-        Token_DOUBLE_QUOTED_STRING = 1036,
-        Token_DO_IN_CONDITION = 1037,
-        Token_ELSE = 1038,
-        Token_ELSIF = 1039,
-        Token_END = 1040,
-        Token_END_UPCASE = 1041,
-        Token_ENSURE = 1042,
-        Token_EOF = 1043,
-        Token_EQUAL = 1044,
-        Token_EXCLUSIVE_RANGE = 1045,
-        Token_FALSE = 1046,
-        Token_FILE = 1047,
-        Token_FLOAT = 1048,
-        Token_FOR = 1049,
-        Token_FUNCTION = 1050,
-        Token_GLOBAL_VARIABLE = 1051,
-        Token_GREATER_OR_EQUAL = 1052,
-        Token_GREATER_THAN = 1053,
-        Token_HERE_DOC_BEGIN = 1054,
-        Token_HEX = 1055,
-        Token_IDENTIFIER = 1056,
-        Token_IF = 1057,
-        Token_IF_MODIFIER = 1058,
-        Token_IN = 1059,
-        Token_INCLUSIVE_RANGE = 1060,
-        Token_INSTANCE_VARIABLE = 1061,
-        Token_INTEGER = 1062,
-        Token_KEYWORD_NOT = 1063,
-        Token_LBRACK = 1064,
-        Token_LBRACK_ARRAY_ACCESS = 1065,
-        Token_LCURLY = 1066,
-        Token_LCURLY_BLOCK = 1067,
-        Token_LCURLY_HASH = 1068,
-        Token_LEADING_TWO_COLON = 1069,
-        Token_LEFT_SHIFT = 1070,
-        Token_LEFT_SHIFT_ASSIGN = 1071,
-        Token_LESS_OR_EQUAL = 1072,
-        Token_LESS_THAN = 1073,
-        Token_LINE = 1074,
-        Token_LINE_BREAK = 1075,
-        Token_LOGICAL_AND = 1076,
-        Token_LOGICAL_AND_ASSIGN = 1077,
-        Token_LOGICAL_OR = 1078,
-        Token_LOGICAL_OR_ASSIGN = 1079,
-        Token_LPAREN = 1080,
-        Token_MATCH = 1081,
-        Token_MINUS = 1082,
-        Token_MINUS_ASSIGN = 1083,
-        Token_MOD = 1084,
-        Token_MODULE = 1085,
-        Token_MOD_ASSIGN = 1086,
-        Token_NEXT = 1087,
-        Token_NIL = 1088,
-        Token_NOT = 1089,
-        Token_NOT_EQUAL = 1090,
-        Token_NOT_MATCH = 1091,
-        Token_OCTAL = 1092,
-        Token_OR = 1093,
-        Token_PLUS = 1094,
-        Token_PLUS_ASSIGN = 1095,
-        Token_POWER = 1096,
-        Token_POWER_ASSIGN = 1097,
-        Token_QUESTION = 1098,
-        Token_RBRACK = 1099,
-        Token_RCURLY = 1100,
-        Token_RCURLY_BLOCK = 1101,
-        Token_REDO = 1102,
-        Token_REGEX = 1103,
-        Token_REGEX_BEFORE_EXPRESSION_SUBSTITUTION = 1104,
-        Token_RESCUE = 1105,
-        Token_RESCUE_MODIFIER = 1106,
-        Token_REST_ARG_PREFIX = 1107,
-        Token_RETRY = 1108,
-        Token_RETURN = 1109,
-        Token_RIGHT_SHIFT = 1110,
-        Token_RIGHT_SHIFT_ASSIGN = 1111,
-        Token_RPAREN = 1112,
-        Token_SELF = 1113,
-        Token_SEMI = 1114,
-        Token_SINGLE_QUOTE = 1115,
-        Token_SINGLE_QUOTED_STRING = 1116,
-        Token_STAR = 1117,
-        Token_STAR_ASSIGN = 1118,
-        Token_STRING_AFTER_EXPRESSION_SUBSTITUTION = 1119,
-        Token_STRING_BEFORE_EXPRESSION_SUBSTITUTION = 1120,
-        Token_STRING_BETWEEN_EXPRESSION_SUBSTITUTION = 1121,
-        Token_STUB_A = 1122,
-        Token_STUB_B = 1123,
-        Token_STUB_C = 1124,
-        Token_SUPER = 1125,
-        Token_THEN = 1126,
-        Token_TRUE = 1127,
-        Token_TWO_COLON = 1128,
-        Token_UNARY_MINUS = 1129,
-        Token_UNARY_PLUS = 1130,
-        Token_UNARY_PLUS_MINUS_METHOD_NAME = 1131,
-        Token_UNDEF = 1132,
-        Token_UNLESS = 1133,
-        Token_UNLESS_MODIFIER = 1134,
-        Token_UNTIL = 1135,
-        Token_UNTIL_MODIFIER = 1136,
-        Token_WHEN = 1137,
-        Token_WHILE = 1138,
-        Token_WHILE_MODIFIER = 1139,
-        Token_W_ARRAY = 1140,
-        Token_YIELD = 1141,
+        Token_ALIAS =  1000,
+        Token_AND =  1001,
+        Token_ASCII_VALUE =  1002,
+        Token_ASSIGN =  1003,
+        Token_ASSIGN_WITH_NO_LEADING_SPACE =  1004,
+        Token_ASSOC =  1005,
+        Token_BAND =  1006,
+        Token_BAND_ASSIGN =  1007,
+        Token_BEGIN =  1008,
+        Token_BEGIN_UPCASE =  1009,
+        Token_BINARY =  1010,
+        Token_BLOCK_ARG_PREFIX =  1011,
+        Token_BNOT =  1012,
+        Token_BOR =  1013,
+        Token_BOR_ASSIGN =  1014,
+        Token_BREAK =  1015,
+        Token_BXOR =  1016,
+        Token_BXOR_ASSIGN =  1017,
+        Token_CASE =  1018,
+        Token_CASE_EQUAL =  1019,
+        Token_CLASS =  1020,
+        Token_CLASS_VARIABLE =  1021,
+        Token_COLON =  1022,
+        Token_COLON_WITH_NO_FOLLOWING_SPACE =  1023,
+        Token_COMMA =  1024,
+        Token_COMMAND_OUTPUT =  1025,
+        Token_COMMAND_OUTPUT_BEFORE_EXPRESSION_SUBSTITUTION =  1026,
+        Token_COMMENT =  1027,
+        Token_COMPARE =  1028,
+        Token_CONSTANT =  1029,
+        Token_DEF =  1030,
+        Token_DEFINED =  1031,
+        Token_DIV =  1032,
+        Token_DIV_ASSIGN =  1033,
+        Token_DO =  1034,
+        Token_DOT =  1035,
+        Token_DOUBLE_QUOTED_STRING =  1036,
+        Token_DO_IN_CONDITION =  1037,
+        Token_ELSE =  1038,
+        Token_ELSIF =  1039,
+        Token_END =  1040,
+        Token_END_UPCASE =  1041,
+        Token_ENSURE =  1042,
+        Token_EOF =  1043,
+        Token_EQUAL =  1044,
+        Token_EXCLUSIVE_RANGE =  1045,
+        Token_FALSE =  1046,
+        Token_FILE =  1047,
+        Token_FLOAT =  1048,
+        Token_FOR =  1049,
+        Token_FUNCTION =  1050,
+        Token_GLOBAL_VARIABLE =  1051,
+        Token_GREATER_OR_EQUAL =  1052,
+        Token_GREATER_THAN =  1053,
+        Token_HERE_DOC_BEGIN =  1054,
+        Token_HEX =  1055,
+        Token_IDENTIFIER =  1056,
+        Token_IF =  1057,
+        Token_IF_MODIFIER =  1058,
+        Token_IN =  1059,
+        Token_INCLUSIVE_RANGE =  1060,
+        Token_INSTANCE_VARIABLE =  1061,
+        Token_INTEGER =  1062,
+        Token_KEYWORD_NOT =  1063,
+        Token_LBRACK =  1064,
+        Token_LBRACK_ARRAY_ACCESS =  1065,
+        Token_LCURLY =  1066,
+        Token_LCURLY_BLOCK =  1067,
+        Token_LCURLY_HASH =  1068,
+        Token_LEADING_TWO_COLON =  1069,
+        Token_LEFT_SHIFT =  1070,
+        Token_LEFT_SHIFT_ASSIGN =  1071,
+        Token_LESS_OR_EQUAL =  1072,
+        Token_LESS_THAN =  1073,
+        Token_LINE =  1074,
+        Token_LINE_BREAK =  1075,
+        Token_LOGICAL_AND =  1076,
+        Token_LOGICAL_AND_ASSIGN =  1077,
+        Token_LOGICAL_OR =  1078,
+        Token_LOGICAL_OR_ASSIGN =  1079,
+        Token_LPAREN =  1080,
+        Token_MATCH =  1081,
+        Token_MINUS =  1082,
+        Token_MINUS_ASSIGN =  1083,
+        Token_MOD =  1084,
+        Token_MODULE =  1085,
+        Token_MOD_ASSIGN =  1086,
+        Token_NEXT =  1087,
+        Token_NIL =  1088,
+        Token_NOT =  1089,
+        Token_NOT_EQUAL =  1090,
+        Token_NOT_MATCH =  1091,
+        Token_OCTAL =  1092,
+        Token_OR =  1093,
+        Token_PLUS =  1094,
+        Token_PLUS_ASSIGN =  1095,
+        Token_POWER =  1096,
+        Token_POWER_ASSIGN =  1097,
+        Token_QUESTION =  1098,
+        Token_RBRACK =  1099,
+        Token_RCURLY =  1100,
+        Token_RCURLY_BLOCK =  1101,
+        Token_REDO =  1102,
+        Token_REGEX =  1103,
+        Token_REGEX_BEFORE_EXPRESSION_SUBSTITUTION =  1104,
+        Token_RESCUE =  1105,
+        Token_RESCUE_MODIFIER =  1106,
+        Token_REST_ARG_PREFIX =  1107,
+        Token_RETRY =  1108,
+        Token_RETURN =  1109,
+        Token_RIGHT_SHIFT =  1110,
+        Token_RIGHT_SHIFT_ASSIGN =  1111,
+        Token_RPAREN =  1112,
+        Token_SELF =  1113,
+        Token_SEMI =  1114,
+        Token_SINGLE_QUOTE =  1115,
+        Token_SINGLE_QUOTED_STRING =  1116,
+        Token_STAR =  1117,
+        Token_STAR_ASSIGN =  1118,
+        Token_STRING_AFTER_EXPRESSION_SUBSTITUTION =  1119,
+        Token_STRING_BEFORE_EXPRESSION_SUBSTITUTION =  1120,
+        Token_STRING_BETWEEN_EXPRESSION_SUBSTITUTION =  1121,
+        Token_STUB_A =  1122,
+        Token_STUB_B =  1123,
+        Token_STUB_C =  1124,
+        Token_SUPER =  1125,
+        Token_THEN =  1126,
+        Token_TRUE =  1127,
+        Token_TWO_COLON =  1128,
+        Token_UNARY_MINUS =  1129,
+        Token_UNARY_PLUS =  1130,
+        Token_UNARY_PLUS_MINUS_METHOD_NAME =  1131,
+        Token_UNDEF =  1132,
+        Token_UNLESS =  1133,
+        Token_UNLESS_MODIFIER =  1134,
+        Token_UNTIL =  1135,
+        Token_UNTIL_MODIFIER =  1136,
+        Token_WHEN =  1137,
+        Token_WHILE =  1138,
+        Token_WHILE_MODIFIER =  1139,
+        Token_W_ARRAY =  1140,
+        Token_YIELD =  1141,
         token_type_size
       }; // token_type_enum
 
       // user defined declarations:
+
     public:
 
       /**
@@ -231,8 +236,9 @@ namespace ruby
         info
       };
 
-      void report_problem( parser::problem_type type, const char* message );
-      void report_problem( parser::problem_type type, std::string message );
+      void report_problem( parser::problem_type type,  const char* message );
+      void report_problem( parser::problem_type type,  std::string message );
+      char* tokenText(std::size_t begin);
 
     private:
 
@@ -244,6 +250,7 @@ namespace ruby
           // in addition to GREATER_THAN (">").
           int ltCounter;
         };
+
       parser_state _M_state;
 
       //state modifiers
@@ -254,6 +261,7 @@ namespace ruby
       bool expect_array_or_block_arguments;
 
       Lexer *m_lexer;
+      char* m_contents;
 
 
     public:
@@ -271,10 +279,10 @@ namespace ruby
       void restore_state(parser_state *state);
       parser()
       {
-        memory_pool = 0;
-        token_stream = 0;
-        yytoken = Token_EOF;
-        yy_block_errors = false;
+        memory_pool =  0;
+        token_stream =  0;
+        yytoken =  Token_EOF;
+        yy_block_errors =  false;
       }
 
       virtual ~parser()

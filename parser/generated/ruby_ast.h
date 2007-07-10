@@ -6,8 +6,9 @@
 
 #include <kdev-pg-list.h>
 
-#include <kdevast.h>
 
+
+#include "rubyparserexport.h"
 
 namespace ruby
   {
@@ -165,7 +166,7 @@ namespace ruby
   struct whileExpression_ast;
 
 
-  struct ast_node: public KDevelop::AST
+  struct ast_node
     {
       enum ast_node_kind_enum {
         Kind_additiveExpression = 1000,
