@@ -26,7 +26,8 @@
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kgenericfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 #include <QExtensionFactory>
 // from the parser subdirectory
@@ -34,11 +35,11 @@
 
 using namespace ruby;
 
-typedef KGenericFactory<RubyLanguageSupport> KDevRubySupportFactory;
-K_EXPORT_COMPONENT_FACTORY( kdevrubylanguagesupport, KDevRubySupportFactory( "kdevrubysupport" ) )
+K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>(); )
+K_EXPORT_PLUGIN(KDevRubySupportFactory("kdevrubysupport"))
 
 RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
-                                          const QStringList& /*args*/ )
+                                          const QVariantList& /*args*/ )
         : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
         , KDevelop::ILanguageSupport()
 {

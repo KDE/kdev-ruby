@@ -20,7 +20,7 @@ namespace ruby
     do
       {
         kind =  m_lexer->yylex();
-        std::cerr <<  m_lexer->YYText() <<  " of kind " <<  kind <<  std::endl; //" "; // debug output
+        std::cerr <<  m_lexer->YYText() <<  " of kind" <<  kind <<  std::endl; //" "; // debug output
 
         if  ( !kind ) // when the lexer returns 0, the end of file is reached
           kind =  parser::Token_EOF;

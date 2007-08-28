@@ -37,7 +37,7 @@ class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguage
 Q_OBJECT
 Q_INTERFACES( KDevelop::ILanguageSupport )
 public:
-    RubyLanguageSupport( QObject *parent, const QStringList& args = QStringList() );
+    RubyLanguageSupport( QObject *parent, const QVariantList& args = QVariantList() );
     virtual ~RubyLanguageSupport();
 
     virtual KDevelop::ParseJob* createParseJob(const KUrl&);

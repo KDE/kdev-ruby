@@ -60,7 +60,7 @@ void print_token_environment(ruby::parser* parser)
         if (i == current_index)
           std::cerr << "<<";
 
-        std::cerr << " ";
+        std::cerr << "";
     }
     std::cerr << std::endl;
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     {
         if (!strncmp(arg, "--", 2))
         {
-            std::cerr << "Unknown option: " << arg << std::endl;
+            std::cerr << "Unknown option:" << arg << std::endl;
             usage(argv[0]);
             exit(EXIT_FAILURE);
         }
@@ -157,8 +157,8 @@ bool parse_file(char const *filename)
 
 static void usage(char const* argv0)
 {
-    std::cerr << "usage: " << argv0 << " [options] file.rb [file2.rb ...]"
+    std::cerr << "usage:" << argv0 << "[options] file.rb [file2.rb ...]"
         << std::endl << std::endl
         << "Options:" << std::endl
-        << "  none so far" << std::endl;
+        << " none so far" << std::endl;
 }
