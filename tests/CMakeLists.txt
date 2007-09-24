@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 get_generated_srcs(parser_GEN_SRCS)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
