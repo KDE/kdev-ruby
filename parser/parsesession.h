@@ -43,7 +43,7 @@ public:
    *
    * \note the line starts from 0.
    */
-  void positionAt( std::size_t offset, int *line, int *column ) const;
+  void positionAt( std::size_t offset, std::size_t *line, std::size_t *column ) const;
 
   void setContents( const QByteArray& contents );
 

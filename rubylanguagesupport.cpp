@@ -50,7 +50,7 @@ RubyLanguageSupport::~RubyLanguageSupport()
 {
 }
 
-KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
+KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &/*url*/)
 {
     // TODO
     return 0;
