@@ -5,6 +5,7 @@ find_package(KDevelop-PG QUIET)
 find_package(Flex QUIET)
 
 include_directories(
+    ${KDEVPLATFORM_INCLUDE_DIR}
     ${KDEVPLATFORM_INCLUDE_DIR}/interfaces
     ${KDEVPLATFORM_INCLUDE_DIR}/language
     ${KDEVPLATFORM_INCLUDE_DIR}/language/backgroundparser
@@ -80,7 +81,7 @@ set(kdevrubylanguagesupport_PART_SRCS
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
 target_link_libraries(kdevrubylanguagesupport
     ${KDE4_KDEUI_LIBS}
-    ${KDEVPLATFORM_INTERFACES_LIBRARY}
+    ${KDEVPLATFORM_INTERFACES_LIBRARY} ${KDEVPLATFORM_LANGUAGE_LIBRARY}
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
