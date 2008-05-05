@@ -73,6 +73,7 @@ add_subdirectory(tests)
 get_generated_srcs(parser_GEN_SRCS)
 set(kdevrubylanguagesupport_PART_SRCS
     ${CMAKE_SOURCE_DIR}/parser/parsesession.cpp
+    simpleparsejob.cpp
     rubylanguagesupport.cpp
     ${kdevrubyparser_STAT_SRCS}
     ${parser_GEN_SRCS}
@@ -81,7 +82,9 @@ set(kdevrubylanguagesupport_PART_SRCS
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
 target_link_libraries(kdevrubylanguagesupport
     ${KDE4_KDEUI_LIBS}
+    ${KDE4_THREADWEAVER_LIBRARIES}
     ${KDEVPLATFORM_INTERFACES_LIBRARY} ${KDEVPLATFORM_LANGUAGE_LIBRARY}
+    ${KDEVPLATFORM_EDITOR_LIBRARY} ${KDEVPLATFORM_PROJECT_LIBRARY}
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})

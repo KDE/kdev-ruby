@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2006 Alexander Dymo <adymo@kdevelop.org>                    *
+ * Copyright (c) 2008 Alexander Dymo <adymo@kdevelop.org>                    *
  *                                                                           *
  * Permission is hereby granted, free of charge, to any person obtaining     *
  * a copy of this software and associated documentation files (the           *
@@ -20,41 +20,39 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION     *
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
+#ifndef RUBY_SIMPLEPARSEJOB_H
+#define RUBY_SIMPLEPARSEJOB_H
 
-#ifndef KDEVRUBYLANGUAGESUPPORT_H
-#define KDEVRUBYLANGUAGESUPPORT_H
+#include <kurl.h>
+#include <backgroundparser/parsejob.h>
 
-#include <iplugin.h>
-#include <ilanguagesupport.h>
+class RubyLanguageSupport;
 
-namespace KDevelop {
-    class IDocument;
-    class IProject;
-}
-
-class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
+namespace ruby
 {
-Q_OBJECT
-Q_INTERFACES( KDevelop::ILanguageSupport )
+
+class ParseSession;
+
+class SimpleParseJob : public KDevelop::ParseJob
+{
+    Q_OBJECT
+
 public:
-    RubyLanguageSupport( QObject *parent, const QVariantList& args = QVariantList() );
-    virtual ~RubyLanguageSupport();
+    SimpleParseJob( const KUrl &url, RubyLanguageSupport* parent );
 
-    virtual KDevelop::ParseJob* createParseJob(const KUrl&);
+    virtual ~SimpleParseJob();
 
-    virtual QString name() const;
+    RubyLanguageSupport* ruby() const;
 
-    QStringList extensions() const;
+    bool wasReadFromDisk() const;
 
-private Q_SLOTS:
-    void documentLoaded(KDevelop::IDocument *document);
-    void documentClosed(KDevelop::IDocument *document);
-    void projectOpened(KDevelop::IProject *project);
-    void projectClosing(KDevelop::IProject *project);
-    void documentChanged( KDevelop::IDocument* document );
-    void documentActivated( KDevelop::IDocument* document );
+protected:
+    virtual void run();
+
+private:
+    bool m_readFromDisk;
 };
 
-#endif
+} // end of namespace ruby
 
-// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
+#endif

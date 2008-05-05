@@ -29,9 +29,20 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
+#include <icore.h>
+#include <iproject.h>
+#include <idocument.h>
+#include <iprojectcontroller.h>
+#include <idocumentcontroller.h>
+#include <ilanguagecontroller.h>
+#include <project/projectmodel.h>
+#include <backgroundparser/backgroundparser.h>
+
 #include <QExtensionFactory>
 // from the parser subdirectory
 #include <ruby_parser.h>
+
+#include "simpleparsejob.h"
 
 using namespace ruby;
 
@@ -44,21 +55,30 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
         , KDevelop::ILanguageSupport()
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
+
+    connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
+             this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
+    connect( core()->documentController(), SIGNAL( documentClosed( KDevelop::IDocument* ) ),
+             this, SLOT( documentClosed( KDevelop::IDocument* ) ) );
+    connect( core()->documentController(), SIGNAL( documentStateChanged( KDevelop::IDocument* ) ),
+             this, SLOT( documentChanged( KDevelop::IDocument* ) ) );
+    connect( core()->documentController(), SIGNAL( documentContentChanged( KDevelop::IDocument* ) ),
+             this, SLOT( documentChanged( KDevelop::IDocument* ) ) );
+    connect( core()->documentController(), SIGNAL( documentActivated( KDevelop::IDocument* ) ),
+             this, SLOT( documentActivated( KDevelop::IDocument* ) ) );
+    connect( core()->projectController(), SIGNAL( projectOpened( KDevelop::IProject* ) ),
+             this, SLOT( projectOpened( KDevelop::IProject* ) ) );
+    connect( core()->projectController(), SIGNAL( projectClosing( KDevelop::IProject* ) ),
+             this, SLOT( projectClosing( KDevelop::IProject* ) ) );
 }
 
 RubyLanguageSupport::~RubyLanguageSupport()
 {
 }
 
-KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &/*url*/)
+KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
 {
-    // TODO
-    return 0;
-}
-
-KDevelop::ILanguage* RubyLanguageSupport::language()
-{
-    return 0;
+    return new SimpleParseJob(url, this);
 }
 
 QString RubyLanguageSupport::name() const
@@ -69,6 +89,41 @@ QString RubyLanguageSupport::name() const
 QStringList RubyLanguageSupport::extensions() const
 {
     return QStringList() << "ILanguageSupport";
+}
+
+void RubyLanguageSupport::documentActivated(KDevelop::IDocument * document)
+{
+    Q_UNUSED(document)
+}
+
+void RubyLanguageSupport::documentLoaded(KDevelop::IDocument *document)
+{
+    kDebug() << "loaded document";
+    core()->languageController()->backgroundParser()->addDocument(document->url());
+}
+
+void RubyLanguageSupport::documentClosed(KDevelop::IDocument *document)
+{
+    Q_UNUSED(document)
+}
+
+void RubyLanguageSupport::projectOpened(KDevelop::IProject *project)
+{
+    //parse project files
+    KDevelop::BackgroundParser *parser = core()->languageController()->backgroundParser();
+    foreach (const KDevelop::ProjectFileItem *file, project->files())
+        parser->addDocument(file->url());
+}
+
+void RubyLanguageSupport::projectClosing(KDevelop::IProject *project)
+{
+    Q_UNUSED(project)
+}
+
+void RubyLanguageSupport::documentChanged(KDevelop::IDocument *document)
+{
+    kDebug() << "loaded document";
+    core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
 #include "rubylanguagesupport.moc"
