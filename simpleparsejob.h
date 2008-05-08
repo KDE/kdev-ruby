@@ -50,6 +50,8 @@ protected:
     virtual void run();
 
 private:
+    void parse(const QString &contents);
+
     bool m_readFromDisk;
 };
 
