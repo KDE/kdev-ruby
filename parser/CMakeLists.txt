@@ -157,7 +157,7 @@ install(TARGETS kdevrubyparser DESTINATION ${LIB_INSTALL_DIR})
 # generate the command-line parser
 add_executable(ruby-parser main.cpp)
 target_link_libraries(ruby-parser kdevrubyparser)
-install(TARGETS ruby-parser DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS ruby-parser ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 add_custom_target( copy-generated

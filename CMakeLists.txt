@@ -93,7 +93,7 @@ install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
 # generate the command-line parser
 add_executable(ruby-parser parser/main.cpp ${parser_GEN_SRCS} ${kdevrubyparser_STAT_SRCS})
 target_link_libraries(ruby-parser)
-install(TARGETS ruby-parser DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS ruby-parser ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 
