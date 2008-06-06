@@ -85,22 +85,16 @@ namespace ruby
       info
   };
 
-  void report_problem( parser::problem_type type, const char* message );
-  void report_problem( parser::problem_type type, std::string message );
+  void report_problem( Parser::problem_type type, const char* message );
+  void report_problem( Parser::problem_type type, std::string message );
   char* tokenText(std::size_t begin);
 :]
 
 
 %parserclass (private declaration)
 [:
-  struct parser_state {
-      // ltCounter stores the amount of currently open type arguments rules,
-      // all of which are beginning with a less than ("<") character.
-      // This way, also RSHIFT (">>") can be used to close type arguments rules,
-      // in addition to GREATER_THAN (">").
-      int ltCounter;
-  };
-  parser_state _M_state;
+  struct ParserState { };
+  ParserState m_state;
 
   //state modifiers
   bool seen_star;
@@ -1065,46 +1059,46 @@ namespace ruby
 
 namespace ruby {
 
-void parser::tokenize( char *contents )
+void Parser::tokenize( char *contents )
 {
     m_contents = contents;
     m_lexer = new Lexer( this, contents );
 
-    int kind = parser::Token_EOF;
+    int kind = Parser::Token_EOF;
     do
     {
         kind = m_lexer->yylex();
         std::cerr << m_lexer->YYText() << " of kind " << kind << std::endl; //" "; // debug output
 
         if ( !kind ) // when the lexer returns 0, the end of file is reached
-            kind = parser::Token_EOF;
+            kind = Parser::Token_EOF;
 
-        parser::token_type &t = this->token_stream->next();
+        Parser::token_type &t = this->token_stream->next();
         t.kind = kind;
         t.begin = m_lexer->tokenBegin();
         t.end = m_lexer->tokenEnd();
     }
-    while (kind != parser::Token_EOF);
+    while (kind != Parser::Token_EOF);
 
     this->yylex(); // produce the look ahead token
     delete m_lexer;
     m_lexer = 0;
 }
 
-parser::parser_state *parser::copy_current_state()
+Parser::ParserState *Parser::copyCurrentState()
 {
-    parser_state *state = new parser_state();
-    state->ltCounter = _M_state.ltCounter;
+    ParserState *state = new ParserState();
+    // (copy any member variables from m_state to state)
     return state;
 }
 
-void parser::restore_state( parser::parser_state *state )
+void Parser::restoreState( Parser::ParserState *state )
 {
-    _M_state.ltCounter = state->ltCounter;
+    // (copy any member variables from state to m_state)
 }
 
 
-char* parser::tokenText(std::size_t begin)
+char* Parser::tokenText(std::size_t begin)
 {
     return &m_contents[begin];
 }
