@@ -42,3 +42,4 @@ X-KDevelop-Args=RUBY
 X-KDevelop-Interfaces=ILanguageSupport
 X-KDevelop-SupportedMimeTypes=application/x-ruby
 X-KDE-PluginInfo-Name=KDevRubySupport
+X-KDevelop-Mode=NoGUI
