@@ -32,6 +32,7 @@
 #include <QFile>
 #include <QRegExp>
 #include <QByteArray>
+#include <QReadLocker>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -51,7 +52,7 @@
 #include <ktexteditor/smartinterface.h>
 #include <ktexteditor/document.h>
 #include <language/duchain/smartconverter.h>
-#include <language/duchain/symboltable.h>
+#include <language/duchain/persistentsymboltable.h>
 #include <editor/hashedstring.h>
 #include <editor/editorintegrator.h>
 
@@ -85,18 +86,35 @@ void SimpleParseJob::run()
     if ( abortRequested() )
         return abortJob();
 
-    QMutexLocker lock(ruby()->language()->parseMutex(QThread::currentThread()));
+    QReadLocker lock(ruby()->language()->parseLock());
     m_readFromDisk = !contentsAvailableFromEditor();
 
     QString contents;
     if ( m_readFromDisk )
     {
-        QFile file( m_document.str() );
+        QFile file( document().str() );
         if ( !file.open( QIODevice::ReadOnly ) )
         {
-            m_errorMessage = i18n( "Could not open file '%1'", m_document.str() );
-            kWarning( 9007 ) << "Could not open file " << m_document.str()
-                             << " (path " << m_document.str() << ")" << endl;
+            KDevelop::ProblemPointer p(new KDevelop::Problem());
+            p->setSource(KDevelop::ProblemData::Disk);
+            p->setDescription( i18n( "Could not open file '%1'", document().str() ) );
+            switch (file.error()) {
+                case QFile::ReadError:
+                    p->setExplanation(i18n("File could not be read from."));
+                    break;
+                case QFile::OpenError:
+                    p->setExplanation(i18n("File could not be opened."));
+                    break;
+                case QFile::PermissionsError:
+                    p->setExplanation(i18n("File permissions prevent opening for read.")); 
+                    break;
+                default:
+                    break;
+            }
+            p->setFinalLocation(KDevelop::DocumentRange(document().str(), KTextEditor::Cursor(0,0), KTextEditor::Cursor(0,0)));
+            // TODO addProblem(p);
+            kWarning( 9007 ) << "Could not open file " << document().str()
+                             << " (path " << document().str() << ")" << endl;
             return ;
         }
 
@@ -109,7 +127,7 @@ void SimpleParseJob::run()
     }
 
     kDebug() << "===-- PARSING --===> "
-             << m_document.str()
+             << document().str()
              << " <== readFromDisk: " << m_readFromDisk
              << " size: " << contents.size()
              << endl;
@@ -141,12 +159,13 @@ void SimpleParseJob::parse(const QString &contents)
 
     DUChainWriteLocker lock( DUChain::lock() );
     EditorIntegrator editor;
-    editor.setCurrentUrl(m_document);
+    editor.setCurrentUrl(document());
 
-    TopDUContext *topContext = DUChain::self()->chainForDocument(m_document);
-    if (topContext)
-        DUChain::self()->removeDocumentChain(IdentifiedFile(m_document));
-    topContext = new TopDUContext(m_document, SimpleRange( editor.currentDocument()->documentRange() ));
+    if (TopDUContext * const topContext = DUChain::self()->chainForDocument(document()))
+    {       
+        DUChain::self()->removeDocumentChain(topContext);
+    }
+    TopDUContext * const topContext = new TopDUContext(document(), SimpleRange( editor.smart().currentDocument()->documentRange() ));
 
     QStringList lines = contents.split("\n");
     int i = 0;
@@ -156,17 +175,19 @@ void SimpleParseJob::parse(const QString &contents)
 
         if (classre.indexIn(line) != -1) {
             //create class declaration
-            Declaration *decl = new Declaration(m_document, SimpleRange(i, 0, i, rawline.length()),
-                Declaration::ClassScope, 0);
+//            Declaration * const decl = new Declaration(document(), SimpleRange(i, 0, i, rawline.length()),
+//                Declaration::ClassScope, 0);
+            Declaration * const decl = new Declaration(SimpleRange(i, 0, i, rawline.length()), topContext);
+
             decl->setDeclarationIsDefinition(true);
             decl->setKind(Declaration::Type);
             decl->setIdentifier(Identifier(classre.cap(3)));
-            decl->setContext(topContext);
+//            decl->setContext(topContext);
         }
 
         i+=1;
     }
-    DUChain::self()->addDocumentChain(IdentifiedFile(m_document), topContext);
+    DUChain::self()->addDocumentChain(topContext);
 }
 
 } // end of namespace ruby

@@ -24,6 +24,8 @@
 /* needed for KDE_EXPORT macros */
 #include <kdemacros.h>
 
+#include <string>
+
 /* needed, because e.g. Q_OS_UNIX is so frequently used */
 #ifdef __cplusplus
 # include <QtCore/qglobal.h>

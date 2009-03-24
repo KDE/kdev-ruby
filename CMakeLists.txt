@@ -18,61 +18,61 @@ include_directories(
 )
 
 set(kdevrubyparser_STAT_SRCS
-    ${CMAKE_SOURCE_DIR}/parser/decoder.cpp
-    ${CMAKE_SOURCE_DIR}/parser/decoder.h
-    ${CMAKE_SOURCE_DIR}/parser/ruby_io.cpp
-    ${CMAKE_SOURCE_DIR}/parser/ruby_lexer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/decoder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/decoder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/ruby_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/ruby_lexer.h
 )
 
 # autogenerate the lexer, the parser and the KDevelop codemodel
-macro(GET_GENERATED_SRCS _srcsList)
+macro(GET_GENERATED_SRCS _srcsList PLUGIN_SOURCE_DIR PLUGIN_BINARY_DIR)
     if(KDEVPG_FOUND AND FLEX_FOUND)
         include_directories(${KDEVPG_INCLUDE_DIR})
         kdevpg_generate(_kdevpgList ruby DEBUG_VISITOR
-  	      "${CMAKE_SOURCE_DIR}/parser/ruby.g" 
-  	      "${CMAKE_SOURCE_DIR}/parser/ruby_lexer.h")
+  	      "${PLUGIN_SOURCE_DIR}/parser/ruby.g" 
+  	      "${PLUGIN_SOURCE_DIR}/parser/ruby_lexer.h")
   
         # Copy ruby_lexer.ll to the builddir, so that flex doesn't write out
         # absolute paths in the generated file when we pass them as arguments.
         # In short, I don't want stuff like
         # '#line 2 "/home/kde/build/.../ruby_lexer.cpp" in SVN.
         add_custom_command(
-            OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-            MAIN_DEPENDENCY "${CMAKE_SOURCE_DIR}/parser/ruby_lexer.ll"
+            OUTPUT  "${PLUGIN_BINARY_DIR}/ruby_lexer.ll"
+            MAIN_DEPENDENCY "${PLUGIN_SOURCE_DIR}/parser/ruby_lexer.ll"
             COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                    "${CMAKE_SOURCE_DIR}/parser/ruby_lexer.ll"
-                    "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
+                    "${PLUGIN_SOURCE_DIR}/parser/ruby_lexer.ll"
+                    "${PLUGIN_BINARY_DIR}/ruby_lexer.ll"
         )
         # Add command to generate the lexer.
         add_custom_command(
-            OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-            MAIN_DEPENDENCY "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-            DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-                    "${CMAKE_SOURCE_DIR}/parser/ruby_lexer.h"
+            OUTPUT  "${PLUGIN_BINARY_DIR}/ruby_lexer.cpp"
+            MAIN_DEPENDENCY "${PLUGIN_BINARY_DIR}/ruby_lexer.ll"
+            DEPENDS "${PLUGIN_BINARY_DIR}/ruby_parser.h"
+                    "${PLUGIN_SOURCE_DIR}/parser/ruby_lexer.h"
             COMMAND ${FLEX_EXECUTABLE}
             ARGS    -o"ruby_lexer.cpp"
                     "ruby_lexer.ll"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            WORKING_DIRECTORY ${PLUGIN_BINARY_DIR}
         )
-        set(${_srcsList} ${_kdevpgList} "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp")
+        set(${_srcsList} ${_kdevpgList} "${PLUGIN_BINARY_DIR}/ruby_lexer.cpp")
     else(KDEVPG_FOUND AND FLEX_FOUND)
-        include_directories(${CMAKE_SOURCE_DIR}/parser/generated ${CMAKE_SOURCE_DIR}/parser/generated/kdevelop-pg)
+        include_directories(${PLUGIN_SOURCE_DIR}/parser/generated ${PLUGIN_SOURCE_DIR}/parser/generated/kdevelop-pg)
         message(STATUS "Assuming existence of generated parser files")
         message( STATUS "Assuming existence of generated lexer files")
 	set(${_srcsList} 
-            ${CMAKE_SOURCE_DIR}/parser/generated/ruby_parser.cpp
-            ${CMAKE_SOURCE_DIR}/parser/generated/ruby_visitor.cpp
-            ${CMAKE_SOURCE_DIR}/parser/generated/ruby_default_visitor.cpp
-            ${CMAKE_SOURCE_DIR}/parser/generated/ruby_lexer.cpp )
+            ${PLUGIN_SOURCE_DIR}/parser/generated/ruby_parser.cpp
+            ${PLUGIN_SOURCE_DIR}/parser/generated/ruby_visitor.cpp
+            ${PLUGIN_SOURCE_DIR}/parser/generated/ruby_default_visitor.cpp
+            ${PLUGIN_SOURCE_DIR}/parser/generated/ruby_lexer.cpp )
 
     endif(KDEVPG_FOUND AND FLEX_FOUND)
 endmacro(GET_GENERATED_SRCS)
 
 add_subdirectory(tests)
 
-get_generated_srcs(parser_GEN_SRCS)
+get_generated_srcs(parser_GEN_SRCS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 set(kdevrubylanguagesupport_PART_SRCS
-    ${CMAKE_SOURCE_DIR}/parser/parsesession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/parsesession.cpp
     simpleparsejob.cpp
     rubylanguagesupport.cpp
     ${kdevrubyparser_STAT_SRCS}
