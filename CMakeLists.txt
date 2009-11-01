@@ -1,4 +1,5 @@
-
+project(ruby)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform REQUIRED)
 find_package(KDevelop-PG QUIET)
