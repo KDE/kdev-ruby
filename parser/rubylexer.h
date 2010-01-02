@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
 
-#include "ruby_parser.h"
+#include "generated/rubyparser.h"
 
 #include <iostream>
 
@@ -40,8 +40,8 @@ namespace ruby
 class Lexer : public yyFlexLexer
 {
 public:
-    Lexer( ruby::parser *parser, char *contents );
-    void restart( ruby::parser *parser, char *contents );
+    Lexer( ruby::Parser *parser, char *contents );
+    void restart( ruby::Parser *parser, char *contents );
 
     int yylex();
     char *contents()         { return m_contents;   }

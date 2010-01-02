@@ -1,205 +1,89 @@
+find_package(KDE4 REQUIRED)
+find_package(KDevPlatform REQUIRED)
+find_package(KDevelop-PG-Qt QUIET)
+find_package(Flex QUIET)
 
+find_program(FLEX_EXECUTABLE
+    NAMES flex
+    PATHS /usr/bin
+    DOC "Flex executable")
 
-include_directories( ${QT_INCLUDES} ${KDE4_INCLUDE_DIR} ${KDEVPLATFORM_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
-########### next target ###############
-
-set(kdevrubyparser_STAT_SRCS
-    decoder.cpp
-    decoder.h
-    ruby_io.cpp
-    ruby_lexer.h
+set(parser_STAT_SRCS
     parsesession.cpp
-    parsesession.h
 )
 
-# autogenerate the lexer, the parser and the KDevelop codemodel
-
-if(KDEVPG_FOUND)
-    include_directories(${KDEVPG_INCLUDE_DIR})
-    # Add commands to generate the parsers.
-    add_custom_command(
-        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-        MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/ruby.g"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ruby_lexer.h"
-        COMMAND ${KDEVPG_EXECUTABLE}
-        ARGS     --output=ruby
-                 --debug-visitor
-                "${CMAKE_CURRENT_SOURCE_DIR}/ruby.g"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+if(KDEVPGQT_FOUND)
+     kdevpgqt_generate(_kdevpgList ruby NAMESPACE ruby DEBUG_VISITOR TOKEN_TEXT
+        "${ruby_SOURCE_DIR}/parser/ruby.g"
+        "${ruby_SOURCE_DIR}/parser/rubylexer.h"
     )
-else(KDEVPG_FOUND)
-    # If kdev-pg is not available, copy the pre-generated parser files from SVN.
-    add_custom_command(
-        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_ast.h"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.h"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.cpp"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.h"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.cpp"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.h"
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.cpp"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_ast.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.h"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-        COMMENT "kdev-pg is not installed, using the pre-generated parser files from SVN."
-    )
-endif(KDEVPG_FOUND)
+    set( parser_SRCS
+       ${_kdevpgList}
+   )
+else(KDEVPGQT_FOUND)
+   message(STATUS "Assuming existence of generated parser files")
+   set(parser_SRCS
+       generated/rubyparser.cpp
+       generated/rubyvisitor.cpp
+       generated/rubydefaultvisitor.cpp )
 
-set(kdevrubyparser_STAT_SRCS
-    ${kdevrubyparser_STAT_SRCS}
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-)
-set_source_files_properties(
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-    GENERATED
-)
-
+endif(KDEVPGQT_FOUND)
 
 if(FLEX_EXECUTABLE)
-    # Copy ruby_lexer.ll to the builddir, so that flex doesn't write out
-    # absolute paths in the generated file when we pass them as arguments.
-    # In short, I don't want stuff like
-    # '#line 2 "/home/kde/build/.../ruby_lexer.cpp" in SVN.
-    add_custom_command(
-        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-        MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/ruby_lexer.ll"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/ruby_lexer.ll"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-    )
-    set_source_files_properties(
-        "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-        GENERATED
-    )
     # Add command to generate the lexer.
     add_custom_command(
-        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-        MAIN_DEPENDENCY "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.ll"
-        DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
+        OUTPUT  "${CMAKE_CURRENT_SOURCE_DIR}/generated/rubylexer.cpp"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ruby.ll"
+                "${CMAKE_CURRENT_SOURCE_DIR}/FlexLexer.h"
+                "${CMAKE_CURRENT_SOURCE_DIR}/generated/rubyparser.h"
         COMMAND ${FLEX_EXECUTABLE}
-        ARGS    -o"ruby_lexer.cpp"
-                "ruby_lexer.ll"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        ARGS    --outfile=generated/rubylexer.cpp
+                -+
+                ruby.ll
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+    set(parser_srcs ${CMAKE_CURRENT_SOURCE_DIR}/generated/rubylexer.cpp ${parser_srcs})
+
+    set_source_files_properties(
+        ${CMAKE_CURRENT_SOURCE_DIR}/generated/rubylexer.cpp
+        GENERATED
     )
 else(FLEX_EXECUTABLE)
-    # If flex is not available, copy the pre-generated lexer from SVN.
-    add_custom_command(
-        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_lexer.cpp"
-        COMMAND ${CMAKE_COMMAND}  ARGS -E copy_if_different
-                "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_lexer.cpp"
-                "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-        COMMENT "flex is not installed, using the pre-generated lexer from SVN."
-    )
+    message("--- Assuming existence of the generated lexer file generated/rubylexer.cpp")
+    set(parser_srcs ${CMAKE_CURRENT_SOURCE_DIR}/generated/rubylexer.cpp ${parser_srcs})
 endif(FLEX_EXECUTABLE)
 
-set(kdevrubyparser_STAT_SRCS
-    ${kdevrubyparser_STAT_SRCS}
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-)
-set_source_files_properties(
-    "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-    GENERATED
+kde4_add_library( kdev4rubyparser SHARED ${parser_SRCS} ${parser_STAT_SRCS} )
+target_link_libraries( kdev4rubyparser
+    ${KDE4_KDECORE_LIBS}
+    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    ${KDE4_KTEXTEDITOR_LIBS}
 )
 
-set(kdevrubyparser_STAT_SRCS
-    ${kdevrubyparser_STAT_SRCS}
-)
+kde4_add_executable( ruby-parser main.cpp )
+target_link_libraries(ruby-parser ${QT_QTCORE_LIBRARY} kdev4rubyparser)
 
-
-kde4_add_library(kdevrubyparser SHARED ${kdevrubyparser_STAT_SRCS})
-target_link_libraries(kdevrubyparser ${QT_QTCORE_LIBRARY})
-install(TARGETS kdevrubyparser DESTINATION ${LIB_INSTALL_DIR})
-
-# generate the command-line parser
-add_executable(ruby-parser main.cpp)
-target_link_libraries(ruby-parser kdevrubyparser)
-install(TARGETS ruby-parser ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdev4rubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 add_custom_target( copy-generated
-
-# 1. copy actions
-    # kdev-pg generated files for the ruby parser
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_ast.h"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.h"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_parser.cpp"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.h"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_visitor.cpp"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.h"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_default_visitor.cpp"
-
-    # flex generated file
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby_lexer.cpp"
-
-# 2. depend on the files being copied
-    # kdev-pg generated files for the ruby parser
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/ruby_ast.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_parser.cpp"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_visitor.cpp"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/ruby_default_visitor.cpp"
-    # flex generated file
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/ruby_lexer.cpp"
-)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubyparser.cpp" "${ruby_SOURCE_DIR}/parser/generated/rubyparser.cpp"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubyparser.h" "${ruby_SOURCE_DIR}/parser/generated/rubyparser.h"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubyast.h" "${ruby_SOURCE_DIR}/parser/generated/rubyast.h"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubyvisitor.h" "${ruby_SOURCE_DIR}/parser/generated/rubyvisitor.h"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubyvisitor.cpp" "${ruby_SOURCE_DIR}/parser/generated/rubyvisitor.cpp"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubydefaultvisitor.h" "${ruby_SOURCE_DIR}/parser/generated/rubydefaultvisitor.h"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubydefaultvisitor.cpp" "${ruby_SOURCE_DIR}/parser/generated/rubydefaultvisitor.cpp"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubydebugvisitor.h" "${ruby_SOURCE_DIR}/parser/generated/rubydebugvisitor.h"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ruby_BINARY_DIR}/parser/rubytokentext.h" "${ruby_SOURCE_DIR}/parser/generated/rubytokentext.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubyparser.cpp"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubyparser.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubyvisitor.cpp"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubyvisitor.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubydefaultvisitor.cpp"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubydefaultvisitor.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubyast.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubydebugvisitor.h"
+    DEPENDS "${ruby_BINARY_DIR}/parser/rubytokentext.h"
+    )

@@ -30,7 +30,7 @@
 %{
 
 #define DONT_INCLUDE_FLEXLEXER
-#include "ruby_lexer.h"
+#include "rubylexer.h"
 
 %}
 

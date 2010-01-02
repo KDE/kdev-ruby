@@ -63,6 +63,10 @@ namespace ruby
 {
   class Lexer;
 }
+
+#include <QtCore/QString>
+#include <kdebug.h>
+
 :]
 
 
@@ -90,6 +94,11 @@ namespace ruby
   char* tokenText(std::size_t begin);
 :]
 
+%parserclass (protected declaration)
+[:
+  void expectedSymbol(ruby::AstNode::AstNodeKind kind, const QString& name) { kWarning() << "In AstNode " << kind << ": Expected symbol " << name; }
+  void expectedToken(int kind, enum TokenType token, const QString& name) { kWarning() << "In AstNode " << kind << ": Expected token " << name << " (" << token << ")";}
+:]
 
 %parserclass (private declaration)
 [:
@@ -1055,7 +1064,7 @@ namespace ruby
 
 [:
 
-#include "ruby_lexer.h"
+#include "rubylexer.h"
 
 namespace ruby {
 

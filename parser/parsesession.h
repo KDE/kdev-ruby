@@ -24,7 +24,7 @@
 
 #include <QtCore/QByteArray>
 
-#include "ruby_parser.h"
+#include "generated/rubyparser.h"
 #include "rubyparserexport.h"
 
 namespace ruby
