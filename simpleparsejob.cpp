@@ -37,6 +37,10 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+#include <ktexteditor/smartrange.h>
+#include <ktexteditor/smartinterface.h>
+#include <ktexteditor/document.h>
+
 #include <interfaces/ilanguage.h>
 
 #include <language/duchain/duchain.h>
@@ -44,13 +48,13 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/topducontext.h>
 #include <language/duchain/parsingenvironment.h>
-#include <ktexteditor/smartrange.h>
-#include <ktexteditor/smartinterface.h>
-#include <ktexteditor/document.h>
 #include <language/duchain/smartconverter.h>
 #include <language/duchain/persistentsymboltable.h>
+
 #include <language/editor/hashedstring.h>
 #include <language/editor/editorintegrator.h>
+
+#include <language/backgroundparser/urlparselock.h>
 
 #include "rubylanguagesupport.h"
 
@@ -69,7 +73,7 @@ SimpleParseJob::~SimpleParseJob()
 
 RubyLanguageSupport *SimpleParseJob::ruby() const
 {
-    return static_cast<RubyLanguageSupport*>(const_cast<QObject*>(parent()));
+    return RubyLanguageSupport::self();
 }
 
 bool SimpleParseJob::wasReadFromDisk() const
@@ -79,47 +83,58 @@ bool SimpleParseJob::wasReadFromDisk() const
 
 void SimpleParseJob::run()
 {
+    kDebug() << "Trying to run ruby parse job";
+
+    //Happens during shutdown
+    if (!ruby())
+        return abortJob();
+
+    kDebug() << "1";
+
     if ( abortRequested() )
         return abortJob();
 
-    QReadLocker lock(ruby()->language()->parseLock());
+    kDebug() << "2";
+
+    KDevelop::UrlParseLock urlLock(document());
+
+    kDebug() << "3";
+
+    {
+        DUChainReadLocker lock(DUChain::lock());
+        bool needsUpdate = true;
+        foreach(const ParsingEnvironmentFilePointer &file, DUChain::self()->allEnvironmentFiles(document())) {
+            if (file->needsUpdate()) {
+                needsUpdate = true;
+                break;
+            } else {
+                needsUpdate = false;
+            }
+        }
+        if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled) && !needsUpdate) {
+            kDebug() << "Already up to date" << document().str();
+            return;
+        }
+    }
+
+    kDebug() << "4";
+
     m_readFromDisk = !contentsAvailableFromEditor();
 
     QString contents;
-    if ( m_readFromDisk )
-    {
+    if ( m_readFromDisk ) {
         QFile file( document().str() );
         if ( !file.open( QIODevice::ReadOnly ) )
         {
-            KDevelop::ProblemPointer p(new KDevelop::Problem());
-            p->setSource(KDevelop::ProblemData::Disk);
-            p->setDescription( i18n( "Could not open file '%1'", document().str() ) );
-            switch (file.error()) {
-                case QFile::ReadError:
-                    p->setExplanation(i18n("File could not be read from."));
-                    break;
-                case QFile::OpenError:
-                    p->setExplanation(i18n("File could not be opened."));
-                    break;
-                case QFile::PermissionsError:
-                    p->setExplanation(i18n("File permissions prevent opening for read.")); 
-                    break;
-                default:
-                    break;
-            }
-            p->setFinalLocation(KDevelop::DocumentRange(document().str(), KTextEditor::Cursor(0,0), KTextEditor::Cursor(0,0)));
-            // TODO addProblem(p);
-            kWarning( 9007 ) << "Could not open file " << document().str()
-                             << " (path " << document().str() << ")" << endl;
-            return ;
+            kDebug() << "Could not open file " << document().str()
+                     << " (path " << document().str() << ")" << endl;
+            return abortJob();
         }
 
         contents = file.readAll();
         file.close();
-    }
-    else
-    {
-        contents = contentsFromEditor().toAscii();
+    } else {
+        contents = contentsFromEditor();
     }
 
     kDebug() << "===-- PARSING --===> "

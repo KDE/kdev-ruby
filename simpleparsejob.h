@@ -38,6 +38,10 @@ class SimpleParseJob : public KDevelop::ParseJob
     Q_OBJECT
 
 public:
+    enum {
+        Resheduled = KDevelop::TopDUContext::LastFeature
+    };
+
     SimpleParseJob( const KUrl &url, RubyLanguageSupport* parent );
 
     virtual ~SimpleParseJob();

@@ -40,6 +40,8 @@ public:
     RubyLanguageSupport( QObject *parent, const QVariantList& args = QVariantList() );
     virtual ~RubyLanguageSupport();
 
+    static RubyLanguageSupport* self();
+
     virtual KDevelop::ParseJob* createParseJob(const KUrl&);
 
     virtual QString name() const;
@@ -53,6 +55,10 @@ private Q_SLOTS:
     void projectClosing(KDevelop::IProject *project);
     void documentChanged( KDevelop::IDocument* document );
     void documentActivated( KDevelop::IDocument* document );
+
+private:
+    static RubyLanguageSupport* m_self;
+
 };
 
 #endif

@@ -47,12 +47,16 @@ using namespace ruby;
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>(); )
 K_EXPORT_PLUGIN(KDevRubySupportFactory("kdevrubysupport"))
 
+RubyLanguageSupport* RubyLanguageSupport::m_self = 0;
+
 RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
                                           const QVariantList& /*args*/ )
         : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
         , KDevelop::ILanguageSupport()
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
+
+    m_self = this;
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
@@ -72,6 +76,11 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
 
 RubyLanguageSupport::~RubyLanguageSupport()
 {
+}
+
+RubyLanguageSupport* RubyLanguageSupport::self()
+{
+    return m_self;
 }
 
 KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
