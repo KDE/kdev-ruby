@@ -24,7 +24,7 @@
 #define RUBY_SIMPLEPARSEJOB_H
 
 #include <kurl.h>
-#include <backgroundparser/parsejob.h>
+#include <language/backgroundparser/parsejob.h>
 
 class RubyLanguageSupport;
 

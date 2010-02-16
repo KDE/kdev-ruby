@@ -37,11 +37,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <ilanguage.h>
-
-// from the parser subdirectory
-#include <parsesession.h>
-#include <ruby_parser.h>
+#include <interfaces/ilanguage.h>
 
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
@@ -53,8 +49,8 @@
 #include <ktexteditor/document.h>
 #include <language/duchain/smartconverter.h>
 #include <language/duchain/persistentsymboltable.h>
-#include <editor/hashedstring.h>
-#include <editor/editorintegrator.h>
+#include <language/editor/hashedstring.h>
+#include <language/editor/editorintegrator.h>
 
 #include "rubylanguagesupport.h"
 
@@ -64,7 +60,7 @@ namespace ruby
 {
 
 SimpleParseJob::SimpleParseJob( const KUrl &url, RubyLanguageSupport *parent )
-        : KDevelop::ParseJob( url, parent )
+        : KDevelop::ParseJob( url )
         , m_readFromDisk( false )
 {}
 

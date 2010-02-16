@@ -24,8 +24,8 @@
 #ifndef KDEVRUBYLANGUAGESUPPORT_H
 #define KDEVRUBYLANGUAGESUPPORT_H
 
-#include <iplugin.h>
-#include <ilanguagesupport.h>
+#include <interfaces/iplugin.h>
+#include <language/interfaces/ilanguagesupport.h>
 
 namespace KDevelop {
     class IDocument;

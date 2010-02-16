@@ -29,18 +29,16 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
-#include <icore.h>
-#include <iproject.h>
-#include <idocument.h>
-#include <iprojectcontroller.h>
-#include <idocumentcontroller.h>
-#include <ilanguagecontroller.h>
+#include <interfaces/icore.h>
+#include <interfaces/iproject.h>
+#include <interfaces/idocument.h>
+#include <interfaces/iprojectcontroller.h>
+#include <interfaces/idocumentcontroller.h>
+#include <interfaces/ilanguagecontroller.h>
 #include <project/projectmodel.h>
-#include <backgroundparser/backgroundparser.h>
+#include <language/backgroundparser/backgroundparser.h>
 
 #include <QExtensionFactory>
-// from the parser subdirectory
-#include <ruby_parser.h>
 
 #include "simpleparsejob.h"
 
