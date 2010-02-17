@@ -31,7 +31,7 @@ class RubyLanguageSupport;
 namespace ruby
 {
 
-class ParseSession;
+class Parser;
 
 class SimpleParseJob : public KDevelop::ParseJob
 {
@@ -56,6 +56,7 @@ protected:
 private:
     void parse(const QString &contents);
 
+    Parser *m_parser;
     bool m_readFromDisk;
 };
 

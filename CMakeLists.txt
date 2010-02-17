@@ -16,6 +16,11 @@ include_directories(
 add_subdirectory(tests)
 
 set(kdevrubylanguagesupport_PART_SRCS
+    rubyast.cpp
+    parser.cpp
+    editorintegrator.cpp
+    declarationbuilder.cpp
+    contextbuilder.cpp
     simpleparsejob.cpp
     rubylanguagesupport.cpp
 )

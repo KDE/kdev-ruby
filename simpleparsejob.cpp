@@ -57,6 +57,9 @@
 #include <language/backgroundparser/urlparselock.h>
 
 #include "rubylanguagesupport.h"
+#include "parser.h"
+#include "declarationbuilder.h"
+#include "editorintegrator.h"
 
 using namespace KDevelop;
 
@@ -64,8 +67,7 @@ namespace ruby
 {
 
 SimpleParseJob::SimpleParseJob( const KUrl &url, RubyLanguageSupport *parent )
-        : KDevelop::ParseJob( url )
-        , m_readFromDisk( false )
+        : KDevelop::ParseJob( url ), m_parser(new Parser), m_readFromDisk( false )
 {}
 
 SimpleParseJob::~SimpleParseJob()
@@ -89,16 +91,10 @@ void SimpleParseJob::run()
     if (!ruby())
         return abortJob();
 
-    kDebug() << "1";
-
     if ( abortRequested() )
         return abortJob();
 
-    kDebug() << "2";
-
     KDevelop::UrlParseLock urlLock(document());
-
-    kDebug() << "3";
 
     {
         DUChainReadLocker lock(DUChain::lock());
@@ -116,8 +112,6 @@ void SimpleParseJob::run()
             return;
         }
     }
-
-    kDebug() << "4";
 
     m_readFromDisk = !contentsAvailableFromEditor();
 
@@ -154,51 +148,47 @@ void SimpleParseJob::run()
 
 void SimpleParseJob::parse(const QString &contents)
 {
-    QRegExp classre("^\\s*(class|module)\\s+([A-Z][A-Za-z0-9_]+::)*([A-Z][A-Za-z0-9_]+)\\s*(<\\s*([A-Z][A-Za-z0-9_:]+))?$");
-    QRegExp methodre("^(\\s*)def\\s+(([A-Z][A-Za-z0-9_:]+|self)\\.)?([A-Za-z0-9_]+[!?=]?|\\[\\]=?|\\*\\*||\\-|[!~+*/%&|><^]|>>|<<||<=>|<=|>=|==|===|!=|=~|!~).*$");
-    QRegExp accessre("^\\s*(private|protected|public)\\s*((:([A-Za-z0-9_]+[!?=]?|\\[\\]=?|\\*\\*||\\-|[!~+*/%&|><^]|>>|<<||<=>|<=|>=|==|===|!=|=~|!~),?\\s*)*)$");
-    QRegExp attr_accessorre("^\\s*(attr_accessor|attr_reader|attr_writer)\\s*((:([A-Za-z0-9_]+),?\\s*)*)$");
-    QRegExp symbolre(":([^,]+),?");
-    QRegExp line_contre(",\\s*$");
-    QRegExp slot_signalre("^\\s*(slots|signals|k_dcop|k_dcop_signals)\\s*(('[^)]+\\)',?\\s*)*)$");
-    QRegExp memberre("'([A-Za-z0-9_ &*]+\\s)?([A-Za-z0-9_]+)\\([^)]*\\)',?");
-    QRegExp begin_commentre("^*=begin");
-    QRegExp end_commentre("^*=end");
-    QRegExp variablere("(@@?[A-Za-z0-9_]+)\\s*=\\s*((?:([A-Za-z0-9_:.]+)\\.new)|[\\[\"'%:/\\?\\{]|%r|<<|true|false|^\\?|0[0-7]+|[-+]?0b[01]+|[-+]?0x[1-9a-fA-F]+|[-+]?[0-9_\\.e]+|nil)?");
-    QRegExp endre("^(\\s*)end\\s*$");
+    ProgramAST *programAST = m_parser->parse(contents);
 
-
-    DUChainWriteLocker lock( DUChain::lock() );
-    EditorIntegrator editor;
-    editor.setCurrentUrl(document());
-
-    if (TopDUContext * const topContext = DUChain::self()->chainForDocument(document()))
-    {       
-        DUChain::self()->removeDocumentChain(topContext);
-    }
-    TopDUContext * const topContext = new TopDUContext(document(), SimpleRange( editor.smart().currentDocument()->documentRange() ));
-
-    QStringList lines = contents.split("\n");
-    int i = 0;
-    foreach (const QString &rawline, lines)
+    KDevelop::ReferencedTopDUContext top;
     {
-        QString line = rawline.trimmed();
-
-        if (classre.indexIn(line) != -1) {
-            //create class declaration
-//            Declaration * const decl = new Declaration(document(), SimpleRange(i, 0, i, rawline.length()),
-//                Declaration::ClassScope, 0);
-            Declaration * const decl = new Declaration(SimpleRange(i, 0, i, rawline.length()), topContext);
-
-            decl->setDeclarationIsDefinition(true);
-            decl->setKind(Declaration::Type);
-            decl->setIdentifier(Identifier(classre.cap(3)));
-//            decl->setContext(topContext);
-        }
-
-        i+=1;
+        KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
+        top = KDevelop::DUChain::self()->chainForDocument(document());
     }
-    DUChain::self()->addDocumentChain(topContext);
+    if (top) {
+        kDebug() << "re-compiling" << document().str();
+        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+        top->clearImportedParentContexts();
+        top->parsingEnvironmentFile()->clearModificationRevisions();
+        top->clearProblems();
+    } else {
+        kDebug() << "compiling" << document().str();
+    }
+
+    QReadLocker parseLock(ruby()->language()->parseLock());
+
+    EditorIntegrator editor;
+    DeclarationBuilder builder;
+    builder.setEditor(&editor);
+    top = builder.build(document(), programAST, top);
+    delete programAST;
+
+    setDuChain(top);
+
+    KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+
+    top->setFeatures(minimumFeatures());
+    KDevelop::ParsingEnvironmentFilePointer file = top->parsingEnvironmentFile();
+
+    QFileInfo fileInfo(document().str());
+    QDateTime lastModified = fileInfo.lastModified();
+    if (m_readFromDisk) {
+        file->setModificationRevision(KDevelop::ModificationRevision(lastModified));
+    } else {
+        file->setModificationRevision(KDevelop::ModificationRevision(lastModified, revisionToken()));
+    }
+    KDevelop::DUChain::self()->updateContextEnvironment( top->topContext(), file.data() );
+
 }
 
 } // end of namespace ruby
