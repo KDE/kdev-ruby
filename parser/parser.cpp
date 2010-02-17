@@ -22,6 +22,7 @@
 #include "parser.h"
 
 #include <QStringList>
+#include <language/duchain/declaration.h>
 
 namespace Ruby {
 
@@ -45,25 +46,100 @@ Parser::Parser()
 ProgramAST* Parser::parse(const QString& contents)
 {
     ProgramAST *programAST = new ProgramAST;
+    ClassAST *lastClass = 0;
+    FunctionAST *lastFunction = 0;
+    QString lastMethodIndentation;
+    KDevelop::Declaration::AccessPolicy lastAccess = KDevelop::Declaration::Public;
+    bool skipMultilineComment = false;
 
-    //for now just parse classes
+    //for now just parse classes and methods
+    /*
+    also todo:
+    - base classes
+    - method access control
+    - functions vs methods (check)
+    */
     QStringList lines = contents.split("\n");
-    int i = 0;
+    int lineNo = 0;
     foreach (const QString &rawline, lines)
     {
-        QString line = rawline.trimmed();
+        QString line = rawline; //.trimmed();
 
-        if (classre.indexIn(line) != -1) {
-            ClassAST *klass = new ClassAST;
-            NameAST *name = new NameAST;
-            name->name = classre.cap(3);
-            klass->name = name;
-            klass->start = KDevelop::SimpleCursor(i, 0);
-            klass->end = KDevelop::SimpleCursor(i, rawline.length());
-            programAST->classes << klass;
+        if (skipMultilineComment) {
+            if (end_commentre.indexIn(line) != -1)
+                skipMultilineComment = false;
+            else
+                continue;
         }
 
-        i+=1;
+        if (classre.indexIn(line) != -1) {
+            QString className = classre.cap(3);
+            lastClass = programAST->findClass(className);
+            if (!lastClass) {
+                lastClass = new ClassAST;
+                NameAST *name = new NameAST;
+                name->name = className;
+                lastClass->name = name;
+                lastClass->start = KDevelop::SimpleCursor(lineNo, 0);
+                lastClass->end = KDevelop::SimpleCursor(lineNo, rawline.length());
+                programAST->classes << lastClass;
+            }
+
+            QString parent = classre.cap(5);
+            if (!parent.isEmpty()) {
+                lastClass->baseClass = parent;
+            }
+
+            lastAccess = KDevelop::Declaration::Public;
+
+        } else if (methodre.indexIn(line) != -1) {
+            QString functionName = methodre.cap(4);
+
+            FunctionAST *fun = 0;
+
+            if ( lastClass != 0 && lastClass->findFunction(functionName) ) {
+                fun = lastClass->findFunction(functionName);
+            } else {
+                fun = new FunctionAST;
+                NameAST *name = new NameAST;
+                name->name = functionName;
+                fun->name = name;
+                fun->start = KDevelop::SimpleCursor(lineNo, 0);
+            }
+
+            if (functionName == "initialize") {
+                // Ruby constructors are alway private
+                fun->access = KDevelop::Declaration::Private;
+            } else {
+                fun->access = lastAccess;
+            }
+
+            if (methodre.cap(2) != "") {
+                // A ruby class/singleton method of the form <classname>.<methodname>
+                fun->isStatic = true;
+            }
+
+            lastMethodIndentation = methodre.cap(1);
+            lastFunction = fun;
+
+            if (lastClass != 0) {
+                lastClass->functions << fun;
+            } else {
+                programAST->functions << fun;
+            }
+        } else if (endre.indexIn(line) != -1 && lastFunction != 0 && endre.cap(1) == lastMethodIndentation ) {
+            if (lastFunction->end.line == 0) {
+                //hack to set end position of the previous method to the line
+                //where its corresponding "end" is found
+                //there's an assumption that method's "def" statement will have the same
+                //indentation level as method's "end"
+                lastFunction->end = KDevelop::SimpleCursor(lineNo, endre.matchedLength());
+            }
+        } else if (begin_commentre.indexIn(line) != -1) {
+            skipMultilineComment = true;
+        }
+
+        lineNo += 1;
     }
     return programAST;
 }

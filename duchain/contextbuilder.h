@@ -61,6 +61,7 @@ protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAST* id);
 
     virtual void visitClass(ClassAST* ast);
+    virtual void visitFunction(FunctionAST* ast);
 
     bool m_reportErrors;
 };

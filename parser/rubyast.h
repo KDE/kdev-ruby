@@ -22,15 +22,17 @@
 #define RUBY_AST_H
 
 #include <QList>
+#include <QString>
 
 #include <language/editor/simplecursor.h>
+#include <language/duchain/declaration.h>
 
 namespace Ruby {
 
 class AST {
 public:
     virtual ~AST() {}
-    enum Kind { Program, Class, Name };
+    enum Kind { Program, Class, Name, Function };
     virtual Kind kind() = 0;
 
     KDevelop::SimpleCursor start;
@@ -44,12 +46,27 @@ public:
     QString name;
 };
 
+class FunctionAST: public AST {
+public:
+    FunctionAST(): isStatic(false) {}
+    virtual ~FunctionAST();
+    virtual Kind kind();
+
+    NameAST *name;
+    bool isStatic;
+    KDevelop::Declaration::AccessPolicy access;
+};
+
 class ClassAST: public AST {
 public:
     virtual ~ClassAST();
     virtual Kind kind();
 
     NameAST *name;
+    QList<FunctionAST*> functions;
+    QString baseClass;
+
+    FunctionAST *findFunction(const QString &name);
 };
 
 class ProgramAST: public AST {
@@ -58,6 +75,9 @@ public:
     virtual Kind kind();
 
     QList<ClassAST*> classes;
+    QList<FunctionAST*> functions;
+
+    ClassAST *findClass(const QString &name);
 };
 
 }

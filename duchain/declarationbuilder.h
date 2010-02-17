@@ -48,6 +48,7 @@ public:
 protected:
     virtual void closeDeclaration();
     virtual void visitClass(ClassAST* ast);
+    virtual void visitFunction(FunctionAST* ast);
 };
 
 }

@@ -30,6 +30,7 @@ public:
     virtual ~Visitor() {}
     virtual void visitProgram(ProgramAST* ast);
     virtual void visitClass(ClassAST* ast);
+    virtual void visitFunction(FunctionAST* ast);
 };
 
 }

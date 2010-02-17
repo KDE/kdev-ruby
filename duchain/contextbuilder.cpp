@@ -70,6 +70,14 @@ void ContextBuilder::startVisiting(AST* node)
 void ContextBuilder::visitClass(ClassAST* ast)
 {
     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Class, ast->name);
+    Visitor::visitClass(ast);
+    closeContext();
+}
+
+void ContextBuilder::visitFunction(FunctionAST* ast)
+{
+    openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Function, ast->name);
+    Visitor::visitFunction(ast);
     closeContext();
 }
 

@@ -26,6 +26,8 @@ ProgramAST::~ProgramAST()
 {
     foreach (ClassAST *klass, classes)
         delete klass;
+    foreach (FunctionAST *fun, functions)
+        delete fun;
 }
 
 AST::Kind ProgramAST::kind()
@@ -40,12 +42,42 @@ AST::Kind ClassAST::kind()
 
 ClassAST::~ClassAST()
 {
+    foreach (FunctionAST *fun, functions)
+        delete fun;
     delete name;
+}
+
+ClassAST* ProgramAST::findClass(const QString& name)
+{
+    foreach (ClassAST *klass, classes) {
+        if (klass->name->name == name)
+            return klass;
+    }
+    return 0;
 }
 
 AST::Kind NameAST::kind()
 {
     return AST::Name;
+}
+
+AST::Kind FunctionAST::kind()
+{
+    return AST::Function;
+}
+
+FunctionAST::~FunctionAST()
+{
+    delete name;
+}
+
+FunctionAST* ClassAST::findFunction(const QString &name)
+{
+    foreach (FunctionAST *fun, functions) {
+        if (fun->name->name == name)
+            return fun;
+    }
+    return 0;
 }
 
 }

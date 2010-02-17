@@ -27,9 +27,19 @@ void Visitor::visitProgram(ProgramAST* ast)
     foreach (ClassAST *klass, ast->classes) {
         visitClass(klass);
     }
+    foreach (FunctionAST *fun, ast->functions) {
+        visitFunction(fun);
+    }
 }
 
 void Visitor::visitClass(ClassAST* ast)
+{
+    foreach (FunctionAST *fun, ast->functions) {
+        visitFunction(fun);
+    }
+}
+
+void Visitor::visitFunction(FunctionAST* /*ast*/)
 {
 }
 
