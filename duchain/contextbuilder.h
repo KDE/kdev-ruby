@@ -24,6 +24,8 @@
 
 #include <language/duchain/builders/abstractcontextbuilder.h>
 
+#include "parser/visitor.h"
+
 namespace Ruby
 {
 class AST;
@@ -31,11 +33,10 @@ class ProgramAST;
 class NameAST;
 class ClassAST;
 class EditorIntegrator;
-class ParseSession;
 
 typedef KDevelop::AbstractContextBuilder<AST, NameAST> ContextBuilderBase;
 
-class ContextBuilder: public ContextBuilderBase {
+class ContextBuilder: public ContextBuilderBase, Visitor {
 public:
     ContextBuilder();
     virtual ~ContextBuilder();
@@ -59,7 +60,6 @@ protected:
 
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAST* id);
 
-    virtual void visitProgram(ProgramAST* ast);
     virtual void visitClass(ClassAST* ast);
 
     bool m_reportErrors;

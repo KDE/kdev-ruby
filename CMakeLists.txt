@@ -20,6 +20,7 @@ add_subdirectory(tests)
 set(kdevrubylanguagesupport_PART_SRCS
     parser/rubyast.cpp
     parser/parser.cpp
+    parser/visitor.cpp
 
     duchain/editorintegrator.cpp
     duchain/declarationbuilder.cpp

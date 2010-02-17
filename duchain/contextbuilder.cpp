@@ -67,13 +67,6 @@ void ContextBuilder::startVisiting(AST* node)
     visitProgram(ast);
 }
 
-void ContextBuilder::visitProgram(ProgramAST* ast)
-{
-    foreach (ClassAST *klass, ast->classes) {
-        visitClass(klass);
-    }
-}
-
 void ContextBuilder::visitClass(ClassAST* ast)
 {
     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Class, ast->name);

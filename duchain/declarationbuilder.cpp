@@ -36,11 +36,6 @@ void DeclarationBuilder::closeDeclaration()
     DeclarationBuilderBase::closeDeclaration();
 }
 
-void DeclarationBuilder::visitProgram(ProgramAST* ast)
-{
-    DeclarationBuilderBase::visitProgram(ast);
-}
-
 void DeclarationBuilder::visitClass(ClassAST* ast)
 {
     {

@@ -1,7 +1,6 @@
 /*
 * This file is part of KDevelop
 *
-* Copyright 2010 Niko Sams <niko.sams@gmail.com>
 * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
 *
 * This program is free software; you can redistribute it and/or modify
@@ -19,37 +18,20 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef DECLARATIONBUILDER_H
-#define DECLARATIONBUILDER_H
+#ifndef RUBYVISITOR_H
+#define RUBYVISITOR_H
 
-#include "contextbuilder.h"
-
-#include <language/duchain/builders/abstractdeclarationbuilder.h>
-
-namespace KDvelop {
-class Declaration;
-}
+#include "rubyast.h"
 
 namespace Ruby {
 
-class AST;
-class NameAST;
-class EditorIntegrator;
-
-typedef KDevelop::AbstractDeclarationBuilder<AST, NameAST, ContextBuilder> DeclarationBuilderBase;
-
-class DeclarationBuilder : public DeclarationBuilderBase
-{
+class Visitor {
 public:
-    DeclarationBuilder(EditorIntegrator* editor) {
-        setEditor(editor);
-    }
-    DeclarationBuilder() {}
-protected:
-    virtual void closeDeclaration();
+    virtual ~Visitor() {}
+    virtual void visitProgram(ProgramAST* ast);
     virtual void visitClass(ClassAST* ast);
 };
 
 }
 
-#endif // DECLARATIONBUILDER_H
+#endif
