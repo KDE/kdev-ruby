@@ -24,7 +24,7 @@
 #include <interfaces/icore.h>
 #include <language/duchain/classdeclaration.h>
 
-#include "rubyast.h"
+#include "parser/rubyast.h"
 #include "editorintegrator.h"
 
 namespace ruby

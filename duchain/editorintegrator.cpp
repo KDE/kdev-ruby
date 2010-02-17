@@ -26,7 +26,7 @@
 #include <language/editor/documentrange.h>
 #include <language/editor/documentrangeobject.h>
 
-#include "rubyast.h"
+#include "parser/rubyast.h"
 
 using namespace KTextEditor;
 using namespace ruby;

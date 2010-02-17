@@ -33,7 +33,7 @@
 
 #include <klocalizedstring.h>
 
-#include "rubyast.h"
+#include "parser/rubyast.h"
 #include "editorintegrator.h"
 
 namespace ruby

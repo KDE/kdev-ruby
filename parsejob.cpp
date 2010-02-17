@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION     *
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.           *
  *****************************************************************************/
-#include "simpleparsejob.h"
+#include "parsejob.h"
 
 #include <cassert>
 #include <fcntl.h>
@@ -57,9 +57,9 @@
 #include <language/backgroundparser/urlparselock.h>
 
 #include "rubylanguagesupport.h"
-#include "parser.h"
-#include "declarationbuilder.h"
-#include "editorintegrator.h"
+#include "parser/parser.h"
+#include "duchain/declarationbuilder.h"
+#include "duchain/editorintegrator.h"
 
 using namespace KDevelop;
 
@@ -193,4 +193,4 @@ void SimpleParseJob::parse(const QString &contents)
 
 } // end of namespace ruby
 
-#include "simpleparsejob.moc"
+#include "parsejob.moc"

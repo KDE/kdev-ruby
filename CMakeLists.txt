@@ -13,15 +13,19 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_subdirectory(parser)
+add_subdirectory(duchain)
 add_subdirectory(tests)
 
 set(kdevrubylanguagesupport_PART_SRCS
-    rubyast.cpp
-    parser.cpp
-    editorintegrator.cpp
-    declarationbuilder.cpp
-    contextbuilder.cpp
-    simpleparsejob.cpp
+    parser/rubyast.cpp
+    parser/parser.cpp
+
+    duchain/editorintegrator.cpp
+    duchain/declarationbuilder.cpp
+    duchain/contextbuilder.cpp
+
+    parsejob.cpp
     rubylanguagesupport.cpp
 )
 
