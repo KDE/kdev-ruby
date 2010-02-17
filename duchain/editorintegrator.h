@@ -23,7 +23,7 @@
 #include <language/editor/editorintegrator.h>
 #include <language/editor/simplerange.h>
 
-namespace ruby
+namespace Ruby
 {
 
 class AST;

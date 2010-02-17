@@ -36,7 +36,7 @@
 #include "parser/rubyast.h"
 #include "editorintegrator.h"
 
-namespace ruby
+namespace Ruby
 {
 
 ContextBuilder::ContextBuilder() : m_reportErrors(true)

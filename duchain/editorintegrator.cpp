@@ -29,7 +29,7 @@
 #include "parser/rubyast.h"
 
 using namespace KTextEditor;
-using namespace ruby;
+using namespace Ruby;
 
 EditorIntegrator::EditorIntegrator()
 {

@@ -30,7 +30,7 @@ namespace KDvelop {
 class Declaration;
 }
 
-namespace ruby {
+namespace Ruby {
 
 class AST;
 class NameAST;
@@ -47,8 +47,8 @@ public:
     DeclarationBuilder() {}
 protected:
     virtual void closeDeclaration();
-    virtual void visitProgram(ruby::ProgramAST* ast);
-    virtual void visitClass(ruby::ClassAST* ast);
+    virtual void visitProgram(ProgramAST* ast);
+    virtual void visitClass(ClassAST* ast);
 };
 
 }

@@ -23,7 +23,7 @@
 
 #include <QStringList>
 
-namespace ruby {
+namespace Ruby {
 
 Parser::Parser()
 {

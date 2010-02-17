@@ -27,7 +27,7 @@
 #include "parser/rubyast.h"
 #include "editorintegrator.h"
 
-namespace ruby
+namespace Ruby
 {
 
 void DeclarationBuilder::closeDeclaration()

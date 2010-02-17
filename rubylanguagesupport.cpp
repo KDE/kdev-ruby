@@ -40,9 +40,9 @@
 
 #include <QExtensionFactory>
 
-#include "simpleparsejob.h"
+#include "parsejob.h"
 
-using namespace ruby;
+using namespace Ruby;
 
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>(); )
 K_EXPORT_PLUGIN(KDevRubySupportFactory("kdevrubysupport"))

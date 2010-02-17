@@ -20,7 +20,7 @@
 */
 #include "rubyast.h"
 
-namespace ruby {
+namespace Ruby {
 
 ProgramAST::~ProgramAST()
 {

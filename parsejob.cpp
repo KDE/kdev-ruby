@@ -63,7 +63,7 @@
 
 using namespace KDevelop;
 
-namespace ruby
+namespace Ruby
 {
 
 SimpleParseJob::SimpleParseJob( const KUrl &url, RubyLanguageSupport *parent )

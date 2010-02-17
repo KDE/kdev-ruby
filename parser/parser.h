@@ -26,7 +26,7 @@
 
 #include "rubyast.h"
 
-namespace ruby {
+namespace Ruby {
 
 class Parser {
 public:

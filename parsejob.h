@@ -28,7 +28,7 @@
 
 class RubyLanguageSupport;
 
-namespace ruby
+namespace Ruby
 {
 
 class Parser;

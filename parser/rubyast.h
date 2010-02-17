@@ -25,7 +25,7 @@
 
 #include <language/editor/simplecursor.h>
 
-namespace ruby {
+namespace Ruby {
 
 class AST {
 public:

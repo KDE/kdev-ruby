@@ -24,7 +24,7 @@
 
 #include <language/duchain/builders/abstractcontextbuilder.h>
 
-namespace ruby
+namespace Ruby
 {
 class AST;
 class ProgramAST;
