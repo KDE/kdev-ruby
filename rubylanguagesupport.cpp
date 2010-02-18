@@ -57,6 +57,7 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
         , m_railsSwitchers(new Ruby::RailsSwitchers(this))
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
+    setXMLFile( "kdevrubysupport.rc" );
 
     m_self = this;
 

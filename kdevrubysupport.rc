@@ -1,0 +1,13 @@
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="KDevRubyLanguageSupport" version="1">
+<MenuBar>
+  <Menu name="navigation">
+    <text context="@title:menu">Navigation</text>
+    <Separator group="navigation_code"/>
+    <Menu name="rails_navigation" group="navigation_code">
+        <text context="@title:menu">Rails Navigation</text>
+        <Action name="ruby_switch_to_controller" />
+    </Menu>
+  </Menu>
+</MenuBar>
+</kpartgui>
