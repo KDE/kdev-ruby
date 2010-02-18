@@ -111,7 +111,43 @@ void RailsSwitchers::switchToController()
 
 void RailsSwitchers::switchToModel()
 {
+    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!activeDocument) return;
 
+    QFileInfo file(activeDocument->url().toLocalFile());
+    if (!file.exists()) return;
+
+    QString ext = file.completeSuffix();
+    QString name = file.baseName();
+    QString switchTo = "";
+
+    KUrl railsRoot = findRailsRoot(activeDocument->url());
+    kDebug(9047) << "   rails root found:" << railsRoot;
+    if (railsRoot.isEmpty()) return;
+
+    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
+        || ext == "html.erb" || ext == "erb")
+    {
+        //this is a view already, let's show the list of all views for this model
+        switchTo = file.dir().dirName();
+    }
+    else if (ext == "rb" && (name.endsWith("_controller") || name.endsWith("_test")))
+    {
+        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+    }
+
+    if (switchTo.isEmpty())
+        return;
+
+    KUrl modelUrl = railsRoot;
+    modelUrl.addPath("app");
+    modelUrl.addPath("models");
+
+    if (switchTo.endsWith("s"))
+        switchTo = switchTo.mid(0, switchTo.length()-1);
+    modelUrl.addPath(switchTo + ".rb");
+
+    KDevelop::ICore::self()->documentController()->openDocument(modelUrl);
 }
 
 void RailsSwitchers::switchToTest()
