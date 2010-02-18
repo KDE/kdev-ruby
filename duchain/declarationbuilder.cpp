@@ -24,6 +24,7 @@
 #include <interfaces/icore.h>
 #include <language/duchain/classdeclaration.h>
 #include <language/duchain/functiondeclaration.h>
+#include <language/duchain/classfunctiondeclaration.h>
 
 #include "parser/rubyast.h"
 #include "editorintegrator.h"
@@ -63,9 +64,16 @@ void DeclarationBuilder::visitFunction(FunctionAST* ast)
 
         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
 
-        KDevelop::FunctionDeclaration* decl = openDefinition<KDevelop::FunctionDeclaration>(id, range);
-        decl->setDeclarationIsDefinition(true);
-        decl->setKind(KDevelop::Declaration::Type);
+        if (ast->isMember) {
+            KDevelop::ClassFunctionDeclaration *decl = openDefinition<KDevelop::ClassFunctionDeclaration>(id, range);
+            decl->setAccessPolicy(ast->access);
+            decl->setDeclarationIsDefinition(true);
+            decl->setKind(KDevelop::Declaration::Type);
+        } else {
+            KDevelop::FunctionDeclaration *decl = openDefinition<KDevelop::FunctionDeclaration>(id, range);
+            decl->setDeclarationIsDefinition(true);
+            decl->setKind(KDevelop::Declaration::Type);
+        }
     }
     DeclarationBuilderBase::visitFunction(ast);
     closeDeclaration();

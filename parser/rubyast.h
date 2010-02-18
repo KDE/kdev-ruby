@@ -48,12 +48,13 @@ public:
 
 class FunctionAST: public AST {
 public:
-    FunctionAST(): isStatic(false) {}
+    FunctionAST(): isStatic(false), isMember(false) {}
     virtual ~FunctionAST();
     virtual Kind kind();
 
     NameAST *name;
     bool isStatic;
+    bool isMember;
     KDevelop::Declaration::AccessPolicy access;
 };
 

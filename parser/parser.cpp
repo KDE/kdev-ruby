@@ -125,8 +125,10 @@ ProgramAST* Parser::parse(const QString& contents)
             lastFunction = fun;
 
             if (lastClass != 0) {
+                fun->isMember = true;
                 lastClass->functions << fun;
             } else {
+                fun->isMember = false;
                 programAST->functions << fun;
             }
         } else if (endre.indexIn(line) != -1 && lastFunction != 0 && endre.cap(1) == lastMethodIndentation ) {
