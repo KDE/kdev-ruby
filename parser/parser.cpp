@@ -103,6 +103,8 @@ ProgramAST* Parser::parse(const QString& contents)
                 fun = new FunctionAST;
                 NameAST *name = new NameAST;
                 name->name = functionName;
+                name->start = KDevelop::SimpleCursor(lineNo, methodre.pos(4));
+                name->end = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + functionName.length() - 1);
                 fun->name = name;
                 fun->start = KDevelop::SimpleCursor(lineNo, 0);
             }

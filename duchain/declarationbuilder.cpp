@@ -58,7 +58,7 @@ void DeclarationBuilder::visitClass(ClassAST* ast)
 void DeclarationBuilder::visitFunction(FunctionAST* ast)
 {
     {
-        KDevelop::SimpleRange range = editor()->findRange(ast);
+        KDevelop::SimpleRange range = editor()->findRange(ast->name);
         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
 
         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
