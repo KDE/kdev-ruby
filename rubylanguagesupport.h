@@ -29,6 +29,10 @@ namespace KDevelop {
     class IProject;
 }
 
+namespace Ruby {
+    class RailsSwitchers;
+}
+
 class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
 {
 Q_OBJECT
@@ -56,6 +60,7 @@ private Q_SLOTS:
 private:
     static RubyLanguageSupport* m_self;
 
+    Ruby::RailsSwitchers *m_railsSwitchers;
 };
 
 #endif

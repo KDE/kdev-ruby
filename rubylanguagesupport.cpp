@@ -21,10 +21,13 @@
 #include "rubylanguagesupport.h"
 
 #include <kdebug.h>
+#include <klocale.h>
+#include <kaction.h>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
+#include <kactioncollection.h>
 
 #include <interfaces/icore.h>
 #include <interfaces/iproject.h>
@@ -38,6 +41,7 @@
 #include <QExtensionFactory>
 
 #include "parsejob.h"
+#include "navigation/railsswitchers.h"
 
 using namespace Ruby;
 
@@ -50,6 +54,7 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
                                           const QVariantList& /*args*/ )
         : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
         , KDevelop::ILanguageSupport()
+        , m_railsSwitchers(new Ruby::RailsSwitchers(this))
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
 
@@ -69,6 +74,27 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
              this, SLOT( projectOpened( KDevelop::IProject* ) ) );
     connect( core()->projectController(), SIGNAL( projectClosing( KDevelop::IProject* ) ),
              this, SLOT( projectClosing( KDevelop::IProject* ) ) );
+
+    KActionCollection* actions = actionCollection();
+    KAction *action = actions->addAction("ruby_switch_to_controller");
+    action->setText(i18n("Switch To Controller"));
+    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_1);
+    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToController()));
+
+    action = actions->addAction("ruby_switch_to_model");
+    action->setText(i18n("Switch To Model"));
+    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_2);
+    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToModel()));
+
+    action = actions->addAction("ruby_switch_to_view");
+    action->setText(i18n("Switch To View"));
+    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_3);
+    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToView()));
+
+    action = actions->addAction("ruby_switch_to_test");
+    action->setText(i18n("Switch To Test"));
+    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
+    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
 }
 
 RubyLanguageSupport::~RubyLanguageSupport()

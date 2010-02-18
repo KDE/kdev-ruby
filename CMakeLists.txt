@@ -15,6 +15,7 @@ include_directories(
 
 add_subdirectory(parser)
 add_subdirectory(duchain)
+add_subdirectory(navigation)
 add_subdirectory(tests)
 
 set(kdevrubylanguagesupport_PART_SRCS
@@ -25,6 +26,8 @@ set(kdevrubylanguagesupport_PART_SRCS
     duchain/editorintegrator.cpp
     duchain/declarationbuilder.cpp
     duchain/contextbuilder.cpp
+
+    navigation/railsswitchers.cpp
 
     parsejob.cpp
     rubylanguagesupport.cpp
