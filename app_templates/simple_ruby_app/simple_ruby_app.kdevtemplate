@@ -1,0 +1,8 @@
+# KDE Config File
+[General]
+Name=Simple Ruby Application
+Name[x-test]=xxSimple Ruby Applicationxx
+Category=Ruby
+Comment=Generate a simple Ruby application
+Comment[x-test]=xxGenerate a simple Ruby applicationxx
+ShowFilesAfterGeneration=%{dest}/%{APPNAMELC}.rb
