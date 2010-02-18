@@ -12,6 +12,6 @@ Arguments=%{APPNAMELC}.rb
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
 EnvironmentGroup=default
-Executable=file:///usr/bin/ruby
+Executable=ruby
 Working Directory=file://%{PROJECTDIR}/
 isExecutable=true
