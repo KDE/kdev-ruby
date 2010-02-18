@@ -97,7 +97,9 @@ ProgramAST* Parser::parse(const QString& contents)
 
             FunctionAST *fun = 0;
 
+            bool alreadyInAst = false;
             if ( lastClass != 0 && lastClass->findFunction(functionName) ) {
+                alreadyInAst = true;
                 fun = lastClass->findFunction(functionName);
             } else {
                 fun = new FunctionAST;
@@ -124,12 +126,14 @@ ProgramAST* Parser::parse(const QString& contents)
             lastMethodIndentation = methodre.cap(1);
             lastFunction = fun;
 
-            if (lastClass != 0) {
-                fun->isMember = true;
-                lastClass->functions << fun;
-            } else {
-                fun->isMember = false;
-                programAST->functions << fun;
+            if (!alreadyInAst) {
+                if (lastClass != 0) {
+                    fun->isMember = true;
+                    lastClass->functions << fun;
+                } else {
+                    fun->isMember = false;
+                    programAST->functions << fun;
+                }
             }
         } else if (endre.indexIn(line) != -1 && lastFunction != 0 && endre.cap(1) == lastMethodIndentation ) {
             if (lastFunction->end.line == 0) {
