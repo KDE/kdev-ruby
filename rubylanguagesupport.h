@@ -63,6 +63,7 @@ private:
 
     Ruby::RailsSwitchers *m_railsSwitchers;
     Ruby::RailsDataProvider *m_viewsQuickOpenDataProvider;
+    Ruby::RailsDataProvider *m_testsQuickOpenDataProvider;
 };
 
 #endif

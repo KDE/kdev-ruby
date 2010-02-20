@@ -228,9 +228,85 @@ KUrl::List RailsSwitchers::viewsToSwitch()
     return urls;
 }
 
+KUrl::List RailsSwitchers::testsToSwitch()
+{
+    KUrl::List urls;
+
+    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!activeDocument) return urls;
+
+    QFileInfo file(activeDocument->url().toLocalFile());
+    if (!file.exists()) return urls;
+
+    QString ext = file.completeSuffix();
+    QString name = file.baseName();
+    QString switchTo = "";
+
+    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
+        || ext == "html.erb" || ext == "erb")
+        switchTo = file.dir().dirName();
+    else if (ext == "rb")
+        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+
+    if (switchTo.isEmpty())
+        return urls;
+
+    if (switchTo.endsWith("s"))
+        switchTo = switchTo.mid(0, switchTo.length() - 1);
+
+    KUrl testsUrl = findRailsRoot(activeDocument->url());
+    testsUrl.addPath("test");
+
+    KUrl functionalTestsUrlS = testsUrl;
+    functionalTestsUrlS.addPath("functional");
+    functionalTestsUrlS.addPath(switchTo + "_controller_test.rb");
+    if (QFile::exists(functionalTestsUrlS.toLocalFile()))
+        urls << functionalTestsUrlS;
+
+    KUrl functionalTestsUrlP = testsUrl;
+    functionalTestsUrlP.addPath("functional");
+    functionalTestsUrlP.addPath(switchTo + "s_controller_test.rb");
+    if (QFile::exists(functionalTestsUrlP.toLocalFile()))
+        urls << functionalTestsUrlP;
+
+    KUrl integrationTestsUrlS = testsUrl;
+    integrationTestsUrlS.addPath("integration");
+    integrationTestsUrlS.addPath(switchTo + "_test.rb");
+    if (QFile::exists(integrationTestsUrlS.toLocalFile()))
+        urls << integrationTestsUrlS;
+
+    KUrl integrationTestsUrlP = testsUrl;
+    integrationTestsUrlP.addPath("integration");
+    integrationTestsUrlP.addPath(switchTo + "s_test.rb");
+    if (QFile::exists(integrationTestsUrlP.toLocalFile()))
+        urls << integrationTestsUrlP;
+
+    KUrl unitTestsUrlS = testsUrl;
+    unitTestsUrlS.addPath("unit");
+    unitTestsUrlS.addPath(switchTo + "_test.rb");
+    if (QFile::exists(unitTestsUrlS.toLocalFile()))
+        urls << unitTestsUrlS;
+
+    KUrl unitTestsUrlP = testsUrl;
+    unitTestsUrlP.addPath("unit");
+    unitTestsUrlP.addPath(switchTo + "s_test.rb");
+    if (QFile::exists(unitTestsUrlP.toLocalFile()))
+        urls << unitTestsUrlP;
+
+    return urls;
+}
+
 void RailsSwitchers::switchToTest()
 {
+    if (testsToSwitch().isEmpty())
+        return;
 
+    KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
+        ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
+    if (quickOpen) {
+        kDebug(9047) << "   showing quickopen";
+        quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
+    }
 }
 
 }

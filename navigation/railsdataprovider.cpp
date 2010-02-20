@@ -137,7 +137,9 @@ void RailsDataProvider::reset()
     KUrl::List urlsToSwitch;
     if (m_kind == Views)
         urlsToSwitch = RailsSwitchers::viewsToSwitch();
-    foreach (const KUrl &url, RailsSwitchers::viewsToSwitch()) {
+    else if (m_kind == Tests)
+        urlsToSwitch = RailsSwitchers::testsToSwitch();
+    foreach (const KUrl &url, urlsToSwitch) {
         RailsQuickOpenItem item;
         item.url = url;
         if (activeDocument)

@@ -9,6 +9,7 @@
         <Action name="ruby_switch_to_controller" />
         <Action name="ruby_switch_to_model" />
         <Action name="ruby_switch_to_view" />
+        <Action name="ruby_switch_to_test" />
     </Menu>
   </Menu>
 </MenuBar>

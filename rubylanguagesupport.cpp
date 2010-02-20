@@ -101,10 +101,13 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
 
     m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
+    m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
 
     KDevelop::IQuickOpen* quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
-    if (quickOpen)
+    if (quickOpen) {
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
+        quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
+    }
 }
 
 RubyLanguageSupport::~RubyLanguageSupport()

@@ -34,6 +34,7 @@ public:
     RailsSwitchers(RubyLanguageSupport *language);
 
     static KUrl::List viewsToSwitch();
+    static KUrl::List testsToSwitch();
     static KUrl findRailsRoot(const KUrl &url);
 
 public slots:
