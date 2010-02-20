@@ -32,16 +32,19 @@
 #include <interfaces/icore.h>
 #include <interfaces/iproject.h>
 #include <interfaces/idocument.h>
+#include <interfaces/iplugincontroller.h>
 #include <interfaces/iprojectcontroller.h>
 #include <interfaces/idocumentcontroller.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <project/projectmodel.h>
+#include <language/interfaces/iquickopen.h>
 #include <language/backgroundparser/backgroundparser.h>
 
 #include <QExtensionFactory>
 
 #include "parsejob.h"
 #include "navigation/railsswitchers.h"
+#include "navigation/viewsdataprovider.h"
 
 using namespace Ruby;
 
@@ -96,6 +99,12 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
     action->setText(i18n("Switch To Test"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
+
+    m_viewsQuickOpenDataProvider = new ViewsDataProvider();
+
+    KDevelop::IQuickOpen* quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
+    if (quickOpen)
+        quickOpen->registerProvider(ViewsDataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
 }
 
 RubyLanguageSupport::~RubyLanguageSupport()

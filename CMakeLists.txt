@@ -29,6 +29,7 @@ set(kdevrubylanguagesupport_PART_SRCS
     duchain/contextbuilder.cpp
 
     navigation/railsswitchers.cpp
+    navigation/viewsdataprovider.cpp
 
     parsejob.cpp
     rubylanguagesupport.cpp

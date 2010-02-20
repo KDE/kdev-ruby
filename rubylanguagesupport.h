@@ -31,6 +31,7 @@ namespace KDevelop {
 
 namespace Ruby {
     class RailsSwitchers;
+    class ViewsDataProvider;
 }
 
 class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
@@ -61,6 +62,7 @@ private:
     static RubyLanguageSupport* m_self;
 
     Ruby::RailsSwitchers *m_railsSwitchers;
+    Ruby::ViewsDataProvider *m_viewsQuickOpenDataProvider;
 };
 
 #endif

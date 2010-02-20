@@ -23,7 +23,10 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include <language/interfaces/iquickopen.h>
+
 #include "interfaces/icore.h"
+#include "interfaces/iplugincontroller.h"
 #include "interfaces/idocumentcontroller.h"
 
 namespace Ruby {
@@ -150,12 +153,82 @@ void RailsSwitchers::switchToModel()
     KDevelop::ICore::self()->documentController()->openDocument(modelUrl);
 }
 
-void RailsSwitchers::switchToTest()
+void RailsSwitchers::switchToView()
 {
+    if (viewsToSwitch().isEmpty())
+        return;
 
+    KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
+        ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
+    if (quickOpen) {
+        kDebug(9047) << "   showing quickopen";
+        quickOpen->showQuickOpen(QStringList() << i18n("Rails Views"));
+    }
 }
 
-void RailsSwitchers::switchToView()
+KUrl::List RailsSwitchers::viewsToSwitch()
+{
+    KUrl::List urls;
+
+    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!activeDocument) return urls;
+
+    QFileInfo file(activeDocument->url().toLocalFile());
+    if (!file.exists()) return urls;
+
+    QString ext = file.completeSuffix();
+    QString name = file.baseName();
+    QString switchTo = "";
+
+    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder" || ext == "html.erb")
+    {
+        //this is a view already, let's show the list of all views for this model
+        switchTo = file.dir().dirName();
+    }
+    else if (ext == "rb")
+        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+
+    if (switchTo.isEmpty())
+        return urls;
+
+    if (switchTo.endsWith("s"))
+        switchTo = switchTo.mid(0, switchTo.length() - 1);
+
+    KUrl railsRoot = findRailsRoot(activeDocument->url());
+    kDebug(9047) << "   rails root found:" << railsRoot;
+    if (railsRoot.isEmpty()) return urls;
+
+    KUrl viewsUrl = railsRoot;
+    viewsUrl.addPath("app");
+    viewsUrl.addPath("views");
+    KUrl viewsUrlS = viewsUrl;
+    viewsUrlS.addPath(switchTo);
+    KUrl viewsUrlP = viewsUrl;
+    viewsUrlP.addPath(switchTo + "s");
+
+    if (QFile::exists(viewsUrlS.toLocalFile()))
+        viewsUrl = viewsUrlS;
+    else if (QFile::exists(viewsUrlP.toLocalFile()))
+        viewsUrl = viewsUrlP;
+    else
+        return urls;
+
+    QDir viewsDir(viewsUrl.toLocalFile());
+    QStringList views = viewsDir.entryList();
+
+    foreach (const QString &viewName, views) {
+        if ( !(viewName.endsWith("~") || viewName == "." || viewName == "..") ) {
+            KUrl viewUrl(viewsDir.absolutePath());
+            viewUrl.addPath(viewName);
+            urls << viewUrl;
+        }
+    }
+    kDebug(9047) << "   views found:" << urls;
+
+    return urls;
+}
+
+void RailsSwitchers::switchToTest()
 {
 
 }

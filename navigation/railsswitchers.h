@@ -32,6 +32,10 @@ class RailsSwitchers: public QObject {
     Q_OBJECT
 public:
     RailsSwitchers(RubyLanguageSupport *language);
+
+    static KUrl::List viewsToSwitch();
+    static KUrl findRailsRoot(const KUrl &url);
+
 public slots:
     void switchToController();
     void switchToModel();
@@ -40,7 +44,6 @@ public slots:
 
 private:
     RubyLanguageSupport *m_language;
-    KUrl findRailsRoot(const KUrl &url);
 };
 
 }
