@@ -142,6 +142,8 @@ void SimpleParseJob::run()
 
     if ( abortRequested() )
         return abortJob();
+
+    cleanupSmartRevision();
 }
 
 void SimpleParseJob::parse(const QString &contents)
