@@ -18,8 +18,8 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef VIEWSDATAPROVIDER_H
-#define VIEWSDATAPROVIDER_H
+#ifndef RAILSDATAPROVIDER_H
+#define RAILSDATAPROVIDER_H
 
 #include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
@@ -28,16 +28,16 @@ namespace Ruby {
 
 class RailsSwitchers;
 
-struct ViewItem {
-    //the url of the view
+struct RailsQuickOpenItem {
+    //the url of the view or test
     KUrl url;
-    //the url of the file for which we show views
+    //the url of the file for which we show views/tests
     KUrl originUrl;
 };
 
-class ViewData : public KDevelop::QuickOpenDataBase {
+class RailsQuickOpenData : public KDevelop::QuickOpenDataBase {
 public:
-    ViewData( const ViewItem& view );
+    RailsQuickOpenData( const RailsQuickOpenItem& item, const QString &explanation );
 
     virtual QString text() const;
     virtual QString htmlDescription() const;
@@ -52,25 +52,33 @@ public:
     QList<QVariant> highlighting() const;
 
 private:
-    ViewItem m_view;
+    RailsQuickOpenItem m_item;
+    QString m_explanation;
 };
 
-class ViewsDataProvider: public KDevelop::QuickOpenDataProviderBase,
-        public KDevelop::FilterWithSeparator<ViewItem>, public KDevelop::QuickOpenFileSetInterface {
+typedef KDevelop::FilterWithSeparator<RailsQuickOpenItem> Base;
+
+class RailsDataProvider: public KDevelop::QuickOpenDataProviderBase,
+        public Base, public KDevelop::QuickOpenFileSetInterface {
 public:
-    ViewsDataProvider();
+    enum Kind { Views, Tests };
+
+    RailsDataProvider(Kind kind);
     virtual void setFilterText( const QString& text );
     virtual void reset();
     virtual uint itemCount() const;
     virtual QList<KDevelop::QuickOpenDataPointer> data( uint start, uint end ) const;
     virtual void enableData( const QStringList& items, const QStringList& scopes );
 
-    virtual QString itemText( const ViewItem& data ) const;
+    virtual QString itemText( const RailsQuickOpenItem& data ) const;
 
     virtual QSet<KDevelop::IndexedString> files() const;
 
     ///Returns all scopes supported by this data-provider
     static QStringList scopes();
+
+private:
+    Kind m_kind;
 };
 
 }
