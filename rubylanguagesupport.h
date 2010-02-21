@@ -24,6 +24,8 @@
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
 
+class KConfigGroup;
+
 namespace KDevelop {
     class IDocument;
     class IProject;
@@ -60,14 +62,21 @@ private Q_SLOTS:
     void documentActivated( KDevelop::IDocument* document );
 
     void runCurrentFile();
+    void runCurrentTestFunction();
 
 private:
+    KDevelop::ILaunchConfiguration *findOrCreateLaunchConfiguration(const QString &name);
+    void setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument);
+    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
+
     static RubyLanguageSupport* m_self;
 
     Ruby::RailsSwitchers *m_railsSwitchers;
     Ruby::RailsDataProvider *m_viewsQuickOpenDataProvider;
     Ruby::RailsDataProvider *m_testsQuickOpenDataProvider;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
+    KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
+
 };
 
 #endif
