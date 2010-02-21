@@ -27,6 +27,7 @@
 namespace KDevelop {
     class IDocument;
     class IProject;
+    class ILaunchConfiguration;
 }
 
 namespace Ruby {
@@ -58,12 +59,15 @@ private Q_SLOTS:
     void documentChanged( KDevelop::IDocument* document );
     void documentActivated( KDevelop::IDocument* document );
 
+    void runCurrentFile();
+
 private:
     static RubyLanguageSupport* m_self;
 
     Ruby::RailsSwitchers *m_railsSwitchers;
     Ruby::RailsDataProvider *m_viewsQuickOpenDataProvider;
     Ruby::RailsDataProvider *m_testsQuickOpenDataProvider;
+    KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
 };
 
 #endif

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="KDevRubyLanguageSupport" version="2">
+<kpartgui name="KDevRubyLanguageSupport" version="4">
 <MenuBar>
   <Menu name="navigation">
     <text context="@title:menu">Navigation</text>
@@ -11,6 +11,10 @@
         <Action name="ruby_switch_to_view" />
         <Action name="ruby_switch_to_test" />
     </Menu>
+  </Menu>
+  <Menu name="run">
+    <text name="@title:menu">&amp;Run</text>
+    <Action name="ruby_run_current_file" group="run_operations" />
   </Menu>
 </MenuBar>
 </kpartgui>

@@ -36,6 +36,12 @@
 #include <interfaces/iprojectcontroller.h>
 #include <interfaces/idocumentcontroller.h>
 #include <interfaces/ilanguagecontroller.h>
+#include <interfaces/iruncontroller.h>
+#include <interfaces/ilauncher.h>
+#include <interfaces/ilaunchmode.h>
+#include <interfaces/ilaunchconfiguration.h>
+#include <interfaces/launchconfigurationtype.h>
+#include <execute/iexecuteplugin.h>
 #include <project/projectmodel.h>
 #include <language/interfaces/iquickopen.h>
 #include <language/backgroundparser/backgroundparser.h>
@@ -48,6 +54,8 @@
 
 using namespace Ruby;
 
+#define RUBY_FILE_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby File")
+
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>(); )
 K_EXPORT_PLUGIN(KDevRubySupportFactory("kdevrubysupport"))
 
@@ -58,6 +66,7 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
         : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
         , KDevelop::ILanguageSupport()
         , m_railsSwitchers(new Ruby::RailsSwitchers(this))
+        , m_rubyFileLaunchConfiguration(0)
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
     setXMLFile( "kdevrubysupport.rc" );
@@ -99,6 +108,11 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
     action->setText(i18n("Switch To Test"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
+
+    action = actions->addAction("ruby_run_current_file");
+    action->setText(i18n("Run Current File"));
+    action->setShortcut(Qt::META | Qt::Key_F9);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentFile()));
 
     m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
     m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
@@ -167,6 +181,58 @@ void RubyLanguageSupport::documentChanged(KDevelop::IDocument *document)
 {
     kDebug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
+}
+
+void RubyLanguageSupport::runCurrentFile()
+{
+    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!activeDocument) return;
+
+    //todo: adymo: check that this file is actually a ruby source
+    //todo: adymo: disable this action in the UI if current file is not a ruby source
+
+    if (!m_rubyFileLaunchConfiguration) {
+        foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
+            if (config->name() == RUBY_FILE_LAUNCH_CONFIGURATION_NAME) {
+                m_rubyFileLaunchConfiguration = config;
+                break;
+            }
+        }
+        if (!m_rubyFileLaunchConfiguration) {
+            IExecutePlugin* executePlugin = core()->pluginController()->pluginForExtension("org.kdevelop.IExecutePlugin")->extension<IExecutePlugin>();
+            KDevelop::LaunchConfigurationType* type = core()->runController()->launchConfigurationTypeForId(executePlugin->nativeAppConfigTypeId());
+            if (!type) return;
+
+            KDevelop::ILaunchMode* mode = core()->runController()->launchModeForId("execute");
+            if (!mode) return;
+
+            KDevelop::ILauncher *launcher = 0;
+            foreach (KDevelop::ILauncher *l, type->launchers()) {
+                if (l->supportedModes().contains("execute"))
+                    launcher = l;
+            }
+            if (!launcher) return;
+
+            m_rubyFileLaunchConfiguration = core()->runController()->createLaunchConfiguration(
+                type, qMakePair( mode->id(), launcher->id() ), 0, RUBY_FILE_LAUNCH_CONFIGURATION_NAME);
+
+            KConfigGroup cfg = m_rubyFileLaunchConfiguration->config();
+            cfg.writeEntry("isExecutable", true);
+            cfg.writeEntry("Executable", "ruby");
+            cfg.sync();
+        }
+
+    }
+    KConfigGroup cfg = m_rubyFileLaunchConfiguration->config();
+    KUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url());
+    if (!railsRoot.isEmpty())
+        cfg.writeEntry("Working Directory", railsRoot);
+    else
+        cfg.writeEntry("Working Directory", activeDocument->url().directory());
+    cfg.writeEntry("Arguments", QStringList() << activeDocument->url().toLocalFile());
+    cfg.sync();
+
+    core()->runController()->execute("execute", m_rubyFileLaunchConfiguration);
 }
 
 #include "rubylanguagesupport.moc"
