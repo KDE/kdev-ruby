@@ -36,6 +36,7 @@ public:
 private:
     QRegExp classre;
     QRegExp methodre;
+    QRegExp methodargsre;
     QRegExp accessre;
     QRegExp attr_accessorre;
     QRegExp symbolre;

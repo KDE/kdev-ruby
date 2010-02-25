@@ -81,6 +81,11 @@ void ContextBuilder::visitFunction(FunctionAST* ast)
     closeContext();
 }
 
+void ContextBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
+{
+    Visitor::visitFunctionArgument(ast);
+}
+
 KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::SimpleRange& range, KDevelop::ParsingEnvironmentFile* file)
 {
     if (!file) {

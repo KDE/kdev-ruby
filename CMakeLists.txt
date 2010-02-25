@@ -27,6 +27,7 @@ set(kdevrubylanguagesupport_PART_SRCS
     duchain/editorintegrator.cpp
     duchain/declarationbuilder.cpp
     duchain/contextbuilder.cpp
+    duchain/typebuilder.cpp
 
     navigation/railsswitchers.cpp
     navigation/railsdataprovider.cpp

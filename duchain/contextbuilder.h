@@ -62,6 +62,7 @@ protected:
 
     virtual void visitClass(ClassAST* ast);
     virtual void visitFunction(FunctionAST* ast);
+    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
 
     bool m_reportErrors;
 };

@@ -68,6 +68,8 @@ AST::Kind FunctionAST::kind()
 
 FunctionAST::~FunctionAST()
 {
+    foreach (FunctionArgumentAST *arg, arguments)
+        delete arg;
     delete name;
 }
 
@@ -78,6 +80,16 @@ FunctionAST* ClassAST::findFunction(const QString &name)
             return fun;
     }
     return 0;
+}
+
+FunctionArgumentAST::~FunctionArgumentAST()
+{
+    delete name;
+}
+
+AST::Kind FunctionArgumentAST::kind()
+{
+    return AST::FunctionArgument;
 }
 
 }

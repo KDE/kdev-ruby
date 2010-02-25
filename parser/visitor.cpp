@@ -39,8 +39,15 @@ void Visitor::visitClass(ClassAST* ast)
     }
 }
 
-void Visitor::visitFunction(FunctionAST* /*ast*/)
+void Visitor::visitFunction(FunctionAST* ast)
 {
+    foreach (FunctionArgumentAST *arg, ast->arguments)
+        visitFunctionArgument(arg);
+}
+
+void Visitor::visitFunctionArgument(FunctionArgumentAST* /*ast*/)
+{
+
 }
 
 }

@@ -30,6 +30,7 @@ Parser::Parser()
 {
     classre.setPattern("^\\s*(class|module)\\s+([A-Z][A-Za-z0-9_]+::)*([A-Z][A-Za-z0-9_]+)\\s*(<\\s*([A-Z][A-Za-z0-9_:]+))?$");
     methodre.setPattern("^(\\s*)def\\s+(([A-Z][A-Za-z0-9_:]+|self)\\.)?([A-Za-z0-9_]+[!?=]?|\\[\\]=?|\\*\\*||\\-|[!~+*/%&|><^]|>>|<<||<=>|<=|>=|==|===|!=|=~|!~).*$");
+    methodargsre.setPattern("\\((.*)\\)");
     accessre.setPattern("^\\s*(private|protected|public)\\s*((:([A-Za-z0-9_]+[!?=]?|\\[\\]=?|\\*\\*||\\-|[!~+*/%&|><^]|>>|<<||<=>|<=|>=|==|===|!=|=~|!~),?\\s*)*)$");
     attr_accessorre.setPattern("^\\s*(attr_accessor|attr_reader|attr_writer)\\s*((:([A-Za-z0-9_]+),?\\s*)*)$");
     symbolre.setPattern(":([^,]+),?");
@@ -135,6 +136,23 @@ ProgramAST* Parser::parse(const QString& contents)
                     programAST->functions << fun;
                 }
             }
+
+            //parse function args if any
+            QString argsLine = line.mid(methodre.pos(4) + functionName.length());
+            if (methodargsre.indexIn(argsLine) != -1) {
+                QString args = methodargsre.cap(1);
+                QStringList parsedArgs = args.replace(QRegExp("\\s"), "").split(",");
+                foreach (const QString &argName, parsedArgs) {
+                    FunctionArgumentAST *arg = new FunctionArgumentAST;
+                    NameAST *name = new NameAST;
+                    name->name = argName;
+                    name->start = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + argsLine.indexOf(argName));
+                    name->end = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + argsLine.indexOf(argName) + argName.length());
+                    arg->name = name;
+                    fun->arguments << arg;
+                }
+            }
+
         } else if (endre.indexIn(line) != -1 && lastFunction != 0 && endre.cap(1) == lastMethodIndentation ) {
             if (lastFunction->end.line == 0) {
                 //hack to set end position of the previous method to the line

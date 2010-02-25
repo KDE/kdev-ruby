@@ -32,7 +32,7 @@ namespace Ruby {
 class AST {
 public:
     virtual ~AST() {}
-    enum Kind { Program, Class, Name, Function };
+    enum Kind { Program, Class, Name, Function, FunctionArgument };
     virtual Kind kind() = 0;
 
     KDevelop::SimpleCursor start;
@@ -46,6 +46,14 @@ public:
     QString name;
 };
 
+class FunctionArgumentAST: public AST {
+public:
+    FunctionArgumentAST() {}
+    virtual ~FunctionArgumentAST();
+    virtual Kind kind();
+    NameAST *name;
+};
+
 class FunctionAST: public AST {
 public:
     FunctionAST(): isStatic(false), isMember(false) {}
@@ -53,6 +61,7 @@ public:
     virtual Kind kind();
 
     NameAST *name;
+    QList<FunctionArgumentAST*> arguments;
     bool isStatic;
     bool isMember;
     KDevelop::Declaration::AccessPolicy access;

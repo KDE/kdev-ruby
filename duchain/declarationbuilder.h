@@ -22,7 +22,7 @@
 #ifndef DECLARATIONBUILDER_H
 #define DECLARATIONBUILDER_H
 
-#include "contextbuilder.h"
+#include "typebuilder.h"
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 
@@ -36,19 +36,21 @@ class AST;
 class NameAST;
 class EditorIntegrator;
 
-typedef KDevelop::AbstractDeclarationBuilder<AST, NameAST, ContextBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<AST, NameAST, TypeBuilder> DeclarationBuilderBase;
 
 class DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
-    DeclarationBuilder(EditorIntegrator* editor) {
-        setEditor(editor);
-    }
+    DeclarationBuilder(EditorIntegrator* editor);
     DeclarationBuilder() {}
+
 protected:
     virtual void closeDeclaration();
     virtual void visitClass(ClassAST* ast);
     virtual void visitFunction(FunctionAST* ast);
+    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
+
+    virtual void updateCurrentType();
 };
 
 }

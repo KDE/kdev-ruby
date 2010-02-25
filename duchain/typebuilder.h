@@ -18,20 +18,28 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef RUBYVISITOR_H
-#define RUBYVISITOR_H
+#ifndef TYPEBUILDER_H
+#define TYPEBUILDER_H
 
-#include "rubyast.h"
+#include "contextbuilder.h"
+
+#include <language/duchain/builders/abstracttypebuilder.h>
 
 namespace Ruby {
 
-class Visitor {
+typedef KDevelop::AbstractTypeBuilder<AST, NameAST, ContextBuilder> TypeBuilderBase;
+
+class TypeBuilder: public TypeBuilderBase {
 public:
-    virtual ~Visitor() {}
-    virtual void visitProgram(ProgramAST* ast);
+    TypeBuilder();
+
+protected:
     virtual void visitClass(ClassAST* ast);
     virtual void visitFunction(FunctionAST* ast);
     virtual void visitFunctionArgument(FunctionArgumentAST* ast);
+
+    virtual void updateCurrentType();
+
 };
 
 }
