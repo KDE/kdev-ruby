@@ -1,3 +1,5 @@
+add_subdirectory(tests)
+
 set(rubyduchain_SRCS
     editorintegrator.cpp
     declarationbuilder.cpp
