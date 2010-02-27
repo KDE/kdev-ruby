@@ -65,7 +65,6 @@ void DeclarationBuilder::visitClass(ClassAST* ast)
 
 void DeclarationBuilder::visitFunction(FunctionAST* ast)
 {
-    KDevelop::Declaration *x = 0;
     {
         KDevelop::SimpleRange range = editor()->findRange(ast->name);
         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
@@ -77,21 +76,14 @@ void DeclarationBuilder::visitFunction(FunctionAST* ast)
             decl->setAccessPolicy(ast->access);
             decl->setDeclarationIsDefinition(true);
             decl->setKind(KDevelop::Declaration::Type);
-            x = decl;
         } else {
             KDevelop::FunctionDeclaration *decl = openDefinition<KDevelop::FunctionDeclaration>(id, range);
             decl->setDeclarationIsDefinition(true);
             decl->setKind(KDevelop::Declaration::Type);
-            x = decl;
         }
     }
     DeclarationBuilderBase::visitFunction(ast);
     closeDeclaration();
-/*    {
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        kDebug(9047) << x->toString();
-        kDebug(9047) << x->type<KDevelop::FunctionType>()->partToString(KDevelop::FunctionType::SignatureArguments);
-    }*/
 }
 
 void DeclarationBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
