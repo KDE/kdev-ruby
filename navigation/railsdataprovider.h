@@ -24,18 +24,20 @@
 #include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
 
+#include "navigationexport.h"
+
 namespace Ruby {
 
 class RailsSwitchers;
 
-struct RailsQuickOpenItem {
+struct KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenItem {
     //the url of the view or test
     KUrl url;
     //the url of the file for which we show views/tests
     KUrl originUrl;
 };
 
-class RailsQuickOpenData : public KDevelop::QuickOpenDataBase {
+class KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenData : public KDevelop::QuickOpenDataBase {
 public:
     RailsQuickOpenData( const RailsQuickOpenItem& item, const QString &explanation );
 
@@ -58,7 +60,7 @@ private:
 
 typedef KDevelop::FilterWithSeparator<RailsQuickOpenItem> Base;
 
-class RailsDataProvider: public KDevelop::QuickOpenDataProviderBase,
+class KDEVRUBYNAVIGATION_EXPORT RailsDataProvider: public KDevelop::QuickOpenDataProviderBase,
         public Base, public KDevelop::QuickOpenFileSetInterface {
 public:
     enum Kind { Views, Tests };

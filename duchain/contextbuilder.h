@@ -25,6 +25,7 @@
 #include <language/duchain/builders/abstractcontextbuilder.h>
 
 #include "parser/visitor.h"
+#include "duchainexport.h"
 
 namespace Ruby
 {
@@ -36,7 +37,7 @@ class EditorIntegrator;
 
 typedef KDevelop::AbstractContextBuilder<AST, NameAST> ContextBuilderBase;
 
-class ContextBuilder: public ContextBuilderBase, Visitor {
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, Visitor {
 public:
     ContextBuilder();
     virtual ~ContextBuilder();

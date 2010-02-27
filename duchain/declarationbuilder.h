@@ -38,7 +38,7 @@ class EditorIntegrator;
 
 typedef KDevelop::AbstractDeclarationBuilder<AST, NameAST, TypeBuilder> DeclarationBuilderBase;
 
-class DeclarationBuilder : public DeclarationBuilderBase
+class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
     DeclarationBuilder(EditorIntegrator* editor);

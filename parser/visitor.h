@@ -25,7 +25,7 @@
 
 namespace Ruby {
 
-class Visitor {
+class KDEVRUBYPARSER_EXPORT Visitor {
 public:
     virtual ~Visitor() {}
     virtual void visitProgram(ProgramAST* ast);

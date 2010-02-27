@@ -27,9 +27,11 @@
 #include <language/editor/simplecursor.h>
 #include <language/duchain/declaration.h>
 
+#include "parserexport.h"
+
 namespace Ruby {
 
-class AST {
+class KDEVRUBYPARSER_EXPORT AST {
 public:
     virtual ~AST() {}
     enum Kind { Program, Class, Name, Function, FunctionArgument };
@@ -39,14 +41,14 @@ public:
     KDevelop::SimpleCursor end;
 };
 
-class NameAST: public AST {
+class KDEVRUBYPARSER_EXPORT NameAST: public AST {
 public:
     virtual ~NameAST() {}
     virtual Kind kind();
     QString name;
 };
 
-class FunctionArgumentAST: public AST {
+class KDEVRUBYPARSER_EXPORT FunctionArgumentAST: public AST {
 public:
     FunctionArgumentAST() {}
     virtual ~FunctionArgumentAST();
@@ -54,7 +56,7 @@ public:
     NameAST *name;
 };
 
-class FunctionAST: public AST {
+class KDEVRUBYPARSER_EXPORT FunctionAST: public AST {
 public:
     FunctionAST(): isStatic(false), isMember(false) {}
     virtual ~FunctionAST();
@@ -67,7 +69,7 @@ public:
     KDevelop::Declaration::AccessPolicy access;
 };
 
-class ClassAST: public AST {
+class KDEVRUBYPARSER_EXPORT ClassAST: public AST {
 public:
     virtual ~ClassAST();
     virtual Kind kind();
@@ -79,7 +81,7 @@ public:
     FunctionAST *findFunction(const QString &name);
 };
 
-class ProgramAST: public AST {
+class KDEVRUBYPARSER_EXPORT ProgramAST: public AST {
 public:
     virtual ~ProgramAST();
     virtual Kind kind();

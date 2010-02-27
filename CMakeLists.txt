@@ -20,18 +20,6 @@ add_subdirectory(app_templates)
 add_subdirectory(tests)
 
 set(kdevrubylanguagesupport_PART_SRCS
-    parser/rubyast.cpp
-    parser/parser.cpp
-    parser/visitor.cpp
-
-    duchain/editorintegrator.cpp
-    duchain/declarationbuilder.cpp
-    duchain/contextbuilder.cpp
-    duchain/typebuilder.cpp
-
-    navigation/railsswitchers.cpp
-    navigation/railsdataprovider.cpp
-
     parsejob.cpp
     rubylanguagesupport.cpp
 )
@@ -43,6 +31,9 @@ target_link_libraries(kdevrubylanguagesupport
     ${KDE4_THREADWEAVER_LIBRARIES}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    kdevrubyparser
+    kdevrubyduchain
+    kdevrubynavigation
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})

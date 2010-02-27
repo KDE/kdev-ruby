@@ -28,7 +28,7 @@
 
 namespace Ruby {
 
-class Parser {
+class KDEVRUBYPARSER_EXPORT Parser {
 public:
     Parser();
     ProgramAST *parse(const QString &contents);

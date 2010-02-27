@@ -25,10 +25,11 @@
 #include <kurl.h>
 
 #include "rubylanguagesupport.h"
+#include "navigationexport.h"
 
 namespace Ruby {
 
-class RailsSwitchers: public QObject {
+class KDEVRUBYNAVIGATION_EXPORT RailsSwitchers: public QObject {
     Q_OBJECT
 public:
     RailsSwitchers(RubyLanguageSupport *language);

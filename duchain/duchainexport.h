@@ -18,30 +18,18 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef TYPEBUILDER_H
-#define TYPEBUILDER_H
+#ifndef DUCHAINEXPORT_H
+#define DUCHAINEXPORT_H
 
-#include "contextbuilder.h"
+/* needed for KDE_EXPORT macros */
+#include <kdemacros.h>
 
-#include <language/duchain/builders/abstracttypebuilder.h>
-
-namespace Ruby {
-
-typedef KDevelop::AbstractTypeBuilder<AST, NameAST, ContextBuilder> TypeBuilderBase;
-
-class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase {
-public:
-    TypeBuilder();
-
-protected:
-    virtual void visitClass(ClassAST* ast);
-    virtual void visitFunction(FunctionAST* ast);
-    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
-
-    virtual void updateCurrentType();
-
-};
-
-}
+#ifndef KDEVRUBYDUCHAIN_EXPORT
+# ifdef MAKE_KDEVRUBYDUCHAIN_LIB
+#  define KDEVRUBYDUCHAIN_EXPORT KDE_EXPORT
+# else
+#  define KDEVRUBYDUCHAIN_EXPORT KDE_IMPORT
+# endif
+#endif
 
 #endif

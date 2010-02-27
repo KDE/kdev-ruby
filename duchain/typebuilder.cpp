@@ -43,9 +43,9 @@ void TypeBuilder::visitFunction(FunctionAST* ast)
 {
     KDevelop::FunctionType::Ptr functionType = KDevelop::FunctionType::Ptr(new KDevelop::FunctionType());
     openType(functionType);
-    updateCurrentType();
 
     TypeBuilderBase::visitFunction(ast);
+    updateCurrentType();
 
     closeType();
 }

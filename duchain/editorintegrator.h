@@ -25,12 +25,14 @@
 #include <language/editor/editorintegrator.h>
 #include <language/editor/simplerange.h>
 
+#include "duchainexport.h"
+
 namespace Ruby
 {
 
 class AST;
 
-class EditorIntegrator: public KDevelop::EditorIntegrator {
+class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator: public KDevelop::EditorIntegrator {
 public:
     EditorIntegrator();
 
