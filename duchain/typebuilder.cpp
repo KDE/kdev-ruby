@@ -36,6 +36,7 @@ void TypeBuilder::visitClass(ClassAST* ast)
     KDevelop::StructureType::Ptr classType = KDevelop::StructureType::Ptr(new KDevelop::StructureType());
     openType(classType);
     TypeBuilderBase::visitClass(ast);
+    updateCurrentType();
     closeType();
 }
 
