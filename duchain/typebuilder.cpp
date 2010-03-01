@@ -20,10 +20,8 @@
 */
 #include "typebuilder.h"
 
-#include <language/duchain/types/unsuretype.h>
-#include <language/duchain/types/structuretype.h>
 #include <language/duchain/types/functiontype.h>
-#include <language/duchain/types/integraltype.h>
+#include "duchain/types/objecttype.h"
 
 namespace Ruby  {
 
@@ -44,6 +42,8 @@ void TypeBuilder::visitFunction(FunctionAST* ast)
 {
     KDevelop::FunctionType::Ptr functionType = KDevelop::FunctionType::Ptr(new KDevelop::FunctionType());
     openType(functionType);
+    KDevelop::AbstractType::Ptr returnType(new ObjectType());
+    functionType->setReturnType(returnType);
 
     TypeBuilderBase::visitFunction(ast);
     updateCurrentType();
@@ -53,7 +53,7 @@ void TypeBuilder::visitFunction(FunctionAST* ast)
 
 void TypeBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
 {
-    KDevelop::AbstractType::Ptr type(new KDevelop::IntegralType(KDevelop::IntegralType::TypeMixed));
+    KDevelop::AbstractType::Ptr type(new ObjectType());
     openAbstractType(type);
     TypeBuilderBase::visitFunctionArgument(ast);
     closeType();

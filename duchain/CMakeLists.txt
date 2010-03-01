@@ -5,6 +5,8 @@ set(rubyduchain_SRCS
     declarationbuilder.cpp
     contextbuilder.cpp
     typebuilder.cpp
+
+    types/objecttype.cpp
 )
 
 kde4_add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
