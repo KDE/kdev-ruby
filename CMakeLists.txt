@@ -32,6 +32,7 @@ target_link_libraries(kdevrubylanguagesupport
     ${KDE4_THREADWEAVER_LIBRARIES}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    ${KDEVPLATFORM_PROJECT_LIBRARIES}
     kdevrubyparser
     kdevrubyduchain
     kdevrubynavigation
