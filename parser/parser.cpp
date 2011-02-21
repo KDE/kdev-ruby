@@ -81,8 +81,8 @@ ProgramAST* Parser::parse(const QString& contents)
                 NameAST *name = new NameAST;
                 name->name = className;
                 lastClass->name = name;
-                lastClass->start = KDevelop::SimpleCursor(lineNo, 0);
-                lastClass->end = KDevelop::SimpleCursor(lineNo, rawline.length());
+                lastClass->start = KDevelop::CursorInRevision(lineNo, 0);
+                lastClass->end = KDevelop::CursorInRevision(lineNo, rawline.length());
                 programAST->classes << lastClass;
             }
 
@@ -106,10 +106,10 @@ ProgramAST* Parser::parse(const QString& contents)
                 fun = new FunctionAST;
                 NameAST *name = new NameAST;
                 name->name = functionName;
-                name->start = KDevelop::SimpleCursor(lineNo, methodre.pos(4));
-                name->end = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + functionName.length() - 1);
+                name->start = KDevelop::CursorInRevision(lineNo, methodre.pos(4));
+                name->end = KDevelop::CursorInRevision(lineNo, methodre.pos(4) + functionName.length() - 1);
                 fun->name = name;
-                fun->start = KDevelop::SimpleCursor(lineNo, 0);
+                fun->start = KDevelop::CursorInRevision(lineNo, 0);
             }
 
             if (functionName == "initialize") {
@@ -146,8 +146,8 @@ ProgramAST* Parser::parse(const QString& contents)
                     FunctionArgumentAST *arg = new FunctionArgumentAST;
                     NameAST *name = new NameAST;
                     name->name = argName;
-                    name->start = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + argsLine.indexOf(argName));
-                    name->end = KDevelop::SimpleCursor(lineNo, methodre.pos(4) + argsLine.indexOf(argName) + argName.length());
+                    name->start = KDevelop::CursorInRevision(lineNo, methodre.pos(4) + argsLine.indexOf(argName));
+                    name->end = KDevelop::CursorInRevision(lineNo, methodre.pos(4) + argsLine.indexOf(argName) + argName.length());
                     arg->name = name;
                     fun->arguments << arg;
                 }
@@ -159,7 +159,7 @@ ProgramAST* Parser::parse(const QString& contents)
                 //where its corresponding "end" is found
                 //there's an assumption that method's "def" statement will have the same
                 //indentation level as method's "end"
-                lastFunction->end = KDevelop::SimpleCursor(lineNo, endre.matchedLength());
+                lastFunction->end = KDevelop::CursorInRevision(lineNo, endre.matchedLength());
             }
         } else if (begin_commentre.indexIn(line) != -1) {
             skipMultilineComment = true;

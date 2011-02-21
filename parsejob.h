@@ -52,7 +52,7 @@ protected:
     virtual void run();
 
 private:
-    void parse(const QString &contents);
+    void parse(const QString &c);
 
     Parser *m_parser;
     bool m_readFromDisk;

@@ -248,7 +248,7 @@ QString RubyLanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     KDevelop::TopDUContext* topContext = KDevelop::DUChainUtils::standardContextForUrl( doc->url() );
     if (!topContext) return "";
 
-    KDevelop::SimpleCursor cursor = KDevelop::SimpleCursor(doc->cursorPosition());
+    KDevelop::CursorInRevision cursor = KDevelop::CursorInRevision(doc->cursorPosition().line(), doc->cursorPosition().column());
     KDevelop::DUContext* context = topContext->findContextAt(cursor);
     if (!context) return "";
 

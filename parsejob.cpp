@@ -35,8 +35,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <ktexteditor/smartrange.h>
-#include <ktexteditor/smartinterface.h>
 #include <ktexteditor/document.h>
 
 #include <interfaces/ilanguage.h>
@@ -46,11 +44,7 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/topducontext.h>
 #include <language/duchain/parsingenvironment.h>
-#include <language/duchain/smartconverter.h>
 #include <language/duchain/persistentsymboltable.h>
-
-#include <language/editor/hashedstring.h>
-#include <language/editor/editorintegrator.h>
 
 #include <language/backgroundparser/urlparselock.h>
 
@@ -97,7 +91,10 @@ void SimpleParseJob::run()
     {
         DUChainReadLocker lock(DUChain::lock());
         bool needsUpdate = true;
+        static const IndexedString langString("Ruby");                                                                      
         foreach(const ParsingEnvironmentFilePointer &file, DUChain::self()->allEnvironmentFiles(document())) {
+            if (file->language() != langString)
+                continue;
             if (file->needsUpdate()) {
                 needsUpdate = true;
                 break;
@@ -111,44 +108,30 @@ void SimpleParseJob::run()
         }
     }
 
-    m_readFromDisk = !contentsAvailableFromEditor();
-
-    QString contents;
-    if ( m_readFromDisk ) {
-        QFile file( document().str() );
-        if ( !file.open( QIODevice::ReadOnly ) )
-        {
-            kDebug() << "Could not open file " << document().str()
-                     << " (path " << document().str() << ")" << endl;
-            return abortJob();
-        }
-
-        contents = file.readAll();
-        file.close();
-    } else {
-        contents = contentsFromEditor();
-    }
+    KDevelop::ProblemPointer p = readContents();
+    if (p)
+        return abortJob();
+  
+    QString c = contents().contents;
 
     kDebug() << "===-- PARSING --===> "
              << document().str()
              << " <== readFromDisk: " << m_readFromDisk
-             << " size: " << contents.size()
+             << " size: " << c.size()
              << endl;
 
     if ( abortRequested() )
         return abortJob();
 
-    parse(contents);
+    parse(c);
 
     if ( abortRequested() )
         return abortJob();
-
-    cleanupSmartRevision();
 }
 
-void SimpleParseJob::parse(const QString &contents)
+void SimpleParseJob::parse(const QString &c)
 {
-    ProgramAST *programAST = m_parser->parse(contents);
+    ProgramAST *programAST = m_parser->parse(c);
 
     KDevelop::ReferencedTopDUContext top;
     {
@@ -168,6 +151,7 @@ void SimpleParseJob::parse(const QString &contents)
     QReadLocker parseLock(ruby()->language()->parseLock());
 
     EditorIntegrator editor;
+    editor.setUrl(document());
     DeclarationBuilder builder;
     builder.setEditor(&editor);
     top = builder.build(document(), programAST, top);
@@ -179,14 +163,8 @@ void SimpleParseJob::parse(const QString &contents)
 
     top->setFeatures(minimumFeatures());
     KDevelop::ParsingEnvironmentFilePointer file = top->parsingEnvironmentFile();
-
-    QFileInfo fileInfo(document().str());
-    QDateTime lastModified = fileInfo.lastModified();
-    if (m_readFromDisk) {
-        file->setModificationRevision(KDevelop::ModificationRevision(lastModified));
-    } else {
-        file->setModificationRevision(KDevelop::ModificationRevision(lastModified, revisionToken()));
-    }
+    
+    file->setModificationRevision(contents().modification);
     KDevelop::DUChain::self()->updateContextEnvironment( top->topContext(), file.data() );
 
 }

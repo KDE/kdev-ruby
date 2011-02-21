@@ -24,7 +24,7 @@
 #include <QList>
 #include <QString>
 
-#include <language/editor/simplecursor.h>
+#include <language/editor/rangeinrevision.h>                                                                          
 #include <language/duchain/declaration.h>
 
 #include "parserexport.h"
@@ -37,8 +37,8 @@ public:
     enum Kind { Program, Class, Name, Function, FunctionArgument };
     virtual Kind kind() = 0;
 
-    KDevelop::SimpleCursor start;
-    KDevelop::SimpleCursor end;
+    KDevelop::CursorInRevision start;
+    KDevelop::CursorInRevision end;
 };
 
 class KDEVRUBYPARSER_EXPORT NameAST: public AST {

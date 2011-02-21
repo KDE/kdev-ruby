@@ -22,11 +22,6 @@
 #include "editorintegrator.h"
 
 #include <ktexteditor/document.h>
-#include <ktexteditor/smartrange.h>
-#include <ktexteditor/smartinterface.h>
-
-#include <language/editor/documentrange.h>
-#include <language/editor/documentrangeobject.h>
 
 #include "parser/rubyast.h"
 
@@ -37,12 +32,12 @@ EditorIntegrator::EditorIntegrator()
 {
 }
 
-KDevelop::SimpleCursor EditorIntegrator::findPosition(AST *node, Edge edge) const
+KDevelop::CursorInRevision EditorIntegrator::findPosition(AST *node, Edge edge) const
 {
     if (edge == BackEdge) {
         // Apparently KTE expects a range to go until _after_ the last character that should be included
         // however the parser calculates endCol as the index _before_ the last included character, so adjust here
-        KDevelop::SimpleCursor cursor = node->end;
+        KDevelop::CursorInRevision cursor = node->end;
         cursor.column += 1;
         return cursor;
     } else {
@@ -50,12 +45,22 @@ KDevelop::SimpleCursor EditorIntegrator::findPosition(AST *node, Edge edge) cons
     }
 }
 
-KDevelop::SimpleRange EditorIntegrator::findRange(AST* from, AST* to)
+KDevelop::RangeInRevision EditorIntegrator::findRange(AST* from, AST* to)
 {
-    return KDevelop::SimpleRange(findPosition(from, FrontEdge), findPosition(to, BackEdge));
+    return KDevelop::RangeInRevision(findPosition(from, FrontEdge), findPosition(to, BackEdge));
 }
 
-KDevelop::SimpleRange EditorIntegrator::findRange(AST* ast)
+KDevelop::RangeInRevision EditorIntegrator::findRange(AST* ast, Edge /*edge*/)
 {
-    return KDevelop::SimpleRange(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
+    return KDevelop::RangeInRevision(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
+}
+
+void EditorIntegrator::setUrl(const KDevelop::IndexedString &url)
+{
+    m_url = url;
+}
+
+KDevelop::IndexedString EditorIntegrator::url() const 
+{
+    return m_url;
 }

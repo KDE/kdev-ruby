@@ -48,17 +48,17 @@ ContextBuilder::~ContextBuilder()
 }
 
 KDevelop::ReferencedTopDUContext ContextBuilder::build(const KDevelop::IndexedString& url, AST* node,
-    KDevelop::ReferencedTopDUContext updateContext, bool useSmart)
+    KDevelop::ReferencedTopDUContext updateContext)
 {
     if ( KDevelop::ICore::self() ) {
         m_reportErrors = KDevelop::ICore::self()->languageController()->completionSettings()->highlightSemanticProblems();
     }
-    return ContextBuilderBase::build(url, node, updateContext, useSmart);
+    return ContextBuilderBase::build(url, node, updateContext);
 }
 
 void ContextBuilder::setEditor(EditorIntegrator* editor)
 {
-    ContextBuilderBase::setEditor(editor, false);
+    m_editor = editor;
 }
 
 void ContextBuilder::startVisiting(AST* node)
@@ -86,13 +86,13 @@ void ContextBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
     Visitor::visitFunctionArgument(ast);
 }
 
-KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::SimpleRange& range, KDevelop::ParsingEnvironmentFile* file)
+KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file)
 {
     if (!file) {
-        file = new KDevelop::ParsingEnvironmentFile(editor()->currentUrl());
+        file = new KDevelop::ParsingEnvironmentFile(KDevelop::IndexedString(m_editor->url()));
         file->setLanguage(KDevelop::IndexedString("Ruby"));
     }
-    return new KDevelop::TopDUContext(editor()->currentUrl(), range, file);
+    return new KDevelop::TopDUContext(KDevelop::IndexedString(m_editor->url()), range, file);
 }
 
 void ContextBuilder::setContextOnNode(AST* /*node*/, KDevelop::DUContext* /*ctx*/)
@@ -106,17 +106,17 @@ KDevelop::DUContext* ContextBuilder::contextFromNode(AST* /*node*/)
 
 EditorIntegrator* ContextBuilder::editor() const
 {
-    return static_cast<EditorIntegrator*>(ContextBuilderBase::editor());
+    return m_editor;
 }
 
-KTextEditor::Range ContextBuilder::editorFindRange(AST* fromRange, AST* toRange)
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(AST* fromRange, AST* toRange)
 {
-    return editor()->findRange(fromRange, toRange).textRange();
+    return m_editor->findRange(fromRange, toRange);
 }
 
-KDevelop::SimpleCursor ContextBuilder::startPos(AST* node)
+KDevelop::CursorInRevision ContextBuilder::startPos(AST* node)
 {
-    return editor()->findPosition(node, KDevelop::EditorIntegrator::FrontEdge);
+    return m_editor->findPosition(node, EditorIntegrator::FrontEdge);
 }
 
 KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAST* id)

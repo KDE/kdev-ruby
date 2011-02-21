@@ -22,9 +22,8 @@
 #ifndef RUBYEDITORINTEGRATOR_H
 #define RUBYEDITORINTEGRATOR_H
 
-#include <language/editor/editorintegrator.h>
-#include <language/editor/simplerange.h>
-
+#include <language/duchain/indexedstring.h>                                                                          
+#include <language/editor/rangeinrevision.h>                                                                          
 #include "duchainexport.h"
 
 namespace Ruby
@@ -32,16 +31,25 @@ namespace Ruby
 
 class AST;
 
-class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator: public KDevelop::EditorIntegrator {
+class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator {
 public:
     EditorIntegrator();
 
-    KDevelop::SimpleCursor findPosition(AST *node, Edge edge = BackEdge) const;
+    enum Edge {                                                                                                       
+      FrontEdge,                                                                                                      
+      BackEdge                                                                                                        
+    };                                                                                                                
+                                                                                                                      
+    KDevelop::CursorInRevision findPosition(AST *node, Edge edge = BackEdge) const;
 
-    using KDevelop::EditorIntegrator::createRange;
-
-    KDevelop::SimpleRange findRange(AST* from, AST* to);
-    KDevelop::SimpleRange findRange(AST* node);
+    KDevelop::RangeInRevision findRange(AST* from, AST* to);
+    KDevelop::RangeInRevision findRange(AST* node, Edge edge = BackEdge);
+    
+    void setUrl(const KDevelop::IndexedString &url);
+    KDevelop::IndexedString url() const;
+    
+private:
+    KDevelop::IndexedString m_url;
 };
 
 }

@@ -48,7 +48,7 @@ void DeclarationBuilder::closeDeclaration()
 void DeclarationBuilder::visitClass(ClassAST* ast)
 {
     {
-        KDevelop::SimpleRange range = editor()->findRange(ast);
+        KDevelop::RangeInRevision range = editor()->findRange(ast);
         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
 
         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
@@ -66,7 +66,7 @@ void DeclarationBuilder::visitClass(ClassAST* ast)
 void DeclarationBuilder::visitFunction(FunctionAST* ast)
 {
     {
-        KDevelop::SimpleRange range = editor()->findRange(ast->name);
+        KDevelop::RangeInRevision range = editor()->findRange(ast->name);
         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
 
         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
@@ -91,7 +91,7 @@ void DeclarationBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
     {
         // create variable declaration for argument
         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        KDevelop::SimpleRange range = editor()->findRange(ast->name);
+        KDevelop::RangeInRevision range = editor()->findRange(ast->name);
         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
 
         openDefinition<KDevelop::Declaration>(id, range);
