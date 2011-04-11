@@ -24,26 +24,28 @@
 
 #include <language/duchain/builders/abstractcontextbuilder.h>
 
-#include "parser/visitor.h"
+// #include "parser/visitor.h"
 #include "duchainexport.h"
+#include <parser/node.h>
 
 namespace Ruby
 {
-class AST;
-class ProgramAST;
-class NameAST;
-class ClassAST;
+// class AST;
+// class ProgramAST;
+// class NameAST;
+// class ClassAST;
 class EditorIntegrator;
 
-typedef KDevelop::AbstractContextBuilder<AST, NameAST> ContextBuilderBase;
+typedef KDevelop::AbstractContextBuilder<Node, Node> ContextBuilderBase;
 
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, Visitor {
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase /*, Visitor*/
+{
 public:
     ContextBuilder();
     virtual ~ContextBuilder();
 
     void setEditor(EditorIntegrator* editor);
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, AST* node,
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, Node * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
 
 protected:
@@ -51,19 +53,19 @@ protected:
 
     virtual KDevelop::TopDUContext* newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file = 0);
 
-    virtual void startVisiting(AST* node);
-    virtual void setContextOnNode(AST* node, KDevelop::DUContext* ctx);
-    virtual KDevelop::DUContext* contextFromNode(AST* node);
+    virtual void startVisiting(Node * node);
+    virtual void setContextOnNode(Node * node, KDevelop::DUContext* ctx);
+    virtual KDevelop::DUContext* contextFromNode(Node * node);
 
-    virtual KDevelop::RangeInRevision editorFindRange(AST* fromRange, AST* toRange);
+    virtual KDevelop::RangeInRevision editorFindRange(Node * fromRange, Node * toRange);
     /// Find Cursor for start of a node, useful to limit findLocalDeclarations() searches.
-    KDevelop::CursorInRevision startPos(AST* node);
+    KDevelop::CursorInRevision startPos(Node * node);
 
-    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAST* id);
-
+//     virtual KDevelop::QualifiedIdentifier identifierForNode(Node * id);
+/*
     virtual void visitClass(ClassAST* ast);
     virtual void visitFunction(FunctionAST* ast);
-    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
+    virtual void visitFunctionArgument(FunctionArgumentAST* ast);*/
 
     bool m_reportErrors;
     EditorIntegrator* m_editor;

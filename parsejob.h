@@ -54,7 +54,7 @@ protected:
 private:
     void parse(const QString &c);
 
-    Parser *m_parser;
+//     Parser *m_parser;
     bool m_readFromDisk;
 };
 

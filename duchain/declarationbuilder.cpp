@@ -27,7 +27,7 @@
 #include <language/duchain/classfunctiondeclaration.h>
 #include <language/duchain/types/functiontype.h>
 
-#include "parser/rubyast.h"
+// #include "parser/rubyast.h"
 #include "editorintegrator.h"
 
 namespace Ruby
@@ -36,75 +36,75 @@ namespace Ruby
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator* editor):
     DeclarationBuilderBase()
 {
-    setEditor(editor);
+//     setEditor(editor);
 }
 
 void DeclarationBuilder::closeDeclaration()
 {
-    eventuallyAssignInternalContext();
-    DeclarationBuilderBase::closeDeclaration();
+//     eventuallyAssignInternalContext();
+//     DeclarationBuilderBase::closeDeclaration();
 }
 
-void DeclarationBuilder::visitClass(ClassAST* ast)
-{
-    {
-        KDevelop::RangeInRevision range = editor()->findRange(ast);
-        KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
-
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-
-        KDevelop::ClassDeclaration* decl = openDefinition<KDevelop::ClassDeclaration>(id, range);
-        decl->setDeclarationIsDefinition(true);
-        decl->setKind(KDevelop::Declaration::Type);
-        decl->clearBaseClasses();
-        decl->setClassType(KDevelop::ClassDeclarationData::Class);
-    }
-    DeclarationBuilderBase::visitClass(ast);
-    closeDeclaration();
-}
-
-void DeclarationBuilder::visitFunction(FunctionAST* ast)
-{
-    {
-        KDevelop::RangeInRevision range = editor()->findRange(ast->name);
-        KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
-
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-
-        if (ast->isMember) {
-            KDevelop::ClassFunctionDeclaration *decl = openDefinition<KDevelop::ClassFunctionDeclaration>(id, range);
-            decl->setAccessPolicy(ast->access);
-            decl->setDeclarationIsDefinition(true);
-            decl->setKind(KDevelop::Declaration::Type);
-        } else {
-            KDevelop::FunctionDeclaration *decl = openDefinition<KDevelop::FunctionDeclaration>(id, range);
-            decl->setDeclarationIsDefinition(true);
-            decl->setKind(KDevelop::Declaration::Type);
-        }
-    }
-    DeclarationBuilderBase::visitFunction(ast);
-    closeDeclaration();
-}
-
-void DeclarationBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
-{
-    {
-        // create variable declaration for argument
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        KDevelop::RangeInRevision range = editor()->findRange(ast->name);
-        KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
-
-        openDefinition<KDevelop::Declaration>(id, range);
-        currentDeclaration()->setKind(KDevelop::Declaration::Instance);
-    }
-    DeclarationBuilderBase::visitFunctionArgument(ast);
-    closeDeclaration();
-}
+// void DeclarationBuilder::visitClass(ClassAST* ast)
+// {
+//     {
+//         KDevelop::RangeInRevision range = editor()->findRange(ast);
+//         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
+// 
+//         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+// 
+//         KDevelop::ClassDeclaration* decl = openDefinition<KDevelop::ClassDeclaration>(id, range);
+//         decl->setDeclarationIsDefinition(true);
+//         decl->setKind(KDevelop::Declaration::Type);
+//         decl->clearBaseClasses();
+//         decl->setClassType(KDevelop::ClassDeclarationData::Class);
+//     }
+//     DeclarationBuilderBase::visitClass(ast);
+//     closeDeclaration();
+// }
+// 
+// void DeclarationBuilder::visitFunction(FunctionAST* ast)
+// {
+//     {
+//         KDevelop::RangeInRevision range = editor()->findRange(ast->name);
+//         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
+// 
+//         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+// 
+//         if (ast->isMember) {
+//             KDevelop::ClassFunctionDeclaration *decl = openDefinition<KDevelop::ClassFunctionDeclaration>(id, range);
+//             decl->setAccessPolicy(ast->access);
+//             decl->setDeclarationIsDefinition(true);
+//             decl->setKind(KDevelop::Declaration::Type);
+//         } else {
+//             KDevelop::FunctionDeclaration *decl = openDefinition<KDevelop::FunctionDeclaration>(id, range);
+//             decl->setDeclarationIsDefinition(true);
+//             decl->setKind(KDevelop::Declaration::Type);
+//         }
+//     }
+//     DeclarationBuilderBase::visitFunction(ast);
+//     closeDeclaration();
+// }
+// 
+// void DeclarationBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
+// {
+//     {
+//         // create variable declaration for argument
+//         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+//         KDevelop::RangeInRevision range = editor()->findRange(ast->name);
+//         KDevelop::QualifiedIdentifier id(KDevelop::Identifier(KDevelop::IndexedString(ast->name->name)));
+// 
+//         openDefinition<KDevelop::Declaration>(id, range);
+//         currentDeclaration()->setKind(KDevelop::Declaration::Instance);
+//     }
+//     DeclarationBuilderBase::visitFunctionArgument(ast);
+//     closeDeclaration();
+// }
 
 void DeclarationBuilder::updateCurrentType()
 {
-    KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-    currentDeclaration()->setAbstractType(currentAbstractType());
+//     KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+//     currentDeclaration()->setAbstractType(currentAbstractType());
 }
 
 }

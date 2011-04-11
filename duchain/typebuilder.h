@@ -27,16 +27,16 @@
 
 namespace Ruby {
 
-typedef KDevelop::AbstractTypeBuilder<AST, NameAST, ContextBuilder> TypeBuilderBase;
+typedef KDevelop::AbstractTypeBuilder<Node, Node, ContextBuilder> TypeBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase {
 public:
     TypeBuilder();
 
 protected:
-    virtual void visitClass(ClassAST* ast);
-    virtual void visitFunction(FunctionAST* ast);
-    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
+    virtual void visitClass(Node* ast);
+    virtual void visitFunction(Node* ast);
+    virtual void visitFunctionArgument(Node* ast);
 
     virtual void updateCurrentType();
 

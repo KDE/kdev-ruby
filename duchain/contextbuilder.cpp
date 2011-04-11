@@ -33,7 +33,7 @@
 
 #include <klocalizedstring.h>
 
-#include "parser/rubyast.h"
+// #include "parser/rubyast.h"
 #include "editorintegrator.h"
 
 namespace Ruby
@@ -47,7 +47,7 @@ ContextBuilder::~ContextBuilder()
 {
 }
 
-KDevelop::ReferencedTopDUContext ContextBuilder::build(const KDevelop::IndexedString& url, AST* node,
+KDevelop::ReferencedTopDUContext ContextBuilder::build(const KDevelop::IndexedString& url, Node* node,
     KDevelop::ReferencedTopDUContext updateContext)
 {
     if ( KDevelop::ICore::self() ) {
@@ -61,30 +61,30 @@ void ContextBuilder::setEditor(EditorIntegrator* editor)
     m_editor = editor;
 }
 
-void ContextBuilder::startVisiting(AST* node)
+void ContextBuilder::startVisiting(Node* node)
 {
-    ProgramAST *ast = static_cast<ProgramAST*>(node);
-    visitProgram(ast);
+//     ProgramNode *ast = static_cast<ProgramNode*>(node);
+//     visitProgram(ast);
 }
 
-void ContextBuilder::visitClass(ClassAST* ast)
-{
-    openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Class, ast->name);
-    Visitor::visitClass(ast);
-    closeContext();
-}
+// void ContextBuilder::visitClass(ClassNode* ast)
+// {
+//     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Class, ast->name);
+//     Visitor::visitClass(ast);
+//     closeContext();
+// }
 
-void ContextBuilder::visitFunction(FunctionAST* ast)
-{
-    openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Function, ast->name);
-    Visitor::visitFunction(ast);
-    closeContext();
-}
+// void ContextBuilder::visitFunction(FunctionNode* ast)
+// {
+//     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Function, ast->name);
+//     Visitor::visitFunction(ast);
+//     closeContext();
+// }
 
-void ContextBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
-{
-    Visitor::visitFunctionArgument(ast);
-}
+// void ContextBuilder::visitFunctionArgument(FunctionArgumentNode* ast)
+// {
+//     Visitor::visitFunctionArgument(ast);
+// }
 
 KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file)
 {
@@ -95,11 +95,11 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
     return new KDevelop::TopDUContext(KDevelop::IndexedString(m_editor->url()), range, file);
 }
 
-void ContextBuilder::setContextOnNode(AST* /*node*/, KDevelop::DUContext* /*ctx*/)
+void ContextBuilder::setContextOnNode(Node* /*node*/, KDevelop::DUContext* /*ctx*/)
 {
 }
 
-KDevelop::DUContext* ContextBuilder::contextFromNode(AST* /*node*/)
+KDevelop::DUContext* ContextBuilder::contextFromNode(Node* /*node*/)
 {
     return 0;
 }
@@ -109,21 +109,21 @@ EditorIntegrator* ContextBuilder::editor() const
     return m_editor;
 }
 
-KDevelop::RangeInRevision ContextBuilder::editorFindRange(AST* fromRange, AST* toRange)
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(Node* fromRange, Node* toRange)
 {
     return m_editor->findRange(fromRange, toRange);
 }
 
-KDevelop::CursorInRevision ContextBuilder::startPos(AST* node)
+KDevelop::CursorInRevision ContextBuilder::startPos(Node* node)
 {
     return m_editor->findPosition(node, EditorIntegrator::FrontEdge);
 }
-
-KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAST* id)
+/*
+KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameNode* id)
 {
     if (!id)
         return KDevelop::QualifiedIdentifier();
     return KDevelop::QualifiedIdentifier(id->name);
-}
+}*/
 
 }

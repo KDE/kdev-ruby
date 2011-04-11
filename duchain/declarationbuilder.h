@@ -23,20 +23,21 @@
 #define DECLARATIONBUILDER_H
 
 #include "typebuilder.h"
+#include <parser/node.h>
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 
-namespace KDvelop {
+namespace KDevelop {
 class Declaration;
 }
 
 namespace Ruby {
 
-class AST;
-class NameAST;
+// class AST;
+// class NameAST;
 class EditorIntegrator;
 
-typedef KDevelop::AbstractDeclarationBuilder<AST, NameAST, TypeBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<Node, Node, Node> DeclarationBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
@@ -46,9 +47,9 @@ public:
 
 protected:
     virtual void closeDeclaration();
-    virtual void visitClass(ClassAST* ast);
-    virtual void visitFunction(FunctionAST* ast);
-    virtual void visitFunctionArgument(FunctionArgumentAST* ast);
+//     virtual void visitClass(ClassAST* ast);
+//     virtual void visitFunction(FunctionAST* ast);
+//     virtual void visitFunctionArgument(FunctionArgumentAST* ast);
 
     virtual void updateCurrentType();
 };

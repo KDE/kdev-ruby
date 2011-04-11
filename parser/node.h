@@ -145,6 +145,12 @@ struct node {
   struct node * last;
 };
 
+/*
+ * Although it's not used internally, maybe this is more comfortable
+ * to the "outside" programmer
+ */
+typedef struct node Node;
+
 
 /* Interface to the parser */
 

@@ -49,7 +49,8 @@
 #include <language/backgroundparser/urlparselock.h>
 
 #include "rubylanguagesupport.h"
-#include "parser/parser.h"
+// #include "parser/parser.h"
+#include <parser/node.h>
 #include "duchain/declarationbuilder.h"
 #include "duchain/editorintegrator.h"
 
@@ -59,7 +60,7 @@ namespace Ruby
 {
 
 SimpleParseJob::SimpleParseJob( const KUrl &url, RubyLanguageSupport *parent )
-        : KDevelop::ParseJob( url ), m_parser(new Parser), m_readFromDisk( false )
+        : KDevelop::ParseJob( url ), m_readFromDisk( false )
 {}
 
 SimpleParseJob::~SimpleParseJob()
@@ -131,41 +132,41 @@ void SimpleParseJob::run()
 
 void SimpleParseJob::parse(const QString &c)
 {
-    ProgramAST *programAST = m_parser->parse(c);
-
-    KDevelop::ReferencedTopDUContext top;
-    {
-        KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
-        top = KDevelop::DUChain::self()->chainForDocument(document());
-    }
-    if (top) {
-        kDebug() << "re-compiling" << document().str();
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        top->clearImportedParentContexts();
-        top->parsingEnvironmentFile()->clearModificationRevisions();
-        top->clearProblems();
-    } else {
-        kDebug() << "compiling" << document().str();
-    }
-
-    QReadLocker parseLock(ruby()->language()->parseLock());
-
-    EditorIntegrator editor;
-    editor.setUrl(document());
-    DeclarationBuilder builder;
-    builder.setEditor(&editor);
-    top = builder.build(document(), programAST, top);
-    delete programAST;
-
-    setDuChain(top);
-
-    KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-
-    top->setFeatures(minimumFeatures());
-    KDevelop::ParsingEnvironmentFilePointer file = top->parsingEnvironmentFile();
-    
-    file->setModificationRevision(contents().modification);
-    KDevelop::DUChain::self()->updateContextEnvironment( top->topContext(), file.data() );
+//     ProgramAST *programAST = m_parser->parse(c);
+// 
+//     KDevelop::ReferencedTopDUContext top;
+//     {
+//         KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
+//         top = KDevelop::DUChain::self()->chainForDocument(document());
+//     }
+//     if (top) {
+//         kDebug() << "re-compiling" << document().str();
+//         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+//         top->clearImportedParentContexts();
+//         top->parsingEnvironmentFile()->clearModificationRevisions();
+//         top->clearProblems();
+//     } else {
+//         kDebug() << "compiling" << document().str();
+//     }
+// 
+//     QReadLocker parseLock(ruby()->language()->parseLock());
+// 
+//     EditorIntegrator editor;
+//     editor.setUrl(document());
+//     DeclarationBuilder builder;
+//     builder.setEditor(&editor);
+//     top = builder.build(document(), programAST, top);
+//     delete programAST;
+// 
+//     setDuChain(top);
+// 
+//     KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+// 
+//     top->setFeatures(minimumFeatures());
+//     KDevelop::ParsingEnvironmentFilePointer file = top->parsingEnvironmentFile();
+//     
+//     file->setModificationRevision(contents().modification);
+//     KDevelop::DUChain::self()->updateContextEnvironment( top->topContext(), file.data() );
 
 }
 

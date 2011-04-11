@@ -29,33 +29,33 @@ TypeBuilder::TypeBuilder(): TypeBuilderBase()
 {
 }
 
-void TypeBuilder::visitClass(ClassAST* ast)
+void TypeBuilder::visitClass(Node* ast)
 {
     KDevelop::StructureType::Ptr classType = KDevelop::StructureType::Ptr(new KDevelop::StructureType());
     openType(classType);
-    TypeBuilderBase::visitClass(ast);
+//     TypeBuilderBase::visitClass(ast);
     updateCurrentType();
     closeType();
 }
 
-void TypeBuilder::visitFunction(FunctionAST* ast)
+void TypeBuilder::visitFunction(Node* ast)
 {
     KDevelop::FunctionType::Ptr functionType = KDevelop::FunctionType::Ptr(new KDevelop::FunctionType());
     openType(functionType);
     KDevelop::AbstractType::Ptr returnType(new ObjectType());
     functionType->setReturnType(returnType);
 
-    TypeBuilderBase::visitFunction(ast);
+//     TypeBuilderBase::visitFunction(ast);
     updateCurrentType();
 
     closeType();
 }
 
-void TypeBuilder::visitFunctionArgument(FunctionArgumentAST* ast)
+void TypeBuilder::visitFunctionArgument(Node* ast)
 {
     KDevelop::AbstractType::Ptr type(new ObjectType());
     openAbstractType(type);
-    TypeBuilderBase::visitFunctionArgument(ast);
+//     TypeBuilderBase::visitFunctionArgument(ast);
     closeType();
 
     KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());

@@ -23,7 +23,8 @@
 
 #include <ktexteditor/document.h>
 
-#include "parser/rubyast.h"
+// #include "parser/rubyast.h" /* old */
+#include <parser/node.h>
 
 using namespace KTextEditor;
 using namespace Ruby;
@@ -32,27 +33,34 @@ EditorIntegrator::EditorIntegrator()
 {
 }
 
-KDevelop::CursorInRevision EditorIntegrator::findPosition(AST *node, Edge edge) const
+KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge) const
 {
-    if (edge == BackEdge) {
+  /* TODO: Not implemented yet */
+//     if (edge == BackEdge) {
         // Apparently KTE expects a range to go until _after_ the last character that should be included
         // however the parser calculates endCol as the index _before_ the last included character, so adjust here
-        KDevelop::CursorInRevision cursor = node->end;
-        cursor.column += 1;
-        return cursor;
-    } else {
-        return node->start;
-    }
+//         KDevelop::CursorInRevision cursor;
+//         cursor.column += 1;
+//         return cursor;
+//     } else {
+//         return node->start;
+//     }
+    KDevelop::CursorInRevision cursor;
+    return cursor;
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(AST* from, AST* to)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
 {
-    return KDevelop::RangeInRevision(findPosition(from, FrontEdge), findPosition(to, BackEdge));
+    KDevelop::RangeInRevision range;
+    return range;
+//     return KDevelop::RangeInRevision(findPosition(from, FrontEdge), findPosition(to, BackEdge));
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(AST* ast, Edge /*edge*/)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node * ast, Edge /*edge*/)
 {
-    return KDevelop::RangeInRevision(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
+    KDevelop::RangeInRevision range;
+    return range;
+//     return KDevelop::RangeInRevision(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
 }
 
 void EditorIntegrator::setUrl(const KDevelop::IndexedString &url)

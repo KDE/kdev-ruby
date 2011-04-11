@@ -22,14 +22,15 @@
 #ifndef RUBYEDITORINTEGRATOR_H
 #define RUBYEDITORINTEGRATOR_H
 
-#include <language/duchain/indexedstring.h>                                                                          
-#include <language/editor/rangeinrevision.h>                                                                          
+#include <language/duchain/indexedstring.h>
+#include <language/editor/rangeinrevision.h>                                                                   
 #include "duchainexport.h"
+#include <parser/node.h>
 
 namespace Ruby
 {
 
-class AST;
+// class AST;
 
 class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator {
 public:
@@ -40,10 +41,10 @@ public:
       BackEdge                                                                                                        
     };                                                                                                                
                                                                                                                       
-    KDevelop::CursorInRevision findPosition(AST *node, Edge edge = BackEdge) const;
+    KDevelop::CursorInRevision findPosition(Node * node, Edge edge = BackEdge) const;
 
-    KDevelop::RangeInRevision findRange(AST* from, AST* to);
-    KDevelop::RangeInRevision findRange(AST* node, Edge edge = BackEdge);
+    KDevelop::RangeInRevision findRange(Node * from, Node * to);
+    KDevelop::RangeInRevision findRange(Node * node, Edge edge = BackEdge);
     
     void setUrl(const KDevelop::IndexedString &url);
     KDevelop::IndexedString url() const;
