@@ -1,0 +1,6 @@
+Resulting AST's:
+51(a) 22 52 
+Next statements: 23 
+Root: 44 
+
+51(b) 22 52 45 

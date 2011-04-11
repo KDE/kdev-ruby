@@ -1,0 +1,23 @@
+Resulting AST's:
+51(a) 22 53(:a) 51 60 
+Next statements: 51 
+Root: 64 
+51(b) 22 53(c) 51 60 
+Next statements: 51 
+Root: 64 
+51(c) 22 53(:e) 51 60 
+Next statements: 51 
+Root: 64 
+
+51(a) 22 53(:a) 51 52 
+Next statements: 51 
+Root: 64 
+51(a) 22 53(:a) 51 52 
+Next statements: 51 
+Root: 64 
+51(a) 22 53(:a) 51 52 
+Next statements: 51 
+Root: 64 
+51(a) 22 53(a) 51 52 
+Next statements: 51 
+Root: 64 

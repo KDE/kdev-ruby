@@ -1,0 +1,24 @@
+Resulting AST's:
+52 54 57 51(A) 
+
+52 54 57 51(A) 
+52 54 55 54 57 51(A) 
+51(a) 22 51(A) 66 
+Next statements: 51(new) 
+Root: 
+51(puts) 66 51(a) 66 
+Next statements: 51(foo) 
+Root: 
+51(puts) 66 52 
+51(puts) 66 52 
+51(puts) 66 52 40 
+Condition: 51 
+54 55 
+Next statements: 55 
+Root: 54 57 51(A) 
+52 54 55 
+Next statements: 55 
+Root: 54 57 51(A) 
+54 55 54 56 51(A) 
+51(puts) 66 52 43 51(puts) 66 52 43 42 
+Condition: 51(a) 

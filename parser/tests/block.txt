@@ -1,0 +1,37 @@
+Resulting AST's:
+51(a) 22 51(lambda) 
+Next statements: 65 
+Root: 
+51(a) 22 51(lambda) 
+Next statements: 65 
+Root: 
+51(a) 22 51(lambda) 
+Next statements: 65 
+Root: 
+
+51(a) 22 52 
+Next statements: 52 52 52 
+Root: 63 
+51(a) 66 
+Next statements: 66 65 
+Root: 
+
+51(a) 66 
+Next statements: 66 65 
+Root: 
+
+51(a) 66 52 
+Next statements: 52 
+Root: 
+Next statements: 51(foo) 65 
+Root: 
+
+51(a) 66 
+Next statements: 66 51(c) 51(d) 65 
+Root: 
+
+51(a) 66 52 
+Next statements: 52 
+Root: 
+Next statements: 66 51(c) 51(d) 65 
+Root: 

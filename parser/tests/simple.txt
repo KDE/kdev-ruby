@@ -1,0 +1,27 @@
+Resulting AST's:
+52 2 52 72 54 55 
+Condition: 51(foo) 
+
+52 72 54 55 
+Condition: 51(foo1) 
+
+51(puts) 66 60 54 55 
+Condition: 51(a) 
+
+51(a) 22 52 
+51(b) 22 52 
+51(b) 22 52 
+Next statements: 69 
+Root: 38 
+Next statements: 23 
+Root: 40 
+Condition: 51(a) 33 52 
+
+51(foo) 74 51(foo1) 
+51(foo1) 74 53(:a) 
+
+53(:a) 
+Next statements: 51(foo) 
+Root: 76 
+51(puts) 66 60 38 
+Condition: 51(anoia) 75 

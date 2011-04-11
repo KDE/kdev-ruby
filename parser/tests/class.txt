@@ -1,0 +1,30 @@
+Resulting AST's:
+54 55 54 57 51(FooClass) 
+
+54 55 54 57 51(FooFooClass) 
+Condition: 51(FooClass) 
+
+51(f) 22 51(FooClass) 66 
+Next statements: 51(new) 
+Root: 
+51(puts) 66 51(f) 66 
+Next statements: 51(foo) 
+Root: 
+
+60 54 55 54 58 51(f) 
+
+51(puts) 66 51(f) 66 
+Next statements: 51(foo) 
+Root: 
+
+60 54 55 54 58 51(f) 
+
+51(puts) 66 51(f) 66 
+Next statements: 51(foo) 
+Root: 
+
+60 54 55 54 58 51(f) 
+
+51(puts) 66 51(f) 66 
+Next statements: 51(foo) 
+Root: 

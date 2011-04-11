@@ -1,0 +1,68 @@
+Resulting AST's:
+51(a) 2 51(b) 54 55 51(a) 
+Next statements: 51(b) 
+Root: 
+Condition: 51(foo) 
+
+52 54 55 
+Condition: 51(alone) 
+
+51(a) 22 52 
+Next statements: 22 52 
+Root: 63 
+51(b) 22 51(foo) 66 52 
+Next statements: 52 
+Root: 
+Next statements: 52 
+Root: 63 
+51(c) 22 51(alone) 
+Next statements: 66 22 
+Root: 63 
+
+51(a) 22 52 
+Next statements: 66 52 
+Root: 63 
+51(e) 22 51(f) 
+Next statements: 51(g) 
+Root: 22 52 
+Next statements: 52 
+Root: 
+Next statements: 52 
+Root: 63 
+51(h) 22 51(i) 22 52 
+Next statements: 52 52 
+Root: 
+Next statements: 52 
+Root: 63 
+51(j) 22 52 2 52 
+Next statements: 60 
+Root: 63 
+51(k) 22 52 
+Next statements: 52 52 
+Root: 63 
+Next statements: 63 64 
+Root: 63 
+
+51(x) 22 52 
+Next statements: 52 52 
+Root: 63 
+51(y) 22 52 
+Next statements: 52 
+Root: 63 
+Next statements: 63 
+Root: 63 
+51(x) 77 52 22 51(y) 77 52 
+Next statements: 51(alone) 
+Root: 2 51(y) 77 52 
+Next statements: 52 52 
+Root: 
+
+51(a) 22 52 
+Next statements: 52 
+Root: 63 
+51(a) 22 52 
+Next statements: 52 
+Root: 63 
+51(a) 22 52 
+Next statements: 52 
+Root: 63 

@@ -1,0 +1,79 @@
+Resulting AST's:
+
+
+51(a) 22 52 
+Next statements: 40 
+Root: 54 49 51(b) 22 52 55 51(a) 
+Condition: 51(foo) 
+
+54 55 51(a) 
+Next statements: 51(b) 
+Root: 
+Condition: 51(foo) 
+
+
+
+52 54 55 51(a) 51 52 
+Next statements: 51(b) 
+Root: 54 57 51(Single) 
+
+51(s) 22 51(Single) 66 
+Next statements: 51(new) 
+Root: 
+51(puts) 66 51(s) 66 
+Next statements: 51(foo) 
+Root: 
+
+52 54 55 51(a) 51 52 
+Condition: 51(s) 51 51(foo) 
+
+51(puts) 66 51(s) 66 
+Next statements: 51(foo) 
+Root: 
+
+
+
+54 55 51(a) 
+Next statements: 51(b) 51(c) 
+Root: 
+Condition: 51(aa) 
+
+54 55 51(a) 51 52 
+Next statements: 51 51 
+Root: 
+Condition: 51(bb) 
+
+54 55 51(a) 
+Next statements: 51(c) 51(b) 51(d) 
+Root: 
+Condition: 51(funny) 
+
+54 55 51(a) 51 52 
+Next statements: 51 51(c) 51(d) 51(e) 
+Root: 
+Condition: 51(jolly) 
+
+54 55 51(a) 51 52 
+Next statements: 51 51(c) 51(d) 51(e) 51(f) 
+Root: 
+Condition: 51(fuck) 
+
+54 55 51(a) 51 52 
+Next statements: 51 51(c) 51(d) 
+Root: 
+Condition: 51(nice) 
+
+54 55 51(a) 
+Next statements: 51(b) 51 51 51(e) 51(f) 51(g) 
+Root: 
+Condition: 51(yeah) 
+
+54 55 51(a) 
+Next statements: 51(b) 51 51 51(e) 51(f) 51(g) 51(h) 
+Root: 
+Condition: 51(head_shot) 
+
+54 55 51(a) 
+Next statements: 51(b) 51 51 51(e) 51(h) 
+Root: 
+Condition: 51(final) 

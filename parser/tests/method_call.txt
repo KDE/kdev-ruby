@@ -1,0 +1,23 @@
+Resulting AST's:
+51(__inspect__) 66 
+Next statements: 66 
+Root: 
+51(method) 66 
+Next statements: 51(to_s) 66 51(capitalize) 
+Root: 
+51(b) 66 
+Next statements: 66 51(c) 
+Root: 
+51(a) 66 52 
+Next statements: 52 
+Root: 
+Next statements: 51(b) 51(c) 
+Root: 
+51(puts) 66 52 2 52 
+
+51(a) 66 
+Next statements: 51(class) 
+Root: 
+51(foo) 66 52 
+Next statements: 52 
+Root: 

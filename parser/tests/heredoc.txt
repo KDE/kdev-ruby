@@ -1,0 +1,8 @@
+Resulting AST's:
+51(a) 22 67 
+
+51(b) 22 67 
+
+67 
+
+51(this_is) 22 51(a_shift) 16 51(not_a_heredoc) 

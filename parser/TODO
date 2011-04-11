@@ -1,0 +1,15 @@
+ToDo:
+=====
+
+- Parser: Parens & other_keywords shouldn't be allowed in mlhs. (waiting for adymo's opinion)
+- Parser: goto "Ambiguities". (waiting for adymo's opinion)
+- Parser: Get names between #{ }
+- Parser: Take a look at ToDo's
+- Parser: Try to reduce actual conflicts.
+- General: Test, Test, Test,...
+- General: Clean things.
+
+Ambiguities:
+
+- foo *a    <--- Can be a method_call or a product :S
+- foo [1]   <--- Can be a method_call or an array access

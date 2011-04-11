@@ -18,7 +18,6 @@ add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(navigation)
 add_subdirectory(app_templates)
-add_subdirectory(tests)
 
 set(kdevrubylanguagesupport_PART_SRCS
     parsejob.cpp

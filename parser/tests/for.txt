@@ -1,0 +1,19 @@
+Resulting AST's:
+51(a) 22 52 
+51(a) 23 52 46 51(i) 
+Condition: 52 35 52 
+
+51(a) 23 52 46 51(i) 
+Condition: 52 36 52 
+
+51(puts) 66 60 46 51(i) 
+Next statements: 51(j) 
+Root: 
+Condition: 53(a) 51 60 
+Next statements: 51 
+Root: 64 
+
+51(puts) 66 51(i) 46 51(i) 
+Next statements: 51(j) 
+Root: 
+Condition: 52 35 52 

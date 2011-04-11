@@ -1,0 +1,17 @@
+Resulting AST's:
+51(a) 22 52 
+51(b) 22 52 
+
+51(a) 23 52 40 
+Condition: 51(a) 33 52 
+
+51(a) 23 52 41 
+Condition: 51(a) 26 52 
+
+51(a) 23 52 
+Next statements: 38 23 
+Root: 40 
+Condition: 51(a) 33 52 
+
+51(a) 23 52 41 
+Condition: 51(a) 26 52 
