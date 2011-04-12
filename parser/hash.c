@@ -129,7 +129,7 @@ rb_reserved_word (str, len)
 #line 35 "../tools/gperf.txt"
       {"not", KWNOT},
 #line 28 "../tools/gperf.txt"
-      {"false", FALSE},
+      {"false", tFALSE},
 #line 41 "../tools/gperf.txt"
       {"self", SELF},
 #line 25 "../tools/gperf.txt"
@@ -137,7 +137,7 @@ rb_reserved_word (str, len)
 #line 38 "../tools/gperf.txt"
       {"rescue", RESCUE},
 #line 44 "../tools/gperf.txt"
-      {"true", TRUE},
+      {"true", tTRUE},
 #line 47 "../tools/gperf.txt"
       {"until", UNTIL},
 #line 46 "../tools/gperf.txt"

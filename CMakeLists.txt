@@ -32,7 +32,7 @@ target_link_libraries(kdevrubylanguagesupport
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_PROJECT_LIBRARIES}
-    kdevrubyparser
+    kdev4rubyparser
     kdevrubyduchain
     kdevrubynavigation
 )

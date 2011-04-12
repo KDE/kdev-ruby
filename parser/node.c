@@ -78,9 +78,16 @@ struct node * update_list(struct node * head, struct node * tail)
 {
   if (tail == NULL)
     return head;
+  printf("Here\n");
+  if (head == NULL) {
+      printf("It never happens\n");
+  }
   (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
+  printf("Second\n");
   tail->next = NULL;
+  printf("Third\n");
   head->last = tail;
+  printf("Fourth\n");
   return head;
 }
 

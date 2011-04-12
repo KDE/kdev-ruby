@@ -215,8 +215,8 @@ void pop_stack(struct parser_t * parser, struct node * n);
      upBEGIN = 290,
      upEND = 291,
      HEREDOC = 292,
-     TRUE = 293,
-     FALSE = 294,
+     tTRUE = 293,
+     tFALSE = 294,
      NIL = 295,
      ENCODING = 296,
      tFILE = 297,
@@ -781,8 +781,8 @@ static const char *const yytname[] =
   "BEGIN", "RESCUE", "ENSURE", "END", "IF", "UNLESS", "THEN", "ELSIF",
   "ELSE", "CASE", "WHEN", "WHILE", "UNTIL", "FOR", "BREAK", "NEXT", "REDO",
   "RETRY", "IN", "DO", "DO_BLOCK", "RETURN", "YIELD", "KWAND", "KWOR",
-  "KWNOT", "ALIAS", "DEFINED", "upBEGIN", "upEND", "HEREDOC", "TRUE",
-  "FALSE", "NIL", "ENCODING", "tFILE", "LINE", "SELF", "SUPER", "EOL",
+  "KWNOT", "ALIAS", "DEFINED", "upBEGIN", "upEND", "HEREDOC", "tTRUE",
+  "tFALSE", "NIL", "ENCODING", "tFILE", "LINE", "SELF", "SUPER", "EOL",
   "CVAR", "NUMBER", "SYMBOL", "FNAME", "BASE", "STRING", "COMMENT",
   "REGEXP", "MCALL", "ARRAY", "SARY", "IVAR", "GLOBAL", "tLBRACKET",
   "tRBRACKET", "tDOT", "tTILDE", "tBACKTICK", "tCOMMA", "tCOLON", "tPOW",
@@ -5457,16 +5457,17 @@ void yyerror(struct parser_t * p, const char * s, ...)
 
 RubyAst * rb_compile_file(const char * path)
 {
+    printf("Compile\n");
   struct parser_t p;
   RubyAst * result;
-
+printf("Compile\n");
   /* Open specified file */
   FILE * fd = fopen(path, "r");
   if (!fd) {
     fprintf(stderr, "Cannot open file: %s\n", path);
     return 0;
   }
-
+printf("Compile\n");
   /* Set up parser */
   init_parser(&p);
   if (retrieve_source(&p, fd) < 0) {
@@ -5474,7 +5475,7 @@ RubyAst * rb_compile_file(const char * path)
     fclose(fd);
     return 0;
   }
-
+printf("Compile\n");
   p.name = strdup(path);
   result = (RubyAst *) malloc (sizeof(RubyAst));
   for (;;) {
@@ -5490,6 +5491,7 @@ RubyAst * rb_compile_file(const char * path)
       break;
     }
   }
+printf("Compile\n");
   free_parser(&p);
 
   return result;

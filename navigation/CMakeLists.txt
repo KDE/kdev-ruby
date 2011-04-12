@@ -14,7 +14,7 @@ target_link_libraries( kdevrubynavigation
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDE4_KTEXTEDITOR_LIBS}
-    kdevrubyparser
+    kdev4rubyparser
 )
 
 install(TARGETS kdevrubynavigation DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

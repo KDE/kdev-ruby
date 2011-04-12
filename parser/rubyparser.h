@@ -1,6 +1,5 @@
 /* This file is part of KDevelop
- *
- * Copyright 2008-2010 Alexander Dymo <adymo@kdevelop.org>
+ * 
  * Copyright (C) 2011  Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,48 +17,45 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
 
+#ifndef RUBYPARSER_H
+#define RUBYPARSER_H
+
+#include <QString>
 #include <KUrl>
-#include <language/backgroundparser/parsejob.h>
 
-class RubyLanguageSupport;
+#include <language/interfaces/iproblem.h>
+#include <parser/parserexport.h>
 
-namespace Ruby
+#include "node.h"
+#include "parser.h"
+
+
+using namespace KDevelop;
+
+namespace Ruby {
+
+class KDEVRUBYPARSER_EXPORT RubyParser
 {
-
-class RubyParser;
-
-class ParseJob : public KDevelop::ParseJob
-{
-    Q_OBJECT
-
 public:
-    enum {
-        Resheduled = KDevelop::TopDUContext::LastFeature
-    };
+    RubyParser();
+    ~RubyParser();
 
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
+    void setContents(const QString & contents);
+    QString contents() const;
 
-    virtual ~ParseJob();
+    void setCurrentDocument(KUrl & fileName);
+    IndexedString currentDocument();
 
-    RubyLanguageSupport * ruby() const;
-
-    bool wasReadFromDisk() const;
-
-protected:
-    virtual void run();
+    RubyAst * parse();
+    QList<KDevelop::ProblemPointer> m_problems;
 
 private:
-    void parse();
-
-//     Parser *m_parser;
-    KUrl m_url;
-    RubyParser * m_parser;
-    bool m_readFromDisk;
+    QString m_contents;
+    IndexedString m_currentDocument;
 };
 
-} // end of namespace ruby
 
-#endif
+} // End of namespace: Ruby
+
+#endif // RUBYPARSER_H

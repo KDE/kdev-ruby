@@ -117,7 +117,7 @@ void pop_stack(struct parser_t * parser, struct node * n);
 %token CLASS MODULE DEF UNDEF BEGIN RESCUE ENSURE END IF UNLESS THEN ELSIF
 %token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK RETURN
 %token YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND HEREDOC
-%token TRUE FALSE NIL ENCODING tFILE LINE SELF SUPER
+%token tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
 
 /* Declare tokens */
 %token EOL CVAR NUMBER SYMBOL FNAME BASE STRING COMMENT REGEXP MCALL ARRAY SARY
@@ -204,8 +204,8 @@ basic: variable           { $$ = $1;  }
   | other_keywords        { $$ = alloc_node(token_object, NULL, NULL);    }
 ;
 
-other_keywords: FALSE
-  | TRUE
+other_keywords: tFALSE
+  | tTRUE
   | NIL
   | ENCODING
   | tFILE
@@ -1770,16 +1770,17 @@ void yyerror(struct parser_t * p, const char * s, ...)
 
 RubyAst * rb_compile_file(const char * path)
 {
+    printf("Compile\n");
   struct parser_t p;
   RubyAst * result;
-
+printf("Compile\n");
   /* Open specified file */
   FILE * fd = fopen(path, "r");
   if (!fd) {
     fprintf(stderr, "Cannot open file: %s\n", path);
     return 0;
   }
-
+printf("Compile\n");
   /* Set up parser */
   init_parser(&p);
   if (retrieve_source(&p, fd) < 0) {
@@ -1787,7 +1788,7 @@ RubyAst * rb_compile_file(const char * path)
     fclose(fd);
     return 0;
   }
-
+printf("Compile\n");
   p.name = strdup(path);
   result = (RubyAst *) malloc (sizeof(RubyAst));
   for (;;) {
@@ -1803,6 +1804,7 @@ RubyAst * rb_compile_file(const char * path)
       break;
     }
   }
+printf("Compile\n");
   free_parser(&p);
 
   return result;

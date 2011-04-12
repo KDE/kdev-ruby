@@ -1,23 +1,26 @@
-/*
-* This file is part of KDevelop
-*
-* Copyright 2008-2010 Alexander Dymo <adymo@kdevelop.org>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Library General Public License as
-* published by the Free Software Foundation; either version 2 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public
-* License along with this program; if not, write to the
-* Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*/
+/* This file is part of KDevelop
+ *
+ * Copyright 2008-2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2011 Miquel Sabaté <mikisabate@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+/* TODO: Clean This mess */
+
 #include "parsejob.h"
 
 #include <cassert>
@@ -50,6 +53,7 @@
 
 #include "rubylanguagesupport.h"
 // #include "parser/parser.h"
+#include <parser/rubyparser.h>
 #include <parser/node.h>
 #include "duchain/declarationbuilder.h"
 #include "duchain/editorintegrator.h"
@@ -59,49 +63,52 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-SimpleParseJob::SimpleParseJob( const KUrl &url, RubyLanguageSupport *parent )
-        : KDevelop::ParseJob( url ), m_readFromDisk( false )
-{}
+ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
+    : KDevelop::ParseJob(url)
+    , m_parser (new RubyParser)
+    , m_url (url)
+    , m_readFromDisk(false)
+{
+    /* There's nothing to do here */
+}
 
-SimpleParseJob::~SimpleParseJob()
-{}
+ParseJob::~ParseJob()
+{
+    /* There's nothing to do here */
+}
 
-RubyLanguageSupport *SimpleParseJob::ruby() const
+RubyLanguageSupport * ParseJob::ruby() const
 {
     return RubyLanguageSupport::self();
 }
 
-bool SimpleParseJob::wasReadFromDisk() const
+bool ParseJob::wasReadFromDisk() const
 {
     return m_readFromDisk;
 }
 
-void SimpleParseJob::run()
+void ParseJob::run()
 {
-    kDebug() << "Trying to run ruby parse job";
-
     //Happens during shutdown
     if (!ruby())
         return abortJob();
 
-    if ( abortRequested() )
+    if (abortRequested())
         return abortJob();
 
     KDevelop::UrlParseLock urlLock(document());
-
     {
         DUChainReadLocker lock(DUChain::lock());
         bool needsUpdate = true;
         static const IndexedString langString("Ruby");                                                                      
-        foreach(const ParsingEnvironmentFilePointer &file, DUChain::self()->allEnvironmentFiles(document())) {
+        foreach(const ParsingEnvironmentFilePointer & file, DUChain::self()->allEnvironmentFiles(document())) {
             if (file->language() != langString)
                 continue;
             if (file->needsUpdate()) {
                 needsUpdate = true;
                 break;
-            } else {
+            } else
                 needsUpdate = false;
-            }
         }
         if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled) && !needsUpdate) {
             kDebug() << "Already up to date" << document().str();
@@ -112,28 +119,29 @@ void SimpleParseJob::run()
     KDevelop::ProblemPointer p = readContents();
     if (p)
         return abortJob();
-  
-    QString c = contents().contents;
+    QString cont = contents().contents;
 
-    kDebug() << "===-- PARSING --===> "
-             << document().str()
-             << " <== readFromDisk: " << m_readFromDisk
-             << " size: " << c.size()
-             << endl;
-
-    if ( abortRequested() )
+    if (abortRequested())
         return abortJob();
 
-    parse(c);
+    m_parser->setCurrentDocument(m_url);
+    m_parser->setContents(cont);
+    parse();
 
     if ( abortRequested() )
         return abortJob();
 }
 
-void SimpleParseJob::parse(const QString &c)
+void ParseJob::parse()
 {
-//     ProgramAST *programAST = m_parser->parse(c);
-// 
+    RubyAst * ast = m_parser->parse();
+    kDebug() << "C code has been executed!\n";
+
+    if (ast != NULL) {
+        /* Everything is fine */
+    } else {
+        /* Failed */
+    }
 //     KDevelop::ReferencedTopDUContext top;
 //     {
 //         KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
@@ -145,9 +153,8 @@ void SimpleParseJob::parse(const QString &c)
 //         top->clearImportedParentContexts();
 //         top->parsingEnvironmentFile()->clearModificationRevisions();
 //         top->clearProblems();
-//     } else {
+//     } else
 //         kDebug() << "compiling" << document().str();
-//     }
 // 
 //     QReadLocker parseLock(ruby()->language()->parseLock());
 // 

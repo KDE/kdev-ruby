@@ -21,6 +21,11 @@
 #define NODE_H_
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /*
  * This enumeration contains all the available tokens
  * used by this parser. This values are important for the
@@ -201,6 +206,11 @@ void print_node(struct node * n);
 void print_errors(char ** errors);
 void free_ast(struct node * n);
 void free_errors(char ** errors);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* NODE_H_ */

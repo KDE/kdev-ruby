@@ -145,7 +145,7 @@ RubyLanguageSupport* RubyLanguageSupport::self()
 
 KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
 {
-    return new SimpleParseJob(url, this);
+    return new ParseJob(url, this);
 }
 
 QString RubyLanguageSupport::name() const

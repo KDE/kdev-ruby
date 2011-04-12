@@ -25,7 +25,7 @@ else, ELSE
 elsif, ELSIF
 end, END
 ensure, ENSURE
-false, FALSE
+false, tFALSE
 for, FOR
 if, IF
 in, IN
@@ -41,7 +41,7 @@ return, RETURN
 self, SELF
 super, SUPER
 then, THEN
-true, TRUE
+true, tTRUE
 undef, UNDEF
 unless, UNLESS
 until, UNTIL

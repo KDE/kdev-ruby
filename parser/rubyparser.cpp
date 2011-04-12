@@ -1,6 +1,5 @@
 /* This file is part of KDevelop
  *
- * Copyright 2008-2010 Alexander Dymo <adymo@kdevelop.org>
  * Copyright (C) 2011  Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,48 +17,51 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
 
-#include <KUrl>
-#include <language/backgroundparser/parsejob.h>
+#include "rubyparser.h"
 
-class RubyLanguageSupport;
+using namespace KDevelop;
 
 namespace Ruby
 {
 
-class RubyParser;
-
-class ParseJob : public KDevelop::ParseJob
+RubyParser::RubyParser()
 {
-    Q_OBJECT
+    /* There's nothing to do here */
+}
 
-public:
-    enum {
-        Resheduled = KDevelop::TopDUContext::LastFeature
-    };
+RubyParser::~RubyParser()
+{
+    /* There's nothing to do here */
+}
 
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
+void RubyParser::setContents (const QString & contents)
+{
+    m_contents = contents;
+}
 
-    virtual ~ParseJob();
+QString RubyParser::contents() const
+{
+    return m_contents;
+}
 
-    RubyLanguageSupport * ruby() const;
+void RubyParser::setCurrentDocument (KUrl & fileName)
+{
+    m_currentDocument = IndexedString(fileName);
+}
 
-    bool wasReadFromDisk() const;
+IndexedString RubyParser::currentDocument()
+{
+    return m_currentDocument;
+}
 
-protected:
-    virtual void run();
+RubyAst * RubyParser::parse()
+{ /* TODO: Under construction */
+    kDebug() << "PARSER: " << m_currentDocument.c_str() << "\n";
+    return rb_compile_file(m_currentDocument.c_str());
+    kDebug() << "It's working!\n";
+    return NULL;
+}
 
-private:
-    void parse();
+} // End of namespace: Ruby
 
-//     Parser *m_parser;
-    KUrl m_url;
-    RubyParser * m_parser;
-    bool m_readFromDisk;
-};
-
-} // end of namespace ruby
-
-#endif

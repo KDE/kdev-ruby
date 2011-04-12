@@ -15,7 +15,7 @@ target_link_libraries( kdevrubyduchain
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDE4_KTEXTEDITOR_LIBS}
-    kdevrubyparser
+    kdev4rubyparser
 )
 
 install(TARGETS kdevrubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
