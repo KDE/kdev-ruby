@@ -35,16 +35,6 @@ RubyParser::~RubyParser()
     /* There's nothing to do here */
 }
 
-void RubyParser::setContents (const QString & contents)
-{
-    m_contents = contents;
-}
-
-QString RubyParser::contents() const
-{
-    return m_contents;
-}
-
 void RubyParser::setCurrentDocument (KUrl & fileName)
 {
     m_currentDocument = IndexedString(fileName);
@@ -56,11 +46,9 @@ IndexedString RubyParser::currentDocument()
 }
 
 RubyAst * RubyParser::parse()
-{ /* TODO: Under construction */
-    kDebug() << "PARSER: " << m_currentDocument.c_str() << "\n";
+{
+    /* TODO: Under construction */
     return rb_compile_file(m_currentDocument.c_str());
-    kDebug() << "It's working!\n";
-    return NULL;
 }
 
 } // End of namespace: Ruby

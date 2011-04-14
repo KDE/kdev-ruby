@@ -25,7 +25,6 @@
 extern "C" {
 #endif
 
-
 /*
  * This enumeration contains all the available tokens
  * used by this parser. This values are important for the

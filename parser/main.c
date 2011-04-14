@@ -21,7 +21,6 @@
 #include <stdlib.h>
 
 #include "node.h"
-#include "interface.h"
 
 extern int yycompile_file(const char *);
 

@@ -119,13 +119,14 @@ void ParseJob::run()
     KDevelop::ProblemPointer p = readContents();
     if (p)
         return abortJob();
+    /* TODO: ToUtf ?¿ */
     QString cont = contents().contents;
 
     if (abortRequested())
         return abortJob();
 
     m_parser->setCurrentDocument(m_url);
-    m_parser->setContents(cont);
+    QReadLocker parseLock(ruby()->language()->parseLock());
     parse();
 
     if ( abortRequested() )
@@ -135,12 +136,11 @@ void ParseJob::run()
 void ParseJob::parse()
 {
     RubyAst * ast = m_parser->parse();
-    kDebug() << "C code has been executed!\n";
 
     if (ast != NULL) {
-        /* Everything is fine */
+        kDebug() << "Everything is fine " << ast->tree->kind << endl;
     } else {
-        /* Failed */
+        kDebug() << "Failed\n";
     }
 //     KDevelop::ReferencedTopDUContext top;
 //     {

@@ -1770,17 +1770,16 @@ void yyerror(struct parser_t * p, const char * s, ...)
 
 RubyAst * rb_compile_file(const char * path)
 {
-    printf("Compile\n");
   struct parser_t p;
   RubyAst * result;
-printf("Compile\n");
+
   /* Open specified file */
   FILE * fd = fopen(path, "r");
   if (!fd) {
     fprintf(stderr, "Cannot open file: %s\n", path);
     return 0;
   }
-printf("Compile\n");
+
   /* Set up parser */
   init_parser(&p);
   if (retrieve_source(&p, fd) < 0) {
@@ -1788,9 +1787,10 @@ printf("Compile\n");
     fclose(fd);
     return 0;
   }
-printf("Compile\n");
+
   p.name = strdup(path);
   result = (RubyAst *) malloc (sizeof(RubyAst));
+  result->tree = NULL;
   for (;;) {
     yyparse(&p);
     if (p.ast != NULL) {
@@ -1804,7 +1804,6 @@ printf("Compile\n");
       break;
     }
   }
-printf("Compile\n");
   free_parser(&p);
 
   return result;

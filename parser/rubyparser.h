@@ -41,9 +41,6 @@ public:
     RubyParser();
     ~RubyParser();
 
-    void setContents(const QString & contents);
-    QString contents() const;
-
     void setCurrentDocument(KUrl & fileName);
     IndexedString currentDocument();
 

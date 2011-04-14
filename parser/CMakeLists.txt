@@ -11,6 +11,6 @@ target_link_libraries( kdev4rubyparser
     ${KDE4_KTEXTEDITOR_LIBS}
 )
 
-kde4_add_executable( ruby-parser main.c )
-target_link_libraries(ruby-parser kdev4rubyparser)
+# kde4_add_executable( ruby-parser main.c )
+# target_link_libraries(ruby-parser kdev4rubyparser)
 install(TARGETS kdev4rubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
