@@ -122,6 +122,7 @@ enum node_t {
 typedef struct {
   struct node * tree;
   char ** errors;
+  char valid_error;
 } RubyAst;
 
 

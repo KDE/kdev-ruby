@@ -47,8 +47,26 @@ IndexedString RubyParser::currentDocument()
 
 RubyAst * RubyParser::parse()
 {
-    /* TODO: Under construction */
-    return rb_compile_file(m_currentDocument.c_str());
+    RubyAst * result = rb_compile_file(m_currentDocument.c_str());
+    kDebug() << "Let's show the results!";
+    if (result->valid_error) {
+        appendProblems(result->errors);
+        return NULL;
+    } else
+        m_problems.clear();
+    return result;
+}
+
+void RubyParser::appendProblems(char ** errors)
+{
+    char ** ptr;
+
+    for (ptr = errors; *ptr != NULL; ptr++) {
+        ProblemPointer problem(new Problem);
+        problem->setDescription(QString(*ptr));
+        problem->setSource(KDevelop::ProblemData::Parser);
+        m_problems.append(problem);
+    }
 }
 
 } // End of namespace: Ruby

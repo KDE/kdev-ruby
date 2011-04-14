@@ -54,7 +54,7 @@
 #include "rubylanguagesupport.h"
 // #include "parser/parser.h"
 #include <parser/rubyparser.h>
-#include <parser/node.h>
+// #include <parser/node.h>
 #include "duchain/declarationbuilder.h"
 #include "duchain/editorintegrator.h"
 
@@ -135,10 +135,10 @@ void ParseJob::run()
 
 void ParseJob::parse()
 {
-    RubyAst * ast = m_parser->parse();
+    m_lastAst = m_parser->parse();
 
-    if (ast != NULL) {
-        kDebug() << "Everything is fine " << ast->tree->kind << endl;
+    if (m_lastAst != NULL) {
+        kDebug() << "Everything is fine " << m_lastAst->tree->kind << endl;
     } else {
         kDebug() << "Failed\n";
     }

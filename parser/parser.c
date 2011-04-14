@@ -5479,7 +5479,9 @@ RubyAst * rb_compile_file(const char * path)
   result = (RubyAst *) malloc (sizeof(RubyAst));
   result->tree = NULL;
   for (;;) {
+printf("Let's parse\n");
     yyparse(&p);
+printf("Get up!\n");
     if (p.ast != NULL) {
       if (result->tree == NULL)
         result->tree = p.ast;
@@ -5487,6 +5489,7 @@ RubyAst * rb_compile_file(const char * path)
         update_list(result->tree, p.ast);
     }
     if (p.eof_reached) {
+      result->valid_error = p.error;
       result->errors = p.errors;
       break;
     }

@@ -23,6 +23,7 @@
 
 #include <KUrl>
 #include <language/backgroundparser/parsejob.h>
+#include <parser/node.h>
 
 class RubyLanguageSupport;
 
@@ -57,6 +58,7 @@ private:
 //     Parser *m_parser;
     KUrl m_url;
     RubyParser * m_parser;
+    RubyAst * m_lastAst;
     bool m_readFromDisk;
 };
 

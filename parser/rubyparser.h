@@ -48,6 +48,9 @@ public:
     QList<KDevelop::ProblemPointer> m_problems;
 
 private:
+    void appendProblems(char ** errors);
+
+private:
     QString m_contents;
     IndexedString m_currentDocument;
 };
