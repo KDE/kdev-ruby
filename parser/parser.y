@@ -1753,14 +1753,10 @@ static int yylex(void * lval, void * p)
  */
 void yyerror(struct parser_t * p, const char * s, ...)
 {
-  char err[64];
-  char buffer[64];
-  va_list ap;
+  char err[256];
 
-  va_start(ap, s);
   sprintf(err, "%s:%i: ", p->name, p->line);
-  vsprintf(buffer, s, ap);
-  strcat(err, buffer);
+  strcat(err, s);
   *(p->errors + p->error_index) = strdup(err);
   p->error_index++;
 
@@ -1792,9 +1788,7 @@ RubyAst * rb_compile_file(const char * path)
   result = (RubyAst *) malloc (sizeof(RubyAst));
   result->tree = NULL;
   for (;;) {
-printf("Let's parse\n");
     yyparse(&p);
-printf("Get up!\n");
     if (p.ast != NULL) {
       if (result->tree == NULL)
         result->tree = p.ast;

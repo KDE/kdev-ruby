@@ -47,6 +47,7 @@ IndexedString RubyParser::currentDocument()
 
 RubyAst * RubyParser::parse()
 {
+    kDebug() << "We are about to start parsing";
     RubyAst * result = rb_compile_file(m_currentDocument.c_str());
     kDebug() << "Let's show the results!";
     if (result->valid_error) {
@@ -60,13 +61,14 @@ RubyAst * RubyParser::parse()
 void RubyParser::appendProblems(char ** errors)
 {
     char ** ptr;
-
+/* TODO: Range */
     for (ptr = errors; *ptr != NULL; ptr++) {
         ProblemPointer problem(new Problem);
-        problem->setDescription(QString(*ptr));
+        problem->setDescription(QString(strdup(*ptr)));
         problem->setSource(KDevelop::ProblemData::Parser);
-        m_problems.append(problem);
+        m_problems << problem;
     }
+    /* TODO: free errors ? */
 }
 
 } // End of namespace: Ruby
