@@ -20,6 +20,7 @@
 
 #include "rubyparser.h"
 
+
 using namespace KDevelop;
 
 namespace Ruby
@@ -27,29 +28,29 @@ namespace Ruby
 
 RubyParser::RubyParser()
 {
-    /* There's nothing to do here */
+    /* There's nothing to do here! */
 }
 
 RubyParser::~RubyParser()
 {
-    /* There's nothing to do here */
+    /* There's nothing to do here! */
 }
 
-void RubyParser::setCurrentDocument (KUrl & fileName)
+void RubyParser::setCurrentDocument(const KUrl & fileName)
 {
     m_currentDocument = IndexedString(fileName);
 }
 
-IndexedString RubyParser::currentDocument()
+const IndexedString & RubyParser::currentDocument() const
 {
     return m_currentDocument;
 }
 
 RubyAst * RubyParser::parse()
 {
-    kDebug() << "We are about to start parsing";
+    /* Let's call the parser ;) */
     RubyAst * result = rb_compile_file(m_currentDocument.c_str());
-    kDebug() << "Let's show the results!";
+
     if (result->valid_error) {
         appendProblems(result->errors);
         return NULL;
@@ -58,17 +59,22 @@ RubyAst * RubyParser::parse()
     return result;
 }
 
+void RubyParser::freeAst(RubyAst * ast)
+{
+    if (ast != NULL)
+        rb_free(ast);
+}
+
 void RubyParser::appendProblems(char ** errors)
 {
     char ** ptr;
-/* TODO: Range */
+
     for (ptr = errors; *ptr != NULL; ptr++) {
         ProblemPointer problem(new Problem);
         problem->setDescription(QString(strdup(*ptr)));
         problem->setSource(KDevelop::ProblemData::Parser);
         m_problems << problem;
     }
-    /* TODO: free errors ? */
 }
 
 } // End of namespace: Ruby

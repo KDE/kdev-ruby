@@ -68,6 +68,7 @@ ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
     , m_parser (new RubyParser)
     , m_url (url)
     , m_readFromDisk(false)
+    , m_lastAst(NULL)
 {
     /* There's nothing to do here */
 }
@@ -134,7 +135,8 @@ void ParseJob::run()
 }
 
 void ParseJob::parse()
-{/* TODO: free last AST before */
+{
+    m_parser->freeAst(m_lastAst);
     m_lastAst = m_parser->parse();
 
     if (m_lastAst != NULL) {

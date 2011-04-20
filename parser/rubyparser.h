@@ -17,45 +17,90 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/*
+ * TODO:
+ *  - In appendProblems, we have to store ranges.
+ */
+
 
 #ifndef RUBYPARSER_H
 #define RUBYPARSER_H
 
-#include <QString>
-#include <KUrl>
 
 #include <language/interfaces/iproblem.h>
 #include <parser/parserexport.h>
-
 #include "node.h"
-#include "parser.h"
 
 
 using namespace KDevelop;
 
 namespace Ruby {
 
+/**
+ * @class RubyParser
+ *
+ * This class represents an interface to the "pure" parser and it may
+ * be used across the plugin.
+ */
 class KDEVRUBYPARSER_EXPORT RubyParser
 {
 public:
+    /**
+     * Constructor.
+     */
     RubyParser();
+
+    /**
+     * Destructor.
+     */
     ~RubyParser();
 
-    void setCurrentDocument(KUrl & fileName);
-    IndexedString currentDocument();
+    /**
+     * Set the current document.
+     *
+     * @param fileName the name of the current document.
+     */
+    void setCurrentDocument(const KUrl & fileName);
 
+    /**
+     * @return the name of the current document.
+     */
+    const IndexedString & currentDocument() const;
+
+    /**
+     * This method parses the current document.
+     *
+     * @return the generated Ast.
+     */
     RubyAst * parse();
+
+    /**
+     * This method frees the RubyAst if necessary.
+     *
+     * @param ast the RubyAst to free.
+     */
+    void freeAst(RubyAst * ast);
+
+private:
+    /**
+     * @internal called when there are errors in the current
+     * document and we want to append them in a list of
+     * ProblemPointer's.
+     *
+     * @param errors the errors that the parser has provided.
+     */
+    void appendProblems(char ** errors);
+
+public:
     QList<KDevelop::ProblemPointer> m_problems;
 
 private:
-    void appendProblems(char ** errors);
-
-private:
-    QString m_contents;
     IndexedString m_currentDocument;
 };
 
 
 } // End of namespace: Ruby
 
+
 #endif // RUBYPARSER_H
+
