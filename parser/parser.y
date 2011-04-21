@@ -79,6 +79,7 @@ struct parser_t {
 
   /* Stack of names */
   struct stack_t * stack[2];
+  struct node * string_names;
   int sp;
 
   /* Info about the content to parse */
@@ -104,6 +105,7 @@ void free_parser(struct parser_t * p);
 int retrieve_source(struct parser_t * p, FILE * fd);
 int check_lhs(struct node * n);
 void pop_stack(struct parser_t * parser, struct node * n);
+void pop_string(struct parser_t * parser, struct node * n);
 
 %}
 
@@ -196,10 +198,10 @@ stmts: stmt               { $$ = $1;  }
 basic: variable           { $$ = $1;  }
   | NUMBER                { $$ = alloc_node(token_numeric, NULL, NULL);   }
   | symbol                { $$ = $1;  }
-  | string                { $$ = alloc_node(token_string, NULL, NULL);    }
-  | REGEXP                { $$ = alloc_node(token_regexp, NULL, NULL);    }
+  | string                { $$ = alloc_node(token_string, NULL, NULL); pop_string(parser, $$);   }
+  | REGEXP                { $$ = alloc_node(token_regexp, NULL, NULL); pop_string(parser, $$);   }
   | HEREDOC               { $$ = alloc_node(token_heredoc, NULL, NULL);   }
-  | tBACKTICK             { $$ = alloc_node(token_backtick, NULL, NULL);  }
+  | tBACKTICK             { $$ = alloc_node(token_backtick, NULL, NULL); pop_string(parser, $$); }
   | other_keywords        { $$ = alloc_node(token_object, NULL, NULL);    }
 ;
 
@@ -230,10 +232,10 @@ primary1: variable        { $$ = $1;  }
 
 primary2: NUMBER          { $$ = alloc_node(token_numeric, NULL, NULL);   }
   | symbol                { $$ = $1;  }
-  | string                { $$ = alloc_node(token_string, NULL, NULL);    }
-  | REGEXP                { $$ = alloc_node(token_regexp, NULL, NULL);    }
+  | string                { $$ = alloc_node(token_string, NULL, NULL); pop_string(parser, $$);   }
+  | REGEXP                { $$ = alloc_node(token_regexp, NULL, NULL); pop_string(parser, $$);   }
   | HEREDOC               { $$ = alloc_node(token_heredoc, NULL, NULL);   }
-  | tBACKTICK             { $$ = alloc_node(token_backtick, NULL, NULL);  }
+  | tBACKTICK             { $$ = alloc_node(token_backtick, NULL, NULL); pop_string(parser, $$); }
   | array                 { $$ = $1;  }
   | other_keywords        { $$ = alloc_node(token_object, NULL, NULL);    }
 ;
@@ -1194,6 +1196,25 @@ void pop_stack(struct parser_t * parser, struct node * n)
   parser->sp--;
 }
 
+/* Push a string variable */
+void push_string(struct parser_t * parser, char * buffer)
+{
+  struct node * new_node = alloc_node(token_object, NULL, NULL);
+
+  new_node->name = strdup(buffer);
+  if (!parser->string_names)
+    parser->string_names = new_node;
+  else
+    parser->string_names = update_list(parser->string_names, new_node);
+}
+
+/* Pop a list of string variables */
+void pop_string(struct parser_t * parser, struct node * n)
+{
+  n->l = parser->string_names;
+  parser->string_names = NULL;
+}
+
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
@@ -1500,6 +1521,7 @@ static int parser_yylex(struct parser_t * parser)
       int kind = guess_kind(*(c + 1));
       unsigned char is_simple = isSimple(*(c + 1));
       char open, close;
+      char * ptr;
 
       if (*(c + 2) != '(' && *(c + 2) != '[' && *(c + 2) != '{' && !is_simple) {
         yyerror(parser, "unterminated string meets end of file");
@@ -1514,12 +1536,16 @@ static int parser_yylex(struct parser_t * parser)
         if (*c == '#' && *(c + 1) == '{') {
           c += 2;
           curs += 2;
-          for (; *c != '}'; ++c, ++curs)
+          for (ptr = buffer; *c != '}'; ++c, ++curs) {
+            *ptr++ = *c;
             if (curs >= len) {
               yyerror(parser, "expecting '}' token in string");
               curs = len + 1; /* So we can force curs >= len error */
               break;
             }
+          }
+          *ptr = '\0';
+          push_string(parser, buffer);
           c++;
           curs++;
         }
@@ -1633,18 +1659,24 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     t = STRING;
   } else if (*c == '"') {
+    char * ptr;
+
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
         c += 2;
         curs += 2;
-        for (; *c != '}'; ++c, ++curs)
+        for (ptr = buffer; *c != '}'; ++c, ++curs) {
+          *ptr++ = *c;
           if (curs >= len || *c == '"') {
             yyerror(parser, "expecting '}' token in string");
             curs = len + 1; /* So we can force curs >= len error */
             break;
           }
+        }
+        *ptr = '\0';
+        push_string(parser, buffer);
       }
       if (*c == '\\' && *(c + 1) == '"') {
         c += 2;
@@ -1679,18 +1711,24 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     t = tCOMMA;
   } else if (*c == '`') {
+    char * ptr;
+
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
         c += 2;
         curs += 2;
-        for (; *c != '}'; ++c, ++curs)
+        for (ptr = buffer; *c != '}'; ++c, ++curs) {
+          *ptr++ = *c;
           if (curs >= len || *c == '`') {
             yyerror(parser, "expecting '}' token in backtick command");
             curs = len + 1; /* So we can force curs >= len error */
             break;
           }
+        }
+        *ptr = '\0';
+        push_string(parser, buffer);
       }
       if (*c == '\\' && *(c + 1) == '`') {
         curs += 2;
@@ -1716,7 +1754,7 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     parser_dot_seen(t, tXOR_BIT);
   }
- 
+
   /*
    * Once we have the token id, we should update the parser
    * flags to avoid conflicts and weird behavior :P

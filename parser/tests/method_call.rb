@@ -7,3 +7,5 @@ puts 1+1
 a.class
 foo 1,
     2
+
+foo a, :a => 'string', b: 'another'
