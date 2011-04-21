@@ -18,8 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
 #ifndef RUBY_PARSEJOB_H
 #define RUBY_PARSEJOB_H
+
 
 #include <KUrl>
 #include <language/backgroundparser/parsejob.h>
@@ -47,19 +49,15 @@ public:
 
     RubyLanguageSupport * ruby() const;
 
-    bool wasReadFromDisk() const;
-
 protected:
     virtual void run();
 
 private:
     void parse();
 
-//     Parser *m_parser;
     KUrl m_url;
     RubyParser * m_parser;
     RubyAst * m_lastAst;
-    bool m_readFromDisk;
 };
 
 } // end of namespace ruby

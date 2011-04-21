@@ -908,6 +908,7 @@ call_args: exp                { $$ = $1;  }
 /* TODO: hash with exp */
 exp_hash: exp   { $$ = $1;  }
   | hash        { $$ = $1;  }
+  | hash_items  { $$ = alloc_node(token_hash, $1, NULL);  }
 ;
 
 /* TODO: hash with exp */

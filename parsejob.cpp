@@ -67,7 +67,6 @@ ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
     , m_url (url)
-    , m_readFromDisk(false)
     , m_lastAst(NULL)
 {
     /* There's nothing to do here */
@@ -81,11 +80,6 @@ ParseJob::~ParseJob()
 RubyLanguageSupport * ParseJob::ruby() const
 {
     return RubyLanguageSupport::self();
-}
-
-bool ParseJob::wasReadFromDisk() const
-{
-    return m_readFromDisk;
 }
 
 void ParseJob::run()
