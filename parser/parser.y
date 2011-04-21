@@ -1016,6 +1016,7 @@ void init_parser(struct parser_t * p)
   p->line = 1;
   p->column = 0;
   p->name = NULL;
+  p->string_names = NULL;
 }
 
 void free_parser(struct parser_t * p)
@@ -1033,7 +1034,7 @@ void free_parser(struct parser_t * p)
 /* Read the file's source code and allocate it for further inspection. */
 int retrieve_source(struct parser_t * p, FILE * fd)
 {
-  int length, check;
+  int length;
 
   fseek(fd, 0, SEEK_END);
   length = ftell(fd);
@@ -1047,7 +1048,7 @@ int retrieve_source(struct parser_t * p, FILE * fd)
     fprintf(stderr, "Cannot store contents\n");
     return -1;
   }
-  check = fread(p->blob, length, 1, fd);
+  fread(p->blob, length, 1, fd);
   if (ferror(fd)) {
     fprintf(stderr, "Reading error\n");
     return -1;

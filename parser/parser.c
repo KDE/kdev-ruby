@@ -123,6 +123,7 @@ struct parser_t {
 
   /* Stack of names */
   struct stack_t * stack[2];
+  struct node * string_names;
   int sp;
 
   /* Info about the content to parse */
@@ -148,11 +149,12 @@ void free_parser(struct parser_t * p);
 int retrieve_source(struct parser_t * p, FILE * fd);
 int check_lhs(struct node * n);
 void pop_stack(struct parser_t * parser, struct node * n);
+void pop_string(struct parser_t * parser, struct node * n);
 
 
 
 /* Line 189 of yacc.c  */
-#line 156 "../parser.c"
+#line 158 "../parser.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -293,12 +295,12 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 113 "../parser.y"
+#line 115 "../parser.y"
   struct node * n;  
 
 
 /* Line 214 of yacc.c  */
-#line 302 "../parser.c"
+#line 304 "../parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -310,7 +312,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 314 "../parser.c"
+#line 316 "../parser.c"
 
 #ifdef short
 # undef short
@@ -735,39 +737,39 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   167,   167,   168,   179,   180,   181,   182,   183,   184,
-     185,   186,   187,   188,   189,   192,   193,   196,   197,   198,
-     199,   200,   201,   202,   203,   206,   207,   208,   209,   210,
-     211,   212,   213,   216,   217,   220,   221,   222,   223,   226,
-     227,   228,   231,   232,   233,   234,   235,   236,   237,   238,
-     241,   242,   243,   244,   245,   246,   247,   248,   251,   252,
-     255,   256,   259,   260,   263,   264,   265,   268,   275,   282,
-     288,   294,   300,   304,   308,   312,   316,   322,   321,   331,
-     330,   341,   340,   351,   350,   362,   363,   366,   367,   370,
-     371,   374,   375,   381,   382,   383,   384,   385,   388,   391,
-     394,   397,   400,   403,   404,   412,   413,   416,   417,   420,
-     421,   424,   425,   428,   434,   440,   441,   444,   445,   448,
-     449,   452,   456,   462,   466,   472,   476,   480,   486,   489,
-     490,   496,   497,   500,   501,   502,   506,   507,   511,   512,
-     516,   520,   524,   528,   533,   539,   540,   543,   544,   547,
-     550,   553,   554,   557,   558,   561,   566,   571,   576,   583,
-     584,   587,   593,   594,   597,   598,   601,   607,   608,   611,
-     612,   613,   616,   617,   620,   623,   626,   629,   632,   635,
-     638,   641,   644,   647,   650,   653,   656,   657,   660,   663,
-     666,   669,   672,   675,   678,   681,   684,   687,   688,   691,
-     694,   695,   698,   699,   702,   703,   706,   707,   710,   711,
-     714,   715,   718,   719,   722,   723,   726,   736,   737,   738,
-     741,   742,   745,   746,   749,   752,   753,   754,   757,   758,
-     761,   762,   763,   764,   767,   768,   769,   774,   779,   780,
-     781,   782,   785,   786,   787,   791,   792,   793,   796,   797,
-     800,   812,   815,   816,   819,   820,   823,   824,   827,   831,
-     841,   844,   850,   854,   860,   863,   868,   873,   879,   880,
-     883,   888,   895,   896,   899,   900,   904,   905,   909,   910,
-     911,   915,   916,   919,   920,   921,   922,   923,   924,   925,
-     926,   927,   928,   929,   930,   931,   932,   933,   934,   935,
-     936,   937,   938,   939,   940,   941,   942,   943,   944,   945,
-     946,   947,   948,   949,   953,   954,   955,   956,   957,   958,
-     959,   960,   961
+       0,   169,   169,   170,   181,   182,   183,   184,   185,   186,
+     187,   188,   189,   190,   191,   194,   195,   198,   199,   200,
+     201,   202,   203,   204,   205,   208,   209,   210,   211,   212,
+     213,   214,   215,   218,   219,   222,   223,   224,   225,   228,
+     229,   230,   233,   234,   235,   236,   237,   238,   239,   240,
+     243,   244,   245,   246,   247,   248,   249,   250,   253,   254,
+     257,   258,   261,   262,   265,   266,   267,   270,   277,   284,
+     290,   296,   302,   306,   310,   314,   318,   324,   323,   333,
+     332,   343,   342,   353,   352,   364,   365,   368,   369,   372,
+     373,   376,   377,   383,   384,   385,   386,   387,   390,   393,
+     396,   399,   402,   405,   406,   414,   415,   418,   419,   422,
+     423,   426,   427,   430,   436,   442,   443,   446,   447,   450,
+     451,   454,   458,   464,   468,   474,   478,   482,   488,   491,
+     492,   498,   499,   502,   503,   504,   508,   509,   513,   514,
+     518,   522,   526,   530,   535,   541,   542,   545,   546,   549,
+     552,   555,   556,   559,   560,   563,   568,   573,   578,   585,
+     586,   589,   595,   596,   599,   600,   603,   609,   610,   613,
+     614,   615,   618,   619,   622,   625,   628,   631,   634,   637,
+     640,   643,   646,   649,   652,   655,   658,   659,   662,   665,
+     668,   671,   674,   677,   680,   683,   686,   689,   690,   693,
+     696,   697,   700,   701,   704,   705,   708,   709,   712,   713,
+     716,   717,   720,   721,   724,   725,   728,   738,   739,   740,
+     743,   744,   747,   748,   751,   754,   755,   756,   759,   760,
+     763,   764,   765,   766,   769,   770,   771,   776,   781,   782,
+     783,   784,   787,   788,   789,   793,   794,   795,   798,   799,
+     802,   814,   817,   818,   821,   822,   825,   826,   829,   833,
+     843,   846,   852,   856,   862,   865,   870,   875,   881,   882,
+     885,   890,   897,   898,   901,   902,   906,   907,   911,   912,
+     913,   917,   918,   921,   922,   923,   924,   925,   926,   927,
+     928,   929,   930,   931,   932,   933,   934,   935,   936,   937,
+     938,   939,   940,   941,   942,   943,   944,   945,   946,   947,
+     948,   949,   950,   951,   955,   956,   957,   958,   959,   960,
+     961,   962,   963
 };
 #endif
 
@@ -2472,14 +2474,14 @@ yyreduce:
         case 2:
 
 /* Line 1464 of yacc.c  */
-#line 167 "../parser.y"
+#line 169 "../parser.y"
     { parser->ast = NULL; YYACCEPT; ;}
     break;
 
   case 3:
 
 /* Line 1464 of yacc.c  */
-#line 169 "../parser.y"
+#line 171 "../parser.y"
     {
     if (parser->errors[0].valid == 1) {
       free_ast(parser->ast);
@@ -2493,343 +2495,343 @@ yyreduce:
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 182 "../parser.y"
+#line 184 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));;}
     break;
 
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 184 "../parser.y"
+#line 186 "../parser.y"
     { (yyval.n) = alloc_cond(token_if, (yyvsp[(3) - (3)].n), (yyvsp[(1) - (3)].n), NULL);      ;}
     break;
 
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 185 "../parser.y"
+#line 187 "../parser.y"
     { (yyval.n) = alloc_cond(token_unless, (yyvsp[(3) - (3)].n), (yyvsp[(1) - (3)].n), NULL);  ;}
     break;
 
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 186 "../parser.y"
+#line 188 "../parser.y"
     { (yyval.n) = alloc_cond(token_while, (yyvsp[(3) - (3)].n), (yyvsp[(1) - (3)].n), NULL);   ;}
     break;
 
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 187 "../parser.y"
+#line 189 "../parser.y"
     { (yyval.n) = alloc_cond(token_until, (yyvsp[(3) - (3)].n), (yyvsp[(1) - (3)].n), NULL);   ;}
     break;
 
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 189 "../parser.y"
+#line 191 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 192 "../parser.y"
+#line 194 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 193 "../parser.y"
+#line 195 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 196 "../parser.y"
+#line 198 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 197 "../parser.y"
+#line 199 "../parser.y"
     { (yyval.n) = alloc_node(token_numeric, NULL, NULL);   ;}
     break;
 
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 198 "../parser.y"
+#line 200 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 199 "../parser.y"
-    { (yyval.n) = alloc_node(token_string, NULL, NULL);    ;}
+#line 201 "../parser.y"
+    { (yyval.n) = alloc_node(token_string, NULL, NULL); pop_string(parser, (yyval.n));   ;}
     break;
 
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 200 "../parser.y"
-    { (yyval.n) = alloc_node(token_regexp, NULL, NULL);    ;}
+#line 202 "../parser.y"
+    { (yyval.n) = alloc_node(token_regexp, NULL, NULL); pop_string(parser, (yyval.n));   ;}
     break;
 
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 201 "../parser.y"
+#line 203 "../parser.y"
     { (yyval.n) = alloc_node(token_heredoc, NULL, NULL);   ;}
     break;
 
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 202 "../parser.y"
-    { (yyval.n) = alloc_node(token_backtick, NULL, NULL);  ;}
+#line 204 "../parser.y"
+    { (yyval.n) = alloc_node(token_backtick, NULL, NULL); pop_string(parser, (yyval.n)); ;}
     break;
 
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 203 "../parser.y"
+#line 205 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL);    ;}
     break;
 
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 220 "../parser.y"
+#line 222 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 221 "../parser.y"
+#line 223 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 37:
 
 /* Line 1464 of yacc.c  */
-#line 222 "../parser.y"
+#line 224 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 38:
 
 /* Line 1464 of yacc.c  */
-#line 223 "../parser.y"
+#line 225 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 226 "../parser.y"
+#line 228 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 227 "../parser.y"
+#line 229 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 228 "../parser.y"
+#line 230 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 42:
 
 /* Line 1464 of yacc.c  */
-#line 231 "../parser.y"
+#line 233 "../parser.y"
     { (yyval.n) = alloc_node(token_numeric, NULL, NULL);   ;}
     break;
 
   case 43:
 
 /* Line 1464 of yacc.c  */
-#line 232 "../parser.y"
+#line 234 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 44:
 
 /* Line 1464 of yacc.c  */
-#line 233 "../parser.y"
-    { (yyval.n) = alloc_node(token_string, NULL, NULL);    ;}
+#line 235 "../parser.y"
+    { (yyval.n) = alloc_node(token_string, NULL, NULL); pop_string(parser, (yyval.n));   ;}
     break;
 
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 234 "../parser.y"
-    { (yyval.n) = alloc_node(token_regexp, NULL, NULL);    ;}
+#line 236 "../parser.y"
+    { (yyval.n) = alloc_node(token_regexp, NULL, NULL); pop_string(parser, (yyval.n));   ;}
     break;
 
   case 46:
 
 /* Line 1464 of yacc.c  */
-#line 235 "../parser.y"
+#line 237 "../parser.y"
     { (yyval.n) = alloc_node(token_heredoc, NULL, NULL);   ;}
     break;
 
   case 47:
 
 /* Line 1464 of yacc.c  */
-#line 236 "../parser.y"
-    { (yyval.n) = alloc_node(token_backtick, NULL, NULL);  ;}
+#line 238 "../parser.y"
+    { (yyval.n) = alloc_node(token_backtick, NULL, NULL); pop_string(parser, (yyval.n)); ;}
     break;
 
   case 48:
 
 /* Line 1464 of yacc.c  */
-#line 237 "../parser.y"
+#line 239 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 49:
 
 /* Line 1464 of yacc.c  */
-#line 238 "../parser.y"
+#line 240 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL);    ;}
     break;
 
   case 50:
 
 /* Line 1464 of yacc.c  */
-#line 241 "../parser.y"
+#line 243 "../parser.y"
     { (yyval.n) = alloc_node(token_break, NULL, NULL);   ;}
     break;
 
   case 51:
 
 /* Line 1464 of yacc.c  */
-#line 242 "../parser.y"
+#line 244 "../parser.y"
     { (yyval.n) = alloc_node(token_redo, NULL, NULL);    ;}
     break;
 
   case 52:
 
 /* Line 1464 of yacc.c  */
-#line 243 "../parser.y"
+#line 245 "../parser.y"
     { (yyval.n) = alloc_node(token_retry, NULL, NULL);   ;}
     break;
 
   case 53:
 
 /* Line 1464 of yacc.c  */
-#line 244 "../parser.y"
+#line 246 "../parser.y"
     { (yyval.n) = alloc_node(token_next, NULL, NULL);    ;}
     break;
 
   case 54:
 
 /* Line 1464 of yacc.c  */
-#line 245 "../parser.y"
+#line 247 "../parser.y"
     { (yyval.n) = alloc_node(token_undef, (yyvsp[(2) - (2)].n), NULL);     ;}
     break;
 
   case 55:
 
 /* Line 1464 of yacc.c  */
-#line 246 "../parser.y"
+#line 248 "../parser.y"
     { (yyval.n) = alloc_node(token_alias, (yyvsp[(2) - (3)].n), (yyvsp[(3) - (3)].n));       ;}
     break;
 
   case 56:
 
 /* Line 1464 of yacc.c  */
-#line 247 "../parser.y"
+#line 249 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 57:
 
 /* Line 1464 of yacc.c  */
-#line 248 "../parser.y"
+#line 250 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 58:
 
 /* Line 1464 of yacc.c  */
-#line 251 "../parser.y"
+#line 253 "../parser.y"
     { (yyval.n) = alloc_node(token_yield, NULL, NULL);   ;}
     break;
 
   case 59:
 
 /* Line 1464 of yacc.c  */
-#line 252 "../parser.y"
+#line 254 "../parser.y"
     { (yyval.n) = alloc_node(token_yield, (yyvsp[(2) - (2)].n), NULL);     ;}
     break;
 
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 255 "../parser.y"
+#line 257 "../parser.y"
     { (yyval.n) = alloc_node(token_return, NULL, NULL);  ;}
     break;
 
   case 61:
 
 /* Line 1464 of yacc.c  */
-#line 256 "../parser.y"
+#line 258 "../parser.y"
     { (yyval.n) = alloc_node(token_return, (yyvsp[(2) - (2)].n), NULL);    ;}
     break;
 
   case 62:
 
 /* Line 1464 of yacc.c  */
-#line 259 "../parser.y"
+#line 261 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 63:
 
 /* Line 1464 of yacc.c  */
-#line 260 "../parser.y"
+#line 262 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 64:
 
 /* Line 1464 of yacc.c  */
-#line 263 "../parser.y"
+#line 265 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 264 "../parser.y"
+#line 266 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 66:
 
 /* Line 1464 of yacc.c  */
-#line 265 "../parser.y"
+#line 267 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n); ;}
     break;
 
   case 67:
 
 /* Line 1464 of yacc.c  */
-#line 272 "../parser.y"
+#line 274 "../parser.y"
     {
     (yyval.n) = alloc_cond(token_if, (yyvsp[(2) - (6)].n), (yyvsp[(4) - (6)].n), (yyvsp[(5) - (6)].n));
   ;}
@@ -2838,7 +2840,7 @@ yyreduce:
   case 68:
 
 /* Line 1464 of yacc.c  */
-#line 279 "../parser.y"
+#line 281 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_unless, (yyvsp[(2) - (6)].n), (yyvsp[(4) - (6)].n), (yyvsp[(5) - (6)].n));
     ;}
@@ -2847,7 +2849,7 @@ yyreduce:
   case 69:
 
 /* Line 1464 of yacc.c  */
-#line 285 "../parser.y"
+#line 287 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_while, (yyvsp[(2) - (5)].n), (yyvsp[(4) - (5)].n), NULL);
     ;}
@@ -2856,7 +2858,7 @@ yyreduce:
   case 70:
 
 /* Line 1464 of yacc.c  */
-#line 291 "../parser.y"
+#line 293 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_until, (yyvsp[(2) - (5)].n), (yyvsp[(4) - (5)].n), NULL);
     ;}
@@ -2865,7 +2867,7 @@ yyreduce:
   case 71:
 
 /* Line 1464 of yacc.c  */
-#line 297 "../parser.y"
+#line 299 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_case, (yyvsp[(2) - (5)].n), (yyvsp[(4) - (5)].n), NULL);
     ;}
@@ -2874,7 +2876,7 @@ yyreduce:
   case 72:
 
 /* Line 1464 of yacc.c  */
-#line 301 "../parser.y"
+#line 303 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_case, NULL, (yyvsp[(2) - (3)].n), NULL);
     ;}
@@ -2883,7 +2885,7 @@ yyreduce:
   case 73:
 
 /* Line 1464 of yacc.c  */
-#line 305 "../parser.y"
+#line 307 "../parser.y"
     {
       (yyval.n) = alloc_node(token_up_begin, (yyvsp[(3) - (4)].n), NULL);
     ;}
@@ -2892,7 +2894,7 @@ yyreduce:
   case 74:
 
 /* Line 1464 of yacc.c  */
-#line 309 "../parser.y"
+#line 311 "../parser.y"
     {
       (yyval.n) = alloc_node(token_up_end, (yyvsp[(3) - (4)].n), NULL);
     ;}
@@ -2901,7 +2903,7 @@ yyreduce:
   case 75:
 
 /* Line 1464 of yacc.c  */
-#line 313 "../parser.y"
+#line 315 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_for, (yyvsp[(4) - (7)].n), (yyvsp[(6) - (7)].n), (yyvsp[(2) - (7)].n));
     ;}
@@ -2910,7 +2912,7 @@ yyreduce:
   case 76:
 
 /* Line 1464 of yacc.c  */
-#line 317 "../parser.y"
+#line 319 "../parser.y"
     {
       (yyval.n) = (yyvsp[(2) - (3)].n);
       (yyval.n)->kind = token_exception;
@@ -2920,7 +2922,7 @@ yyreduce:
   case 77:
 
 /* Line 1464 of yacc.c  */
-#line 322 "../parser.y"
+#line 324 "../parser.y"
     {
       parser->in_def++;
     ;}
@@ -2929,7 +2931,7 @@ yyreduce:
   case 78:
 
 /* Line 1464 of yacc.c  */
-#line 326 "../parser.y"
+#line 328 "../parser.y"
     {
       parser->in_def--;
       (yyval.n) = alloc_cond(token_function, (yyvsp[(2) - (6)].n), (yyvsp[(5) - (6)].n), (yyvsp[(4) - (6)].n));
@@ -2939,7 +2941,7 @@ yyreduce:
   case 79:
 
 /* Line 1464 of yacc.c  */
-#line 331 "../parser.y"
+#line 333 "../parser.y"
     {
       if (parser->in_def)
         yyerror(parser, "module definition in method body");
@@ -2949,7 +2951,7 @@ yyreduce:
   case 80:
 
 /* Line 1464 of yacc.c  */
-#line 337 "../parser.y"
+#line 339 "../parser.y"
     {
       (yyval.n) = alloc_node(token_module, (yyvsp[(4) - (5)].n), (yyvsp[(2) - (5)].n));
     ;}
@@ -2958,7 +2960,7 @@ yyreduce:
   case 81:
 
 /* Line 1464 of yacc.c  */
-#line 341 "../parser.y"
+#line 343 "../parser.y"
     {
       if (parser->in_def)
         yyerror(parser, "class definition in method body");
@@ -2968,7 +2970,7 @@ yyreduce:
   case 82:
 
 /* Line 1464 of yacc.c  */
-#line 347 "../parser.y"
+#line 349 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_class, (yyvsp[(3) - (6)].n), (yyvsp[(5) - (6)].n), (yyvsp[(2) - (6)].n));
     ;}
@@ -2977,7 +2979,7 @@ yyreduce:
   case 83:
 
 /* Line 1464 of yacc.c  */
-#line 351 "../parser.y"
+#line 353 "../parser.y"
     {
       if (parser->in_def)
         yyerror(parser, "class definition in method body");
@@ -2987,7 +2989,7 @@ yyreduce:
   case 84:
 
 /* Line 1464 of yacc.c  */
-#line 357 "../parser.y"
+#line 359 "../parser.y"
     {
       (yyval.n) = alloc_node(token_singleton_class, (yyvsp[(6) - (7)].n), (yyvsp[(4) - (7)].n));
     ;}
@@ -2996,56 +2998,56 @@ yyreduce:
   case 85:
 
 /* Line 1464 of yacc.c  */
-#line 362 "../parser.y"
+#line 364 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 86:
 
 /* Line 1464 of yacc.c  */
-#line 363 "../parser.y"
+#line 365 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n); ;}
     break;
 
   case 87:
 
 /* Line 1464 of yacc.c  */
-#line 366 "../parser.y"
+#line 368 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 88:
 
 /* Line 1464 of yacc.c  */
-#line 367 "../parser.y"
+#line 369 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 89:
 
 /* Line 1464 of yacc.c  */
-#line 370 "../parser.y"
+#line 372 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (2)].n);  ;}
     break;
 
   case 90:
 
 /* Line 1464 of yacc.c  */
-#line 371 "../parser.y"
+#line 373 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 91:
 
 /* Line 1464 of yacc.c  */
-#line 374 "../parser.y"
+#line 376 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 92:
 
 /* Line 1464 of yacc.c  */
-#line 376 "../parser.y"
+#line 378 "../parser.y"
     {
     yyerror(parser, "class/module name must be CONSTANT");
   ;}
@@ -3054,77 +3056,77 @@ yyreduce:
   case 93:
 
 /* Line 1464 of yacc.c  */
-#line 381 "../parser.y"
+#line 383 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n); ;}
     break;
 
   case 94:
 
 /* Line 1464 of yacc.c  */
-#line 382 "../parser.y"
+#line 384 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 95:
 
 /* Line 1464 of yacc.c  */
-#line 383 "../parser.y"
+#line 385 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 96:
 
 /* Line 1464 of yacc.c  */
-#line 384 "../parser.y"
+#line 386 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 97:
 
 /* Line 1464 of yacc.c  */
-#line 385 "../parser.y"
+#line 387 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 98:
 
 /* Line 1464 of yacc.c  */
-#line 388 "../parser.y"
+#line 390 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 99:
 
 /* Line 1464 of yacc.c  */
-#line 391 "../parser.y"
+#line 393 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 100:
 
 /* Line 1464 of yacc.c  */
-#line 394 "../parser.y"
+#line 396 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 101:
 
 /* Line 1464 of yacc.c  */
-#line 397 "../parser.y"
+#line 399 "../parser.y"
     { (yyval.n) = alloc_node(token_symbol, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 102:
 
 /* Line 1464 of yacc.c  */
-#line 400 "../parser.y"
+#line 402 "../parser.y"
     { (yyval.n) = alloc_node(token_symbol, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 104:
 
 /* Line 1464 of yacc.c  */
-#line 407 "../parser.y"
+#line 409 "../parser.y"
     {
       (yyval.n) = alloc_cond(token_if, (yyvsp[(2) - (5)].n), (yyvsp[(4) - (5)].n), (yyvsp[(5) - (5)].n));
     ;}
@@ -3133,63 +3135,63 @@ yyreduce:
   case 105:
 
 /* Line 1464 of yacc.c  */
-#line 412 "../parser.y"
+#line 414 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 106:
 
 /* Line 1464 of yacc.c  */
-#line 413 "../parser.y"
+#line 415 "../parser.y"
     { (yyval.n) = alloc_cond(token_if, NULL, (yyvsp[(2) - (2)].n), NULL);  ;}
     break;
 
   case 107:
 
 /* Line 1464 of yacc.c  */
-#line 416 "../parser.y"
+#line 418 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 108:
 
 /* Line 1464 of yacc.c  */
-#line 417 "../parser.y"
+#line 419 "../parser.y"
     { (yyval.n) = alloc_node(token_ensure, (yyvsp[(2) - (2)].n), NULL); ;}
     break;
 
   case 109:
 
 /* Line 1464 of yacc.c  */
-#line 420 "../parser.y"
+#line 422 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 110:
 
 /* Line 1464 of yacc.c  */
-#line 421 "../parser.y"
+#line 423 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 111:
 
 /* Line 1464 of yacc.c  */
-#line 424 "../parser.y"
+#line 426 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 112:
 
 /* Line 1464 of yacc.c  */
-#line 425 "../parser.y"
+#line 427 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n)); ;}
     break;
 
   case 113:
 
 /* Line 1464 of yacc.c  */
-#line 429 "../parser.y"
+#line 431 "../parser.y"
     {
     (yyval.n) = alloc_node(token_rescue, (yyvsp[(2) - (4)].n), (yyvsp[(4) - (4)].n));
   ;}
@@ -3198,7 +3200,7 @@ yyreduce:
   case 114:
 
 /* Line 1464 of yacc.c  */
-#line 435 "../parser.y"
+#line 437 "../parser.y"
     {
     (yyval.n) = alloc_ensure(token_body, (yyvsp[(1) - (4)].n), (yyvsp[(2) - (4)].n), (yyvsp[(3) - (4)].n), (yyvsp[(4) - (4)].n));
   ;}
@@ -3207,49 +3209,49 @@ yyreduce:
   case 115:
 
 /* Line 1464 of yacc.c  */
-#line 440 "../parser.y"
+#line 442 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 116:
 
 /* Line 1464 of yacc.c  */
-#line 441 "../parser.y"
+#line 443 "../parser.y"
     { (yyval.n) = (yyvsp[(3) - (3)].n);  ;}
     break;
 
   case 117:
 
 /* Line 1464 of yacc.c  */
-#line 444 "../parser.y"
+#line 446 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 118:
 
 /* Line 1464 of yacc.c  */
-#line 445 "../parser.y"
+#line 447 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 119:
 
 /* Line 1464 of yacc.c  */
-#line 448 "../parser.y"
+#line 450 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 120:
 
 /* Line 1464 of yacc.c  */
-#line 449 "../parser.y"
+#line 451 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 121:
 
 /* Line 1464 of yacc.c  */
-#line 453 "../parser.y"
+#line 455 "../parser.y"
     {
     (yyval.n) = alloc_node(token_block, (yyvsp[(3) - (4)].n), (yyvsp[(2) - (4)].n));
   ;}
@@ -3258,7 +3260,7 @@ yyreduce:
   case 122:
 
 /* Line 1464 of yacc.c  */
-#line 457 "../parser.y"
+#line 459 "../parser.y"
     {
     (yyval.n) = alloc_node(token_block, (yyvsp[(2) - (3)].n), NULL);
   ;}
@@ -3267,7 +3269,7 @@ yyreduce:
   case 123:
 
 /* Line 1464 of yacc.c  */
-#line 463 "../parser.y"
+#line 465 "../parser.y"
     {
     (yyval.n) = alloc_node(token_block, (yyvsp[(4) - (5)].n), (yyvsp[(3) - (5)].n));
   ;}
@@ -3276,7 +3278,7 @@ yyreduce:
   case 124:
 
 /* Line 1464 of yacc.c  */
-#line 467 "../parser.y"
+#line 469 "../parser.y"
     {
     (yyval.n) = alloc_node(token_block, (yyvsp[(2) - (3)].n), NULL);
   ;}
@@ -3285,7 +3287,7 @@ yyreduce:
   case 125:
 
 /* Line 1464 of yacc.c  */
-#line 473 "../parser.y"
+#line 475 "../parser.y"
     {
     (yyval.n) = alloc_node(token_object, (yyvsp[(2) - (4)].n), (yyvsp[(3) - (4)].n));
   ;}
@@ -3294,7 +3296,7 @@ yyreduce:
   case 126:
 
 /* Line 1464 of yacc.c  */
-#line 477 "../parser.y"
+#line 479 "../parser.y"
     {
     (yyval.n) = alloc_node(token_object, NULL, (yyvsp[(2) - (3)].n));
   ;}
@@ -3303,7 +3305,7 @@ yyreduce:
   case 127:
 
 /* Line 1464 of yacc.c  */
-#line 481 "../parser.y"
+#line 483 "../parser.y"
     {
     (yyval.n) = alloc_node(token_object, (yyvsp[(2) - (3)].n), NULL);
   ;}
@@ -3312,21 +3314,21 @@ yyreduce:
   case 128:
 
 /* Line 1464 of yacc.c  */
-#line 486 "../parser.y"
+#line 488 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (2)].n);  ;}
     break;
 
   case 129:
 
 /* Line 1464 of yacc.c  */
-#line 489 "../parser.y"
+#line 491 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL);  ;}
     break;
 
   case 130:
 
 /* Line 1464 of yacc.c  */
-#line 491 "../parser.y"
+#line 493 "../parser.y"
     {
     (yyval.n) = update_list((yyvsp[(1) - (3)].n), alloc_node(token_object, NULL, NULL));
   ;}
@@ -3335,35 +3337,35 @@ yyreduce:
   case 131:
 
 /* Line 1464 of yacc.c  */
-#line 496 "../parser.y"
+#line 498 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 132:
 
 /* Line 1464 of yacc.c  */
-#line 497 "../parser.y"
+#line 499 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n);  ;}
     break;
 
   case 133:
 
 /* Line 1464 of yacc.c  */
-#line 500 "../parser.y"
+#line 502 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (2)].n);  ;}
     break;
 
   case 134:
 
 /* Line 1464 of yacc.c  */
-#line 501 "../parser.y"
+#line 503 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));  ;}
     break;
 
   case 135:
 
 /* Line 1464 of yacc.c  */
-#line 503 "../parser.y"
+#line 505 "../parser.y"
     {
       (yyval.n) = create_list((yyvsp[(1) - (4)].n), update_list((yyvsp[(3) - (4)].n), (yyvsp[(4) - (4)].n)));
     ;}
@@ -3372,14 +3374,14 @@ yyreduce:
   case 136:
 
 /* Line 1464 of yacc.c  */
-#line 506 "../parser.y"
+#line 508 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));  ;}
     break;
 
   case 137:
 
 /* Line 1464 of yacc.c  */
-#line 508 "../parser.y"
+#line 510 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (4)].n), update_list((yyvsp[(3) - (4)].n), (yyvsp[(4) - (4)].n)));
     ;}
@@ -3388,14 +3390,14 @@ yyreduce:
   case 138:
 
 /* Line 1464 of yacc.c  */
-#line 511 "../parser.y"
+#line 513 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));  ;}
     break;
 
   case 139:
 
 /* Line 1464 of yacc.c  */
-#line 513 "../parser.y"
+#line 515 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (6)].n), create_list((yyvsp[(3) - (6)].n), update_list((yyvsp[(5) - (6)].n), (yyvsp[(6) - (6)].n))));
     ;}
@@ -3404,7 +3406,7 @@ yyreduce:
   case 140:
 
 /* Line 1464 of yacc.c  */
-#line 517 "../parser.y"
+#line 519 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (4)].n), update_list((yyvsp[(3) - (4)].n), (yyvsp[(4) - (4)].n)));
     ;}
@@ -3413,7 +3415,7 @@ yyreduce:
   case 141:
 
 /* Line 1464 of yacc.c  */
-#line 521 "../parser.y"
+#line 523 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (6)].n), concat_list((yyvsp[(3) - (6)].n), update_list((yyvsp[(5) - (6)].n), (yyvsp[(6) - (6)].n))));
     ;}
@@ -3422,7 +3424,7 @@ yyreduce:
   case 142:
 
 /* Line 1464 of yacc.c  */
-#line 525 "../parser.y"
+#line 527 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (4)].n), update_list((yyvsp[(3) - (4)].n), (yyvsp[(4) - (4)].n)));
     ;}
@@ -3431,7 +3433,7 @@ yyreduce:
   case 143:
 
 /* Line 1464 of yacc.c  */
-#line 530 "../parser.y"
+#line 532 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (8)].n), concat_list((yyvsp[(3) - (8)].n), create_list((yyvsp[(5) - (8)].n), update_list((yyvsp[(7) - (8)].n), (yyvsp[(8) - (8)].n)))));
     ;}
@@ -3440,7 +3442,7 @@ yyreduce:
   case 144:
 
 /* Line 1464 of yacc.c  */
-#line 534 "../parser.y"
+#line 536 "../parser.y"
     {
       (yyval.n) = concat_list((yyvsp[(1) - (6)].n), concat_list((yyvsp[(3) - (6)].n), update_list((yyvsp[(5) - (6)].n), (yyvsp[(6) - (6)].n))));
     ;}
@@ -3449,77 +3451,77 @@ yyreduce:
   case 145:
 
 /* Line 1464 of yacc.c  */
-#line 539 "../parser.y"
+#line 541 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 146:
 
 /* Line 1464 of yacc.c  */
-#line 540 "../parser.y"
+#line 542 "../parser.y"
     { (yyval.n) = (yyvsp[(3) - (3)].n);  ;}
     break;
 
   case 147:
 
 /* Line 1464 of yacc.c  */
-#line 543 "../parser.y"
+#line 545 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 148:
 
 /* Line 1464 of yacc.c  */
-#line 544 "../parser.y"
+#line 546 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 149:
 
 /* Line 1464 of yacc.c  */
-#line 547 "../parser.y"
+#line 549 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (2)].n);  ;}
     break;
 
   case 150:
 
 /* Line 1464 of yacc.c  */
-#line 550 "../parser.y"
+#line 552 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 151:
 
 /* Line 1464 of yacc.c  */
-#line 553 "../parser.y"
+#line 555 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 152:
 
 /* Line 1464 of yacc.c  */
-#line 554 "../parser.y"
+#line 556 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 153:
 
 /* Line 1464 of yacc.c  */
-#line 557 "../parser.y"
+#line 559 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 154:
 
 /* Line 1464 of yacc.c  */
-#line 558 "../parser.y"
+#line 560 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 155:
 
 /* Line 1464 of yacc.c  */
-#line 562 "../parser.y"
+#line 564 "../parser.y"
     {
     yyerror(parser, "formal argument cannot be a constant");
     (yyval.n) = 0;
@@ -3529,7 +3531,7 @@ yyreduce:
   case 156:
 
 /* Line 1464 of yacc.c  */
-#line 567 "../parser.y"
+#line 569 "../parser.y"
     {
     yyerror(parser, "formal argument cannot be an instance variable");
     (yyval.n) = 0;
@@ -3539,7 +3541,7 @@ yyreduce:
   case 157:
 
 /* Line 1464 of yacc.c  */
-#line 572 "../parser.y"
+#line 574 "../parser.y"
     {
     yyerror(parser, "formal argument cannot be a global variable");
     (yyval.n) = 0;
@@ -3549,7 +3551,7 @@ yyreduce:
   case 158:
 
 /* Line 1464 of yacc.c  */
-#line 577 "../parser.y"
+#line 579 "../parser.y"
     {
     yyerror(parser, "formal argument cannot be a class variable");
     (yyval.n) = 0;
@@ -3559,21 +3561,21 @@ yyreduce:
   case 159:
 
 /* Line 1464 of yacc.c  */
-#line 583 "../parser.y"
+#line 585 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 160:
 
 /* Line 1464 of yacc.c  */
-#line 584 "../parser.y"
+#line 586 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 161:
 
 /* Line 1464 of yacc.c  */
-#line 588 "../parser.y"
+#line 590 "../parser.y"
     {
     (yyval.n) = alloc_node(token_rescue_arg, (yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));
   ;}
@@ -3582,35 +3584,35 @@ yyreduce:
   case 162:
 
 /* Line 1464 of yacc.c  */
-#line 593 "../parser.y"
+#line 595 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 163:
 
 /* Line 1464 of yacc.c  */
-#line 594 "../parser.y"
+#line 596 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 164:
 
 /* Line 1464 of yacc.c  */
-#line 597 "../parser.y"
+#line 599 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 165:
 
 /* Line 1464 of yacc.c  */
-#line 598 "../parser.y"
+#line 600 "../parser.y"
     { (yyval.n) = (yyvsp[(3) - (3)].n);  ;}
     break;
 
   case 166:
 
 /* Line 1464 of yacc.c  */
-#line 602 "../parser.y"
+#line 604 "../parser.y"
     {
     (yyval.n) = alloc_cond(token_when, (yyvsp[(2) - (5)].n), (yyvsp[(4) - (5)].n), (yyvsp[(5) - (5)].n));
   ;}
@@ -3619,42 +3621,42 @@ yyreduce:
   case 197:
 
 /* Line 1464 of yacc.c  */
-#line 687 "../parser.y"
+#line 689 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n);  ;}
     break;
 
   case 198:
 
 /* Line 1464 of yacc.c  */
-#line 688 "../parser.y"
+#line 690 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 199:
 
 /* Line 1464 of yacc.c  */
-#line 691 "../parser.y"
+#line 693 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (2)].n);  ;}
     break;
 
   case 214:
 
 /* Line 1464 of yacc.c  */
-#line 722 "../parser.y"
+#line 724 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 215:
 
 /* Line 1464 of yacc.c  */
-#line 723 "../parser.y"
+#line 725 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (2)].n);  ;}
     break;
 
   case 216:
 
 /* Line 1464 of yacc.c  */
-#line 727 "../parser.y"
+#line 729 "../parser.y"
     {
     /* TODO: Implement a better way to do this, check_lhs can be expensive :( */
     if (check_lhs((yyvsp[(1) - (1)].n)))
@@ -3669,140 +3671,140 @@ yyreduce:
   case 217:
 
 /* Line 1464 of yacc.c  */
-#line 736 "../parser.y"
+#line 738 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(2) - (3)].n), NULL);  ;}
     break;
 
   case 218:
 
 /* Line 1464 of yacc.c  */
-#line 737 "../parser.y"
+#line 739 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (2)].n);  ;}
     break;
 
   case 219:
 
 /* Line 1464 of yacc.c  */
-#line 738 "../parser.y"
+#line 740 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL);  ;}
     break;
 
   case 220:
 
 /* Line 1464 of yacc.c  */
-#line 741 "../parser.y"
+#line 743 "../parser.y"
     { (yyval.n) = 0; ;}
     break;
 
   case 221:
 
 /* Line 1464 of yacc.c  */
-#line 742 "../parser.y"
+#line 744 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 222:
 
 /* Line 1464 of yacc.c  */
-#line 745 "../parser.y"
+#line 747 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n); ;}
     break;
 
   case 223:
 
 /* Line 1464 of yacc.c  */
-#line 746 "../parser.y"
+#line 748 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n)); ;}
     break;
 
   case 224:
 
 /* Line 1464 of yacc.c  */
-#line 749 "../parser.y"
+#line 751 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n); ;}
     break;
 
   case 225:
 
 /* Line 1464 of yacc.c  */
-#line 752 "../parser.y"
+#line 754 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 226:
 
 /* Line 1464 of yacc.c  */
-#line 753 "../parser.y"
+#line 755 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (2)].n);  ;}
     break;
 
   case 227:
 
 /* Line 1464 of yacc.c  */
-#line 754 "../parser.y"
+#line 756 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 228:
 
 /* Line 1464 of yacc.c  */
-#line 757 "../parser.y"
+#line 759 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 229:
 
 /* Line 1464 of yacc.c  */
-#line 758 "../parser.y"
+#line 760 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 230:
 
 /* Line 1464 of yacc.c  */
-#line 761 "../parser.y"
+#line 763 "../parser.y"
     { (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));    ;}
     break;
 
   case 231:
 
 /* Line 1464 of yacc.c  */
-#line 762 "../parser.y"
+#line 764 "../parser.y"
     { (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 232:
 
 /* Line 1464 of yacc.c  */
-#line 763 "../parser.y"
+#line 765 "../parser.y"
     { (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));    ;}
     break;
 
   case 233:
 
 /* Line 1464 of yacc.c  */
-#line 764 "../parser.y"
+#line 766 "../parser.y"
     { (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 234:
 
 /* Line 1464 of yacc.c  */
-#line 767 "../parser.y"
+#line 769 "../parser.y"
     { (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));    ;}
     break;
 
   case 235:
 
 /* Line 1464 of yacc.c  */
-#line 768 "../parser.y"
+#line 770 "../parser.y"
     { (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 236:
 
 /* Line 1464 of yacc.c  */
-#line 770 "../parser.y"
+#line 772 "../parser.y"
     {
     (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (4)].n), (yyvsp[(3) - (4)].n));
     (yyval.n) = update_list((yyval.n), (yyvsp[(4) - (4)].n));
@@ -3812,7 +3814,7 @@ yyreduce:
   case 237:
 
 /* Line 1464 of yacc.c  */
-#line 775 "../parser.y"
+#line 777 "../parser.y"
     {
     (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (4)].n), (yyvsp[(3) - (4)].n));
     (yyval.n) = update_list((yyval.n), (yyvsp[(4) - (4)].n));
@@ -3822,91 +3824,91 @@ yyreduce:
   case 238:
 
 /* Line 1464 of yacc.c  */
-#line 779 "../parser.y"
+#line 781 "../parser.y"
     { (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));     ;}
     break;
 
   case 239:
 
 /* Line 1464 of yacc.c  */
-#line 780 "../parser.y"
+#line 782 "../parser.y"
     { (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 240:
 
 /* Line 1464 of yacc.c  */
-#line 781 "../parser.y"
+#line 783 "../parser.y"
     { (yyval.n) = alloc_node(token_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));     ;}
     break;
 
   case 241:
 
 /* Line 1464 of yacc.c  */
-#line 782 "../parser.y"
+#line 784 "../parser.y"
     { (yyval.n) = alloc_node(token_op_assign, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 242:
 
 /* Line 1464 of yacc.c  */
-#line 785 "../parser.y"
+#line 787 "../parser.y"
     { (yyval.n) = alloc_node(token_array, NULL, NULL); ;}
     break;
 
   case 243:
 
 /* Line 1464 of yacc.c  */
-#line 786 "../parser.y"
+#line 788 "../parser.y"
     { (yyval.n) = alloc_node(token_array, (yyvsp[(2) - (3)].n), NULL);   ;}
     break;
 
   case 244:
 
 /* Line 1464 of yacc.c  */
-#line 787 "../parser.y"
+#line 789 "../parser.y"
     { (yyval.n) = alloc_node(token_array, NULL, NULL); ;}
     break;
 
   case 245:
 
 /* Line 1464 of yacc.c  */
-#line 791 "../parser.y"
+#line 793 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 246:
 
 /* Line 1464 of yacc.c  */
-#line 792 "../parser.y"
+#line 794 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 247:
 
 /* Line 1464 of yacc.c  */
-#line 793 "../parser.y"
+#line 795 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 248:
 
 /* Line 1464 of yacc.c  */
-#line 796 "../parser.y"
+#line 798 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 249:
 
 /* Line 1464 of yacc.c  */
-#line 797 "../parser.y"
+#line 799 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 250:
 
 /* Line 1464 of yacc.c  */
-#line 801 "../parser.y"
+#line 803 "../parser.y"
     {
     struct node * n = (yyvsp[(3) - (5)].n);
     n->next = (yyvsp[(5) - (5)].n);
@@ -3917,56 +3919,56 @@ yyreduce:
   case 251:
 
 /* Line 1464 of yacc.c  */
-#line 812 "../parser.y"
+#line 814 "../parser.y"
     { (yyval.n) = alloc_node(token_object, NULL, NULL); pop_stack(parser, (yyval.n)); ;}
     break;
 
   case 252:
 
 /* Line 1464 of yacc.c  */
-#line 815 "../parser.y"
+#line 817 "../parser.y"
     { (yyval.n) = alloc_node(token_hash, NULL, NULL);  ;}
     break;
 
   case 253:
 
 /* Line 1464 of yacc.c  */
-#line 816 "../parser.y"
+#line 818 "../parser.y"
     { (yyval.n) = alloc_node(token_hash, (yyvsp[(2) - (3)].n), NULL);    ;}
     break;
 
   case 254:
 
 /* Line 1464 of yacc.c  */
-#line 819 "../parser.y"
+#line 821 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 255:
 
 /* Line 1464 of yacc.c  */
-#line 820 "../parser.y"
+#line 822 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 256:
 
 /* Line 1464 of yacc.c  */
-#line 823 "../parser.y"
+#line 825 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 257:
 
 /* Line 1464 of yacc.c  */
-#line 824 "../parser.y"
+#line 826 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));  ;}
     break;
 
   case 258:
 
 /* Line 1464 of yacc.c  */
-#line 828 "../parser.y"
+#line 830 "../parser.y"
     {
     (yyval.n) = alloc_node(token_method_call, (yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));
   ;}
@@ -3975,7 +3977,7 @@ yyreduce:
   case 259:
 
 /* Line 1464 of yacc.c  */
-#line 832 "../parser.y"
+#line 834 "../parser.y"
     {
     if (parser->last_is_paren) {
       yyerror(parser, "bad parameter list");
@@ -3990,14 +3992,14 @@ yyreduce:
   case 260:
 
 /* Line 1464 of yacc.c  */
-#line 841 "../parser.y"
+#line 843 "../parser.y"
     { (yyval.n) = alloc_node(token_method_call, (yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n)); ;}
     break;
 
   case 261:
 
 /* Line 1464 of yacc.c  */
-#line 845 "../parser.y"
+#line 847 "../parser.y"
     {
     (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n));
   ;}
@@ -4006,7 +4008,7 @@ yyreduce:
   case 262:
 
 /* Line 1464 of yacc.c  */
-#line 851 "../parser.y"
+#line 853 "../parser.y"
     {
     (yyval.n) = alloc_node(token_method_call, (yyvsp[(1) - (3)].n), (yyvsp[(2) - (3)].n));
   ;}
@@ -4015,7 +4017,7 @@ yyreduce:
   case 263:
 
 /* Line 1464 of yacc.c  */
-#line 855 "../parser.y"
+#line 857 "../parser.y"
     {
     (yyval.n) = alloc_node(token_method_call, (yyvsp[(1) - (3)].n), (yyvsp[(2) - (3)].n));
   ;}
@@ -4024,14 +4026,14 @@ yyreduce:
   case 264:
 
 /* Line 1464 of yacc.c  */
-#line 860 "../parser.y"
+#line 862 "../parser.y"
     { (yyval.n) = alloc_node(token_object, (yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 265:
 
 /* Line 1464 of yacc.c  */
-#line 864 "../parser.y"
+#line 866 "../parser.y"
     {
     struct node * n = alloc_node(token_method_call, (yyvsp[(1) - (2)].n), NULL);
     (yyval.n) = pop_list(n, (yyvsp[(2) - (2)].n));
@@ -4041,7 +4043,7 @@ yyreduce:
   case 266:
 
 /* Line 1464 of yacc.c  */
-#line 869 "../parser.y"
+#line 871 "../parser.y"
     {
     struct node * n = alloc_node(token_method_call, (yyvsp[(2) - (4)].n), NULL);
     (yyval.n) = pop_list(n, (yyvsp[(4) - (4)].n));
@@ -4051,7 +4053,7 @@ yyreduce:
   case 267:
 
 /* Line 1464 of yacc.c  */
-#line 874 "../parser.y"
+#line 876 "../parser.y"
     {
     (yyval.n) = pop_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n));
   ;}
@@ -4060,21 +4062,21 @@ yyreduce:
   case 268:
 
 /* Line 1464 of yacc.c  */
-#line 879 "../parser.y"
+#line 881 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n); ;}
     break;
 
   case 269:
 
 /* Line 1464 of yacc.c  */
-#line 880 "../parser.y"
+#line 882 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n)); ;}
     break;
 
   case 270:
 
 /* Line 1464 of yacc.c  */
-#line 884 "../parser.y"
+#line 886 "../parser.y"
     {
     (yyval.n) = (yyvsp[(2) - (2)].n);
     parser->last_is_paren = 0;
@@ -4084,7 +4086,7 @@ yyreduce:
   case 271:
 
 /* Line 1464 of yacc.c  */
-#line 889 "../parser.y"
+#line 891 "../parser.y"
     {
     (yyval.n) = (yyvsp[(2) - (2)].n);
     parser->last_is_paren = 1;
@@ -4094,294 +4096,294 @@ yyreduce:
   case 272:
 
 /* Line 1464 of yacc.c  */
-#line 895 "../parser.y"
+#line 897 "../parser.y"
     { (yyval.n) = 0;   ;}
     break;
 
   case 273:
 
 /* Line 1464 of yacc.c  */
-#line 896 "../parser.y"
+#line 898 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 274:
 
 /* Line 1464 of yacc.c  */
-#line 899 "../parser.y"
+#line 901 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 275:
 
 /* Line 1464 of yacc.c  */
-#line 900 "../parser.y"
+#line 902 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 276:
 
 /* Line 1464 of yacc.c  */
-#line 904 "../parser.y"
+#line 906 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 277:
 
 /* Line 1464 of yacc.c  */
-#line 905 "../parser.y"
+#line 907 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (3)].n), (yyvsp[(3) - (3)].n)); ;}
     break;
 
   case 278:
 
 /* Line 1464 of yacc.c  */
-#line 909 "../parser.y"
+#line 911 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 279:
 
 /* Line 1464 of yacc.c  */
-#line 910 "../parser.y"
+#line 912 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 280:
 
 /* Line 1464 of yacc.c  */
-#line 911 "../parser.y"
+#line 913 "../parser.y"
     { (yyval.n) = alloc_node(token_hash, (yyvsp[(1) - (1)].n), NULL);  ;}
     break;
 
   case 281:
 
 /* Line 1464 of yacc.c  */
-#line 915 "../parser.y"
+#line 917 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 282:
 
 /* Line 1464 of yacc.c  */
-#line 916 "../parser.y"
+#line 918 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
   case 283:
 
 /* Line 1464 of yacc.c  */
-#line 919 "../parser.y"
+#line 921 "../parser.y"
     { (yyval.n) = alloc_node(token_plus, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));    ;}
     break;
 
   case 284:
 
 /* Line 1464 of yacc.c  */
-#line 920 "../parser.y"
+#line 922 "../parser.y"
     { (yyval.n) = alloc_node(token_minus, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));   ;}
     break;
 
   case 285:
 
 /* Line 1464 of yacc.c  */
-#line 921 "../parser.y"
+#line 923 "../parser.y"
     { (yyval.n) = alloc_node(token_mul, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 286:
 
 /* Line 1464 of yacc.c  */
-#line 922 "../parser.y"
+#line 924 "../parser.y"
     { (yyval.n) = alloc_node(token_div, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 287:
 
 /* Line 1464 of yacc.c  */
-#line 923 "../parser.y"
+#line 925 "../parser.y"
     { (yyval.n) = alloc_node(token_mod, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 288:
 
 /* Line 1464 of yacc.c  */
-#line 924 "../parser.y"
+#line 926 "../parser.y"
     { (yyval.n) = alloc_node(token_exp, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 289:
 
 /* Line 1464 of yacc.c  */
-#line 925 "../parser.y"
+#line 927 "../parser.y"
     { (yyval.n) = alloc_node(token_bit_and, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n)); ;}
     break;
 
   case 290:
 
 /* Line 1464 of yacc.c  */
-#line 926 "../parser.y"
+#line 928 "../parser.y"
     { (yyval.n) = alloc_node(token_bit_or, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 291:
 
 /* Line 1464 of yacc.c  */
-#line 927 "../parser.y"
+#line 929 "../parser.y"
     { (yyval.n) = alloc_node(token_bit_xor, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n)); ;}
     break;
 
   case 292:
 
 /* Line 1464 of yacc.c  */
-#line 928 "../parser.y"
+#line 930 "../parser.y"
     { (yyval.n) = alloc_node(token_lshift, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 293:
 
 /* Line 1464 of yacc.c  */
-#line 929 "../parser.y"
+#line 931 "../parser.y"
     { (yyval.n) = alloc_node(token_rshift, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 294:
 
 /* Line 1464 of yacc.c  */
-#line 930 "../parser.y"
+#line 932 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n);  ;}
     break;
 
   case 295:
 
 /* Line 1464 of yacc.c  */
-#line 931 "../parser.y"
+#line 933 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n);  ;}
     break;
 
   case 296:
 
 /* Line 1464 of yacc.c  */
-#line 932 "../parser.y"
+#line 934 "../parser.y"
     { (yyval.n) = (yyvsp[(2) - (3)].n);  ;}
     break;
 
   case 297:
 
 /* Line 1464 of yacc.c  */
-#line 933 "../parser.y"
+#line 935 "../parser.y"
     { (yyval.n) = alloc_node(token_cmp, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 298:
 
 /* Line 1464 of yacc.c  */
-#line 934 "../parser.y"
+#line 936 "../parser.y"
     { (yyval.n) = alloc_node(token_eq, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));      ;}
     break;
 
   case 299:
 
 /* Line 1464 of yacc.c  */
-#line 935 "../parser.y"
+#line 937 "../parser.y"
     { (yyval.n) = alloc_node(token_neq, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 300:
 
 /* Line 1464 of yacc.c  */
-#line 936 "../parser.y"
+#line 938 "../parser.y"
     { (yyval.n) = alloc_node(token_eqq, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 301:
 
 /* Line 1464 of yacc.c  */
-#line 937 "../parser.y"
+#line 939 "../parser.y"
     { (yyval.n) = alloc_node(token_match, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));   ;}
     break;
 
   case 302:
 
 /* Line 1464 of yacc.c  */
-#line 938 "../parser.y"
+#line 940 "../parser.y"
     { (yyval.n) = alloc_node(token_nmatch, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 303:
 
 /* Line 1464 of yacc.c  */
-#line 939 "../parser.y"
+#line 941 "../parser.y"
     { (yyval.n) = alloc_node(token_greater, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n)); ;}
     break;
 
   case 304:
 
 /* Line 1464 of yacc.c  */
-#line 940 "../parser.y"
+#line 942 "../parser.y"
     { (yyval.n) = alloc_node(token_lesser, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 305:
 
 /* Line 1464 of yacc.c  */
-#line 941 "../parser.y"
+#line 943 "../parser.y"
     { (yyval.n) = alloc_node(token_geq, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 306:
 
 /* Line 1464 of yacc.c  */
-#line 942 "../parser.y"
+#line 944 "../parser.y"
     { (yyval.n) = alloc_node(token_leq, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 307:
 
 /* Line 1464 of yacc.c  */
-#line 943 "../parser.y"
+#line 945 "../parser.y"
     { (yyval.n) = alloc_node(token_or, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));      ;}
     break;
 
   case 308:
 
 /* Line 1464 of yacc.c  */
-#line 944 "../parser.y"
+#line 946 "../parser.y"
     { (yyval.n) = alloc_node(token_and, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));     ;}
     break;
 
   case 309:
 
 /* Line 1464 of yacc.c  */
-#line 945 "../parser.y"
+#line 947 "../parser.y"
     { (yyval.n) = alloc_node(token_kw_or, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));   ;}
     break;
 
   case 310:
 
 /* Line 1464 of yacc.c  */
-#line 946 "../parser.y"
+#line 948 "../parser.y"
     { (yyval.n) = alloc_node(token_kw_and, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));  ;}
     break;
 
   case 311:
 
 /* Line 1464 of yacc.c  */
-#line 947 "../parser.y"
+#line 949 "../parser.y"
     { (yyval.n) = alloc_node(token_dot2, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));    ;}
     break;
 
   case 312:
 
 /* Line 1464 of yacc.c  */
-#line 948 "../parser.y"
+#line 950 "../parser.y"
     { (yyval.n) = alloc_node(token_dot3, (yyvsp[(1) - (4)].n), (yyvsp[(4) - (4)].n));    ;}
     break;
 
   case 313:
 
 /* Line 1464 of yacc.c  */
-#line 950 "../parser.y"
+#line 952 "../parser.y"
     {
     (yyval.n) = alloc_cond(token_ternary, (yyvsp[(1) - (8)].n), (yyvsp[(4) - (8)].n), (yyvsp[(8) - (8)].n));
   ;}
@@ -4390,70 +4392,70 @@ yyreduce:
   case 314:
 
 /* Line 1464 of yacc.c  */
-#line 953 "../parser.y"
+#line 955 "../parser.y"
     { (yyval.n) = alloc_node(token_kw_not, (yyvsp[(3) - (3)].n), NULL);;}
     break;
 
   case 315:
 
 /* Line 1464 of yacc.c  */
-#line 954 "../parser.y"
+#line 956 "../parser.y"
     { (yyval.n) = alloc_node(token_neg, (yyvsp[(3) - (3)].n), NULL);   ;}
     break;
 
   case 316:
 
 /* Line 1464 of yacc.c  */
-#line 955 "../parser.y"
+#line 957 "../parser.y"
     { (yyval.n) = alloc_node(token_not, (yyvsp[(3) - (3)].n), NULL);   ;}
     break;
 
   case 317:
 
 /* Line 1464 of yacc.c  */
-#line 956 "../parser.y"
+#line 958 "../parser.y"
     { (yyval.n) = alloc_node(token_unary_plus, (yyvsp[(3) - (3)].n), NULL);  ;}
     break;
 
   case 318:
 
 /* Line 1464 of yacc.c  */
-#line 957 "../parser.y"
+#line 959 "../parser.y"
     { (yyval.n) = alloc_node(token_unary_minus, (yyvsp[(3) - (3)].n), NULL); ;}
     break;
 
   case 319:
 
 /* Line 1464 of yacc.c  */
-#line 958 "../parser.y"
+#line 960 "../parser.y"
     { (yyval.n) = alloc_node(token_defined, (yyvsp[(3) - (3)].n), NULL);     ;}
     break;
 
   case 320:
 
 /* Line 1464 of yacc.c  */
-#line 959 "../parser.y"
+#line 961 "../parser.y"
     { (yyval.n) = update_list((yyvsp[(1) - (2)].n), (yyvsp[(2) - (2)].n)); ;}
     break;
 
   case 321:
 
 /* Line 1464 of yacc.c  */
-#line 960 "../parser.y"
+#line 962 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n)   ;}
     break;
 
   case 322:
 
 /* Line 1464 of yacc.c  */
-#line 961 "../parser.y"
+#line 963 "../parser.y"
     { (yyval.n) = (yyvsp[(1) - (1)].n);  ;}
     break;
 
 
 
 /* Line 1464 of yacc.c  */
-#line 4457 "../parser.c"
+#line 4459 "../parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -4665,7 +4667,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 964 "../parser.y"
+#line 966 "../parser.y"
 
 #undef parser
 #undef yylex
@@ -4719,6 +4721,7 @@ void init_parser(struct parser_t * p)
   p->line = 1;
   p->column = 0;
   p->name = NULL;
+  p->string_names = NULL;
 }
 
 void free_parser(struct parser_t * p)
@@ -4736,7 +4739,7 @@ void free_parser(struct parser_t * p)
 /* Read the file's source code and allocate it for further inspection. */
 int retrieve_source(struct parser_t * p, FILE * fd)
 {
-  int length, check;
+  int length;
 
   fseek(fd, 0, SEEK_END);
   length = ftell(fd);
@@ -4750,7 +4753,7 @@ int retrieve_source(struct parser_t * p, FILE * fd)
     fprintf(stderr, "Cannot store contents\n");
     return -1;
   }
-  check = fread(p->blob, length, 1, fd);
+  fread(p->blob, length, 1, fd);
   if (ferror(fd)) {
     fprintf(stderr, "Reading error\n");
     return -1;
@@ -4897,6 +4900,25 @@ void pop_stack(struct parser_t * parser, struct node * n)
   n->name = parser->stack[0]->name;
   parser->stack[0] = parser->stack[1];
   parser->sp--;
+}
+
+/* Push a string variable */
+void push_string(struct parser_t * parser, char * buffer)
+{
+  struct node * new_node = alloc_node(token_object, NULL, NULL);
+
+  new_node->name = strdup(buffer);
+  if (!parser->string_names)
+    parser->string_names = new_node;
+  else
+    parser->string_names = update_list(parser->string_names, new_node);
+}
+
+/* Pop a list of string variables */
+void pop_string(struct parser_t * parser, struct node * n)
+{
+  n->l = parser->string_names;
+  parser->string_names = NULL;
 }
 
 /*
@@ -5205,6 +5227,7 @@ static int parser_yylex(struct parser_t * parser)
       int kind = guess_kind(*(c + 1));
       unsigned char is_simple = isSimple(*(c + 1));
       char open, close;
+      char * ptr;
 
       if (*(c + 2) != '(' && *(c + 2) != '[' && *(c + 2) != '{' && !is_simple) {
         yyerror(parser, "unterminated string meets end of file");
@@ -5219,12 +5242,16 @@ static int parser_yylex(struct parser_t * parser)
         if (*c == '#' && *(c + 1) == '{') {
           c += 2;
           curs += 2;
-          for (; *c != '}'; ++c, ++curs)
+          for (ptr = buffer; *c != '}'; ++c, ++curs) {
+            *ptr++ = *c;
             if (curs >= len) {
               yyerror(parser, "expecting '}' token in string");
               curs = len + 1; /* So we can force curs >= len error */
               break;
             }
+          }
+          *ptr = '\0';
+          push_string(parser, buffer);
           c++;
           curs++;
         }
@@ -5338,18 +5365,24 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     t = STRING;
   } else if (*c == '"') {
+    char * ptr;
+
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
         c += 2;
         curs += 2;
-        for (; *c != '}'; ++c, ++curs)
+        for (ptr = buffer; *c != '}'; ++c, ++curs) {
+          *ptr++ = *c;
           if (curs >= len || *c == '"') {
             yyerror(parser, "expecting '}' token in string");
             curs = len + 1; /* So we can force curs >= len error */
             break;
           }
+        }
+        *ptr = '\0';
+        push_string(parser, buffer);
       }
       if (*c == '\\' && *(c + 1) == '"') {
         c += 2;
@@ -5384,18 +5417,24 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     t = tCOMMA;
   } else if (*c == '`') {
+    char * ptr;
+
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
         c += 2;
         curs += 2;
-        for (; *c != '}'; ++c, ++curs)
+        for (ptr = buffer; *c != '}'; ++c, ++curs) {
+          *ptr++ = *c;
           if (curs >= len || *c == '`') {
             yyerror(parser, "expecting '}' token in backtick command");
             curs = len + 1; /* So we can force curs >= len error */
             break;
           }
+        }
+        *ptr = '\0';
+        push_string(parser, buffer);
       }
       if (*c == '\\' && *(c + 1) == '`') {
         curs += 2;
@@ -5421,7 +5460,7 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     parser_dot_seen(t, tXOR_BIT);
   }
- 
+
   /*
    * Once we have the token id, we should update the parser
    * flags to avoid conflicts and weird behavior :P

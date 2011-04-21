@@ -3,7 +3,6 @@ ToDo:
 
 - Parser: Parens & other_keywords shouldn't be allowed in mlhs. (waiting for adymo's opinion)
 - Parser: goto "Ambiguities". (waiting for adymo's opinion)
-- Parser: Get names between #{ }
 - Parser: Take a look at ToDo's
 - Parser: Try to reduce actual conflicts.
 - General: Test, Test, Test,...
