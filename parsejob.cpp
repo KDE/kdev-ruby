@@ -66,10 +66,10 @@ namespace Ruby
 ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
-    , m_url (url)
     , m_lastAst(NULL)
 {
-    /* There's nothing to do here */
+    m_parent = parent;
+    m_url = url;
 }
 
 ParseJob::~ParseJob()

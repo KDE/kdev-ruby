@@ -27,6 +27,7 @@
 #include <language/backgroundparser/parsejob.h>
 #include <parser/node.h>
 
+
 class RubyLanguageSupport;
 
 namespace Ruby
@@ -39,22 +40,41 @@ class ParseJob : public KDevelop::ParseJob
     Q_OBJECT
 
 public:
-    enum {
-        Resheduled = KDevelop::TopDUContext::LastFeature
-    };
+    enum { Resheduled = KDevelop::TopDUContext::LastFeature };
 
-    ParseJob( const KUrl &url, RubyLanguageSupport* parent );
+    /**
+     * Constructor.
+     *
+     * @param url the url of the file to parse.
+     * @param parent the RubyLanguageSupport this ParseJob is parented to.
+     */
+    ParseJob(const KUrl & url, RubyLanguageSupport * parent);
 
+    /**
+     * Destructor.
+     */
     virtual ~ParseJob();
 
+    /**
+     * @return static accessor to avoid casting.
+     */
     RubyLanguageSupport * ruby() const;
 
 protected:
+    /**
+     * Runs this ParseJob.
+     */
     virtual void run();
 
 private:
+    /**
+     * @internal Called by the run() method. It's used to do the
+     * parsing magic.
+     */
     void parse();
 
+private:
+    const RubyLanguageSupport * m_parent;
     KUrl m_url;
     RubyParser * m_parser;
     RubyAst * m_lastAst;
@@ -62,4 +82,6 @@ private:
 
 } // end of namespace ruby
 
+
 #endif
+
