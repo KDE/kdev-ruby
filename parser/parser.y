@@ -1,27 +1,27 @@
 /* This file is part of KDevelop
-
-   This file is based on the file parse.y from the MRI, version 1.9.2-p136.
-   So, at this point I must recognize the amazing job ruby developers
-   are doing and specially Yukihiro Matsumoto, the Ruby original author
-   and the one who signed parse.y.
-
-   Copyright (C) 1993-2007 Yukihiro Matsumoto
-   Copyright (C) 2010  Miquel Sabaté <mikisabate@gmail.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc.,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ *
+ * This file is based on the file parse.y from the MRI, version 1.9.2-p136.
+ * So, at this point I must recognize the amazing job ruby developers
+ * are doing and specially Yukihiro Matsumoto, the Ruby original author
+ * and the one who signed parse.y.
+ *
+ * Copyright (C) 1993-2007 Yukihiro Matsumoto
+ * Copyright (C) 2010  Miquel Sabaté <mikisabate@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 
 %{
@@ -37,7 +37,6 @@
 /* Flags used by the lexer */
 struct flags {
   unsigned char eof_reached;
-  unsigned char error;
   unsigned char expr_seen;
   unsigned char class_seen;
   unsigned char no_block;
@@ -46,7 +45,6 @@ struct flags {
 };
 
 #define eof_reached lexer_flags.eof_reached
-#define error lexer_flags.error
 #define expr_seen lexer_flags.expr_seen
 #define class_seen lexer_flags.class_seen
 #define no_block lexer_flags.no_block
@@ -76,7 +74,7 @@ struct parser_t {
   int in_def;
 
   /* Errors on the file */
-  char ** errors;
+  struct error_t errors[2];
   int error_index;
 
   /* Stack of names */
@@ -87,6 +85,7 @@ struct parser_t {
   unsigned long cursor;
   unsigned long length;
   unsigned int line;
+  unsigned int column;
   char * name;
   char * blob;
 };
@@ -168,7 +167,7 @@ void pop_stack(struct parser_t * parser, struct node * n);
 parser_start: /* nothing */ EOL   { parser->ast = NULL; YYACCEPT; }
   | stmt
   {
-    if (parser->error) {
+    if (parser->errors[0].valid == 1) {
       free_ast(parser->ast);
       parser->ast = NULL;
     } else
@@ -1001,17 +1000,18 @@ void init_parser(struct parser_t * p)
   p->blob = NULL;
   p->cursor = 0;
   p->eof_reached = 0;
-  p->error = 0;
   p->expr_seen = 0;
   p->class_seen = 0;
   p->no_block = 0;
   p->dot_seen = 0;
   p->last_is_paren = 0;
   p->in_def = 0;
-  p->errors = (char **) malloc (sizeof(char));
+  p->errors[0].valid = 0;
+  p->errors[1].valid = 0;
   p->error_index = 0;
   p->sp = 0;
   p->line = 1;
+  p->column = 0;
   p->name = NULL;
 }
 
@@ -1223,6 +1223,7 @@ static int parser_yylex(struct parser_t * parser)
     parser->no_block = 0;
     parser->expr_seen = 0;
     parser->dot_seen = 0;
+    parser->column = -1; /* So it's correct after curs++ */
     parser->line++;
     curs++;
   } else if (isdigit(*c)) {
@@ -1726,6 +1727,7 @@ static int parser_yylex(struct parser_t * parser)
     parser->dot_seen = 0;
   }
 
+  parser->column += curs - parser->cursor;
   parser->cursor = curs;
   if (curs >= len)
     parser->eof_reached = 1;
@@ -1757,11 +1759,14 @@ void yyerror(struct parser_t * p, const char * s, ...)
 
   sprintf(err, "%s:%i: ", p->name, p->line);
   strcat(err, s);
-  *(p->errors + p->error_index) = strdup(err);
+
+  p->errors[p->error_index].msg = strdup(err);
+  p->errors[p->error_index].line = p->line;
+  p->errors[p->error_index].col = p->column;
+  p->errors[p->error_index].valid = 1;
   p->error_index++;
 
   p->eof_reached = 1;
-  p->error = 1;
 }
 
 RubyAst * rb_compile_file(const char * path)
@@ -1779,7 +1784,6 @@ RubyAst * rb_compile_file(const char * path)
   /* Set up parser */
   init_parser(&p);
   if (retrieve_source(&p, fd) < 0) {
-    free(p.errors);
     fclose(fd);
     return 0;
   }
@@ -1796,8 +1800,8 @@ RubyAst * rb_compile_file(const char * path)
         update_list(result->tree, p.ast);
     }
     if (p.eof_reached) {
-      result->valid_error = p.error;
-      result->errors = p.errors;
+      result->errors[0] = p.errors[0];
+      result->errors[1] = p.errors[1];
       break;
     }
   }
@@ -1825,7 +1829,6 @@ int yycompile_file(const char * path)
   /* Set up parser */
   init_parser(&p);
   if (retrieve_source(&p, fd) < 0) {
-    free(p.errors);
     fclose(fd);
     return 0;
   }

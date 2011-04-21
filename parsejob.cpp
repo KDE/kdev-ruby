@@ -136,15 +136,17 @@ void ParseJob::run()
 
 void ParseJob::parse()
 {
-    m_parser->freeAst(m_lastAst);
+    m_parser->freeAst(m_lastAst); /* TODO: It may go after the builder */
     m_lastAst = m_parser->parse();
 
     if (m_lastAst != NULL) {
         kDebug() << "Everything is fine " << m_lastAst->tree->kind << endl;
     } else {
         kDebug() << "Failed\n";
-        foreach (ProblemPointer p, m_parser->m_problems)
+        foreach (ProblemPointer p, m_parser->m_problems) {
+            kDebug() << p->range();
             kDebug() << p->description();
+        }
     }
 //     KDevelop::ReferencedTopDUContext top;
 //     {

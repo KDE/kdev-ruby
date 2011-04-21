@@ -1,20 +1,21 @@
 /* This file is part of KDevelop
-   Copyright (C) 2010  Miquel Sabaté <mikisabate@gmail.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc.,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ *
+ * Copyright (C) 2010  Miquel Sabaté <mikisabate@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 
 #include <stdio.h>
@@ -137,12 +138,16 @@ void print_node(struct node * n)
   }
 }
 
-void print_errors(char ** errors)
+void print_errors(struct error_t * errors)
 {
-  char ** p;
+  int i;
 
-  for (p = errors; *p != NULL; ++p)
-    printf("%s\n", *p);
+  for (i = 0; i < 2; ++i) {
+    if (errors[i].valid) {
+      printf("Line: %i, Column: %i; %s",  errors[i].line, errors[i].col,
+                                          errors[i].msg);
+    }
+  }
 }
 
 void free_ast(struct node * n)
@@ -159,12 +164,13 @@ void free_ast(struct node * n)
   free(n);
 }
 
-void free_errors(char ** errors)
+void free_errors(struct error_t * errors)
 {
-  char ** p;
+  int i;
 
-  for (p = errors; *p != NULL; p++)
-    free(*p);
-  free(errors);
+  for (i = 0; i < 2; ++i) {
+    if (errors[i].valid)
+      free(errors[i].msg);
+  }
 }
 

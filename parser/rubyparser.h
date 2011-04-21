@@ -17,11 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/*
- * TODO:
- *  - In appendProblems, we have to store ranges.
- */
-
 
 #ifndef RUBYPARSER_H
 #define RUBYPARSER_H
@@ -84,12 +79,12 @@ public:
 private:
     /**
      * @internal called when there are errors in the current
-     * document and we want to append them in a list of
+     * document and we want to append one of them in a list of
      * ProblemPointer's.
      *
-     * @param errors the errors that the parser has provided.
+     * @param givenError the error provided to this method.
      */
-    void appendProblems(char ** errors);
+    void appendProblem(struct error_t givenError);
 
 public:
     QList<KDevelop::ProblemPointer> m_problems;

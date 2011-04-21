@@ -51,8 +51,10 @@ RubyAst * RubyParser::parse()
     /* Let's call the parser ;) */
     RubyAst * result = rb_compile_file(m_currentDocument.c_str());
 
-    if (result->valid_error) {
-        appendProblems(result->errors);
+    if (result->errors[0].valid) {
+        appendProblem(result->errors[0]);
+        if (result->errors[1].valid)
+            appendProblem(result->errors[1]);
         return NULL;
     } else
         m_problems.clear();
@@ -65,16 +67,18 @@ void RubyParser::freeAst(RubyAst * ast)
         rb_free(ast);
 }
 
-void RubyParser::appendProblems(char ** errors)
+void RubyParser::appendProblem(struct error_t givenError)
 {
-    char ** ptr;
+    ProblemPointer problem(new Problem);
 
-    for (ptr = errors; *ptr != NULL; ptr++) {
-        ProblemPointer problem(new Problem);
-        problem->setDescription(QString(strdup(*ptr)));
-        problem->setSource(KDevelop::ProblemData::Parser);
-        m_problems << problem;
-    }
+    SimpleCursor cursor(givenError.line, givenError.col);
+    SimpleRange range(cursor, cursor);
+    DocumentRange location(m_currentDocument, range);
+    problem->setFinalLocation(location);
+    problem->setDescription(QString(givenError.msg));
+    problem->setSource(KDevelop::ProblemData::Parser);
+    problem->setSeverity(KDevelop::ProblemData::Error);
+    m_problems << problem;
 }
 
 } // End of namespace: Ruby
