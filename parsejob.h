@@ -55,11 +55,6 @@ public:
      */
     virtual ~ParseJob();
 
-    /**
-     * @return static accessor to avoid casting.
-     */
-    RubyLanguageSupport * ruby() const;
-
 protected:
     /**
      * Runs this ParseJob.
@@ -67,6 +62,11 @@ protected:
     virtual void run();
 
 private:
+    /**
+     * @return static accessor to avoid casting.
+     */
+    RubyLanguageSupport * ruby() const;
+
     /**
      * @internal Called by the run() method. It's used to do the
      * parsing magic.

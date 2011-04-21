@@ -111,6 +111,7 @@ void ParseJob::run()
         }
     }
 
+    /* TODO: Watch with this readContents ! */
     KDevelop::ProblemPointer p = readContents();
     if (p)
         return abortJob();
