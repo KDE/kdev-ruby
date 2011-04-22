@@ -51,6 +51,13 @@ public:
     ~RubyParser();
 
     /**
+     * Set the contents of the document.
+     *
+     * @param contents the contents of the file to parse.
+     */
+    void setContents(const QByteArray & contents);
+
+    /**
      * Set the current document.
      *
      * @param fileName the name of the current document.
@@ -91,6 +98,7 @@ public:
 
 private:
     IndexedString m_currentDocument;
+    const char * m_contents;
 };
 
 

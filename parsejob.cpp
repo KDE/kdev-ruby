@@ -112,16 +112,16 @@ void ParseJob::run()
     }
 
     QReadLocker parseLock(ruby()->language()->parseLock());
-    /* TODO: Watch with this readContents ! */
     KDevelop::ProblemPointer p = readContents();
-    if (p)
-        return abortJob();
-    /* TODO: ToUtf ?¿ */
-    QString cont = contents().contents;
-
-    if (abortRequested())
+    if (p || abortRequested())
         return abortJob();
 
+    /*
+     * NOTE: Although the parser can retrieve the contents on its own,
+     * it's better to use contents().contents because this way the contents
+     * are converted in utf8 format always.
+     */
+    m_parser->setContents(contents().contents);
     m_parser->setCurrentDocument(m_url);
     parse();
 

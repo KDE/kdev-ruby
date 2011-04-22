@@ -170,11 +170,16 @@ typedef struct node Node;
 /* Interface to the parser */
 
 /**
- * Generate the AST of a given ruby file.
+ * Generate the AST of a given ruby file. Note that the original
+ * parser retrieved the contents on its own. However, the plugin
+ * can ensure that the contents will be in utf8 format, so it's
+ * better to let the plugin retrieve the contents for us.
+ *
  * @param path the path where the file is located.
+ * @param contents the contents in utf8 format.
  * @return an AST that represents the code.
  */
-RubyAst * rb_compile_file(const char * path);
+RubyAst * rb_compile_file(const char * path, const char * contents);
 
 /**
  * Free a RubyAst.

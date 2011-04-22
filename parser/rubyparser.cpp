@@ -28,12 +28,17 @@ namespace Ruby
 
 RubyParser::RubyParser()
 {
-    /* There's nothing to do here! */
+    m_contents = NULL;
 }
 
 RubyParser::~RubyParser()
 {
     /* There's nothing to do here! */
+}
+
+void RubyParser::setContents(const QByteArray & contents)
+{
+    m_contents = contents.data();
 }
 
 void RubyParser::setCurrentDocument(const KUrl & fileName)
@@ -49,7 +54,7 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    RubyAst * result = rb_compile_file(m_currentDocument.c_str());
+    RubyAst * result = rb_compile_file(m_currentDocument.c_str(), m_contents);
 
     if (result->errors[0].valid) {
         appendProblem(result->errors[0]);

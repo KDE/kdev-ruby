@@ -103,6 +103,7 @@ void yyerror(struct parser_t * p, const char * s, ...);
 void init_parser(struct parser_t * p);
 void free_parser(struct parser_t * p);
 int retrieve_source(struct parser_t * p, FILE * fd);
+void update_contents(struct parser_t * p, const char * contents);
 int check_lhs(struct node * n);
 void pop_stack(struct parser_t * parser, struct node * n);
 void pop_string(struct parser_t * parser, struct node * n);
@@ -1057,6 +1058,13 @@ int retrieve_source(struct parser_t * p, FILE * fd)
   return 0;
 }
 
+/* We only have to update some attributes about the contents */
+void update_contents(struct parser_t * p, const char * contents)
+{
+  p->blob = strdup(contents);
+  p->length = strlen(contents);
+}
+
 int check_lhs(struct node * n)
 {
   if (n == NULL || n->kind == token_array_value)
@@ -1809,26 +1817,17 @@ void yyerror(struct parser_t * p, const char * s, ...)
   p->eof_reached = 1;
 }
 
-RubyAst * rb_compile_file(const char * path)
+RubyAst * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
   RubyAst * result;
 
-  /* Open specified file */
-  FILE * fd = fopen(path, "r");
-  if (!fd) {
-    fprintf(stderr, "Cannot open file: %s\n", path);
-    return 0;
-  }
-
   /* Set up parser */
   init_parser(&p);
-  if (retrieve_source(&p, fd) < 0) {
-    fclose(fd);
-    return 0;
-  }
-
+  update_contents(&p, contents);
   p.name = strdup(path);
+
+  /* Initialize the RubyAst & enter the "parsing" loop */
   result = (RubyAst *) malloc (sizeof(RubyAst));
   result->tree = NULL;
   for (;;) {
