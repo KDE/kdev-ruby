@@ -111,6 +111,7 @@ void ParseJob::run()
         }
     }
 
+    QReadLocker parseLock(ruby()->language()->parseLock());
     /* TODO: Watch with this readContents ! */
     KDevelop::ProblemPointer p = readContents();
     if (p)
@@ -122,7 +123,6 @@ void ParseJob::run()
         return abortJob();
 
     m_parser->setCurrentDocument(m_url);
-    QReadLocker parseLock(ruby()->language()->parseLock());
     parse();
 
     if ( abortRequested() )
