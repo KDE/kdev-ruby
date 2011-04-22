@@ -51,7 +51,7 @@
 
 #include <QExtensionFactory>
 
-#include "parsejob.h"
+#include "rubyparsejob.h"
 #include "navigation/railsswitchers.h"
 #include "navigation/railsdataprovider.h"
 

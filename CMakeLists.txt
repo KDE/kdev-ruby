@@ -20,7 +20,7 @@ add_subdirectory(navigation)
 add_subdirectory(app_templates)
 
 set(kdevrubylanguagesupport_PART_SRCS
-    parsejob.cpp
+    rubyparsejob.cpp
     rubylanguagesupport.cpp
 )
 
