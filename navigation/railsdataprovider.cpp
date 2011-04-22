@@ -51,8 +51,10 @@ QString RailsQuickOpenData::htmlDescription() const
     return "<small><small>" + m_explanation + ' ' + m_item.originUrl.fileName() + "</small></small>";
 }
 
-bool RailsQuickOpenData::execute(QString& filterText)
+/* TODO: to adymo from mssola: what is this parameter ? */
+bool RailsQuickOpenData::execute(QString & filterText)
 {
+    Q_UNUSED(filterText);
     KDevelop::ICore::self()->documentController()->openDocument( m_item.url );
     return true;
 }

@@ -21,42 +21,18 @@
 
 /* TODO: Clean This mess */
 
-#include "parsejob.h"
-
-#include <cassert>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-
-#include "Thread.h"
-
-#include <QFile>
-#include <QRegExp>
-#include <QByteArray>
 #include <QReadLocker>
-
-#include <kdebug.h>
-#include <klocale.h>
-
-#include <ktexteditor/document.h>
+#include <KDebug>
 
 #include <interfaces/ilanguage.h>
-
-#include <language/duchain/duchain.h>
-#include <language/duchain/duchainlock.h>
-#include <language/duchain/declaration.h>
-#include <language/duchain/topducontext.h>
-#include <language/duchain/parsingenvironment.h>
-#include <language/duchain/persistentsymboltable.h>
-
 #include <language/backgroundparser/urlparselock.h>
 
+#include "parsejob.h"
 #include "rubylanguagesupport.h"
-// #include "parser/parser.h"
 #include <parser/rubyparser.h>
-// #include <parser/node.h>
-#include "duchain/declarationbuilder.h"
-#include "duchain/editorintegrator.h"
+#include <duchain/declarationbuilder.h>
+#include <duchain/editorintegrator.h>
+
 
 using namespace KDevelop;
 
@@ -67,6 +43,7 @@ ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
     , m_lastAst(NULL)
+    , m_top (NULL)
 {
     m_parent = parent;
     m_url = url;
@@ -123,61 +100,72 @@ void ParseJob::run()
      */
     m_parser->setContents(contents().contents);
     m_parser->setCurrentDocument(m_url);
-    parse();
+    m_lastAst = m_parser->parse();
+/* TODO: I'm not sure about the code below ;)
+    KDevelop::ReferencedTopDUContext top;
+    {
+        KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
+        top = KDevelop::DUChain::self()->chainForDocument(document());
+    }
+    if (top) {
+        kDebug() << "re-compiling" << document().str();
+        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+        top->clearImportedParentContexts();
+        top->parsingEnvironmentFile()->clearModificationRevisions();
+        top->clearProblems();
+    } else
+        kDebug() << "compiling" << document().str();*/
 
-    if ( abortRequested() )
+    if (m_lastAst != NULL) {
+        if (abortRequested())
+            return abortJob();
+
+        EditorIntegrator editor;
+        DeclarationBuilder builder(&editor);
+//         m_top = builder.build(document(), m_lastAst, m_top);
+        m_parser->freeAst(m_lastAst);
+        setDuChain(m_top);
+
+        DUChainWriteLocker lock(DUChain::lock());
+        m_top->setFeatures(minimumFeatures());
+        KDevelop::ParsingEnvironmentFilePointer file = m_top->parsingEnvironmentFile();
+        file->setModificationRevision(contents().modification);
+        KDevelop::DUChain::self()->updateContextEnvironment(m_top->topContext(), file.data());
+        kDebug() << "**** Parsing Succeeded ****";
+
+        /* TODO: Here will go highlighting handling ;) */
+    } else {
+        kWarning() << "**** Parsing Failed ****";
+        DUChainWriteLocker lock;
+        m_top = DUChain::self()->chainForDocument(document());
+        if ( m_top ) {
+            m_top->parsingEnvironmentFile()->clearModificationRevisions();
+            m_top->clearProblems();
+        }
+        else {
+            ParsingEnvironmentFile * file = new ParsingEnvironmentFile(document());
+            static const IndexedString langString("Ruby");
+            file->setLanguage(langString);
+            m_top = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
+            DUChain::self()->addDocumentChain(m_top);
+        }
+
+        setDuChain(m_top);
+    }
+
+    DUChainWriteLocker lock(DUChain::lock());
+    foreach (ProblemPointer p, m_parser->m_problems) {
+        kDebug() << "Added problem to context";
+        m_top->addProblem(p);
+    }
+    setDuChain(m_top);
+
+    if (abortRequested())
         return abortJob();
 }
 
-void ParseJob::parse()
-{
-    m_parser->freeAst(m_lastAst); /* TODO: It may go after the builder */
-    m_lastAst = m_parser->parse();
+} // End of namespace ruby
 
-    if (m_lastAst != NULL) {
-        kDebug() << "Everything is fine " << m_lastAst->tree->kind << endl;
-    } else {
-        kDebug() << "Failed\n";
-        foreach (ProblemPointer p, m_parser->m_problems) {
-            kDebug() << p->range();
-            kDebug() << p->description();
-        }
-    }
-//     KDevelop::ReferencedTopDUContext top;
-//     {
-//         KDevelop::DUChainReadLocker lock(KDevelop::DUChain::lock());
-//         top = KDevelop::DUChain::self()->chainForDocument(document());
-//     }
-//     if (top) {
-//         kDebug() << "re-compiling" << document().str();
-//         KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-//         top->clearImportedParentContexts();
-//         top->parsingEnvironmentFile()->clearModificationRevisions();
-//         top->clearProblems();
-//     } else
-//         kDebug() << "compiling" << document().str();
-// 
-//     QReadLocker parseLock(ruby()->language()->parseLock());
-// 
-//     EditorIntegrator editor;
-//     editor.setUrl(document());
-//     DeclarationBuilder builder;
-//     builder.setEditor(&editor);
-//     top = builder.build(document(), programAST, top);
-//     delete programAST;
-// 
-//     setDuChain(top);
-// 
-//     KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-// 
-//     top->setFeatures(minimumFeatures());
-//     KDevelop::ParsingEnvironmentFilePointer file = top->parsingEnvironmentFile();
-//     
-//     file->setModificationRevision(contents().modification);
-//     KDevelop::DUChain::self()->updateContextEnvironment( top->topContext(), file.data() );
-
-}
-
-} // end of namespace ruby
 
 #include "parsejob.moc"
+

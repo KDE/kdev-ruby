@@ -67,20 +67,15 @@ private:
      */
     RubyLanguageSupport * ruby() const;
 
-    /**
-     * @internal Called by the run() method. It's used to do the
-     * parsing magic.
-     */
-    void parse();
-
 private:
     const RubyLanguageSupport * m_parent;
     KUrl m_url;
     RubyParser * m_parser;
     RubyAst * m_lastAst;
+    KDevelop::ReferencedTopDUContext m_top;
 };
 
-} // end of namespace ruby
+} // End of namespace ruby
 
 
 #endif
