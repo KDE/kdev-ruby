@@ -1,50 +1,43 @@
-/*
-* This file is part of KDevelop
-*
-* Copyright 2010 Niko Sams <niko.sams@gmail.com>
-* Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Library General Public License as
-* published by the Free Software Foundation; either version 2 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public
-* License along with this program; if not, write to the
-* Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*/
-#include "contextbuilder.h"
+/* This file is part of KDevelop
+ *
+ * Copyright 2010 Niko Sams <niko.sams@gmail.com>
+ * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-#include <language/duchain/duchain.h>
-#include <language/duchain/topducontext.h>
-#include <language/duchain/duchainlock.h>
-#include <language/duchain/declaration.h>
-#include <language/duchain/classdeclaration.h>
 
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/icompletionsettings.h>
+#include <duchain/contextbuilder.h>
+#include <duchain/editorintegrator.h>
 
-#include <klocalizedstring.h>
-
-// #include "parser/rubyast.h"
-#include "editorintegrator.h"
 
 namespace Ruby
 {
 
 ContextBuilder::ContextBuilder() : m_reportErrors(true)
 {
+    /* There's nothing to do here! */
 }
 
 ContextBuilder::~ContextBuilder()
 {
+    /* There's nothing to do here! */
 }
 
 KDevelop::ReferencedTopDUContext ContextBuilder::build(const KDevelop::IndexedString& url, Node* node,
@@ -61,30 +54,12 @@ void ContextBuilder::setEditor(EditorIntegrator* editor)
     m_editor = editor;
 }
 
-void ContextBuilder::startVisiting(Node* node)
+void ContextBuilder::startVisiting(Node * node)
 {
+    /* TODO */
 //     ProgramNode *ast = static_cast<ProgramNode*>(node);
 //     visitProgram(ast);
 }
-
-// void ContextBuilder::visitClass(ClassNode* ast)
-// {
-//     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Class, ast->name);
-//     Visitor::visitClass(ast);
-//     closeContext();
-// }
-
-// void ContextBuilder::visitFunction(FunctionNode* ast)
-// {
-//     openContext(ast, editorFindRange(ast, ast), KDevelop::DUContext::Function, ast->name);
-//     Visitor::visitFunction(ast);
-//     closeContext();
-// }
-
-// void ContextBuilder::visitFunctionArgument(FunctionArgumentNode* ast)
-// {
-//     Visitor::visitFunctionArgument(ast);
-// }
 
 KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file)
 {
@@ -97,10 +72,12 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
 
 void ContextBuilder::setContextOnNode(Node* /*node*/, KDevelop::DUContext* /*ctx*/)
 {
+    /* TODO */
 }
 
 KDevelop::DUContext* ContextBuilder::contextFromNode(Node* /*node*/)
 {
+    /* TODO */
     return 0;
 }
 
@@ -114,16 +91,17 @@ KDevelop::RangeInRevision ContextBuilder::editorFindRange(Node* fromRange, Node*
     return m_editor->findRange(fromRange, toRange);
 }
 
-KDevelop::CursorInRevision ContextBuilder::startPos(Node* node)
+KDevelop::CursorInRevision ContextBuilder::startPos(Node * node)
 {
     return m_editor->findPosition(node, EditorIntegrator::FrontEdge);
 }
-/*
-KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameNode* id)
+
+KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node * id)
 {
     if (!id)
         return KDevelop::QualifiedIdentifier();
     return KDevelop::QualifiedIdentifier(id->name);
-}*/
+}
 
 }
+
