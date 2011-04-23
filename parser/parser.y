@@ -1022,12 +1022,6 @@ void init_parser(struct parser_t * p)
 
 void free_parser(struct parser_t * p)
 {
-  int index;
-
-  for (index = 0; index < p->sp; index++) {
-    free(p->stack[index]->name);
-    free(p->stack[index]);
-  }
   free(p->blob);
   free(p->name);
 }
@@ -1201,6 +1195,7 @@ void push_stack(struct parser_t * parser, char * buf)
 void pop_stack(struct parser_t * parser, struct node * n)
 {
   n->name = parser->stack[0]->name;
+  free(parser->stack[0]);
   parser->stack[0] = parser->stack[1];
   parser->sp--;
 }
@@ -1803,12 +1798,7 @@ static int yylex(void * lval, void * p)
  */
 void yyerror(struct parser_t * p, const char * s, ...)
 {
-  char err[256];
-
-  sprintf(err, "%s:%i: ", p->name, p->line);
-  strcat(err, s);
-
-  p->errors[p->error_index].msg = strdup(err);
+  p->errors[p->error_index].msg = strdup(s);
   p->errors[p->error_index].line = p->line;
   p->errors[p->error_index].col = p->column;
   p->errors[p->error_index].valid = 1;
