@@ -74,9 +74,10 @@ void RubyParser::freeAst(RubyAst * ast)
 
 void RubyParser::appendProblem(struct error_t givenError)
 {
+    int col = (givenError.col > 0) ? givenError.col - 1 : 0;
     ProblemPointer problem(new Problem);
 
-    SimpleCursor cursor(givenError.line - 1, givenError.col - 1);
+    SimpleCursor cursor(givenError.line - 1, col);
     SimpleRange range(cursor, cursor);
     DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
