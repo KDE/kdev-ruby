@@ -1154,7 +1154,9 @@ int parse_heredoc(struct parser_t * p, char * c, int * curs, int len)
       i = -1;
     }
   }
-  yyerror(p, "Can't find string \"%s\" anywhere before EOF", buffer);
+  strcpy(aux, "Can't find string \"");
+  strcat(aux, buffer);
+  yyerror(p, strcat(aux, "\" anywhere before EOF"));
   return token_invalid;
 }
 
