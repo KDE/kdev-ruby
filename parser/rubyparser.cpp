@@ -54,8 +54,8 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    RubyAst * result = rb_compile_file(m_currentDocument.c_str(), m_contents);
-
+    RubyAst * result = rb_compile_file(m_currentDocument.str().toAscii(),
+                                       m_contents);
     if (result->errors[0].valid) {
         appendProblem(result->errors[0]);
         if (result->errors[1].valid)
@@ -76,7 +76,7 @@ void RubyParser::appendProblem(struct error_t givenError)
 {
     ProblemPointer problem(new Problem);
 
-    SimpleCursor cursor(givenError.line, givenError.col);
+    SimpleCursor cursor(givenError.line - 1, givenError.col - 1);
     SimpleRange range(cursor, cursor);
     DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
