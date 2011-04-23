@@ -26,6 +26,7 @@
 #include <parser/node.h>
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
+#include <language/duchain/identifier.h>
 
 namespace KDevelop {
 class Declaration;
@@ -37,7 +38,7 @@ namespace Ruby {
 // class NameAST;
 class EditorIntegrator;
 
-typedef KDevelop::AbstractDeclarationBuilder<Node, Node, Node> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<Node, Node, TypeBuilder> DeclarationBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
@@ -46,6 +47,7 @@ public:
     DeclarationBuilder() {}
 
 protected:
+    virtual KDevelop::QualifiedIdentifier identifierForNode(Node * node);
     virtual void closeDeclaration();
 //     virtual void visitClass(ClassAST* ast);
 //     virtual void visitFunction(FunctionAST* ast);

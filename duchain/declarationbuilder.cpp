@@ -33,10 +33,15 @@
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder(EditorIntegrator* editor):
+DeclarationBuilder::DeclarationBuilder(EditorIntegrator * editor):
     DeclarationBuilderBase()
 {
-//     setEditor(editor);
+    setEditor(editor);
+}
+
+KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node * node)
+{
+    return KDevelop::QualifiedIdentifier(node->name);
 }
 
 void DeclarationBuilder::closeDeclaration()
