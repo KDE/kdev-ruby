@@ -33,17 +33,16 @@ EditorIntegrator::EditorIntegrator()
 
 KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge) const
 {
-    KDevelop::CursorInRevision cursor;
-
+    Q_ASSERT(node);
     if (edge == BackEdge) {
         // Apparently KTE expects a range to go until _after_ the last character that should be included
         // however the parser calculates endCol as the index _before_ the last included character, so adjust here
-        cursor.column += 1;
+        // TODO: End of the node, where column must be incremented by one according to the explanation above ;)
+        return KDevelop::CursorInRevision();
     } else {
-//         return node->start;
+        // TODO: Start of the node
+        return KDevelop::CursorInRevision();
     }
-
-    return cursor;
 }
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
@@ -51,7 +50,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
     return KDevelop::RangeInRevision(findPosition(from, FrontEdge), findPosition(to, BackEdge));
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node * ast, Edge /*edge*/)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node * ast, Edge /* edge */)
 {
     return KDevelop::RangeInRevision(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
 }
@@ -61,7 +60,7 @@ void EditorIntegrator::setUrl(const KDevelop::IndexedString & url)
     m_url = url;
 }
 
-KDevelop::IndexedString EditorIntegrator::url() const 
+KDevelop::IndexedString EditorIntegrator::url() const
 {
     return m_url;
 }

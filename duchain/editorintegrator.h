@@ -38,19 +38,15 @@ class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 public:
     EditorIntegrator();
 
-    enum Edge {                                                                                                       
-      FrontEdge,                                                                                                      
-      BackEdge                                                                                                        
-    };                                                                                                                
-                                                                                                                      
-    KDevelop::CursorInRevision findPosition(Node * node, Edge edge = BackEdge) const;
+    enum Edge { FrontEdge, BackEdge };
 
+    KDevelop::CursorInRevision findPosition(Node * node, Edge edge = BackEdge) const;
     KDevelop::RangeInRevision findRange(Node * from, Node * to);
     KDevelop::RangeInRevision findRange(Node * node, Edge edge = BackEdge);
-    
+
     void setUrl(const KDevelop::IndexedString & url);
     KDevelop::IndexedString url() const;
-    
+
 private:
     KDevelop::IndexedString m_url;
 };
