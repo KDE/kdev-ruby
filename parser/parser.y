@@ -51,14 +51,6 @@ struct flags {
 #define dot_seen lexer_flags.dot_seen
 #define last_is_paren lexer_flags.last_is_paren
 
-/*
- * TODO: Document
- */
-struct stack_t {
-  char * name;
-  int start, end; /* TODO: necessary ?¿ */
-};
-
 
 /*
  * This structure defines the parser. It contains the AST, some
@@ -78,7 +70,7 @@ struct parser_t {
   int error_index;
 
   /* Stack of names */
-  struct stack_t * stack[2];
+  char * stack[2];
   struct node * string_names;
   int sp;
 
@@ -1188,17 +1180,16 @@ int guess_kind(char c)
 /* Push name to the stack */
 void push_stack(struct parser_t * parser, char * buf)
 {
-  parser->stack[parser->sp] = (struct stack_t *) malloc (sizeof(struct stack_t));
-  parser->stack[parser->sp]->name = strdup(buf);
+  parser->stack[parser->sp] = strdup(buf);
   parser->sp++;
 }
 
 /* Pop name from the stack. */
 void pop_stack(struct parser_t * parser, struct node * n)
 {
-  n->name = parser->stack[0]->name;
-  free(parser->stack[0]);
+  n->name = parser->stack[0];
   parser->stack[0] = parser->stack[1];
+  parser->stack[1] = NULL;
   parser->sp--;
 }
 
@@ -1888,7 +1879,7 @@ int yycompile_file(const char * path)
 
   /* Check if the stack is empty or not */
   for (index = 0; index < p.sp; index++)
-    printf("\nT: %s", p.stack[index]->name);
+    printf("\nT: %s", p.stack[index]);
   printf("\n");
   free_parser(&p);
 
