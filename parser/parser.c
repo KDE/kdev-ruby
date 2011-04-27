@@ -5224,9 +5224,11 @@ static int parser_yylex(struct parser_t * parser)
       unsigned char is_simple = isSimple(*(c + 1));
       char open, close;
       char * ptr;
-      int possible_error;
+      int possible_error, start;
 
+      start = curs;
       if (*(c + 2) != '(' && *(c + 2) != '[' && *(c + 2) != '{' && !is_simple) {
+        parser->column = curs - parser->line + 4;
         yyerror(parser, "unterminated string meets end of file");
         t = token_invalid;
         catalan = -1;
@@ -5262,6 +5264,7 @@ static int parser_yylex(struct parser_t * parser)
             break;
         }
         if (curs >= len) {
+          parser->column = start;
           yyerror(parser, "unterminated string meets end of file");
           t = token_invalid;
           break;
@@ -5343,6 +5346,7 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     t = tQUESTION;
   } else if (*c == '\'') {
+    int possible_error = curs;
     curs++;
     ++c;
     while (1) {
@@ -5353,6 +5357,7 @@ static int parser_yylex(struct parser_t * parser)
       if (*c == '\'')
         break;
       if (curs >= len) {
+        parser->column = possible_error - parser->line + 2;
         yyerror(parser, "unterminated string meets end of file");
         t = token_invalid;
         break;
@@ -5393,6 +5398,7 @@ static int parser_yylex(struct parser_t * parser)
       if (*c == '"')
         break;
       if (curs >= len) {
+        parser->column = possible_error;
         yyerror(parser, "unterminated string meets end of file");
         t = token_invalid;
         break;
@@ -5448,6 +5454,7 @@ static int parser_yylex(struct parser_t * parser)
       if (*c == '`')
         break;
       if (curs >= len) {
+        parser->column = possible_error;
         yyerror(parser, "unterminated backtick command meets end of file");
         t = token_invalid;
         break;
