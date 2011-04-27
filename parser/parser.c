@@ -5224,6 +5224,7 @@ static int parser_yylex(struct parser_t * parser)
       unsigned char is_simple = isSimple(*(c + 1));
       char open, close;
       char * ptr;
+      int possible_error;
 
       if (*(c + 2) != '(' && *(c + 2) != '[' && *(c + 2) != '{' && !is_simple) {
         yyerror(parser, "unterminated string meets end of file");
@@ -5236,11 +5237,13 @@ static int parser_yylex(struct parser_t * parser)
       close = closing_char(*(c - 1));
       while (catalan != -1) {
         if (*c == '#' && *(c + 1) == '{') {
+          possible_error = curs - parser->line + 1;
           c += 2;
           curs += 2;
           for (ptr = buffer; *c != '}'; ++c, ++curs) {
             *ptr++ = *c;
             if (curs >= len) {
+              parser->column = possible_error;
               yyerror(parser, "expecting '}' token in string");
               curs = len + 1; /* So we can force curs >= len error */
               break;
@@ -5362,16 +5365,19 @@ static int parser_yylex(struct parser_t * parser)
     t = STRING;
   } else if (*c == '"') {
     char * ptr;
+    int possible_error;
 
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
+        possible_error = curs - parser->line + 2;
         c += 2;
         curs += 2;
         for (ptr = buffer; *c != '}'; ++c, ++curs) {
           *ptr++ = *c;
           if (curs >= len || *c == '"') {
+            parser->column = possible_error;
             yyerror(parser, "expecting '}' token in string");
             curs = len + 1; /* So we can force curs >= len error */
             break;
@@ -5414,16 +5420,19 @@ static int parser_yylex(struct parser_t * parser)
     t = tCOMMA;
   } else if (*c == '`') {
     char * ptr;
+    int possible_error;
 
     curs++;
     ++c;
     while (1) {
       if (*c == '#' && *(c + 1) == '{') {
+        possible_error = curs - parser->line + 2;
         c += 2;
         curs += 2;
         for (ptr = buffer; *c != '}'; ++c, ++curs) {
           *ptr++ = *c;
           if (curs >= len || *c == '`') {
+            parser->column = possible_error;
             yyerror(parser, "expecting '}' token in backtick command");
             curs = len + 1; /* So we can force curs >= len error */
             break;
