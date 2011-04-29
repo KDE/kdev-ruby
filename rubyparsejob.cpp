@@ -60,11 +60,7 @@ RubyLanguageSupport * ParseJob::ruby() const
 
 void ParseJob::run()
 {
-    //Happens during shutdown
-    if (!ruby())
-        return abortJob();
-
-    if (abortRequested())
+    if (!ruby() || abortRequested())
         return abortJob();
 
     KDevelop::UrlParseLock urlLock(document());
@@ -114,6 +110,7 @@ void ParseJob::run()
         DUChainWriteLocker lock(DUChain::lock());
         m_top->setFeatures(minimumFeatures());
         KDevelop::ParsingEnvironmentFilePointer file = m_top->parsingEnvironmentFile();
+        file->clearModificationRevisions();
         file->setModificationRevision(contents().modification);
         KDevelop::DUChain::self()->updateContextEnvironment(m_top->topContext(), file.data());
         kDebug() << "**** Parsing Succeeded ****";
