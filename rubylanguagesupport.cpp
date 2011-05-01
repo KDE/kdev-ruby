@@ -60,8 +60,12 @@ using namespace Ruby;
 #define RUBY_FILE_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby File")
 #define RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby Test Function")
 
-K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>(); )
-K_EXPORT_PLUGIN(KDevRubySupportFactory("kdevrubysupport"))
+K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>();)
+K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby", ki18n("Ruby Support"), "1.2.60", ki18n("Support for the Ruby Language"), KAboutData::License_GPL)
+    .addAuthor(ki18n("Alexander Dymo"), ki18n("Original Author"), "adymo@kdevelop.org")
+    .addAuthor(ki18n("Miquel Sabaté"), ki18n("Maintainer, Parser"), "mikisabate@gmail.com")
+))
+
 
 RubyLanguageSupport* RubyLanguageSupport::m_self = 0;
 
