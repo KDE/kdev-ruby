@@ -156,6 +156,7 @@ void pop_string(struct parser_t * parser, struct node * n);
 %type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol
 %type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const
 %type <n> dot_method_call dot_items dot_item array_value opt_bracket_list key
+%type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
 
 %start parser_start
 %%
@@ -355,6 +356,10 @@ cmpd_stmt: k_if exp then
 
 fname: FNAME  { $$ = alloc_node(token_object, NULL, NULL); pop_stack(parser, $$); }
   | base      { $$ = $1; }
+;
+
+fname_or_const: fname { $$ = $1;  }
+  | const             { $$ = $1;  }
 ;
 
 single_name: base dot_or_scope fname  { $$ = alloc_node(token_object, $1, $3);  }
@@ -835,17 +840,17 @@ method_call: fname m_call_args
   | const_scope opt_call_args  { $$ = alloc_node(token_method_call, $1, $2); }
 ;
 
-const_scope: const tSCOPE fname
+const_scope: const tSCOPE fname_or_const
   {
     $$ = alloc_node(token_object, $1, $3);
   }
 ;
 
-paren_method_call: mcall opt_call_args rparen
+paren_method_call: mcall opt_call_args_paren rparen
   {
     $$ = alloc_node(token_method_call, $1, $2);
   }
-  | const_mcall opt_call_args rparen
+  | const_mcall opt_call_args_paren rparen
   {
     $$ = alloc_node(token_method_call, $1, $2);
   }
@@ -890,8 +895,16 @@ opt_call_args: /* nothing */  { $$ = 0;   }
   | m_call_args               { $$ = $1;  }
 ;
 
+opt_call_args_paren: /* nothing */  { $$ = 0;   }
+  | m_call_args_paren               { $$ = $1;  }
+;
+
 m_call_args: method_call      { $$ = $1;  }
   | call_args                 { $$ = $1;  }
+;
+
+m_call_args_paren: method_call  { $$ = $1;  }
+  | call_args_paren             { $$ = $1;  }
 ;
 
 /* TODO: tMUL and tAND_BIT ambiguity :S */
@@ -899,10 +912,19 @@ call_args: exp                { $$ = $1;  }
   | call_args comma exp_hash  { $$ = update_list($1, $3); }
 ;
 
+call_args_paren: exp_paren          { $$ = $1;  }
+  | call_args_paren comma exp_paren { $$ = update_list($1, $3); }
+;
+
 /* TODO: hash with exp */
 exp_hash: exp   { $$ = $1;  }
   | hash        { $$ = $1;  }
   | hash_items  { $$ = alloc_node(token_hash, $1, NULL);  }
+;
+
+exp_paren: exp_hash   { $$ = $1;  }
+  | tAND_BIT exp      { $$ = $2;  }
+  | tMUL exp          { $$ = $2;  }
 ;
 
 /* TODO: hash with exp */
