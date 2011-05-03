@@ -114,7 +114,7 @@ void pop_string(struct parser_t * parser, struct node * n);
 %token tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
 
 /* Declare tokens */
-%token EOL CVAR NUMBER SYMBOL FNAME BASE STRING COMMENT REGEXP MCALL ARRAY SARY
+%token EOL CVAR NUMBER SYMBOL FNAME BASE STRING REGEXP MCALL ARRAY SARY
 %token IVAR GLOBAL tLBRACKET tRBRACKET tDOT tTILDE tBACKTICK tCOMMA tCOLON
 %token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON
 %token tOR tAND tAND_BIT tOR_BIT tXOR_BIT tLBRACE tRBRACE tLPAREN tRPAREN
@@ -181,7 +181,6 @@ stmt: simple_stmt
   | stmt WHILE exp        { $$ = alloc_cond(token_while, $3, $1, NULL);   }
   | stmt UNTIL exp        { $$ = alloc_cond(token_until, $3, $1, NULL);   }
   | exp
-  | COMMENT               { $$ = 0; }
 ;
 
 stmts: stmt               { $$ = $1;  }
@@ -1236,7 +1235,7 @@ static int parser_yylex(struct parser_t * parser)
 
   if (*c == '#') {
     for (; *c != '\n' && curs < len; ++c, ++curs);
-    t = COMMENT;
+    t = EOL;
   } else if (*c == '\n') {
     t = EOL;
     parser->no_block = 0;
@@ -1394,7 +1393,7 @@ static int parser_yylex(struct parser_t * parser)
       c += 5;
       for(; !multiline_end(c); ++curs, ++c);
       curs += 3;
-      t = COMMENT;
+      t = EOL;
     } else
       t = tASGN;
   } else if (*c == '<') {
@@ -1665,7 +1664,7 @@ static int parser_yylex(struct parser_t * parser)
     t = STRING;
   } else if (*c == '"') {
     char * ptr;
-    int possible_error;
+    int possible_error = 0;
 
     curs++;
     ++c;
@@ -1721,7 +1720,7 @@ static int parser_yylex(struct parser_t * parser)
     t = tCOMMA;
   } else if (*c == '`') {
     char * ptr;
-    int possible_error;
+    int possible_error = 0;
 
     curs++;
     ++c;
