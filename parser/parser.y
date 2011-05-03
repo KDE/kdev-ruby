@@ -371,6 +371,7 @@ function_args: f_arglist eol_or_semicolon  { $$ = $1;  }
 ;
 
 module_name: CONST  { $$ = alloc_node(token_object, NULL, NULL); pop_stack(parser, $$); }
+  | const_scope     { $$ = $1;  }
   | BASE
   {
     yyerror(parser, "class/module name must be CONSTANT");
