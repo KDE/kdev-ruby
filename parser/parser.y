@@ -155,7 +155,7 @@ void pop_string(struct parser_t * parser, struct node * n);
 %type <n> block_args exp_for exc_list rescue_list rescue_item function_args
 %type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol
 %type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const
-%type <n> dot_method_call dot_items dot_item array_value opt_bracket_list key
+%type <n> dot_method_call dot_items dot_item scope_items array_value opt_bracket_list key
 %type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
 
 %start parser_start
@@ -841,10 +841,20 @@ method_call: fname m_call_args
   | const_scope opt_call_args  { $$ = alloc_node(token_method_call, $1, $2); }
 ;
 
-const_scope: const tSCOPE fname_or_const
+const_scope: const scope_items
   {
-    $$ = alloc_node(token_object, $1, $3);
+    struct node * n = alloc_node(token_object, $1, NULL);
+    $$ = pop_list(n, $2);
   }
+  | const tSCOPE fname
+  {
+    struct node * n = alloc_node(token_object, $1, NULL);
+    $$ = pop_list(n, $3);
+  }
+;
+
+scope_items: tSCOPE const             { $$ = $2;  }
+  | scope_items tSCOPE fname_or_const { $$ = update_list($1, $3); }
 ;
 
 paren_method_call: mcall opt_call_args_paren rparen

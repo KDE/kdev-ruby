@@ -28,3 +28,18 @@ end
 
 a = Foo::a
 puts a
+
+module Mod1
+  module Mod2
+    class A
+      def to_s
+        "Aigua clara de l'Anoia!"
+      end
+    end
+  end
+end
+
+class B < Mod1::Mod2::A
+end
+
+puts B.new
