@@ -986,6 +986,7 @@ exp: exp tPLUS opt_eol_list exp       { $$ = alloc_node(token_plus, $1, $4);    
   | primary1 opt_lambda_body          { $$ = update_list($1, $2); }
   | primary2                          { $$ = $1   }
   | array_value                       { $$ = $1;  }
+  | FNAME                             { $$ = alloc_node(token_object, NULL, NULL); pop_stack(parser, $$); }
 ;
 
 %%

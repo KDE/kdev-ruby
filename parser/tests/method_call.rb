@@ -9,3 +9,5 @@ foo 1,
     2
 
 foo a, :a => 'string', b: 'another'
+where_is_thumbkin? && here_i_am!
+
