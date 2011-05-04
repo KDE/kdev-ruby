@@ -47,7 +47,7 @@ translate = ['whitespace', 'comment', 'plus', 'minus', 'product', 'exp',
              'until', 'case', 'when', 'BEGIN', 'END', 'for', 'exception',
              'rescue_arg', 'rescue', 'ensure', 'object', 'numeric', 'symbol',
              'body', 'function', 'module', 'class', 'singleton_class',
-             'superclass', 'string', 'regexp', 'key', 'array', 'hash', 'lambda',
+             'superclass', 'string', 'regexp', 'key', 'array', 'hash',
              'block', 'method_call', 'heredoc', 'break', 'redo', 'retry',
              'next', 'return', 'yield', 'alias', 'defined?', 'undef',
              'array_value', 'backtick']
