@@ -31,36 +31,37 @@
 
 struct node * alloc_node(int kind, struct node * l, struct node * r)
 {
-  struct node * n = (struct node *) malloc (sizeof(struct node));
+    struct node * n = (struct node *) malloc (sizeof(struct node));
 
-  if (!n) {
-    printf("Out of space!");
-    exit(0);
-  }
-  n->kind = kind;
-  n->name = NULL;
-  n->next = NULL;
-  n->last = NULL;
-  n->cond = NULL;
-  n->ensure = NULL;
-  n->l = l;
-  n->r = r;
-  return n;
+    if (!n) {
+        printf("Out of space!");
+        exit(0);
+    }
+    n->kind = kind;
+    n->name = NULL;
+    n->next = NULL;
+    n->last = NULL;
+    n->cond = NULL;
+    n->ensure = NULL;
+    n->l = l;
+    n->r = r;
+    return n;
 }
 
-struct node * alloc_cond(int kind, struct node * cond, struct node * l, struct node * r)
+struct node * alloc_cond(int kind, struct node * cond, struct node * l,
+                         struct node * r)
 {
-  struct node * n = alloc_node(kind, l, r);
-  n->cond = cond;
-  return n;
+    struct node * n = alloc_node(kind, l, r);
+    n->cond = cond;
+    return n;
 }
 
 struct node * alloc_ensure(int kind, struct node * l, struct node * r,
                             struct node * els, struct node * ensure)
 {
-  struct node * n = alloc_cond(kind, els, l, r);
-  n->ensure = ensure;
-  return n;
+    struct node * n = alloc_cond(kind, els, l, r);
+    n->ensure = ensure;
+    return n;
 }
 
 
@@ -70,27 +71,27 @@ struct node * alloc_ensure(int kind, struct node * l, struct node * r,
 
 struct node * create_list(struct node * head, struct node * tail)
 {
-  head->next = tail;
-  head->last = tail->last;
-  return head;
+    head->next = tail;
+    head->last = tail->last;
+    return head;
 }
 
 struct node * update_list(struct node * head, struct node * tail)
 {
-  if (tail == NULL)
-    return head;
+    if (tail == NULL)
+        return head;
 
-  (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
-  tail->next = NULL;
-  head->last = tail;
-  return head;
+    (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
+    tail->next = NULL;
+    head->last = tail;
+    return head;
 }
 
 struct node * concat_list(struct node * head, struct node * tail)
 {
-  (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
-  head->last = tail->last;
-  return head;
+    (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
+    head->last = tail->last;
+    return head;
 }
 
 
@@ -100,9 +101,9 @@ struct node * concat_list(struct node * head, struct node * tail)
 
 void rb_free(RubyAst * ra)
 {
-  free_ast(ra->tree);
-  free_errors(ra->errors);
-  free(ra);
+    free_ast(ra->tree);
+    free_errors(ra->errors);
+    free(ra);
 }
 
 
@@ -112,65 +113,65 @@ void rb_free(RubyAst * ra)
 
 void print_list(struct node * n)
 {
-  struct node * p;
+    struct node * p;
 
-  printf("\nNext statements: ");
-  for (p = n; p != NULL; p = p->next) {
-    if (p->name != NULL)
-      printf("%i(%s) ", p->kind, p->name);
-    else
-      printf("%i ", p->kind);
-  }
-  printf("\nRoot: ");
+    printf("\nNext statements: ");
+    for (p = n; p != NULL; p = p->next) {
+        if (p->name != NULL)
+            printf("%i(%s) ", p->kind, p->name);
+        else
+            printf("%i ", p->kind);
+    }
+    printf("\nRoot: ");
 }
 
 void print_node(struct node * n)
 {
-  if (n != NULL) {
-    print_node(n->l);
-    if (n->name != NULL)
-      printf("%i(%s) ", n->kind, n->name);
-    else
-      printf("%i ", n->kind);
-    print_node(n->r);
-    if (n->next != NULL)
-      print_list(n->next);
-  }
+    if (n != NULL) {
+        print_node(n->l);
+        if (n->name != NULL)
+            printf("%i(%s) ", n->kind, n->name);
+        else
+            printf("%i ", n->kind);
+        print_node(n->r);
+        if (n->next != NULL)
+            print_list(n->next);
+    }
 }
 
 void print_errors(struct error_t * errors)
 {
-  int i;
+    int i;
 
-  for (i = 0; i < 2; ++i) {
-    if (errors[i].valid) {
-      printf("Line: %i, Column: %i; %s",  errors[i].line, errors[i].col,
-                                          errors[i].msg);
+    for (i = 0; i < 2; ++i) {
+        if (errors[i].valid) {
+            printf("Line: %i, Column: %i; %s",  errors[i].line, errors[i].col,
+                                                errors[i].msg);
+        }
     }
-  }
 }
 
 void free_ast(struct node * n)
 {
-  if (n == NULL)
-    return;
-  free_ast(n->next);
-  free_ast(n->l);
-  free_ast(n->r);
-  free_ast(n->cond);
-  free_ast(n->ensure);
-  if (n->name != NULL)
-    free(n->name);
-  free(n);
+    if (n == NULL)
+        return;
+    free_ast(n->next);
+    free_ast(n->l);
+    free_ast(n->r);
+    free_ast(n->cond);
+    free_ast(n->ensure);
+    if (n->name != NULL)
+        free(n->name);
+    free(n);
 }
 
 void free_errors(struct error_t * errors)
 {
-  int i;
+    int i;
 
-  for (i = 0; i < 2; ++i) {
-    if (errors[i].valid)
-      free(errors[i].msg);
-  }
+    for (i = 0; i < 2; ++i) {
+        if (errors[i].valid)
+            free(errors[i].msg);
+    }
 }
 
