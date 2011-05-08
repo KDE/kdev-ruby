@@ -70,6 +70,8 @@ end
 def gperf
   puts 'Using gperf to generate hash.c'
   `gperf #{GFLAGS}`
+  text = (File.read '../hash.c').gsub /{""}/, '{"", -1}'
+  File.open('../hash.c', 'w') { |file| file.puts text }
 end
 
 case ARGV[0]

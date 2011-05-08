@@ -113,7 +113,7 @@ rb_reserved_word (str, len)
 {
   static const struct kwtable wordlist[] =
     {
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1},
 #line 18 "../tools/gperf.txt"
       {"break", BREAK},
 #line 24 "../tools/gperf.txt"
@@ -194,7 +194,7 @@ rb_reserved_word (str, len)
       {"defined?", DEFINED},
 #line 20 "../tools/gperf.txt"
       {"class", CLASS},
-      {""}, {""},
+      {"", -1}, {"", -1},
 #line 49 "../tools/gperf.txt"
       {"while", WHILE}
     };
