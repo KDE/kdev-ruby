@@ -1,16 +1,16 @@
 add_subdirectory(tests)
+enable_testing()
 
 set(rubyduchain_SRCS
     editorintegrator.cpp
     declarationbuilder.cpp
     contextbuilder.cpp
     typebuilder.cpp
-
     types/objecttype.cpp
 )
 
-kde4_add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
-target_link_libraries( kdevrubyduchain
+kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
+target_link_libraries( kdev4rubyduchain
     ${KDE4_KDECORE_LIBS}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
@@ -18,4 +18,4 @@ target_link_libraries( kdevrubyduchain
     kdev4rubyparser
 )
 
-install(TARGETS kdevrubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdev4rubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

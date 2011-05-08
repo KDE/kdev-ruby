@@ -8,8 +8,8 @@ set(rubynavigation_SRCS
     railsdataprovider.cpp
 )
 
-kde4_add_library(kdevrubynavigation SHARED ${rubynavigation_SRCS})
-target_link_libraries( kdevrubynavigation
+kde4_add_library(kdev4rubynavigation SHARED ${rubynavigation_SRCS})
+target_link_libraries( kdev4rubynavigation
     ${KDE4_KDECORE_LIBS}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
@@ -17,4 +17,4 @@ target_link_libraries( kdevrubynavigation
     kdev4rubyparser
 )
 
-install(TARGETS kdevrubynavigation DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdev4rubynavigation DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

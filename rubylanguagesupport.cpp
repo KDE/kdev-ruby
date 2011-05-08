@@ -1,34 +1,30 @@
-/*
-* This file is part of KDevelop
-*
-* Copyright 2006-2010 Alexander Dymo <adymo@kdevelop.org>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Library General Public License as
-* published by the Free Software Foundation; either version 2 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public
-* License along with this program; if not, write to the
-* Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*/
-#include "rubylanguagesupport.h"
+/* This file is part of KDevelop
+ *
+ * Copyright 2006-2010 Alexander Dymo <adymo@kdevelop.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-#include <kdebug.h>
-#include <klocale.h>
-#include <kaction.h>
-#include <kcomponentdata.h>
-#include <kstandarddirs.h>
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
-#include <kactioncollection.h>
 
+//BEGIN Includes
+//KDE
+#include <KAction>
+#include <KActionCollection>
+
+//KDevelop
 #include <interfaces/icore.h>
 #include <interfaces/iproject.h>
 #include <interfaces/idocument.h>
@@ -49,11 +45,13 @@
 #include <language/duchain/duchainutils.h>
 #include <language/backgroundparser/backgroundparser.h>
 
-#include <QExtensionFactory>
+//Ruby plugin
+#include <rubylanguagesupport.h>
+#include <rubyparsejob.h>
+#include <navigation/railsswitchers.h>
+#include <navigation/railsdataprovider.h>
+//END Includes
 
-#include "rubyparsejob.h"
-#include "navigation/railsswitchers.h"
-#include "navigation/railsdataprovider.h"
 
 using namespace Ruby;
 
@@ -67,19 +65,18 @@ K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby",
 ))
 
 
-RubyLanguageSupport* RubyLanguageSupport::m_self = 0;
+RubyLanguageSupport * RubyLanguageSupport::m_self = NULL;
 
-RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
-                                          const QVariantList& /*args*/ )
-        : KDevelop::IPlugin( KDevRubySupportFactory::componentData(), parent )
+RubyLanguageSupport::RubyLanguageSupport(QObject * parent,
+                                         const QVariantList & /* args */)
+        : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
         , KDevelop::ILanguageSupport()
         , m_railsSwitchers(new Ruby::RailsSwitchers(this))
-        , m_rubyFileLaunchConfiguration(0)
-        , m_rubyCurrentFunctionLaunchConfiguration(0)
+        , m_rubyFileLaunchConfiguration(NULL)
+        , m_rubyCurrentFunctionLaunchConfiguration(NULL)
 {
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
     setXMLFile( "kdevrubysupport.rc" );
-
     m_self = this;
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
@@ -140,6 +137,7 @@ RubyLanguageSupport::RubyLanguageSupport( QObject* parent,
 
 RubyLanguageSupport::~RubyLanguageSupport()
 {
+    /* There's nothing to do here! */
 }
 
 RubyLanguageSupport* RubyLanguageSupport::self()
@@ -147,7 +145,7 @@ RubyLanguageSupport* RubyLanguageSupport::self()
     return m_self;
 }
 
-KDevelop::ParseJob* RubyLanguageSupport::createParseJob(const KUrl &url)
+KDevelop::ParseJob * RubyLanguageSupport::createParseJob(const KUrl & url)
 {
     return new ParseJob(url, this);
 }
@@ -167,13 +165,13 @@ void RubyLanguageSupport::documentActivated(KDevelop::IDocument * document)
     Q_UNUSED(document)
 }
 
-void RubyLanguageSupport::documentLoaded(KDevelop::IDocument *document)
+void RubyLanguageSupport::documentLoaded(KDevelop::IDocument * document)
 {
     kDebug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
-void RubyLanguageSupport::documentClosed(KDevelop::IDocument *document)
+void RubyLanguageSupport::documentClosed(KDevelop::IDocument * document)
 {
     Q_UNUSED(document)
 }
@@ -300,6 +298,5 @@ KDevelop::ILaunchConfiguration* RubyLanguageSupport::findOrCreateLaunchConfigura
     return config;
 }
 
-#include "rubylanguagesupport.moc"
 
-// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
+#include "rubylanguagesupport.moc"

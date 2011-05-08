@@ -1,7 +1,6 @@
 project(ruby)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
-enable_testing()
 
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform REQUIRED)
@@ -33,8 +32,8 @@ target_link_libraries(kdevrubylanguagesupport
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_PROJECT_LIBRARIES}
     kdev4rubyparser
-    kdevrubyduchain
-    kdevrubynavigation
+    kdev4rubyduchain
+    kdev4rubynavigation
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
