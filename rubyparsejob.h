@@ -76,7 +76,7 @@ private:
     const RubyLanguageSupport * m_parent;
     KUrl m_url;
     RubyParser * m_parser;
-    KDevelop::ReferencedTopDUContext m_top;
+    KDevelop::ReferencedTopDUContext m_duContext;
 };
 
 } // End of namespace ruby

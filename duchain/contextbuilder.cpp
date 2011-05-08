@@ -27,6 +27,7 @@
 #include <duchain/editorintegrator.h>
 
 
+using namespace KDevelop;
 namespace Ruby
 {
 
@@ -40,8 +41,8 @@ ContextBuilder::~ContextBuilder()
     /* There's nothing to do here! */
 }
 
-KDevelop::ReferencedTopDUContext ContextBuilder::build(const KDevelop::IndexedString& url, Node* node,
-    KDevelop::ReferencedTopDUContext updateContext)
+ReferencedTopDUContext ContextBuilder::build(const IndexedString & url, Node * node,
+                                                ReferencedTopDUContext updateContext)
 {
     if ( KDevelop::ICore::self() ) {
         m_reportErrors = KDevelop::ICore::self()->languageController()->completionSettings()->highlightSemanticProblems();
@@ -57,6 +58,7 @@ void ContextBuilder::setEditor(EditorIntegrator* editor)
 void ContextBuilder::startVisiting(Node * node)
 {
     /* TODO */
+    Q_UNUSED(node) // NOTE: Avoid warnings by now, should be removed in the future
 //     ProgramNode *ast = static_cast<ProgramNode*>(node);
 //     visitProgram(ast);
 }

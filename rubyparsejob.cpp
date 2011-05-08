@@ -42,7 +42,7 @@ namespace Ruby
 ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
-    , m_top (NULL)
+    , m_duContext (NULL)
 {
     m_parent = parent;
     m_url = url;
@@ -103,37 +103,41 @@ void ParseJob::run()
 
         EditorIntegrator editor;
         DeclarationBuilder builder(&editor);
-        m_top = builder.build(document(), ast->tree, m_top);
+        m_duContext = builder.build(document(), ast->tree, m_duContext);
         m_parser->freeAst(ast);
-        setDuChain(m_top);
+        setDuChain(m_duContext);
 
-        DUChainWriteLocker lock(DUChain::lock());
-        m_top->setFeatures(minimumFeatures());
-        KDevelop::ParsingEnvironmentFilePointer file = m_top->parsingEnvironmentFile();
-        file->clearModificationRevisions();
-        file->setModificationRevision(contents().modification);
-        KDevelop::DUChain::self()->updateContextEnvironment(m_top->topContext(), file.data());
+        {
+            DUChainWriteLocker lock(DUChain::lock());
+            m_duContext->setFeatures(minimumFeatures());
+            KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
+            file->clearModificationRevisions();
+            file->setModificationRevision(contents().modification);
+            KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
+        }
         kDebug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
-        m_top = DUChain::self()->chainForDocument(document());
-        if (m_top) {
-            m_top->parsingEnvironmentFile()->clearModificationRevisions();
-            m_top->clearProblems();
+        m_duContext = DUChain::self()->chainForDocument(document());
+        if (m_duContext) {
+            m_duContext->parsingEnvironmentFile()->clearModificationRevisions();
+            m_duContext->clearProblems();
         } else {
             ParsingEnvironmentFile * file = new ParsingEnvironmentFile(document());
             static const IndexedString langString("Ruby");
             file->setLanguage(langString);
-            m_top = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
-            DUChain::self()->addDocumentChain(m_top);
+            m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
+            DUChain::self()->addDocumentChain(m_duContext);
         }
-        foreach (ProblemPointer p, m_parser->m_problems) {
-            kDebug() << "Added problem to context";
-            m_top->addProblem(p);
-        }
-        setDuChain(m_top);
+        setDuChain(m_duContext);
     }
+    DUChainWriteLocker lock(DUChain::lock());
+    foreach (ProblemPointer p, m_parser->m_problems) {
+        kDebug() << "Added problem to context";
+        m_duContext->addProblem(p);
+    }
+    setDuChain(m_duContext);
 }
 
 } // End of namespace ruby
