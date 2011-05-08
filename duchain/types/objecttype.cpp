@@ -1,46 +1,49 @@
-/*
-* This file is part of KDevelop
-*
-* Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Library General Public License as
-* published by the Free Software Foundation; either version 2 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public
-* License along with this program; if not, write to the
-* Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*/
-#include "objecttype.h"
+/* This file is part of KDevelop
+ *
+ * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
 
 #include <language/duchain/types/typeregister.h>
+#include <duchain/types/objecttype.h>
+
 
 using namespace KDevelop;
 
-namespace Ruby {
-
+namespace Ruby
+{
 REGISTER_TYPE(ObjectType);
 
-ObjectType::ObjectType()
-    :KDevelop::StructureType(createData<ObjectType>())
+ObjectType::ObjectType() : KDevelop::StructureType(createData<ObjectType>())
 {
+    /* There's nothing to do here */
 }
 
 ObjectType::ObjectType(const ObjectType& rhs)
-    :KDevelop::StructureType(copyData<ObjectType>(*rhs.d_func()))
+    : KDevelop::StructureType(copyData<ObjectType>(*rhs.d_func()))
 {
+    /* There's nothing to do here */
 }
 
 ObjectType::ObjectType(ObjectTypeData& data)
     :KDevelop::StructureType(data)
 {
+    /* There's nothing to do here */
 }
 
 KDevelop::AbstractType* ObjectType::clone() const
@@ -58,4 +61,5 @@ QString ObjectType::toString() const
     return "Object";
 }
 
-}
+} // End of namespace ruby
+
