@@ -2,6 +2,7 @@
  *
  * Copyright 2006 Hamish Rodda <rodda@kde.org>
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -29,26 +30,60 @@
 #include <duchain/duchainexport.h>
 #include <parser/node.h>
 
-/*
- * WARNING: This class is still under construction.
- */
-
 
 namespace Ruby
 {
 
+/**
+ * @class EditorIntegrator
+ *
+ * The EditorIntegrator for the Ruby plugin.
+ */
 class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 {
 public:
+    /**
+     * Constructor.
+     */
     EditorIntegrator();
 
     enum Edge { FrontEdge, BackEdge };
 
+    /**
+     * Find the position of the given node at the given edge.
+     *
+     * @param node the node to localize.
+     * @param edge the edge this method has to look at.
+     */
     KDevelop::CursorInRevision findPosition(Node * node, Edge edge = BackEdge) const;
-    KDevelop::RangeInRevision findRange(Node * from, Node * to);
-    KDevelop::RangeInRevision findRange(Node * node, Edge edge = BackEdge);
 
+    /**
+     * Find the range between the given nodes.
+     *
+     * @param from the former node.
+     * @param to the latter node.
+     */
+    KDevelop::RangeInRevision findRange(Node * from, Node * to);
+
+    /**
+     * Get the range of the given node.
+     *
+     * @param node the node to get its range.
+     */
+    KDevelop::RangeInRevision findRange(Node * node);
+
+    /**
+     * Set the url of the document we are editing.
+     *
+     * @param url the url of the document we are editing.
+     */
     void setUrl(const KDevelop::IndexedString & url);
+
+    /**
+     * Get the url of the document we are editing.
+     *
+     * @return the url of the document we are editing.
+     */
     KDevelop::IndexedString url() const;
 
 private:

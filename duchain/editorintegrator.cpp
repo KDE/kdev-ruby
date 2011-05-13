@@ -2,6 +2,7 @@
  *
  * Copyright 2006 Hamish Rodda <rodda@kde.org>
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -26,15 +27,23 @@
 using namespace KTextEditor;
 using namespace Ruby;
 
+
 EditorIntegrator::EditorIntegrator()
 {
     /* There's nothing to do here! */
 }
 
+/*
+ * NOTE: This method cannot be implemented yet. It needs a feature of the
+ * parser that is still under development. But don't panic! this feature
+ * will come as soon as possible ;)
+ */
 KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge) const
 {
     Q_ASSERT(node);
+
     if (edge == BackEdge) {
+        /* WARNING: The comment below is not necessarily true in ruby's case */
         // Apparently KTE expects a range to go until _after_ the last character that should be included
         // however the parser calculates endCol as the index _before_ the last included character, so adjust here
         // TODO: End of the node, where column must be incremented by one according to the explanation above ;)
@@ -47,12 +56,18 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
 {
-    return KDevelop::RangeInRevision(findPosition(from, FrontEdge), findPosition(to, BackEdge));
+    KDevelop::CursorInRevision c_from = findPosition(from, FrontEdge);
+    KDevelop::CursorInRevision c_to = findPosition(to, BackEdge);
+
+    return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node * ast, Edge /* edge */)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node * node)
 {
-    return KDevelop::RangeInRevision(findPosition(ast, FrontEdge), findPosition(ast, BackEdge));
+    KDevelop::CursorInRevision c_from = findPosition(node, FrontEdge);
+    KDevelop::CursorInRevision c_to = findPosition(node, BackEdge);
+
+    return KDevelop::RangeInRevision(c_from, c_to);
 }
 
 void EditorIntegrator::setUrl(const KDevelop::IndexedString & url)
