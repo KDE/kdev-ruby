@@ -50,7 +50,7 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString & url, Node * n
     return ContextBuilderBase::build(url, node, updateContext);
 }
 
-void ContextBuilder::setEditor(EditorIntegrator* editor)
+void ContextBuilder::setEditor(EditorIntegrator * editor)
 {
     m_editor = editor;
 }
@@ -66,10 +66,10 @@ void ContextBuilder::startVisiting(Node * node)
 KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file)
 {
     if (!file) {
-        file = new KDevelop::ParsingEnvironmentFile(KDevelop::IndexedString(m_editor->url()));
+        file = new KDevelop::ParsingEnvironmentFile(m_editor->url());
         file->setLanguage(KDevelop::IndexedString("Ruby"));
     }
-    return new KDevelop::TopDUContext(KDevelop::IndexedString(m_editor->url()), range, file);
+    return new KDevelop::TopDUContext(m_editor->url(), range, file);
 }
 
 void ContextBuilder::setContextOnNode(Node* /*node*/, KDevelop::DUContext* /*ctx*/)

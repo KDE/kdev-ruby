@@ -104,6 +104,7 @@ void ParseJob::run()
         EditorIntegrator editor;
         DeclarationBuilder builder(&editor);
         m_duContext = builder.build(document(), ast->tree, m_duContext);
+        editor.setUrl(IndexedString(m_url));
         m_parser->freeAst(ast);
         setDuChain(m_duContext);
 

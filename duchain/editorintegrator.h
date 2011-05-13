@@ -29,6 +29,10 @@
 #include <duchain/duchainexport.h>
 #include <parser/node.h>
 
+/*
+ * WARNING: This class is still under construction.
+ */
+
 
 namespace Ruby
 {
