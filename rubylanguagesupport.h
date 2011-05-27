@@ -51,10 +51,9 @@ public:
     virtual ~RubyLanguageSupport();
 
     static RubyLanguageSupport * self();
-
-    virtual KDevelop::ParseJob * createParseJob(const KUrl &);
-
     virtual QString name() const;
+    virtual KDevelop::ParseJob * createParseJob(const KUrl &);
+    virtual KDevelop::ILanguage * language();
 
     QStringList extensions() const;
 

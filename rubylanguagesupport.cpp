@@ -145,14 +145,19 @@ RubyLanguageSupport* RubyLanguageSupport::self()
     return m_self;
 }
 
+QString RubyLanguageSupport::name() const
+{
+    return "Ruby";
+}
+
 KDevelop::ParseJob * RubyLanguageSupport::createParseJob(const KUrl & url)
 {
     return new ParseJob(url, this);
 }
 
-QString RubyLanguageSupport::name() const
+KDevelop::ILanguage * RubyLanguageSupport::language()
 {
-    return "Ruby";
+    return core()->languageController()->language(name());
 }
 
 QStringList RubyLanguageSupport::extensions() const

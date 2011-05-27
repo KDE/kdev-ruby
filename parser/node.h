@@ -181,6 +181,7 @@ RubyAst * rb_compile_file(const char * path, const char * contents);
 
 /**
  * Free a RubyAst.
+ *
  * @param ra the RubyAst you want to free.
  */
 void rb_free(RubyAst * ra);
