@@ -10,3 +10,8 @@ n = case
   when num % 3 == 0 then :b
   else :c
 end
+
+case num
+  when 2 then :a
+  when 3 then :b
+end

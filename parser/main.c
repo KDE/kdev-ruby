@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 
-extern int yycompile_file(const char *);
+extern int rb_debug_file(const char *);
 
 
 /**
@@ -37,6 +37,6 @@ int main(int argc, char * argv[])
         printf("KDevelop Ruby parser debugging utility\n");
         exit(0);
     }
-    return yycompile_file(argv[argc - 1]);
+    return rb_debug_file(argv[argc - 1]);
 }
 

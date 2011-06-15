@@ -1,21 +1,22 @@
 Resulting AST's:
-51(a) 
-Next statements: 51 51(b) 51(c) 
-Root: 22 52 
-Next statements: 52 52 63 
+51(a)[1,0:1,1] 
+Next statements: 51[1,3:1,4] 51(b)[1,6:1,7] 51(c)[1,9:1,10] 
+Root: 22[1,0:1,27] 52[1,13:1,14] 
+Next statements: 52[1,16:1,17] 52[1,19:1,20] 63[1,22:1,27] 
 Root: 
-51(a) 
-Next statements: 51 51(d) 
-Root: 22 52 
-Next statements: 52 52 
+51(a)[2,0:2,1] 
+Next statements: 51[2,4:2,8] 51(d)[2,11:2,12] 
+Root: 22[2,0:2,22] 52[2,15:2,16] 
+Next statements: 52[2,18:2,19] 52[2,21:2,22] 
 Root: 
-51(a) 
-Next statements: 51(b) 
-Root: 22 52 
-Next statements: 52 
+51(a)[3,0:3,1] 
+Next statements: 51(b)[4,4:4,5] 
+Root: 22[3,0:6,5] 52[5,4:5,5] 
+Next statements: 52[6,4:6,5] 
 Root: 
-51(a) 
-Next statements: 51(b) 
-Root: 22 52 
-Next statements: 52 
+51(a)[7,0:7,1] 
+Next statements: 51(b)[7,3:7,4] 
+Root: 22[7,0:8,4] 52[7,7:7,8] 
+Next statements: 52[8,3:8,4] 
 Root: 
+

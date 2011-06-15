@@ -1,4 +1,4 @@
-module A a = 0
+module A a = 0 # TODO: Known issue
 end
 
 module B

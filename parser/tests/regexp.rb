@@ -6,3 +6,4 @@ a = / \/ /
 a = %r[ Mon "adasdadas" /asdasda/ @a ]
 variable = 'variable'
 a = /#{variable}/
+a = /#{variable}#{a}/

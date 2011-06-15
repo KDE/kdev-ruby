@@ -31,9 +31,10 @@ but what the programmer wants to use are the following functions:
   RubyAst * rb_compile_file(const char * path, const char * contents);
   void rb_free(RubyAst * ra);
 
-The former wants the path of a Ruby source code file and its contents. It will
-return the generated AST (RubyAst). Once we don't need this AST anymore, we
-should call the function rb_free.
+The former wants the path of a Ruby source code file and its contents. If you
+just want this parser to retrieve the contents on its own, just pass NULL
+as its second parameter. It will return the generated AST (RubyAst).
+Once we don't need this AST anymore, we should call the function rb_free.
 
 
 Testing and Debugging the parser:

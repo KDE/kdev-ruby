@@ -19,6 +19,14 @@ while a < 5 do
   a -= 1
 end
 
-until a == 0 do
+
+until a < 5 do
+  a += 1
+end
+
+until a == 0 && b == 1 do
+  while a < 5 do
+    puts 'lalala'
+  end
   a -= 1
 end

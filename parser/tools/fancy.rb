@@ -24,7 +24,7 @@
 # shown at the expected output of the tests to words for mere mortals. This
 # script does the job by executing the parser on a given test and flushing
 # its output to a temporary file. Then it does the transalation in a simple way
-# and show the output to the user.
+# and shows the output to the user.
 # NOTE: To use it, for example, just type "ruby fancy.rb test.rb"
 # to execute "tests/test.rb" ;)
 #
@@ -56,6 +56,7 @@ translate = ['whitespace', 'comment', 'plus', 'minus', 'product', 'exp',
 # This piece of code really does to job
 IO.foreach('fancy.txt') do |line|
   print '-- Blank line --' if line == "\n"
-  puts line.gsub(/[0-9]+/) { |m| translate[m.to_i] }
+  line = line.gsub(/[0-9]+(\[)/) { |m| translate[m.to_i] + "[" }
+  puts line.gsub(/[0-9]+(\()/) { |m| translate[m.to_i] + "(" }
 end
-exec('rm -rf fancy.txt')
+exec 'rm -rf fancy.txt'

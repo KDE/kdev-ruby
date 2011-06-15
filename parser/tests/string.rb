@@ -13,3 +13,7 @@ k = `ls \`asdas`
 l = `ls`
 dir = "."
 m = `ls #{dir}`
+n = %{ Miquel Sabaté #{Solà} }
+o = "Més accents en #{català}"
+p = `i més i #{més} i #{més}...`
+q = %Q{ más vale maña que #{fuerza} }

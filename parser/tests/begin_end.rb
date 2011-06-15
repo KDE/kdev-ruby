@@ -4,3 +4,5 @@ BEGIN {
 }
 
 END { b = 0 }
+END { b = 0
+      }
