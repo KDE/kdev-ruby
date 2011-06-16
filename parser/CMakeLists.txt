@@ -18,4 +18,3 @@ install(DIRECTORY tests tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 # Building the kdev4rubyparser library
 target_link_libraries(ruby-parser kdev4rubyparser)
 install(TARGETS kdev4rubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
-install(TARGETS ruby-parser ${INSTALL_TARGETS_DEFAULT_ARGS} )
