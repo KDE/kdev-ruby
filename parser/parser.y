@@ -104,7 +104,7 @@ struct parser_t {
 
 
 /* yy's functions */
-static int yylex(void *, void *);
+int yylex(void *, void *);
 void yyerror(struct parser_t * p, const char * s, ...);
 
 /* Parser auxiliar functions */
@@ -1692,7 +1692,7 @@ void fix_pos(struct parser_t * parser, struct node * n)
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
  */
-static int parser_yylex(struct parser_t * parser)
+int parser_yylex(struct parser_t * parser)
 {
   int t = YYEOF;
   char buffer[BSIZE];
@@ -2285,7 +2285,7 @@ static int parser_yylex(struct parser_t * parser)
 /*
  * Standard yylex.
  */
-static int yylex(void * lval, void * p)
+int yylex(void * lval, void * p)
 {
   struct parser_t * parser = (struct parser_t *) p;
 
@@ -2306,6 +2306,17 @@ void yyerror(struct parser_t * p, const char * s, ...)
   p->eof_reached = 1;
 }
 
+/*
+ * Copy errors to the RubyAst structure.
+ */
+void copy_error(RubyAst * ast, int index, struct error_t p)
+{
+  ast->errors[index].valid = p.valid;
+  ast->errors[index].line = p.line;
+  ast->errors[index].col = p.col;
+  ast->errors[index].msg = p.msg;
+}
+
 RubyAst * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
@@ -2314,8 +2325,13 @@ RubyAst * rb_compile_file(const char * path, const char * contents)
   /* Initialize parser */
   init_parser(&p);
   p.name = strdup(path);
-  if (!contents && !retrieve_source(&p, path))
-    return NULL;
+  if (!contents) {
+    if (!retrieve_source(&p, path))
+      return NULL;
+  } else {
+    p.blob = strdup(contents);
+    p.length = strlen(contents);
+  }
 
   /* Let's parse */
   result = (RubyAst *) malloc (sizeof(RubyAst));
@@ -2329,12 +2345,8 @@ RubyAst * rb_compile_file(const char * path, const char * contents)
         update_list(result->tree, p.ast);
     }
     if (p.eof_reached) {
-      #ifdef __cplusplus
-        result->errors[0] = p.errors[0];
-        result->errors[1] = p.errors[1];
-      #else
-        result->errors = p.errors;
-      #endif
+      copy_error(result, 0, p.errors[0]);
+      copy_error(result, 1, p.errors[1]);
       break;
     }
   }

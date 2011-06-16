@@ -132,7 +132,7 @@ struct error_t {
  */
 typedef struct {
   struct node * tree;
-  struct error_t * errors;
+  struct error_t errors[2];
 } RubyAst;
 
 
