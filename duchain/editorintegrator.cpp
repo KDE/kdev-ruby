@@ -33,25 +33,18 @@ EditorIntegrator::EditorIntegrator()
     /* There's nothing to do here! */
 }
 
-/*
- * NOTE: This method cannot be implemented yet. It needs a feature of the
- * parser that is still under development. But don't panic! this feature
- * will come as soon as possible ;)
- */
 KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge) const
 {
     Q_ASSERT(node);
 
-    if (edge == BackEdge) {
-        /* WARNING: The comment below is not necessarily true in ruby's case */
-        // Apparently KTE expects a range to go until _after_ the last character that should be included
-        // however the parser calculates endCol as the index _before_ the last included character, so adjust here
-        // TODO: End of the node, where column must be incremented by one according to the explanation above ;)
-        return KDevelop::CursorInRevision();
-    } else {
-        // TODO: Start of the node
-        return KDevelop::CursorInRevision();
-    }
+    /*
+     * The Ruby parser always sets the column  _after_ the last character
+     * that should be included.
+     */
+    if (edge == BackEdge)
+        return KDevelop::CursorInRevision(node->endLine, node->endCol);
+    else
+        return KDevelop::CursorInRevision(node->startLine, node->startCol - 1);
 }
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
