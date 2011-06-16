@@ -753,9 +753,8 @@ exc_var: /* nothing */            { $$ = 0;   }
 case_body: k_when exp then compstmt cases
   {
     /* The following statements fixes some issues around positions. */
-    struct node * n = ALLOC_N(token_object, NULL, NULL);
-    pop_pos(parser, n);
-    struct pos_t t = {n->startLine, n->endLine, n->startCol, n->endCol};
+    $$ = ALLOC_N(token_object, NULL, NULL);
+    struct pos_t t = {$$->startLine, $$->endLine, $$->startCol, $$->endCol};
     $$ = ALLOC_C(token_when, $2, $4, $5);
     push_pos(parser, t);
   }
