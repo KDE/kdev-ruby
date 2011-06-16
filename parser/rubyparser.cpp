@@ -60,6 +60,7 @@ RubyAst * RubyParser::parse()
         appendProblem(result->errors[0]);
         if (result->errors[1].valid)
             appendProblem(result->errors[1]);
+        rb_free(result);
         return NULL;
     } else
         m_problems.clear();
