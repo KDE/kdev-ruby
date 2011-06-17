@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+
 /**
  * This enumeration contains all the available tokens
  * used by this parser. This values are important for the
@@ -133,7 +134,7 @@ struct error_t {
 typedef struct {
   struct node * tree;
   struct error_t errors[2];
-} RubyAst;
+} Ast;
 
 
 /**
@@ -181,14 +182,14 @@ typedef struct node Node;
  *        if you want that the parser retrieves the contents for you.
  * @return an AST that represents the code.
  */
-RubyAst * rb_compile_file(const char * path, const char * contents);
+Ast * rb_compile_file(const char * path, const char * contents);
 
 /**
  * Free a RubyAst.
  *
- * @param ra the RubyAst you want to free.
+ * @param ra the Ast you want to free.
  */
-void rb_free(RubyAst * ra);
+void rb_free(Ast * ra);
 
 
 /*

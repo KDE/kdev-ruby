@@ -6,6 +6,7 @@ set(rubyduchain_SRCS
     declarationbuilder.cpp
     contextbuilder.cpp
     typebuilder.cpp
+	rubyducontext.cpp
     types/objecttype.cpp
 )
 

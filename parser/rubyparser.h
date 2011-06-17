@@ -24,7 +24,10 @@
 
 #include <language/interfaces/iproblem.h>
 #include <parser/parserexport.h>
-#include "node.h"
+// #include "node.h"
+#include "rubyast.h"
+
+/* TODO: Under construction */
 
 
 using namespace KDevelop;

@@ -29,7 +29,6 @@
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
-#include <parser/node.h>
 #include <duchain/declarationbuilder.h>
 #include <duchain/editorintegrator.h>
 
@@ -103,7 +102,7 @@ void ParseJob::run()
 
         EditorIntegrator editor;
         DeclarationBuilder builder(&editor);
-        m_duContext = builder.build(document(), ast->tree, m_duContext);
+        m_duContext = builder.build(document(), ast, m_duContext);
         editor.setUrl(IndexedString(m_url));
         m_parser->freeAst(ast);
         setDuChain(m_duContext);
@@ -112,7 +111,6 @@ void ParseJob::run()
             DUChainWriteLocker lock(DUChain::lock());
             m_duContext->setFeatures(minimumFeatures());
             KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
-            file->clearModificationRevisions();
             file->setModificationRevision(contents().modification);
             KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
         }
@@ -145,5 +143,4 @@ void ParseJob::run()
 
 
 #include "rubyparsejob.moc"
-
 

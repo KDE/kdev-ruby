@@ -54,23 +54,28 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    RubyAst * result = rb_compile_file(m_currentDocument.str().toAscii(),
-                                       m_contents);
+    Ast * result = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
+    RubyAst *ra = new RubyAst(result->tree);
     if (result->errors[0].valid) {
         appendProblem(result->errors[0]);
         if (result->errors[1].valid)
             appendProblem(result->errors[1]);
         rb_free(result);
         return NULL;
-    } else
+    } else {
+        free_errors(result->errors);
+        free(result); //TODO: sure ? :S
         m_problems.clear();
-    return result;
+    }
+    return ra;
 }
 
 void RubyParser::freeAst(RubyAst * ast)
 {
-    if (ast != NULL)
-        rb_free(ast);
+    /* TODO: free context? */
+    if (ast != NULL) {
+        free_ast(ast->tree);
+    }
 }
 
 void RubyParser::appendProblem(struct error_t givenError)

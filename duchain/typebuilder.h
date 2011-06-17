@@ -23,13 +23,20 @@
 #define TYPEBUILDER_H
 
 
+/*
+ * TODO: Don't know what to do with this. I'll take a closer look
+ * at it as soon as possible.
+ */
+
+
 #include <duchain/contextbuilder.h>
 #include <language/duchain/builders/abstracttypebuilder.h>
 
 
-namespace Ruby {
+namespace Ruby
+{
 
-typedef KDevelop::AbstractTypeBuilder<Node, Node, ContextBuilder> TypeBuilderBase;
+typedef KDevelop::AbstractTypeBuilder<RubyAst, RubyAst, ContextBuilder> TypeBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
 {

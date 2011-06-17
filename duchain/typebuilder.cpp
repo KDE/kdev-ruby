@@ -22,7 +22,8 @@
 #include <duchain/typebuilder.h>
 
 
-namespace Ruby  {
+namespace Ruby
+{
 
 TypeBuilder::TypeBuilder(): TypeBuilderBase()
 {

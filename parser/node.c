@@ -99,7 +99,7 @@ struct node * concat_list(struct node * head, struct node * tail)
  * Interface to the parser
  */
 
-void rb_free(RubyAst * ra)
+void rb_free(Ast * ra)
 {
   free_ast(ra->tree);
   free_errors(ra->errors);

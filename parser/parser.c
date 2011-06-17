@@ -5406,7 +5406,7 @@ void push_string_var(struct parser_t * p, int * curs, char ** ch)
       *ptr++ = *c++;
       *curs = *curs + 1;
     }
-    if (*curs >= p->length || *c == '"') {
+    if ((unsigned int) *curs >= p->length || *c == '"') {
       p->column = possible_error;
       yyerror(p, "expecting '}' token in string");
       *curs = p->length + 1; /* So we can force curs >= len error */
@@ -6212,6 +6212,7 @@ int parser_yylex(struct parser_t * parser)
 int yylex(void * lval, void * p)
 {
   struct parser_t * parser = (struct parser_t *) p;
+  (void) lval;
 
   return parser_yylex(parser);
 }
@@ -6233,7 +6234,7 @@ void yyerror(struct parser_t * p, const char * s, ...)
 /*
  * Copy errors to the RubyAst structure.
  */
-void copy_error(RubyAst * ast, int index, struct error_t p)
+void copy_error(Ast * ast, int index, struct error_t p)
 {
   ast->errors[index].valid = p.valid;
   ast->errors[index].line = p.line;
@@ -6241,10 +6242,10 @@ void copy_error(RubyAst * ast, int index, struct error_t p)
   ast->errors[index].msg = p.msg;
 }
 
-RubyAst * rb_compile_file(const char * path, const char * contents)
+Ast * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
-  RubyAst * result;
+  Ast * result;
 
   /* Initialize parser */
   init_parser(&p);
@@ -6258,7 +6259,7 @@ RubyAst * rb_compile_file(const char * path, const char * contents)
   }
 
   /* Let's parse */
-  result = (RubyAst *) malloc (sizeof(RubyAst));
+  result = (Ast *) malloc (sizeof(Ast));
   result->tree = NULL;
   for (;;) {
     yyparse(&p);

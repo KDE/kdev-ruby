@@ -2,6 +2,7 @@
  *
  * Copyright 2010 Niko Sams <niko.sams@gmail.com>
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright (C) 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -25,6 +26,7 @@
 #include <interfaces/icompletionsettings.h>
 #include <duchain/contextbuilder.h>
 #include <duchain/editorintegrator.h>
+#include "rubyducontext.h"
 
 
 using namespace KDevelop;
@@ -41,21 +43,50 @@ ContextBuilder::~ContextBuilder()
     /* There's nothing to do here! */
 }
 
-ReferencedTopDUContext ContextBuilder::build(const IndexedString & url, Node * node,
+ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *node,
                                                 ReferencedTopDUContext updateContext)
 {
-    if ( KDevelop::ICore::self() ) {
-        m_reportErrors = KDevelop::ICore::self()->languageController()->completionSettings()->highlightSemanticProblems();
-    }
+	if (!updateContext) {
+		DUChainReadLocker lock(DUChain::lock());
+		updateContext = DUChain::self()->chainForDocument(url);
+	}
+	if (updateContext) {
+		kDebug() << "Re-compiling" << url.str();
+		DUChainWriteLocker lock(DUChain::lock());
+		updateContext->clearImportedParentContexts();
+		updateContext->parsingEnvironmentFile()->clearModificationRevisions();
+		updateContext->clearProblems();
+	} else
+		kDebug() << "Compiling";
     return ContextBuilderBase::build(url, node, updateContext);
 }
 
-void ContextBuilder::setEditor(EditorIntegrator * editor)
+void ContextBuilder::setEditor(EditorIntegrator *editor)
 {
     m_editor = editor;
 }
 
-void ContextBuilder::startVisiting(Node * node)
+DUContext * ContextBuilder::newContext(const RangeInRevision &range)
+{
+    return new RubyDUContext<DUContext>(range, currentContext());
+}
+
+KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision &range,
+                                                      KDevelop::ParsingEnvironmentFile *file)
+{
+    KDevelop::IndexedString doc(m_editor->url());
+    if (!file) {
+        file = new KDevelop::ParsingEnvironmentFile(doc);
+        file->setLanguage(KDevelop::IndexedString("Ruby"));
+    }
+    TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
+    top->setType(DUContext::Global);
+    ReferencedTopDUContext ref(top); //TODO: Not sure :S
+    m_topContext = ref;
+    return top;
+}
+
+void ContextBuilder::startVisiting(RubyAst *node)
 {
     /* TODO */
     Q_UNUSED(node) // NOTE: Avoid warnings by now, should be removed in the future
@@ -63,42 +94,32 @@ void ContextBuilder::startVisiting(Node * node)
 //     visitProgram(ast);
 }
 
-KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file)
+void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
 {
-    if (!file) {
-        file = new KDevelop::ParsingEnvironmentFile(m_editor->url());
-        file->setLanguage(KDevelop::IndexedString("Ruby"));
-    }
-    return new KDevelop::TopDUContext(m_editor->url(), range, file);
+    node->context = ctx;
 }
 
-void ContextBuilder::setContextOnNode(Node* /*node*/, KDevelop::DUContext* /*ctx*/)
+KDevelop::DUContext * ContextBuilder::contextFromNode(RubyAst *node)
 {
-    /* TODO */
+    return node->context;
 }
 
-KDevelop::DUContext* ContextBuilder::contextFromNode(Node* /*node*/)
-{
-    /* TODO */
-    return 0;
-}
-
-EditorIntegrator* ContextBuilder::editor() const
+EditorIntegrator * ContextBuilder::editor() const
 {
     return m_editor;
 }
 
-KDevelop::RangeInRevision ContextBuilder::editorFindRange(Node* fromRange, Node* toRange)
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, RubyAst *toRange)
 {
-    return m_editor->findRange(fromRange, toRange);
+    return m_editor->findRange(fromRange->tree, toRange->tree);
 }
 
-KDevelop::CursorInRevision ContextBuilder::startPos(Node * node)
+KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node)
 {
-    return m_editor->findPosition(node, EditorIntegrator::FrontEdge);
+    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
 }
 
-KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node * id)
+KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node *id)
 {
     if (!id)
         return KDevelop::QualifiedIdentifier();
