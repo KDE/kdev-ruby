@@ -1,13 +1,11 @@
-add_subdirectory(tests)
-enable_testing()
-
 set(rubyduchain_SRCS
     editorintegrator.cpp
     declarationbuilder.cpp
     contextbuilder.cpp
     typebuilder.cpp
-	rubyducontext.cpp
+    rubyducontext.cpp
     types/objecttype.cpp
+    helpers.cpp
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})

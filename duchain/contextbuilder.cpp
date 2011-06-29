@@ -27,6 +27,8 @@
 #include <duchain/contextbuilder.h>
 #include <duchain/editorintegrator.h>
 #include "rubyducontext.h"
+#include "helpers.h"
+#include <KStandardDirs>
 
 
 using namespace KDevelop;
@@ -58,7 +60,8 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
 		updateContext->clearProblems();
 	} else
 		kDebug() << "Compiling";
-    return ContextBuilderBase::build(url, node, updateContext);
+    ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
+    return top;
 }
 
 void ContextBuilder::setEditor(EditorIntegrator *editor)
@@ -68,6 +71,7 @@ void ContextBuilder::setEditor(EditorIntegrator *editor)
 
 DUContext * ContextBuilder::newContext(const RangeInRevision &range)
 {
+    kDebug() << "lololo";
     return new RubyDUContext<DUContext>(range, currentContext());
 }
 
@@ -81,17 +85,33 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
     }
     TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
     top->setType(DUContext::Global);
-    ReferencedTopDUContext ref(top); //TODO: Not sure :S
-    m_topContext = ref;
+    kDebug() << "HERE" << doc.str();
+//     ReferencedTopDUContext ref(top); //TODO: Not sure :S
+//     m_topContext = ref;
     return top;
 }
 
+/* TODO: Take a closer look */
 void ContextBuilder::startVisiting(RubyAst *node)
 {
-    /* TODO */
-    Q_UNUSED(node) // NOTE: Avoid warnings by now, should be removed in the future
-//     ProgramNode *ast = static_cast<ProgramNode*>(node);
-//     visitProgram(ast);
+    IndexedString doc_url = internalBuiltinsFile();
+    if (m_editor->url() != doc_url) {
+        TopDUContext *internal;
+        {
+            DUChainReadLocker rlock(DUChain::lock());
+            internal = DUChain::self()->chainForDocument(doc_url);
+        }
+        if (!internal) {
+            //TODO unresolved imports
+            DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
+        } else {
+            kDebug() << "Adding builtins context";
+            DUChainWriteLocker wlock(DUChain::lock());
+            currentContext()->addImportedParentContext(internal);
+            //TODO Referenced TopDuContext
+        }
+    }
+    visitNode(node);
 }
 
 void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
@@ -125,6 +145,37 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node *id)
         return KDevelop::QualifiedIdentifier();
     return KDevelop::QualifiedIdentifier(id->name);
 }
+
+void ContextBuilder::visitModuleStatement(RubyAst *node)
+{//TODO
+    KDevelop::QualifiedIdentifier id(getModuleName(node->tree));
+kDebug() << "Start Visiting module: " << id;
+    openContext(node, editorFindRange(node, node), DUContext::Class, id);
+    RubyAstVisitor::visitModuleStatement(node);
+    closeContext();
+}
+
+void ContextBuilder::visitClassStatement(RubyAst *node)
+{
+//     TODO
+// TODO : what about singleton classes?
+    KDevelop::QualifiedIdentifier id(getModuleName(node->tree));
+kDebug() << "Start Visiting class: " << id;
+    openContext(node, editorFindRange(node, node), DUContext::Class, id);
+    RubyAstVisitor::visitClassStatement(node);
+    closeContext();
+}
+
+void ContextBuilder::visitFunctionStatement(RubyAst *node)
+{
+//     TODO
+    KDevelop::QualifiedIdentifier id(getMethodName(node->tree));
+kDebug() << "Start Visiting function: " << id;
+    openContext(node, editorFindRange(node, node), DUContext::Class, id);
+    RubyAstVisitor::visitFunctionStatement(node);
+    closeContext();
+}
+
 
 }
 

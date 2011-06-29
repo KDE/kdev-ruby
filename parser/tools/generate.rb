@@ -54,19 +54,13 @@ GRAMMAR = '../parser.y'
 GFLAGS = '-C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k1,3,$ ../tools/gperf.txt > ../hash.c'
 FILES = '../parser.h ../parser.c ../hash.c'
 
-# Call bison and beautify the output
+# Call bison
 def bison
   puts 'Using bison to generate parser.h and parser.c'
-  `bison #{GRAMMAR} #{YFLAGS} &> temp.txt`
-  IO.foreach 'temp.txt' do |line|
-    index = line.index('conflicts:') + 10
-    str = line.slice(index, line.length - index)
-    puts "Conflicts:#{str}"
-  end
-  `rm temp.txt`
+  `bison #{GRAMMAR} #{YFLAGS}`
 end
 
-# Just call gperf
+# Call gperf and remove warnings from the generated file.
 def gperf
   puts 'Using gperf to generate hash.c'
   `gperf #{GFLAGS}`

@@ -133,6 +133,7 @@ void pop_end(struct parser_t * parser, struct node * n);
 #define copy_start(dest, src) dest->startLine = src->startLine; dest->startCol = src->startCol
 #define copy_end(dest, src) dest->endLine = src->endLine; dest->endCol = src->endCol
 #define copy_range(dest, src1, src2) copy_start(dest, src1); copy_end(dest, src2)
+#define copy_pos(dest, src) copy_range(dest, src, src);
 #define manual_fix() {\
     struct node * n = parser->last_pos; \
     struct pos_t tp = { n->startLine, n->startCol, n->endLine, n->endCol }; \
@@ -195,9 +196,9 @@ void pop_end(struct parser_t * parser, struct node * n);
 %type <n> f_arguments f_args f_restarg f_optarg primary f_opt primary1 primary2
 %type <n> array array_items hash hash_items hash_item method_call call_args
 %type <n> opt_lambda_body lambda_body brace_block do_block bv_decls block_list
-%type <n> block_args exp_for exc_list rescue_list rescue_item function_args
-%type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol
-%type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const
+%type <n> block_args exp_for exc_list rescue_list rescue_item function_args block_params
+%type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol exp_or_hash
+%type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const single_name_mcall
 %type <n> dot_method_call dot_items dot_item scope_items array_value opt_bracket_list key
 %type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
 
@@ -395,6 +396,16 @@ cmpd_stmt: k_if exp then
       $$ = ALLOC_C(token_function, $2, $5, $4);
       pop_start(parser, $$);
     }
+	| k_def single_name_mcall
+    {
+      parser->in_def++;
+    }
+    f_arglist tRPAREN bodystmt END
+    {
+      parser->in_def--;
+      $$ = ALLOC_C(token_function, $2, $6, $4);
+      pop_start(parser, $$);
+    }
   | k_module module_name
     {
       if (parser->in_def)
@@ -428,15 +439,16 @@ cmpd_stmt: k_if exp then
       $$ = ALLOC_C(token_class, $3, $5, $2);
       pop_start(parser, $$);
     }
-  | k_class tLSHIFT opt_eol_list variable
+  | k_class tLSHIFT exp_or_hash
     {
       if (parser->in_def)
         yyerror(parser, "class definition in method body");
     }
+    term
     bodystmt
     END
     {
-      $$ = ALLOC_N(token_singleton_class, $6, $4);
+      $$ = ALLOC_N(token_singleton_class, $6, $3);
       pop_start(parser, $$);
     }
 ;
@@ -455,6 +467,14 @@ single_name: base dot_or_scope fname
     copy_range($$, $1, $3);
   }
   | fname   { $$ = $1;  }
+;
+
+single_name_mcall: base dot_or_scope mcall
+	{
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);		
+	}
+	| mcall		{ $$ = $1;	}
 ;
 
 function_args: f_arglist eol_or_semicolon  { $$ = $1;  }
@@ -570,7 +590,7 @@ lambda_body: brace_block  { $$ = $1;  }
 
 brace_block: lbrace block_args not_empty_compstmt tRBRACE
   {
-    pop_start(parser, parser->last_pos);
+    pop_pos(parser, NULL);
     $$ = ALLOC_N(token_block, $3, $2);
     if ($3->last != NULL) {
       copy_end($$, $3->last);
@@ -580,7 +600,7 @@ brace_block: lbrace block_args not_empty_compstmt tRBRACE
   }
   | lbrace not_empty_compstmt tRBRACE
   {
-    pop_pos(parser, parser->last_pos);
+    pop_pos(parser, NULL);
     $$ = ALLOC_N(token_block, $2, NULL);
     if ($2->last != NULL) {
       copy_end($$, $2->last);
@@ -594,38 +614,59 @@ do_block: k_do_block endl block_args compstmt END
   {
     pop_pos(parser, parser->last_pos);
     $$ = ALLOC_N(token_block, $4, $3);
-    if ($4->last != NULL) {
-      copy_end($$, $4->last);
-    } else {
-      copy_end($$, $4);
+    if ($4 != NULL) {
+      if ($4->last != NULL) {
+        copy_end($$, $4->last);
+      } else {
+        copy_end($$, $4);
+      }
+    } else { 
+      copy_pos($$, parser->last_pos);
     }
   }
   | k_do_block compstmt END
   {
     pop_pos(parser, parser->last_pos);
     $$ = ALLOC_N(token_block, $2, NULL);
-    if ($2->last != NULL) {
-      copy_end($$, $2->last);
+    if ($2 != NULL) {
+      if ($2->last != NULL) {
+        copy_end($$, $2->last);
+      } else {
+        copy_end($$, $2);
+      }
     } else {
-      copy_end($$, $2);
+      copy_pos($$, parser->last_pos);
     }
   }
 ;
 
-block_args: tOR_BIT f_arguments bv_decls tOR_BIT
+block_params: f_arguments { $$ = $1;  }
+  | comma tAND_BIT arg    { $$ = $3;  }
+  | f_args comma          { $$ = $1;  }
+  | f_args comma f_restarg f_blockarg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_args comma f_restarg comma f_args f_blockarg
+  {
+    $$ = concat_list($1, create_list($3, update_list($5, $6)));
+  }
+;
+
+block_args: tOR_BIT block_params bv_decls tOR_BIT
   {
     $$ = alloc_node(token_object, $2, $3);
-    copy_range($$, $2, $3);
+    copy_range($$, $2, $3); 
   }
   | tOR_BIT bv_decls tOR_BIT
   {
     $$ = alloc_node(token_object, NULL, $2);
-    copy_range($$, $2, $2);
+    copy_range($$, $2, $2); 
   }
-  | tOR_BIT f_arguments tOR_BIT
+  | tOR_BIT block_params tOR_BIT
   {
     $$ = alloc_node(token_object, $2, NULL);
-    copy_range($$, $2, $2);
+    copy_range($$, $2, $2); 
   }
 ;
 
@@ -637,11 +678,12 @@ block_list: base          { $$ = $1;  }
 ;
 
 f_arglist: f_arguments            { $$ = $1;  }
+  | tAND_BIT arg                  { $$ = $2;  }
   | lparen f_arguments rparen     { $$ = $2;  }
+  | lparen tAND_BIT arg rparen    { $$ = $3;  }
 ;
 
-f_arguments: tAND_BIT arg         { $$ = $2;  }
-  | f_args f_blockarg             { $$ = update_list($1, $2);  }
+f_arguments: f_args f_blockarg    { $$ = update_list($1, $2);  }
   | f_restarg comma f_args f_blockarg
     {
       $$ = create_list($1, update_list($3, $4));
@@ -999,6 +1041,7 @@ array_exp: exp      { $$ = $1;  }
 ;
 
 array_items: array_exp              { $$ = $1;  }
+  | array_items comma               { $$ = $1;  }
   | array_items comma array_exp     { $$ = update_list($1, $3); }
 ;
 
@@ -1031,7 +1074,12 @@ sary: SARY
   }
 ;
 
-hash: lbrace tRBRACE            { $$ = ALLOC_N(token_hash, NULL, NULL); pop_pos(parser, NULL); }
+hash: lbrace tRBRACE
+  { 
+    $$ = alloc_node(token_hash, NULL, NULL);
+    pop_pos(parser, $$);
+    pop_start(parser, $$);
+  }
   | lbrace hash_items rbrace
   {
     pop_pos(parser, parser->last_pos);
@@ -1041,6 +1089,7 @@ hash: lbrace tRBRACE            { $$ = ALLOC_N(token_hash, NULL, NULL); pop_pos(
 ;
 
 hash_items: hash_item           { $$ = $1;  }
+  | hash_items comma            { $$ = $1;  }
   | hash_items comma hash_item  { $$ = update_list($1, $3); }
 ;
 
@@ -1213,6 +1262,10 @@ call_args: exp                { $$ = $1;  }
 call_args_paren: exp_paren          { $$ = $1;  }
   | call_args_paren comma exp_paren { $$ = update_list($1, $3); }
 ;
+
+exp_or_hash: exp { $$ = $1; }
+  | hash         { $$ = $1; }
+; 
 
 /* TODO: hash with exp */
 exp_hash: exp   { $$ = $1;  }
@@ -1707,8 +1760,9 @@ int parser_yylex(struct parser_t * parser)
   }
   c = parser->blob + curs;
 
-  /* Ignore whitespaces */
-  for (; isspace(*c) && *c != '\n'; ++c, ++curs, parser->column++, parser->cursor++);
+  /* Ignore whitespaces and backslashes */
+  for (; (isspace(*c) || *c == '\\') && *c != '\n';
+      ++c, ++curs, parser->column++, parser->cursor++);
 
   if (*c == '#') {
     for (; *c != '\n' && curs < len; ++c, ++curs);

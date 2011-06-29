@@ -67,7 +67,8 @@ void ParseJob::run()
         DUChainReadLocker lock(DUChain::lock());
         bool needsUpdate = true;
         static const IndexedString langString("Ruby");                                                                      
-        foreach(const ParsingEnvironmentFilePointer & file, DUChain::self()->allEnvironmentFiles(document())) {
+        foreach(const ParsingEnvironmentFilePointer &file, 
+                DUChain::self()->allEnvironmentFiles(document())) {
             if (file->language() != langString)
                 continue;
             if (file->needsUpdate()) {
@@ -101,11 +102,11 @@ void ParseJob::run()
             return abortJob();
 
         EditorIntegrator editor;
+        editor.setUrl(IndexedString(m_url));
         DeclarationBuilder builder(&editor);
         m_duContext = builder.build(document(), ast, m_duContext);
-        editor.setUrl(IndexedString(m_url));
-        m_parser->freeAst(ast);
         setDuChain(m_duContext);
+        m_parser->freeAst(ast);
 
         {
             DUChainWriteLocker lock(DUChain::lock());
@@ -123,7 +124,7 @@ void ParseJob::run()
             m_duContext->parsingEnvironmentFile()->clearModificationRevisions();
             m_duContext->clearProblems();
         } else {
-            ParsingEnvironmentFile * file = new ParsingEnvironmentFile(document());
+            ParsingEnvironmentFile *file = new ParsingEnvironmentFile(document());
             static const IndexedString langString("Ruby");
             file->setLanguage(langString);
             m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);

@@ -191,6 +191,10 @@ Ast * rb_compile_file(const char * path, const char * contents);
  */
 void rb_free(Ast * ra);
 
+/* TODO */
+
+char * getModuleName(struct node *n);
+char * getMethodName(struct node *n);
 
 /*
  * There are three ways to allocate a node. The simplest one is

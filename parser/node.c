@@ -106,6 +106,16 @@ void rb_free(Ast * ra)
   free(ra);
 }
 
+char * getModuleName(struct node *n)
+{
+    return (n->r->last != NULL) ? n->r->last->name : n->r->name;
+}
+
+char * getMethodName(struct node *n)
+{
+    return (n->cond->r != NULL) ? n->cond->r->name : n->cond->name;
+}
+
 
 /*
  * Auxiliar functions

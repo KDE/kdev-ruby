@@ -1,6 +1,6 @@
 /* This file is part of KDevelop
- * 
- * Copyright (C) 2011  Miquel Sabaté <mikisabate@gmail.com>
+ *
+ * Copyright (C) 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,31 +17,44 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBYAST_H
-#define RUBYAST_H
-
-
-/*
- * TODO: This file is still under construction
- */
+#ifndef RUBYASTVISITOR_H
+#define RUBYASTVISITOR_H
 
 
-#include "node.h"
-#include <language/duchain/ducontext.h>
+/* TODO: Under construction */
+
+#include <parser/parserexport.h>
+// #include "node.h"
+#include "rubyast.h"
 
 
-class RubyAst
+/* TODO: Document: The following are based on the enum node_t from parser/node.h */
+
+
+using namespace KDevelop;
+
+namespace Ruby
+{
+
+class KDEVRUBYPARSER_EXPORT RubyAstVisitor
 {
 public:
-    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL) : tree (n), context(ctx)
-    {};
+    RubyAstVisitor();
+    virtual ~RubyAstVisitor();
     
-public:
-    Node *tree;
-    KDevelop::DUContext *context;
+    void visitNode(RubyAst *node);
+    
+protected:
+    virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
+    virtual void visitFunctionStatement(RubyAst *node);
+    
+private:
+    void visitChilds(RubyAst *node);
 };
 
+}
 
-#endif // RUBYAST_H
+
+#endif // RUBYASTVISITOR_H
 

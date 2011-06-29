@@ -34,6 +34,7 @@
 #include <language/duchain/topducontext.h>
 #include <duchain/duchainexport.h>
 #include <parser/rubyast.h>
+#include <parser/rubyastvisitor.h>
 
 
 namespace Ruby
@@ -42,7 +43,7 @@ namespace Ruby
 class EditorIntegrator;
 typedef KDevelop::AbstractContextBuilder<RubyAst, Node> ContextBuilderBase;
 
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, public RubyAstVisitor
 {
 public:
     ContextBuilder();
@@ -67,6 +68,11 @@ protected:
     KDevelop::CursorInRevision startPos(RubyAst *node);
 
     virtual KDevelop::QualifiedIdentifier identifierForNode(Node *id);
+    
+    /* Re-implementing from RubyAstVistor */
+    virtual void visitClassStatement(RubyAst *node);
+    virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitFunctionStatement(RubyAst *node);
 
     bool m_reportErrors;
     EditorIntegrator *m_editor;
