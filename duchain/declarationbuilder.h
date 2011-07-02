@@ -37,20 +37,23 @@
 
 namespace KDevelop { class Declaration; }
 
-namespace Ruby {
+namespace Ruby
+{
 
-typedef KDevelop::AbstractDeclarationBuilder<RubyAst, RubyAst, TypeBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<RubyAst, Node, TypeBuilder> DeclarationBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
-    DeclarationBuilder() {}
+    DeclarationBuilder();
     DeclarationBuilder(EditorIntegrator *editor);
+    virtual ~DeclarationBuilder();
 
 protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(Node *node);
     virtual void closeDeclaration();
     virtual void updateCurrentType();
+    /* TODO: supportBuild?, closeContext? */
 };
 
 }

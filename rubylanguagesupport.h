@@ -40,23 +40,23 @@ namespace KDevelop {
     class ICodeHighlighting;
 }
 
-namespace Ruby {
-    class RailsSwitchers;
-    class RailsDataProvider;
-    class RubyHighlighting;
-}
+namespace Ruby
+{
 
+class RailsSwitchers;
+class RailsDataProvider;
+class RubyHighlighting;
 
-class RubyLanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
+class LanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
 {
     Q_OBJECT
     Q_INTERFACES( KDevelop::ILanguageSupport )
 
 public:
-    RubyLanguageSupport(QObject * parent, const QVariantList & args = QVariantList());
-    virtual ~RubyLanguageSupport();
+    LanguageSupport(QObject * parent, const QVariantList &args = QVariantList());
+    virtual ~LanguageSupport();
 
-    static RubyLanguageSupport * self();
+    static LanguageSupport * self();
     virtual QString name() const;
     virtual KDevelop::ParseJob * createParseJob(const KUrl &);
     virtual KDevelop::ILanguage * language();
@@ -80,20 +80,19 @@ private:
     void setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument);
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
-    static RubyLanguageSupport* m_self;
-    Ruby::RubyHighlighting *m_highlighting;
+    static LanguageSupport* m_self;
+    RubyHighlighting *m_highlighting;
 
-    Ruby::RailsSwitchers *m_railsSwitchers;
-    Ruby::RailsDataProvider *m_viewsQuickOpenDataProvider;
-    Ruby::RailsDataProvider *m_testsQuickOpenDataProvider;
+    RailsSwitchers *m_railsSwitchers;
+    RailsDataProvider *m_viewsQuickOpenDataProvider;
+    RailsDataProvider *m_testsQuickOpenDataProvider;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 
 };
 
+} // End of namespace Ruby
+
 
 #endif
-
-
-// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
 

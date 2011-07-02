@@ -43,7 +43,7 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
+ParseJob::ParseJob(const KUrl & url, LanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
     , m_duContext (NULL)
@@ -57,9 +57,9 @@ ParseJob::~ParseJob()
     /* There's nothing to do here */
 }
 
-RubyLanguageSupport * ParseJob::ruby() const
+LanguageSupport * ParseJob::ruby() const
 {
-    return RubyLanguageSupport::self();
+    return LanguageSupport::self();
 }
 
 void ParseJob::run()

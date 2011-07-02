@@ -27,11 +27,11 @@
 
 
 class KUrl;
-class RubyLanguageSupport;
 
 namespace Ruby
 {
 
+class LanguageSupport;
 class RubyParser;
 
 /**
@@ -53,7 +53,7 @@ public:
      * @param url the url of the file to parse.
      * @param parent the RubyLanguageSupport this ParseJob is parented to.
      */
-    ParseJob(const KUrl &url, RubyLanguageSupport *parent);
+    ParseJob(const KUrl &url, LanguageSupport *parent);
 
     /**
      * Destructor.
@@ -70,10 +70,10 @@ private:
     /**
      * @return static accessor to avoid casting.
      */
-    RubyLanguageSupport * ruby() const;
+    LanguageSupport * ruby() const;
 
 private:
-    const RubyLanguageSupport *m_parent;
+    const LanguageSupport *m_parent;
     KUrl m_url;
     RubyParser *m_parser;
     KDevelop::ReferencedTopDUContext m_duContext;

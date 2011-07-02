@@ -27,10 +27,21 @@
 namespace Ruby
 {
 
+DeclarationBuilder::DeclarationBuilder()
+    : DeclarationBuilderBase()
+{
+    /* There's nothing to do here! */
+}
+
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
     DeclarationBuilderBase()
 {
     setEditor(editor);
+}
+
+DeclarationBuilder::~DeclarationBuilder()
+{
+    /* There's nothing to do here! */
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node *node)
@@ -42,13 +53,17 @@ KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node *node)
 
 void DeclarationBuilder::closeDeclaration()
 {
+    if (currentDeclaration() && lastType()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        currentDeclaration()->setType(lastType());
+    }
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
 }
 
 void DeclarationBuilder::updateCurrentType()
 {
-    KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+    DUChainWriteLocker lock(DUChain::lock());
     currentDeclaration()->setAbstractType(currentAbstractType());
 }
 
