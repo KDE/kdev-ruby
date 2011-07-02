@@ -45,10 +45,10 @@ class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
     DeclarationBuilder() {}
-    DeclarationBuilder(EditorIntegrator* editor);
+    DeclarationBuilder(EditorIntegrator *editor);
 
 protected:
-    virtual KDevelop::QualifiedIdentifier identifierForNode(Node * node);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(Node *node);
     virtual void closeDeclaration();
     virtual void updateCurrentType();
 };

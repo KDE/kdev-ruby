@@ -27,13 +27,13 @@
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder(EditorIntegrator * editor):
+DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
     DeclarationBuilderBase()
 {
     setEditor(editor);
 }
 
-KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node * node)
+KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node *node)
 {
     if (!node)
         return KDevelop::QualifiedIdentifier();
