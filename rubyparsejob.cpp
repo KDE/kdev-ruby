@@ -30,6 +30,7 @@
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
 #include <duchain/declarationbuilder.h>
+#include <duchain/usebuilder.h>
 #include <duchain/editorintegrator.h>
 
 
@@ -110,7 +111,8 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        //TODO UseBuilder
+        UseBuilder useBuilder(&editor);
+        useBuilder.buildUses(ast);
 
         if (abortRequested())
             return abortJob();

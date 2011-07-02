@@ -1,6 +1,7 @@
 set(rubyduchain_SRCS
     editorintegrator.cpp
     declarationbuilder.cpp
+    usebuilder.cpp
     contextbuilder.cpp
     typebuilder.cpp
     rubyducontext.cpp
