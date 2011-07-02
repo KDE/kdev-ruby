@@ -48,6 +48,7 @@
 //Ruby plugin
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
+#include <rubyhighlighting.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
 //END Includes
@@ -78,6 +79,7 @@ RubyLanguageSupport::RubyLanguageSupport(QObject * parent,
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
     setXMLFile( "kdevrubysupport.rc" );
     m_self = this;
+    m_highlighting = new RubyHighlighting(this);
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
@@ -158,6 +160,11 @@ KDevelop::ParseJob * RubyLanguageSupport::createParseJob(const KUrl & url)
 KDevelop::ILanguage * RubyLanguageSupport::language()
 {
     return core()->languageController()->language(name());
+}
+
+KDevelop::ICodeHighlighting* RubyLanguageSupport::codeHighlighting() const
+{
+    return m_highlighting;
 }
 
 QStringList RubyLanguageSupport::extensions() const

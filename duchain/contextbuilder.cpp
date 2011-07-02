@@ -148,21 +148,16 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node *id)
 }
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)
-{//TODO
-    KDevelop::QualifiedIdentifier id(getModuleName(node->tree));
-kDebug() << "Start Visiting module: " << id;
-    openContext(node, editorFindRange(node, node), DUContext::Class, id);
+{
+    openContextForClassDefinition(node);
     RubyAstVisitor::visitModuleStatement(node);
     closeContext();
 }
 
+// TODO : what about singleton classes?
 void ContextBuilder::visitClassStatement(RubyAst *node)
 {
-//     TODO
-// TODO : what about singleton classes?
-    KDevelop::QualifiedIdentifier id(getModuleName(node->tree));
-kDebug() << "Start Visiting class: " << id;
-    openContext(node, editorFindRange(node, node), DUContext::Class, id);
+    openContextForClassDefinition(node);
     RubyAstVisitor::visitClassStatement(node);
     closeContext();
 }
@@ -175,6 +170,29 @@ kDebug() << "Start Visiting function: " << id;
     openContext(node, editorFindRange(node, node), DUContext::Class, id);
     RubyAstVisitor::visitFunctionStatement(node);
     closeContext();
+}
+
+void ContextBuilder::addImportedContexts()
+{
+    /* TODO: really ? :S */
+    if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        foreach (KDevelop::DUContext *imported, m_importedParentContexts)
+            currentContext()->addImportedParentContext(imported);
+        m_importedParentContexts.clear();
+    }
+}
+
+void ContextBuilder::openContextForClassDefinition(RubyAst *node)
+{
+    RangeInRevision range = editorFindRange(node, node);
+    KDevelop::QualifiedIdentifier className(getModuleName(node->tree));
+    DUChainWriteLocker wlock(DUChain::lock());
+
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
+    wlock.unlock();
+    addImportedContexts();
 }
 
 

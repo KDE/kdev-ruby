@@ -24,6 +24,10 @@
 #include <KDebug>
 
 #include <interfaces/ilanguage.h>
+#include <interfaces/ilanguagecontroller.h>
+#include <interfaces/icore.h>
+#include <language/backgroundparser/backgroundparser.h>
+#include <language/interfaces/icodehighlighting.h>
 #include <language/backgroundparser/urlparselock.h>
 
 #include <rubyparsejob.h>
@@ -129,6 +133,11 @@ void ParseJob::run()
             KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
         }
         m_parser->freeAst(ast);
+
+        if (m_parent && m_parent->codeHighlighting() &&
+            ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
+            ruby()->codeHighlighting()->highlightDUChain(m_duContext);
+        }
         kDebug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";

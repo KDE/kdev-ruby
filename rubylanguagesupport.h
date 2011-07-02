@@ -26,6 +26,10 @@
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
 
+/*
+ * WARNING: This file (and class) is a complete mess. It should be properly
+ * polished as soon as possible.
+ */
 
 class KConfigGroup;
 
@@ -33,11 +37,13 @@ namespace KDevelop {
     class IDocument;
     class IProject;
     class ILaunchConfiguration;
+    class ICodeHighlighting;
 }
 
 namespace Ruby {
     class RailsSwitchers;
     class RailsDataProvider;
+    class RubyHighlighting;
 }
 
 
@@ -54,6 +60,7 @@ public:
     virtual QString name() const;
     virtual KDevelop::ParseJob * createParseJob(const KUrl &);
     virtual KDevelop::ILanguage * language();
+    virtual KDevelop::ICodeHighlighting* codeHighlighting() const;
 
     QStringList extensions() const;
 
@@ -74,6 +81,7 @@ private:
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
     static RubyLanguageSupport* m_self;
+    Ruby::RubyHighlighting *m_highlighting;
 
     Ruby::RailsSwitchers *m_railsSwitchers;
     Ruby::RailsDataProvider *m_viewsQuickOpenDataProvider;

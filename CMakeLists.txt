@@ -20,6 +20,7 @@ add_subdirectory(app_templates)
 
 set(kdevrubylanguagesupport_PART_SRCS
     rubyparsejob.cpp
+    rubyhighlighting.cpp
     rubylanguagesupport.cpp
 )
 
