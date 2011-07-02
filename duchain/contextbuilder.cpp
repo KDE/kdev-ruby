@@ -35,7 +35,8 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ContextBuilder::ContextBuilder() : m_reportErrors(true)
+ContextBuilder::ContextBuilder() 
+    : m_reportErrors(true), m_hasUnresolvedIdentifiers(false)
 {
     /* There's nothing to do here! */
 }
@@ -60,8 +61,12 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
 		updateContext->clearProblems();
 	} else
 		kDebug() << "Compiling";
-    ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
-    return top;
+    return ContextBuilderBase::build(url, node, updateContext);
+}
+
+bool ContextBuilder::hasUnresolvedImports() const
+{
+    return m_hasUnresolvedIdentifiers;
 }
 
 void ContextBuilder::setEditor(EditorIntegrator *editor)
@@ -71,7 +76,6 @@ void ContextBuilder::setEditor(EditorIntegrator *editor)
 
 DUContext * ContextBuilder::newContext(const RangeInRevision &range)
 {
-    kDebug() << "lololo";
     return new RubyDUContext<DUContext>(range, currentContext());
 }
 
@@ -85,13 +89,10 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
     }
     TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
     top->setType(DUContext::Global);
-    kDebug() << "HERE" << doc.str();
-//     ReferencedTopDUContext ref(top); //TODO: Not sure :S
-//     m_topContext = ref;
+    m_topContext = ReferencedTopDUContext(top);
     return top;
 }
 
-/* TODO: Take a closer look */
 void ContextBuilder::startVisiting(RubyAst *node)
 {
     IndexedString doc_url = internalBuiltinsFile();
@@ -102,16 +103,16 @@ void ContextBuilder::startVisiting(RubyAst *node)
             internal = DUChain::self()->chainForDocument(doc_url);
         }
         if (!internal) {
-            //TODO unresolved imports
+            m_hasUnresolvedIdentifiers = true;
             DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
         } else {
             kDebug() << "Adding builtins context";
             DUChainWriteLocker wlock(DUChain::lock());
             currentContext()->addImportedParentContext(internal);
-            //TODO Referenced TopDuContext
+            m_builtinsContext = TopDUContextPointer(internal);
         }
     }
-    visitNode(node);
+    RubyAstVisitor::visitNode(node);
 }
 
 void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)

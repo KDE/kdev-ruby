@@ -52,6 +52,8 @@ public:
     void setEditor(EditorIntegrator *editor);
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
+    
+    bool hasUnresolvedImports() const;
 
 protected:
     EditorIntegrator * editor() const;
@@ -75,8 +77,10 @@ protected:
     virtual void visitFunctionStatement(RubyAst *node);
 
     bool m_reportErrors;
+    bool m_hasUnresolvedIdentifiers;
     EditorIntegrator *m_editor;
     KDevelop::ReferencedTopDUContext m_topContext;
+    KDevelop::TopDUContextPointer m_builtinsContext;
 };
 
 }

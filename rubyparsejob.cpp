@@ -105,8 +105,19 @@ void ParseJob::run()
         editor.setUrl(IndexedString(m_url));
         DeclarationBuilder builder(&editor);
         m_duContext = builder.build(document(), ast, m_duContext);
+        bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
-        m_parser->freeAst(ast);
+        if (abortRequested())
+            return abortJob();
+
+        //TODO UseBuilder
+
+        if (abortRequested())
+            return abortJob();
+
+        if (needsReparse) {
+            //TODO
+        }
 
         {
             DUChainWriteLocker lock(DUChain::lock());
@@ -115,6 +126,7 @@ void ParseJob::run()
             file->setModificationRevision(contents().modification);
             KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
         }
+        m_parser->freeAst(ast);
         kDebug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
