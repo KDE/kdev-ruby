@@ -44,6 +44,12 @@ DeclarationBuilder::~DeclarationBuilder()
     /* There's nothing to do here! */
 }
 
+void DeclarationBuilder::visitClassStatement(RubyAst *node)
+{
+    kDebug() << "Declaration: " << getModuleName(node->tree);
+    RubyAstVisitor::visitClassStatement(node);
+}
+
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node *node)
 {
     if (!node)

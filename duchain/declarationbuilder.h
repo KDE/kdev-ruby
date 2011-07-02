@@ -54,6 +54,8 @@ protected:
     virtual void closeDeclaration();
     virtual void updateCurrentType();
     /* TODO: supportBuild?, closeContext? */
+
+    virtual void visitClassStatement(RubyAst *node);
 };
 
 }

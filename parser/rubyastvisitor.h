@@ -43,8 +43,7 @@ public:
     virtual ~RubyAstVisitor();
     
     void visitNode(RubyAst *node);
-    
-protected:
+
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
     virtual void visitFunctionStatement(RubyAst *node);

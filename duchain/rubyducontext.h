@@ -71,6 +71,11 @@ public:
         static_cast<KDevelop::DUChainBase*>(this)->d_func_dynamic()->setClassId(this);
     }
 
+    virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl,
+                                            KDevelop::TopDUContext *topContext,
+                                            const QString &htmlPrefix,
+                                            const QString &htmlSufix);
+
     //TODO: Both Php and Python define an enum called Identity as follows: Why? :S
     enum { Identity = BaseContext::Identity + 51 };
 };

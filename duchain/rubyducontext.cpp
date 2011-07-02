@@ -22,6 +22,7 @@
 
 #include <language/duchain/topducontextdata.h>
 #include <language/duchain/duchainregister.h>
+#include "navigation/navigationwidget.h"
 
 
 namespace Ruby
@@ -34,9 +35,23 @@ REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyTopDUContext, TopDUContextData);
 typedef RubyDUContext<DUContext> RubyNormalDUContext;
 REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyNormalDUContext, DUContextData);
 
+template<>
+QWidget* RubyTopDUContext::createNavigationWidget(  Declaration *decl, TopDUContext *topContext,
+                                                    const QString &htmlPrefix, const QString & htmlSufix)
+{
+    if (!decl)
+        return NULL;
+    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSufix);
+}
 
-/*
- * TODO: Navigation widgets !!
- */
+template<>
+QWidget* RubyNormalDUContext::createNavigationWidget(   Declaration *decl, TopDUContext *topContext,
+                                                        const QString &htmlPrefix, const QString & htmlSufix)
+{
+    if (!decl)
+        return NULL;
+    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSufix);
+}
 
 };
+
