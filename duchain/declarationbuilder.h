@@ -33,14 +33,17 @@
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/typebuilder.h>
 #include <parser/rubyast.h>
+#include "declarations/classdeclaration.h"
 
 
-namespace KDevelop { class Declaration; }
+namespace KDevelop {
+    class Declaration;
+}
 
 namespace Ruby
 {
 
-typedef KDevelop::AbstractDeclarationBuilder<RubyAst, Node, TypeBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
@@ -50,12 +53,17 @@ public:
     virtual ~DeclarationBuilder();
 
 protected:
-    virtual KDevelop::QualifiedIdentifier identifierForNode(Node *node);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();
     virtual void updateCurrentType();
-    /* TODO: supportBuild?, closeContext? */
 
     virtual void visitClassStatement(RubyAst *node);
+    virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitFunctionStatement(RubyAst *node);
+
+private:
+    void openMethodDeclaration(RubyAst *node);
+    void openClassDeclaration(RubyAst *node, bool isClass);
 };
 
 }

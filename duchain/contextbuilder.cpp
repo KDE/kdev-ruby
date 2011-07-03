@@ -140,11 +140,11 @@ KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node)
     return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
 }
 
-KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(Node *id)
+KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
 {
-    if (!id)
+    if (!name)
         return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(id->name);
+    return KDevelop::QualifiedIdentifier(name->value);
 }
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)

@@ -36,7 +36,7 @@
 namespace Ruby
 {
 
-typedef KDevelop::AbstractTypeBuilder<RubyAst, RubyAst, ContextBuilder> TypeBuilderBase;
+typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
 {

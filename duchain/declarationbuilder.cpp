@@ -22,6 +22,8 @@
 
 
 #include <duchain/declarationbuilder.h>
+#include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/integraltype.h>
 
 
 namespace Ruby
@@ -46,15 +48,81 @@ DeclarationBuilder::~DeclarationBuilder()
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
-    kDebug() << "Declaration: " << getModuleName(node->tree);
+    openClassDeclaration(node, true);
     RubyAstVisitor::visitClassStatement(node);
+
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        closeContext();
+    }
+    closeType();
+    closeDeclaration();
 }
 
-KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node *node)
+void DeclarationBuilder::visitModuleStatement(RubyAst* node)
+{
+    openClassDeclaration(node, false);
+    RubyAstVisitor::visitModuleStatement(node);
+
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        closeContext();
+    }
+    closeType();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::visitFunctionStatement(RubyAst *node)
+{
+    openMethodDeclaration(node);
+    /* TODO
+     * The following (thread-safe) steps have to be done:
+     *  - Visit Method arguments.
+     *  - Visit Method Body.
+     */
+    closeType();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
+{
+    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(new NameAst(node), node);
+    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        decl->setType(type);
+    }
+    openType(type);
+}
+
+void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(new NameAst(node), node);
+    eventuallyAssignInternalContext();
+
+    if (isClass) {
+        decl->setKind(KDevelop::Declaration::Type);
+        decl->setClassType(ClassDeclarationData::Class);
+    } else {
+        decl->setKind(KDevelop::Declaration::Namespace);
+        decl->setClassType(ClassDeclarationData::Interface);
+    }
+    decl->clearBaseClasses();
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+    openContextForClassDefinition(node);
+    decl->setInternalContext(currentContext());
+}
+
+KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)
 {
     if (!node)
         return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(node->name);
+    return KDevelop::QualifiedIdentifier(node->value);
 }
 
 void DeclarationBuilder::closeDeclaration()

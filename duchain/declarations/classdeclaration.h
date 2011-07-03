@@ -18,37 +18,34 @@
  */
 
 
-#ifndef USEBUILDER_H
-#define USEBUILDER_H
+#ifndef RUBY_CLASSDECLARATION_H
+#define RUBY_CLASSDECLARATION_H
+
+
+#include <language/duchain/classdeclaration.h>
+#include <duchain/duchainexport.h>
 
 /*
- * TODO: This file is still under construction.
+ * WARNING: This files is under development.
  */
-
-
-#include "contextbuilder.h"
-#include <language/duchain/builders/abstractusebuilder.h>
-#include "duchainexport.h"
-#include "editorintegrator.h"
 
 
 namespace Ruby
 {
-typedef KDevelop::AbstractUseBuilder<RubyAst, NameAst, ContextBuilder> UseBuilderBase;
-
-class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
+    
+class KDEVRUBYDUCHAIN_EXPORT RubyClassDeclaration : public KDevelop::ClassDeclaration
 {
 public:
-    UseBuilder(EditorIntegrator *editor);
-
-protected:
-    //TODO visitors :D
-
-private:
-//     EditorIntegrator *m_editor; TODO: why?
+    RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    RubyClassDeclaration(const ClassDeclaration &rhs);
+    RubyClassDeclaration(KDevelop::ClassDeclarationData &data);
+    RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
 };
+
+typedef RubyClassDeclaration ClassDeclaration;
 
 } // End of namespace Ruby
 
 
-#endif // USEBUILDER_H
+#endif // CLASSDECLARATION_H
+

@@ -42,6 +42,23 @@ public:
     KDevelop::DUContext *context;
 };
 
+class NameAst : public RubyAst
+{
+public:
+    NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
+    {
+        if (tree->kind == token_class || tree->kind == token_module)
+            value = QString(getModuleName(tree));
+        else if (tree->kind == token_function)
+            value = QString(getMethodName(tree));
+        else
+            value = QString(tree->name);
+    };
+
+public:
+    QString value;
+};
+
 
 #endif // RUBYAST_H
 

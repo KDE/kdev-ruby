@@ -10,6 +10,8 @@ set(rubyduchain_SRCS
     navigation/declarationnavigationcontext.cpp
     navigation/navigationwidget.cpp
     navigation/includenavigationcontext.cpp
+    declarations/classdeclaration.cpp
+    declarations/functiondeclaration.cpp
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
@@ -22,5 +24,3 @@ target_link_libraries( kdev4rubyduchain
 )
 
 install(TARGETS kdev4rubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-add_subdirectory(navigation)

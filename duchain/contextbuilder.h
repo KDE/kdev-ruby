@@ -41,7 +41,7 @@ namespace Ruby
 {
 
 class EditorIntegrator;
-typedef KDevelop::AbstractContextBuilder<RubyAst, Node> ContextBuilderBase;
+typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, public RubyAstVisitor
 {
@@ -69,12 +69,14 @@ protected:
     virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange);
     KDevelop::CursorInRevision startPos(RubyAst *node);
 
-    virtual KDevelop::QualifiedIdentifier identifierForNode(Node *id);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
 
     /* Re-implementing from RubyAstVistor */
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitFunctionStatement(RubyAst *node);
+
+    void openContextForClassDefinition(RubyAst *node);
 
     bool m_reportErrors;
     bool m_hasUnresolvedIdentifiers;
@@ -84,7 +86,6 @@ protected:
 
 private:
     void addImportedContexts();
-    void openContextForClassDefinition(RubyAst *node);
 
 private:
     QList<KDevelop::DUContext *> m_importedParentContexts; //TODO: Really?
