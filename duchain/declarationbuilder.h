@@ -52,6 +52,10 @@ public:
     DeclarationBuilder(EditorIntegrator *editor);
     virtual ~DeclarationBuilder();
 
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
+        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
+    void setPreBuilding(bool preBuilding);
+
 protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();
@@ -60,10 +64,17 @@ protected:
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitFunctionStatement(RubyAst *node);
+    virtual void visitMethodArguments(RubyAst *node);
+    virtual void visitBody(RubyAst *node);
+    virtual void visitVariable(RubyAst *node);
+//     virtual void visitAssignmentStatement(RubyAst *node);
 
 private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
+
+private:
+    bool m_preBuilding;
 };
 
 }

@@ -17,35 +17,34 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBY_CLASSDECLARATION_H
-#define RUBY_CLASSDECLARATION_H
-
-
-#include <language/duchain/classdeclaration.h>
-#include <duchain/duchainexport.h>
-
-/*
- * WARNING: This file is under development.
- */
+#include "variabledeclaration.h"
 
 
 namespace Ruby
 {
-    
-class KDEVRUBYDUCHAIN_EXPORT RubyClassDeclaration : public KDevelop::ClassDeclaration
+
+RubyVariableDeclaration::RubyVariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext* ctx)
+    : KDevelop::Declaration(range, ctx)
 {
-public:
-    RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-    RubyClassDeclaration(const ClassDeclaration &rhs);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-};
 
-typedef RubyClassDeclaration ClassDeclaration;
+}
 
-} // End of namespace Ruby
+RubyVariableDeclaration::RubyVariableDeclaration(const RubyVariableDeclaration& rhs)
+    : KDevelop::Declaration(rhs)
+{
 
+}
 
-#endif // CLASSDECLARATION_H
+RubyVariableDeclaration::RubyVariableDeclaration(KDevelop::DeclarationData& data)
+    : KDevelop::Declaration(data)
+{
 
+}
+
+RubyVariableDeclaration::RubyVariableDeclaration(KDevelop::DeclarationData& data, const KDevelop::RangeInRevision& range)
+    : KDevelop::Declaration(data, range)
+{
+
+}
+
+}

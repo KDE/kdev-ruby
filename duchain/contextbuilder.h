@@ -72,9 +72,11 @@ protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
 
     /* Re-implementing from RubyAstVistor */
+//     virtual void visitCode(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
-    virtual void visitFunctionStatement(RubyAst *node);
+    virtual void visitMethodStatement(RubyAst *node);
+    virtual void visitMethodArguments(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
 
@@ -85,10 +87,12 @@ protected:
     KDevelop::TopDUContextPointer m_builtinsContext;
 
 private:
+    RangeInRevision rangeForMethodArguments(RubyAst *node);
     void addImportedContexts();
 
 private:
     QList<KDevelop::DUContext *> m_importedParentContexts; //TODO: Really?
+    KDevelop::QualifiedIdentifier lastMethodName;
 };
 
 }

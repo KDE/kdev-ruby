@@ -24,19 +24,20 @@
 #include <duchain/declarationbuilder.h>
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
+#include "declarations/variabledeclaration.h"
 
 
 namespace Ruby
 {
 
 DeclarationBuilder::DeclarationBuilder()
-    : DeclarationBuilderBase()
+    : DeclarationBuilderBase(), m_preBuilding(false)
 {
     /* There's nothing to do here! */
 }
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
-    DeclarationBuilderBase()
+    DeclarationBuilderBase(), m_preBuilding(false)
 {
     setEditor(editor);
 }
@@ -44,6 +45,23 @@ DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
 DeclarationBuilder::~DeclarationBuilder()
 {
     /* There's nothing to do here! */
+}
+
+ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyAst *node, ReferencedTopDUContext updateContext)
+{
+    if (!m_preBuilding) {
+        kDebug() << "Pre-building";
+        DeclarationBuilder *preBuilder = new DeclarationBuilder(editor());
+        preBuilder->setPreBuilding(true);
+        updateContext = preBuilder->build(url, node, updateContext);
+    }
+
+    return DeclarationBuilderBase::build(url, node, updateContext);
+}
+
+void DeclarationBuilder::setPreBuilding(bool preBuilding)
+{
+    m_preBuilding = preBuilding;
 }
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
@@ -75,14 +93,41 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 void DeclarationBuilder::visitFunctionStatement(RubyAst *node)
 {
     openMethodDeclaration(node);
-    /* TODO
-     * The following (thread-safe) steps have to be done:
-     *  - Visit Method arguments.
-     *  - Visit Method Body.
-     */
+    visitMethodArguments(node);
+    visitBody(node);
     closeType();
     closeDeclaration();
 }
+
+void DeclarationBuilder::visitBody(RubyAst* node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    //TODO
+    Ruby::RubyAstVisitor::visitBody(node);
+}
+
+void DeclarationBuilder::visitMethodArguments(RubyAst* node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    Ruby::RubyAstVisitor::visitMethodArguments(node);
+}
+
+void DeclarationBuilder::visitVariable(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    kDebug() << "Parsing variable declaration: " << node->tree->name << ":" << node->tree->kind;
+    Declaration *decl = openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), editorFindRange(node, node));
+    IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+//     decl->setKind(Declaration::Instance); BUG: Crash!
+//     decl->setType(type); BUG Crash
+    eventuallyAssignInternalContext();
+    DeclarationBuilderBase::closeDeclaration();
+}
+
+// void DeclarationBuilder::visitAssignmentStatement(RubyAst* node)
+// {
+//     // TODO
+// }
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
 {
@@ -91,7 +136,7 @@ void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
     type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
     {
         DUChainWriteLocker lock(DUChain::lock());
-        decl->setType(type);
+//         decl->setType(type); BUG: Crash!
     }
     openType(type);
 }
@@ -104,10 +149,10 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
     eventuallyAssignInternalContext();
 
     if (isClass) {
-        decl->setKind(KDevelop::Declaration::Type);
+//         decl->setKind(KDevelop::Declaration::Type); BUG: Crash!
         decl->setClassType(ClassDeclarationData::Class);
     } else {
-        decl->setKind(KDevelop::Declaration::Namespace);
+//         decl->setKind(KDevelop::Declaration::Namespace); BUG: Crash!
         decl->setClassType(ClassDeclarationData::Interface);
     }
     decl->clearBaseClasses();

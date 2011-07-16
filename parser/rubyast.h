@@ -22,18 +22,25 @@
 #define RUBYAST_H
 
 
-/*
- * TODO: This file is still under construction
- */
-
-
-#include "node.h"
+#include <parser/node.h>
 #include <language/duchain/ducontext.h>
 
 
+/**
+ * @class RubyAst
+ *
+ * This class represents a Ruby AST (Abstract Syntax Tree). It contains
+ * the code (tree) and the associated KDevelop::DUContext.
+ */
 class RubyAst
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param n the code that this RubAst represents.
+     * @param ctx the KDevelop::DUContext associated with it.
+     */
     RubyAst(Node *n, KDevelop::DUContext *ctx = NULL) : tree (n), context(ctx)
     {};
     
@@ -42,9 +49,21 @@ public:
     KDevelop::DUContext *context;
 };
 
+
+/**
+ * @class NameAst
+ *
+ * Extends the RubyAst class to easily obtain the identifier for
+ * a RubyAst.
+ */
 class NameAst : public RubyAst
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param ast the RubyAst this class extends.
+     */
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
     {
         if (tree->kind == token_class || tree->kind == token_module)

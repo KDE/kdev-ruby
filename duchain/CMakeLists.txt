@@ -12,6 +12,7 @@ set(rubyduchain_SRCS
     navigation/includenavigationcontext.cpp
     declarations/classdeclaration.cpp
     declarations/functiondeclaration.cpp
+    declarations/variabledeclaration.cpp
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})

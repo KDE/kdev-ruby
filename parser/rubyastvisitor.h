@@ -41,15 +41,17 @@ class KDEVRUBYPARSER_EXPORT RubyAstVisitor
 public:
     RubyAstVisitor();
     virtual ~RubyAstVisitor();
-    
+
+    void visitCode(RubyAst *node);
     void visitNode(RubyAst *node);
 
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
-    virtual void visitFunctionStatement(RubyAst *node);
-    
-private:
-    void visitChilds(RubyAst *node);
+    virtual void visitMethodStatement(RubyAst *node); //TODO rename to Method
+    virtual void visitMethodArguments(RubyAst *node);
+    virtual void visitBody(RubyAst *node);
+    virtual void visitVariable(RubyAst *node);
+    virtual void visitAssignmentStatement(RubyAst *node);
 };
 
 }

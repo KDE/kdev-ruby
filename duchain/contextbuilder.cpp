@@ -112,7 +112,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             m_builtinsContext = TopDUContextPointer(internal);
         }
     }
-    RubyAstVisitor::visitNode(node);
+    RubyAstVisitor::visitCode(node);
 }
 
 void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
@@ -162,14 +162,37 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     closeContext();
 }
 
-void ContextBuilder::visitFunctionStatement(RubyAst *node)
+void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
 //     TODO
-    KDevelop::QualifiedIdentifier id(getMethodName(node->tree));
-kDebug() << "Start Visiting function: " << id;
-    openContext(node, editorFindRange(node, node), DUContext::Class, id);
-    RubyAstVisitor::visitFunctionStatement(node);
+    lastMethodName = QualifiedIdentifier(getMethodName(node->tree));
+kDebug() << "Start Visiting function: " << lastMethodName;
+    openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
+    RubyAstVisitor::visitMethodStatement(node);
     closeContext();
+}
+
+void ContextBuilder::visitMethodArguments(RubyAst *node)
+{
+    RangeInRevision rg = rangeForMethodArguments(node);
+    DUContext *ctx = openContext(node, rg, DUContext::Function, lastMethodName);
+    RubyAstVisitor::visitMethodArguments(node);
+    closeContext();
+    m_importedParentContexts.append(ctx);
+}
+
+RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
+{
+    if (!node->tree)
+        return RangeInRevision();
+
+    RubyAst *last = new RubyAst(node->tree->last, node->context);
+    if (!node->tree->last)
+        last->tree = node->tree;
+    RangeInRevision range = editorFindRange(node, last);
+    delete last;
+
+    return range;
 }
 
 void ContextBuilder::addImportedContexts()

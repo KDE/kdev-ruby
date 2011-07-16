@@ -18,34 +18,38 @@
  */
 
 
-#ifndef RUBY_CLASSDECLARATION_H
-#define RUBY_CLASSDECLARATION_H
+#ifndef RUBY_VARIABLEDECLARATION_H
+#define RUBY_VARIABLEDECLARATION_H
 
 
-#include <language/duchain/classdeclaration.h>
+#include <language/duchain/declaration.h>
 #include <duchain/duchainexport.h>
+
 
 /*
  * WARNING: This file is under development.
  */
-
+/*
+ * TODO
+ *  - Define a set of variable kinds
+ */
 
 namespace Ruby
 {
-    
-class KDEVRUBYDUCHAIN_EXPORT RubyClassDeclaration : public KDevelop::ClassDeclaration
+
+class KDEVRUBYDUCHAIN_EXPORT RubyVariableDeclaration : public KDevelop::Declaration
 {
 public:
-    RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-    RubyClassDeclaration(const ClassDeclaration &rhs);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    RubyVariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    RubyVariableDeclaration(const RubyVariableDeclaration &rhs);
+    RubyVariableDeclaration(KDevelop::DeclarationData &data);
+    RubyVariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range);
 };
 
-typedef RubyClassDeclaration ClassDeclaration;
+typedef RubyVariableDeclaration VariableDeclaration;
 
-} // End of namespace Ruby
+} // End of namespace: Ruby
 
 
-#endif // CLASSDECLARATION_H
+#endif // RUBY_VARIABLEDECLARATION_H
 
