@@ -99,35 +99,19 @@ void DeclarationBuilder::visitFunctionStatement(RubyAst *node)
     closeDeclaration();
 }
 
-void DeclarationBuilder::visitBody(RubyAst* node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    //TODO
-    Ruby::RubyAstVisitor::visitBody(node);
-}
-
-void DeclarationBuilder::visitMethodArguments(RubyAst* node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    Ruby::RubyAstVisitor::visitMethodArguments(node);
-}
-
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
+    /* TODO: this is waaay too simple */
+
     DUChainWriteLocker wlock(DUChain::lock());
     kDebug() << "Parsing variable declaration: " << node->tree->name << ":" << node->tree->kind;
     Declaration *decl = openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), editorFindRange(node, node));
     IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
 //     decl->setKind(Declaration::Instance); BUG: Crash!
-//     decl->setType(type); BUG Crash
+//     decl->setType(type);
     eventuallyAssignInternalContext();
-    DeclarationBuilderBase::closeDeclaration();
+    closeDeclaration();
 }
-
-// void DeclarationBuilder::visitAssignmentStatement(RubyAst* node)
-// {
-//     // TODO
-// }
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
 {
@@ -174,7 +158,7 @@ void DeclarationBuilder::closeDeclaration()
 {
     if (currentDeclaration() && lastType()) {
         DUChainWriteLocker wlock(DUChain::lock());
-        currentDeclaration()->setType(lastType());
+//         currentDeclaration()->setType(lastType()); BUG: Crash!
     }
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();

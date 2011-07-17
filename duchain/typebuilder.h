@@ -45,6 +45,7 @@ public:
 
 protected:
     virtual void updateCurrentType();
+    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
 };
 
 }
