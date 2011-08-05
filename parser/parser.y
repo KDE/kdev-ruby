@@ -2352,11 +2352,13 @@ int yylex(void * lval, void * p)
  */
 void yyerror(struct parser_t * p, const char * s, ...)
 {
-  p->errors[p->error_index].msg = strdup(s);
-  p->errors[p->error_index].line = p->line;
-  p->errors[p->error_index].col = p->column;
-  p->errors[p->error_index].valid = 1;
-  p->error_index++;
+  if (p->error_index < 1) {
+    p->errors[p->error_index].msg = strdup(s);
+    p->errors[p->error_index].line = p->line;
+    p->errors[p->error_index].col = p->column;
+    p->errors[p->error_index].valid = 1;
+    p->error_index++;
+  }
   p->eof_reached = 1;
 }
 
