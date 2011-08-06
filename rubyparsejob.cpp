@@ -102,7 +102,7 @@ void ParseJob::run()
     m_parser->setCurrentDocument(m_url);
     RubyAst * ast = m_parser->parse();
 
-    if (ast != NULL) {
+    if (ast != NULL && ast->tree != NULL) {
         if (abortRequested())
             return abortJob();
 
