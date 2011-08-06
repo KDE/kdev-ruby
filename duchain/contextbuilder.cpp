@@ -197,7 +197,6 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 
 void ContextBuilder::addImportedContexts()
 {
-    /* TODO: really ? :S */
     if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
         DUChainWriteLocker wlock(DUChain::lock());
         foreach (KDevelop::DUContext *imported, m_importedParentContexts)
@@ -211,7 +210,7 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getModuleName(node->tree));
     DUChainWriteLocker wlock(DUChain::lock());
-
+kDebug() << "Open context for class: " << className;
     openContext(node, range, DUContext::Class, className);
     currentContext()->setLocalScopeIdentifier(className);
     wlock.unlock();
