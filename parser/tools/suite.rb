@@ -19,19 +19,19 @@
 
 #!/usr/bin/env ruby
 
-#
+##
 # This script executes "ruby-parser" to test every *.rb file
 # located in parser/tests/ and outputs in a file. Then it makes
 # a diff with the generated files against the expected results.
 # Finally it outputs the results and it cleans the parser/tests
 # directory.
-# NOTE: I'm sure it could be improved but it works fine by now.
-#
+# You can also pass the name of a test as a parameter so you
+# can run it.
 
 require 'find'
 
 
-#
+##
 # This function does the dirty job. Basically it executes the parser to create
 # a file containing the output of the parser. The next step is to make a diff
 # between the expected results and the generated output. It detects this cases:
@@ -74,14 +74,22 @@ def do_diff(str)
   return res
 end
 
+# We just want to run a single test, so run it and then exit
+unless ARGV[0].nil?
+  res = do_diff('../tests/' + ARGV[0])
+  if res == :fail
+    puts "Test #{ARGV[0]} failed!"
+  else
+    puts "Passed test #{ARGV[0]}!"
+  end
+  exit
+end
 
 # Counting the results obtained
 fails = 0
 oks = 0
 
-#
 # Main procedure. It calls do_diff for all *.rb files located in parser/tests/
-#
 Find.find('../tests') do |f|
   str = f.gsub(/..\/tests\/?/, '')
   unless str.nil?

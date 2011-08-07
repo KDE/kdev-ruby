@@ -153,17 +153,17 @@ void pop_end(struct parser_t * parser, struct node * n);
 
 /* Reserved words */
 %token CLASS MODULE DEF UNDEF BEGIN RESCUE ENSURE END IF UNLESS THEN ELSIF
-%token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK RETURN
-%token YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND HEREDOC
-%token tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
+%token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK
+%token RETURN YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND
+%token HEREDOC tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
 
 /* Declare tokens */
 %token EOL CVAR NUMBER SYMBOL FNAME BASE STRING REGEXP MCALL ARRAY SARY
 %token IVAR GLOBAL tLBRACKET tRBRACKET tDOT tTILDE tBACKTICK tCOMMA tCOLON
 %token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON
 %token tOR tAND tAND_BIT tOR_BIT tXOR_BIT tLBRACE tRBRACE tLPAREN tRPAREN
-%token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST
-%token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tSCOPE
+%token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST tCOLON3
+%token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tCOLON2
 
 
 /* Precedence table */
@@ -197,7 +197,7 @@ void pop_end(struct parser_t * parser, struct node * n);
 %type <n> array array_items hash hash_items hash_item method_call call_args
 %type <n> opt_lambda_body lambda_body brace_block do_block bv_decls block_list
 %type <n> block_args exp_for exc_list rescue_list rescue_item function_args block_params
-%type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol exp_or_hash
+%type <n> f_bad_arg simple_assign item_list opt_rescue_arg symbol exp_or_hash
 %type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const single_name_mcall
 %type <n> dot_method_call dot_items dot_item scope_items array_value opt_bracket_list key
 %type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
@@ -453,8 +453,8 @@ cmpd_stmt: k_if exp then
     }
 ;
 
-fname: FNAME  { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | base      { $$ = $1; }
+fname: FNAME    { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | base        { $$ = $1;  }
 ;
 
 fname_or_const: fname { $$ = $1;  }
@@ -942,7 +942,7 @@ opt_terms: /* nothing */
 ;
 
 dot_or_scope: tDOT
-  | tSCOPE
+  | tCOLON2
 ;
 
 eol_or_semicolon: EOL
@@ -1124,7 +1124,7 @@ method_call: fname m_call_args
       $$->r = $2;
     }
   }
-  | const_scope opt_call_args
+  | const_scope m_call_args
   {
     $$ = alloc_node(token_method_call, $1, $2);
     if ($2 == NULL) {
@@ -1149,16 +1149,26 @@ const_scope: const scope_items
       copy_range($$, $1, $2);
     }
   }
-  | const tSCOPE fname
+  | const tCOLON2 fname
   {
     struct node * n = alloc_node(token_object, $1, NULL);
     $$ = pop_list(n, $3);
     copy_range($$, $1, $3);
   }
+  | tCOLON3 const scope_items
+  {
+    struct node * n = alloc_node(token_object, $2, NULL);
+    $$ = pop_list(n, $3);
+    if ($3->last != NULL) {
+      copy_range($$, $2, $3->last);
+    } else {
+      copy_range($$, $2, $3);
+    }
+  }
 ;
 
-scope_items: tSCOPE const               { $$ = $2;  }
-  | scope_items tSCOPE fname_or_const   { $$ = update_list($1, $3); }
+scope_items: tCOLON2 const               { $$ = $2;  }
+  | scope_items tCOLON2 fname_or_const   { $$ = update_list($1, $3); }
 ;
 
 paren_method_call: mcall opt_call_args_paren rparen
@@ -1189,7 +1199,7 @@ paren_method_call: mcall opt_call_args_paren rparen
   }
 ;
 
-const_mcall: const tSCOPE mcall { $$ = ALLOC_N(token_object, $1, $3); }
+const_mcall: const tCOLON2 mcall { $$ = ALLOC_N(token_object, $1, $3); }
 ;
 
 dot_method_call: basic dot_items
@@ -1234,12 +1244,8 @@ dot_item: tDOT fname
   }
 ;
 
-opt_call_args: /* nothing */  { $$ = 0;   }
-  | m_call_args               { $$ = $1;  }
-;
-
 opt_call_args_paren: /* nothing */  { $$ = 0;   }
-  | m_call_args_paren         { $$ = $1;  }
+  | m_call_args_paren               { $$ = $1;  }
 ;
 
 m_call_args: method_call      { $$ = $1;  }
@@ -1265,10 +1271,11 @@ call_args_paren: exp_paren          { $$ = $1;  }
 
 exp_or_hash: exp { $$ = $1; }
   | hash         { $$ = $1; }
-; 
+;
 
 /* TODO: hash with exp */
 exp_hash: exp   { $$ = $1;  }
+  | const_scope { $$ = $1;  }
   | hash        { $$ = $1;  }
   | hash_items
   {
@@ -1750,6 +1757,7 @@ int parser_yylex(struct parser_t * parser)
   char buffer[BSIZE];
   char * c;
   int curs, len;
+  unsigned char space_seen = 0;
   struct pos_t tokp = {-1, -1, -1, -1};
 
   curs = parser->cursor;
@@ -1761,8 +1769,10 @@ int parser_yylex(struct parser_t * parser)
   c = parser->blob + curs;
 
   /* Ignore whitespaces and backslashes */
+  space_seen = *c;
   for (; (isspace(*c) || *c == '\\') && *c != '\n';
       ++c, ++curs, parser->column++, parser->cursor++);
+  (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
 
   if (*c == '#') {
     for (; *c != '\n' && curs < len; ++c, ++curs);
@@ -1833,6 +1843,7 @@ int parser_yylex(struct parser_t * parser)
     int step = 0;
     int ax = 0;
     unsigned char isConstant = 1;
+    unsigned char isGlobal = (*c == '$');
 
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
@@ -1845,10 +1856,9 @@ int parser_yylex(struct parser_t * parser)
         *ptr++ = *c++;
         curs++;
       }
-    } while (curs < len && isNotSep(c));
+    } while (curs < len && ((isGlobal && !isspace(*c)) || isNotSep(c)));
     *ptr = '\0';
     parser->column -= ax;
-
     const struct kwtable *kw = rb_reserved_word(buffer, ptr - buffer);
     if (kw) {
       t = kw->id;
@@ -1866,8 +1876,13 @@ int parser_yylex(struct parser_t * parser)
     } else if ((!strcmp(buffer, "defined")) && (*c == '?')) {
       ++curs;
       t = DEFINED;
+    } else if (isGlobal) {
+      push_stack(parser, buffer);
+      parser->expr_seen = 1;
+      t = GLOBAL;
     } else if (isValidVariableIdentifier(buffer)) {
       push_stack(parser, buffer);
+      parser->expr_seen = 1;
       if (isConstant || is_upper(buffer[0]))
         t = CONST;
       else if (*c == ':' && *(c + 1) != ':') {
@@ -1879,15 +1894,12 @@ int parser_yylex(struct parser_t * parser)
           t = CVAR;
         else if (buffer[0] == '@')
           t = IVAR;
-        else if (buffer[0] == '$')
-          t = GLOBAL;
         else if (isFunction(c)) {
           curs++;
           c++;
           t = FNAME;
         } else
           t = BASE;
-        parser->expr_seen = 1;
         if (parser->class_seen)
           parser->class_seen = 0;
         if (t == BASE && *c == '[') {
@@ -1896,6 +1908,7 @@ int parser_yylex(struct parser_t * parser)
         }
         if (*c == '(' && (t == BASE || t == FNAME)) {
           ++curs;
+/*           parser->expr_seen = 0; BUG: On 'global' test it makes it to fail */
           t = MCALL;
         }
       }
@@ -2011,6 +2024,17 @@ int parser_yylex(struct parser_t * parser)
     if (*(c + 1) == '=') {
       curs++;
       t = tOP_ASGN;
+    } else if (*(c + 1) == '>') {
+      curs++;
+      if (*(c + 2) == '(') {
+        curs++;
+        t = MCALL;
+      } else
+        t = BASE;
+      push_stack(parser, "->");
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
+      tokp.endLine = tokp.startCol + 2;
     } else {
       parser_dot_seen(t, tMINUS);
       if (!parser->expr_seen && t == tMINUS) {
@@ -2164,7 +2188,10 @@ int parser_yylex(struct parser_t * parser)
     curs++;
     if (*(c + 1) == ':') {
       curs++;
-      t = tSCOPE;
+      if (!parser->expr_seen || (parser->expr_seen && space_seen))
+        t = tCOLON3;
+      else
+        t = tCOLON2;
     } else if (isNotSep(c + 1)) {
       char * ptr = buffer;
       int step = 0;
@@ -2266,6 +2293,7 @@ int parser_yylex(struct parser_t * parser)
     t = tRBRACE;
   } else if (*c == ',') {
     curs++;
+    parser->expr_seen = 0;
     t = tCOMMA;
   } else if (*c == '`') {
     int ax = 0;
@@ -2306,12 +2334,12 @@ int parser_yylex(struct parser_t * parser)
     curs++;
     parser_dot_seen(t, tXOR_BIT);
   }
- 
+
   /*
    * Once we have the token id, we should update the parser
    * flags to avoid conflicts and weird behavior :P
    */
-
+/* TODO printf("Kind: %i, Buffer: %s Expr_seen: %i\n", t, buffer, parser->expr_seen); */
   if (t == DO && !parser->no_block) {
     t = DO_BLOCK;
     parser->no_block = 0;
