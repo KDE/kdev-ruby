@@ -46,7 +46,7 @@ def do_diff(str)
   end
   Process.waitpid(pid)
   pid = fork do
-    exec("cd ../tests && diff -sw #{str.gsub('.rb', '.txt')} #{str}.out > output.txt")
+    exec("cd ../tests && diff -swu #{str.gsub('.rb', '.txt')} #{str}.out > output.txt")
   end
   Process.waitpid(pid)
   error = 0
