@@ -47,7 +47,7 @@ public:
 
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
-    virtual void visitMethodStatement(RubyAst *node); //TODO rename to Method
+    virtual void visitMethodStatement(RubyAst *node);
     virtual void visitMethodArguments(RubyAst *node);
     virtual void visitBody(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
