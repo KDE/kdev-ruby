@@ -31,13 +31,13 @@ namespace Ruby
 {
 
 DeclarationBuilder::DeclarationBuilder()
-    : DeclarationBuilderBase(), m_preBuilding(false)
+    : DeclarationBuilderBase()
 {
     /* There's nothing to do here! */
 }
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
-    DeclarationBuilderBase(), m_preBuilding(false)
+    DeclarationBuilderBase()
 {
     setEditor(editor);
 }
@@ -49,19 +49,7 @@ DeclarationBuilder::~DeclarationBuilder()
 
 ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyAst *node, ReferencedTopDUContext updateContext)
 {
-    if (!m_preBuilding) {
-        kDebug() << "Pre-building";
-        DeclarationBuilder *preBuilder = new DeclarationBuilder(editor());
-        preBuilder->setPreBuilding(true);
-        updateContext = preBuilder->build(url, node, updateContext);
-    }
-
     return DeclarationBuilderBase::build(url, node, updateContext);
-}
-
-void DeclarationBuilder::setPreBuilding(bool preBuilding)
-{
-    m_preBuilding = preBuilding;
 }
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)

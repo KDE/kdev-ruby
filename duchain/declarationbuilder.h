@@ -54,7 +54,6 @@ public:
 
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
-    void setPreBuilding(bool preBuilding);
 
 protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
@@ -73,8 +72,6 @@ private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
 
-private:
-    bool m_preBuilding;
 };
 
 }
