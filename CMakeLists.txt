@@ -5,6 +5,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform REQUIRED)
 
+add_definitions( -DKDE_DEFAULT_DEBUG_AREA=9047 )
+
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
     ${KDE4_INCLUDES}
