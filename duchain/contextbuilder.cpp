@@ -49,18 +49,18 @@ ContextBuilder::~ContextBuilder()
 ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *node,
                                                 ReferencedTopDUContext updateContext)
 {
-	if (!updateContext) {
-		DUChainReadLocker lock(DUChain::lock());
-		updateContext = DUChain::self()->chainForDocument(url);
-	}
-	if (updateContext) {
-		kDebug() << "Re-compiling" << url.str();
-		DUChainWriteLocker lock(DUChain::lock());
-		updateContext->clearImportedParentContexts();
-		updateContext->parsingEnvironmentFile()->clearModificationRevisions();
-		updateContext->clearProblems();
-	} else
-		kDebug() << "Compiling";
+    if (!updateContext) {
+        DUChainReadLocker lock(DUChain::lock());
+        updateContext = DUChain::self()->chainForDocument(url);
+    }
+    if (updateContext) {
+        kDebug() << "Re-compiling" << url.str();
+        DUChainWriteLocker lock(DUChain::lock());
+        updateContext->clearImportedParentContexts();
+        updateContext->parsingEnvironmentFile()->clearModificationRevisions();
+        updateContext->clearProblems();
+    } else
+        kDebug() << "Compiling";
     return ContextBuilderBase::build(url, node, updateContext);
 }
 
@@ -160,6 +160,7 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     openContextForClassDefinition(node);
     RubyAstVisitor::visitClassStatement(node);
     closeContext();
+    kDebug() << "Closing class: " << getModuleName(node->tree);
 }
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
