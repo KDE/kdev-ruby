@@ -115,9 +115,6 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        UseBuilder useBuilder(&editor);
-        useBuilder.buildUses(ast);
-
         if (abortRequested())
             return abortJob();
 
