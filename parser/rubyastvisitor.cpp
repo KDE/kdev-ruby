@@ -51,14 +51,11 @@ void RubyAstVisitor::visitCode(RubyAst *node)
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
-    int kind;
 
     /* This is not a valid node */
     if (!n || n->kind == token_invalid)
         return;
-
-    kind = n->kind;
-    switch (kind) {
+    switch (n->kind) {
         case token_class:
         case token_singleton_class:
             visitClassStatement(node);
@@ -113,7 +110,7 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
 {
     RubyAst *child = new RubyAst(node->tree, node->context);
     for (Node *n = node->tree; n != NULL; n = n->next) {
-        RubyAstVisitor::visitNode(child);
+        visitNode(child);
         child->tree = n->next;
     }
     delete child;
@@ -121,11 +118,16 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
 
 void RubyAstVisitor::visitBody(RubyAst *node)
 {
-    RubyAst *child = new RubyAst(node->tree, node->context);
-    for (Node *n = node->tree; n != NULL; n = n->next) {
-        RubyAstVisitor::visitNode(child);
-        child->tree = n->next;
-    }
+    if (node->tree == NULL)
+        return;
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    child->tree = node->tree->r;
+    visitNode(child);
+    child->tree = node->tree->cond;
+    visitNode(child);
+    child->tree = node->tree->ensure;
+    visitNode(child);
     delete child;
 }
 

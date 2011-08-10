@@ -107,7 +107,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             m_hasUnresolvedIdentifiers = true;
             DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
         } else {
-            debug() << "Adding builtins context";
+            debug() << "Adding kernel context";
             DUChainWriteLocker wlock(DUChain::lock());
             currentContext()->addImportedParentContext(internal);
             m_builtinsContext = TopDUContextPointer(internal);
@@ -168,7 +168,6 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
     lastMethodName = QualifiedIdentifier(getName(node));
-    debug() << "Start Visiting function: " << lastMethodName;
     openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
     debug() << "Start Visiting function: " << lastMethodName << " at range: " << editorFindRange(node, node);
     RubyAstVisitor::visitMethodStatement(node);
