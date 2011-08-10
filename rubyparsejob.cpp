@@ -30,6 +30,7 @@
 #include <language/interfaces/icodehighlighting.h>
 #include <language/backgroundparser/urlparselock.h>
 
+#include <rubydefs.h>
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
@@ -83,7 +84,7 @@ void ParseJob::run()
                 needsUpdate = false;
         }
         if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled) && !needsUpdate) {
-            kDebug() << "Already up to date" << document().str();
+            debug() << "Already up to date" << document().str();
             return;
         }
     }
@@ -135,7 +136,7 @@ void ParseJob::run()
             ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
             ruby()->codeHighlighting()->highlightDUChain(m_duContext);
         }
-        kDebug() << "**** Parsing Succeeded ****";
+        debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
@@ -154,7 +155,7 @@ void ParseJob::run()
     }
     DUChainWriteLocker lock(DUChain::lock());
     foreach (ProblemPointer p, m_parser->m_problems) {
-        kDebug() << "Added problem to context";
+        debug() << "Added problem to context";
         m_duContext->addProblem(p);
     }
     setDuChain(m_duContext);

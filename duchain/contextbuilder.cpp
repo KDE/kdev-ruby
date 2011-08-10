@@ -29,6 +29,7 @@
 #include "rubyducontext.h"
 #include "helpers.h"
 #include <KStandardDirs>
+#include <rubydefs.h>
 
 
 using namespace KDevelop;
@@ -54,13 +55,13 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
         updateContext = DUChain::self()->chainForDocument(url);
     }
     if (updateContext) {
-        kDebug() << "Re-compiling" << url.str();
+        debug() << "Re-compiling" << url.str();
         DUChainWriteLocker lock(DUChain::lock());
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
     } else
-        kDebug() << "Compiling";
+        debug() << "Compiling";
     return ContextBuilderBase::build(url, node, updateContext);
 }
 
@@ -106,7 +107,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             m_hasUnresolvedIdentifiers = true;
             DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
         } else {
-            kDebug() << "Adding builtins context";
+            debug() << "Adding builtins context";
             DUChainWriteLocker wlock(DUChain::lock());
             currentContext()->addImportedParentContext(internal);
             m_builtinsContext = TopDUContextPointer(internal);
@@ -160,14 +161,14 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     openContextForClassDefinition(node);
     RubyAstVisitor::visitClassStatement(node);
     closeContext();
-    kDebug() << "Closing class: " << getModuleName(node->tree);
+    debug() << "Closing class: " << getModuleName(node->tree);
 }
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
 //     TODO
     lastMethodName = QualifiedIdentifier(getMethodName(node->tree));
-kDebug() << "Start Visiting function: " << lastMethodName;
+debug() << "Start Visiting function: " << lastMethodName;
     openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
     RubyAstVisitor::visitMethodStatement(node);
     closeContext();
@@ -211,7 +212,7 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getModuleName(node->tree));
     DUChainWriteLocker wlock(DUChain::lock());
-kDebug() << "Open context for class: " << className;
+debug() << "Open context for class: " << className;
     openContext(node, range, DUContext::Class, className);
     currentContext()->setLocalScopeIdentifier(className);
     wlock.unlock();

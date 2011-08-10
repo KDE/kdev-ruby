@@ -20,7 +20,6 @@
 
 #include "rubyhighlighting.h"
 
-
 namespace Ruby
 {
 
