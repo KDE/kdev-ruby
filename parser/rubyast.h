@@ -42,10 +42,19 @@ public:
      * @param ctx the KDevelop::DUContext associated with it.
      */
     RubyAst(Node *n, KDevelop::DUContext *ctx = NULL) : tree (n), context(ctx)
-    {};
+    {
+        /* There's nothing to do here! */
+    };
     
 public:
+    /**
+     * The tree of this AST.
+     */
     Node *tree;
+
+    /**
+     * The DUContext for this AST.
+     */
     KDevelop::DUContext *context;
 };
 
@@ -75,6 +84,9 @@ public:
     };
 
 public:
+    /**
+     * The QString that represents this class.
+     */
     QString value;
 };
 

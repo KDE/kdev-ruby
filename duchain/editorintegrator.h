@@ -87,6 +87,9 @@ public:
     KDevelop::IndexedString url() const;
 
 private:
+    /**
+     * The url of the current document.
+     */
     KDevelop::IndexedString m_url;
 };
 
