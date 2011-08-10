@@ -25,11 +25,12 @@
 
 #include "duchainexport.h"
 #include <language/duchain/indexedstring.h>
-
+#include <parser/rubyast.h>
 
 namespace Ruby
 {
     KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString& internalBuiltinsFile();
+    KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst* ast);
 }
 
 

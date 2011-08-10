@@ -106,14 +106,19 @@ void rb_free(Ast * ra)
   free(ra);
 }
 
-char * getModuleName(struct node *n)
+struct node * getNameTree(struct node *n, const char isMethod)
 {
-    return (n->r->last != NULL) ? n->r->last->name : n->r->name;
-}
-
-char * getMethodName(struct node *n)
-{
-    return (n->cond->r != NULL) ? n->cond->r->name : n->cond->name;
+    struct node *name;
+    if (isMethod) {
+        if (n->cond->r != NULL)
+            name = n->cond->r;
+        else
+            name = n->cond;
+    } else if (n->r->last != NULL)
+        name = n->r->last;
+    else
+        name = n->r;
+    return name;
 }
 
 

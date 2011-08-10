@@ -193,8 +193,7 @@ void rb_free(Ast * ra);
 
 /* TODO */
 
-char * getModuleName(struct node *n);
-char * getMethodName(struct node *n);
+struct node * getNameTree(struct node *n, const char isMethod);
 
 /*
  * There are three ways to allocate a node. The simplest one is

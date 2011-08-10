@@ -21,6 +21,7 @@
 
 #include <KStandardDirs>
 #include "helpers.h"
+#include <parser/rubyast.h>
 
 
 const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
@@ -28,5 +29,11 @@ const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
     static KDevelop::IndexedString doc_url(KStandardDirs::locate("data", 
                                           "kdevrubysupport/kernel.rb"));
     return doc_url;
+}
+
+const QString Ruby::getName(RubyAst *ast)
+{
+    bool cond = (ast->tree->kind == token_function);
+    return QString(getNameTree(ast->tree, cond)->name);
 }
 

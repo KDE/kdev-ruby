@@ -67,9 +67,9 @@ public:
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
     {
         if (tree->kind == token_class || tree->kind == token_module)
-            value = QString(getModuleName(tree));
+            value = QString(getNameTree(tree, 0)->name);
         else if (tree->kind == token_function)
-            value = QString(getMethodName(tree));
+            value = QString(getNameTree(tree, 1)->name);
         else
             value = QString(tree->name);
     };

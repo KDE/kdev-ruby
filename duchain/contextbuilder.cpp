@@ -161,18 +161,18 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     openContextForClassDefinition(node);
     RubyAstVisitor::visitClassStatement(node);
     closeContext();
-    debug() << "Closing class: " << getModuleName(node->tree);
+    debug() << "Closing class: " << getName(node);
 }
 
 //     TODO
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-    lastMethodName = QualifiedIdentifier(getMethodName(node->tree));
+    lastMethodName = QualifiedIdentifier(getName(node));
     debug() << "Start Visiting function: " << lastMethodName;
     openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
-    kDebug() << "Start Visiting function: " << lastMethodName << " at range: " << editorFindRange(node, node);
+    debug() << "Start Visiting function: " << lastMethodName << " at range: " << editorFindRange(node, node);
     RubyAstVisitor::visitMethodStatement(node);
-    kDebug() << "Closing the context for method: " << getMethodName(node->tree);
+    debug() << "Closing the context for method: " << getName(node);
     closeContext();
 }
 
@@ -212,7 +212,7 @@ void ContextBuilder::addImportedContexts()
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
-    KDevelop::QualifiedIdentifier className(getModuleName(node->tree));
+    KDevelop::QualifiedIdentifier className(getName(node));
     DUChainWriteLocker wlock(DUChain::lock());
 debug() << "Open context for class: " << className;
     openContext(node, range, DUContext::Class, className);
