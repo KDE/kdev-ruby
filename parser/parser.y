@@ -30,7 +30,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "node.h"
+#include <node.h>
 #include "parser.h"
 
 

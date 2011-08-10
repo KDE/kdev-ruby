@@ -1,8 +1,16 @@
+
+bison_target(RUBY_PARSER parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
+
 set(rubyparser_SRCS
     node.c
-    parser.c
+    ${BISON_RUBY_PARSER_OUTPUTS}
     rubyparser.cpp
     rubyastvisitor.cpp
+)
+
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 kde4_add_library(kdev4rubyparser SHARED ${rubyparser_SRCS})
