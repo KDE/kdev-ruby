@@ -26,7 +26,7 @@
 const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
 {
     static KDevelop::IndexedString doc_url(KStandardDirs::locate("data", 
-                                          "kdevrubysupport/builtins.rb"));
+                                          "kdevrubysupport/kernel.rb"));
     return doc_url;
 }
 
