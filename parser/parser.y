@@ -203,7 +203,6 @@ void pop_end(struct parser_t * parser, struct node * n);
 %type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
 
 %start parser_start
-%expect 5
 %%
 parser_start: /* nothing */ EOL   { parser->ast = NULL; YYACCEPT; }
   | stmt
@@ -841,13 +840,13 @@ k_if: IF opt_eol_list
 m_if: IF  { manual_fix(); }
 ;
 
-m_unless: UNLESS  { manual_fix(); }
+m_unless: UNLESS    { manual_fix(); }
 ;
 
-m_while: WHILE  { manual_fix(); }
+m_while: WHILE      { manual_fix(); }
 ;
 
-m_until: UNTIL  { manual_fix(); }
+m_until: UNTIL      { manual_fix(); }
 ;
 
 k_elsif: ELSIF opt_eol_list
@@ -949,8 +948,8 @@ eol_or_semicolon: EOL
   | tSEMICOLON
 ;
 
-lhs_list: mlhs comma lhs { $$ = update_list($1, $3);  }
-  | mlhs comma  { $$ = $1;  }
+lhs_list: mlhs comma lhs    { $$ = update_list($1, $3);  }
+  | mlhs comma              { $$ = $1;  }
 ;
 
 lhs: exp
@@ -1034,7 +1033,6 @@ array: lbracket tRBRACKET               { $$ = ALLOC_N(token_array, NULL, NULL);
   | ARRAY                               { $$ = ALLOC_N(token_array, NULL, NULL); POP_STR; }
 ;
 
-/* TODO: hash with expr */
 array_exp: exp      { $$ = $1;  }
   | simple_assign   { $$ = $1;  }
   | hash            { $$ = $1;  }
@@ -1531,8 +1529,8 @@ void push_string_var(struct parser_t * p, int * curs, char ** ch)
   int possible_error = *curs + 1;
   char buffer[BSIZE];
   char * ptr = buffer;
-  int step = 0;
-  int ax = 0;
+  int step = 0; /* How many bytes the actual utf8 char has */
+  int ax = 0; /* Used to properly update the column when the utf8 chars appear */
 
   c += 2;
   *curs += 2;
@@ -1541,7 +1539,7 @@ void push_string_var(struct parser_t * p, int * curs, char ** ch)
     ax += step - 1;
     while (step-- > 0) {
       *ptr++ = *c++;
-      *curs = *curs + 1;
+      (*curs)++;
     }
     if ((unsigned int) *curs >= p->length || *c == '"') {
       p->column = possible_error;
@@ -1784,7 +1782,7 @@ int parser_yylex(struct parser_t * parser)
     parser->no_block = 0;
     parser->expr_seen = 0;
     parser->dot_seen = 0;
-    parser->column = -1;
+    parser->column = -1; /* So it's correct after curs++ */
     parser->line++;
     curs++;
   } else if (isdigit(*c)) {
@@ -1842,8 +1840,8 @@ int parser_yylex(struct parser_t * parser)
     t = NUMBER;
   } else if (isNotSep(c)) {
     char * ptr = buffer;
-    int step = 0;
-    int ax = 0;
+    int step = 0; /* How many bytes the actual utf8 char has */
+    int ax = 0; /* Used to properly update the column when the utf8 chars appear */
     unsigned char isConstant = 1;
     unsigned char isGlobal = (*c == '$');
 
@@ -2343,7 +2341,6 @@ int parser_yylex(struct parser_t * parser)
    * Once we have the token id, we should update the parser
    * flags to avoid conflicts and weird behavior :P
    */
-/* TODO printf("Kind: %i, Buffer: %s Expr_seen: %i\n", t, buffer, parser->expr_seen); */
   if (t == DO && !parser->no_block) {
     t = DO_BLOCK;
     parser->no_block = 0;
@@ -2487,7 +2484,6 @@ int rb_debug_file(const char * path)
   }
 
   /* Check that all the stacks are empty */
-
   for (index = 0; index < p.sp; index++)
     printf("\nS: %s", p.stack[index]);
   printf("\n");

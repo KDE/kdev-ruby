@@ -106,9 +106,11 @@ void rb_free(Ast * ra)
   free(ra);
 }
 
-struct node * getNameTree(struct node *n, const char isMethod)
+struct node * getNameNode(struct node *n)
 {
     struct node *name;
+    const char isMethod = (n->kind == token_function);
+
     if (isMethod) {
         if (n->cond->r != NULL)
             name = n->cond->r;

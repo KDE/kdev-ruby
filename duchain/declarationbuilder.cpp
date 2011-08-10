@@ -138,9 +138,9 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
     decl->setInternalContext(currentContext());
 }
 
-KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node, bool isMethod)
+KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node)
 {
-    return m_editor->findRange(getNameTree(node->tree, isMethod));
+    return m_editor->findRange(getNameNode(node->tree));
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

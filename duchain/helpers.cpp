@@ -34,6 +34,6 @@ const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
 const QString Ruby::getName(RubyAst *ast)
 {
     bool cond = (ast->tree->kind == token_function);
-    return QString(getNameTree(ast->tree, cond)->name);
+    return QString(getNameNode(ast->tree)->name);
 }
 

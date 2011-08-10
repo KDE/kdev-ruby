@@ -191,9 +191,12 @@ Ast * rb_compile_file(const char * path, const char * contents);
  */
 void rb_free(Ast * ra);
 
-/* TODO */
-
-struct node * getNameTree(struct node *n, const char isMethod);
+/**
+ * Get the name node.
+ *
+ * @param n The root node.
+ */
+struct node * getNameNode(struct node *n);
 
 /*
  * There are three ways to allocate a node. The simplest one is

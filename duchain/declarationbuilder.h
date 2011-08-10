@@ -72,7 +72,7 @@ protected:
 private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
-    KDevelop::RangeInRevision getNameRange(RubyAst *node, bool isMethod = false);
+    KDevelop::RangeInRevision getNameRange(RubyAst *node);
 
 private:
     EditorIntegrator *m_editor;
