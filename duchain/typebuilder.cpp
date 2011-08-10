@@ -22,7 +22,8 @@
 #include <duchain/typebuilder.h>
 
 
-namespace Ruby  {
+namespace Ruby
+{
 
 TypeBuilder::TypeBuilder(): TypeBuilderBase()
 {
@@ -32,6 +33,11 @@ TypeBuilder::TypeBuilder(): TypeBuilderBase()
 void TypeBuilder::updateCurrentType()
 {
     /* reimplemented in DeclarationBuilder */
+}
+
+void TypeBuilder::supportBuild(RubyAst* ast, DUContext* ctx)
+{
+    TypeBuilderBase::supportBuild(ast, ctx);
 }
 
 }

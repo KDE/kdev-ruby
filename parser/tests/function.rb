@@ -17,6 +17,29 @@ def foo a,
     b
 end
 
+def foo(a, b)
+end
+
+def a.append_features(klass)
+  super
+
+  klass.install_must_call_validator('', ::RSS::URI)
+end
+
+# class A < ::B
+
+# module A
+#   module BA
+#     def BA.foo *list
+#       n = 0
+#       list.each do |l|
+#         n += l
+#       end
+#       n
+#     end
+#   end
+# end
+
 # Singleton
 
 class Single

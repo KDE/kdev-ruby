@@ -25,27 +25,53 @@
 #define DECLARATIONBUILDER_H
 
 
+/*
+ * TODO: This class is under construction.
+ */
+
+
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/typebuilder.h>
-#include <parser/node.h>
+#include <parser/rubyast.h>
+#include "declarations/classdeclaration.h"
 
 
-namespace KDevelop { class Declaration; }
+namespace KDevelop {
+    class Declaration;
+}
 
-namespace Ruby {
+namespace Ruby
+{
 
-typedef KDevelop::AbstractDeclarationBuilder<Node, Node, TypeBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
-    DeclarationBuilder() {}
-    DeclarationBuilder(EditorIntegrator* editor);
+    DeclarationBuilder();
+    DeclarationBuilder(EditorIntegrator *editor);
+    virtual ~DeclarationBuilder();
+
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
+        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
 
 protected:
-    virtual KDevelop::QualifiedIdentifier identifierForNode(Node * node);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();
     virtual void updateCurrentType();
+
+    virtual void visitClassStatement(RubyAst *node);
+    virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitFunctionStatement(RubyAst *node);
+//     virtual void visitMethodArguments(RubyAst *node);
+//     virtual void visitBody(RubyAst *node);
+    virtual void visitVariable(RubyAst *node);
+//     virtual void visitAssignmentStatement(RubyAst *node);
+
+private:
+    void openMethodDeclaration(RubyAst *node);
+    void openClassDeclaration(RubyAst *node, bool isClass);
+
 };
 
 }

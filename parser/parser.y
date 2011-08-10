@@ -133,6 +133,7 @@ void pop_end(struct parser_t * parser, struct node * n);
 #define copy_start(dest, src) dest->startLine = src->startLine; dest->startCol = src->startCol
 #define copy_end(dest, src) dest->endLine = src->endLine; dest->endCol = src->endCol
 #define copy_range(dest, src1, src2) copy_start(dest, src1); copy_end(dest, src2)
+#define copy_pos(dest, src) copy_range(dest, src, src);
 #define manual_fix() {\
     struct node * n = parser->last_pos; \
     struct pos_t tp = { n->startLine, n->startCol, n->endLine, n->endCol }; \
@@ -152,17 +153,17 @@ void pop_end(struct parser_t * parser, struct node * n);
 
 /* Reserved words */
 %token CLASS MODULE DEF UNDEF BEGIN RESCUE ENSURE END IF UNLESS THEN ELSIF
-%token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK RETURN
-%token YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND HEREDOC
-%token tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
+%token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK
+%token RETURN YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND
+%token HEREDOC tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
 
 /* Declare tokens */
 %token EOL CVAR NUMBER SYMBOL FNAME BASE STRING REGEXP MCALL ARRAY SARY
 %token IVAR GLOBAL tLBRACKET tRBRACKET tDOT tTILDE tBACKTICK tCOMMA tCOLON
 %token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON
 %token tOR tAND tAND_BIT tOR_BIT tXOR_BIT tLBRACE tRBRACE tLPAREN tRPAREN
-%token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST
-%token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tSCOPE
+%token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST tCOLON3
+%token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tCOLON2
 
 
 /* Precedence table */
@@ -195,9 +196,9 @@ void pop_end(struct parser_t * parser, struct node * n);
 %type <n> f_arguments f_args f_restarg f_optarg primary f_opt primary1 primary2
 %type <n> array array_items hash hash_items hash_item method_call call_args
 %type <n> opt_lambda_body lambda_body brace_block do_block bv_decls block_list
-%type <n> block_args exp_for exc_list rescue_list rescue_item function_args
-%type <n> f_bad_arg opt_call_args simple_assign item_list opt_rescue_arg symbol
-%type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const
+%type <n> block_args exp_for exc_list rescue_list rescue_item function_args block_params
+%type <n> f_bad_arg simple_assign item_list opt_rescue_arg symbol exp_or_hash
+%type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const single_name_mcall
 %type <n> dot_method_call dot_items dot_item scope_items array_value opt_bracket_list key
 %type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
 
@@ -395,6 +396,16 @@ cmpd_stmt: k_if exp then
       $$ = ALLOC_C(token_function, $2, $5, $4);
       pop_start(parser, $$);
     }
+	| k_def single_name_mcall
+    {
+      parser->in_def++;
+    }
+    f_arglist tRPAREN bodystmt END
+    {
+      parser->in_def--;
+      $$ = ALLOC_C(token_function, $2, $6, $4);
+      pop_start(parser, $$);
+    }
   | k_module module_name
     {
       if (parser->in_def)
@@ -428,21 +439,22 @@ cmpd_stmt: k_if exp then
       $$ = ALLOC_C(token_class, $3, $5, $2);
       pop_start(parser, $$);
     }
-  | k_class tLSHIFT opt_eol_list variable
+  | k_class tLSHIFT exp_or_hash
     {
       if (parser->in_def)
         yyerror(parser, "class definition in method body");
     }
+    term
     bodystmt
     END
     {
-      $$ = ALLOC_N(token_singleton_class, $6, $4);
+      $$ = ALLOC_N(token_singleton_class, $6, $3);
       pop_start(parser, $$);
     }
 ;
 
-fname: FNAME  { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | base      { $$ = $1; }
+fname: FNAME    { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | base        { $$ = $1;  }
 ;
 
 fname_or_const: fname { $$ = $1;  }
@@ -455,6 +467,14 @@ single_name: base dot_or_scope fname
     copy_range($$, $1, $3);
   }
   | fname   { $$ = $1;  }
+;
+
+single_name_mcall: base dot_or_scope mcall
+	{
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);		
+	}
+	| mcall		{ $$ = $1;	}
 ;
 
 function_args: f_arglist eol_or_semicolon  { $$ = $1;  }
@@ -570,7 +590,7 @@ lambda_body: brace_block  { $$ = $1;  }
 
 brace_block: lbrace block_args not_empty_compstmt tRBRACE
   {
-    pop_start(parser, parser->last_pos);
+    pop_pos(parser, NULL);
     $$ = ALLOC_N(token_block, $3, $2);
     if ($3->last != NULL) {
       copy_end($$, $3->last);
@@ -580,7 +600,7 @@ brace_block: lbrace block_args not_empty_compstmt tRBRACE
   }
   | lbrace not_empty_compstmt tRBRACE
   {
-    pop_pos(parser, parser->last_pos);
+    pop_pos(parser, NULL);
     $$ = ALLOC_N(token_block, $2, NULL);
     if ($2->last != NULL) {
       copy_end($$, $2->last);
@@ -594,38 +614,59 @@ do_block: k_do_block endl block_args compstmt END
   {
     pop_pos(parser, parser->last_pos);
     $$ = ALLOC_N(token_block, $4, $3);
-    if ($4->last != NULL) {
-      copy_end($$, $4->last);
-    } else {
-      copy_end($$, $4);
+    if ($4 != NULL) {
+      if ($4->last != NULL) {
+        copy_end($$, $4->last);
+      } else {
+        copy_end($$, $4);
+      }
+    } else { 
+      copy_pos($$, parser->last_pos);
     }
   }
   | k_do_block compstmt END
   {
     pop_pos(parser, parser->last_pos);
     $$ = ALLOC_N(token_block, $2, NULL);
-    if ($2->last != NULL) {
-      copy_end($$, $2->last);
+    if ($2 != NULL) {
+      if ($2->last != NULL) {
+        copy_end($$, $2->last);
+      } else {
+        copy_end($$, $2);
+      }
     } else {
-      copy_end($$, $2);
+      copy_pos($$, parser->last_pos);
     }
   }
 ;
 
-block_args: tOR_BIT f_arguments bv_decls tOR_BIT
+block_params: f_arguments { $$ = $1;  }
+  | comma tAND_BIT arg    { $$ = $3;  }
+  | f_args comma          { $$ = $1;  }
+  | f_args comma f_restarg f_blockarg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_args comma f_restarg comma f_args f_blockarg
+  {
+    $$ = concat_list($1, create_list($3, update_list($5, $6)));
+  }
+;
+
+block_args: tOR_BIT block_params bv_decls tOR_BIT
   {
     $$ = alloc_node(token_object, $2, $3);
-    copy_range($$, $2, $3);
+    copy_range($$, $2, $3); 
   }
   | tOR_BIT bv_decls tOR_BIT
   {
     $$ = alloc_node(token_object, NULL, $2);
-    copy_range($$, $2, $2);
+    copy_range($$, $2, $2); 
   }
-  | tOR_BIT f_arguments tOR_BIT
+  | tOR_BIT block_params tOR_BIT
   {
     $$ = alloc_node(token_object, $2, NULL);
-    copy_range($$, $2, $2);
+    copy_range($$, $2, $2); 
   }
 ;
 
@@ -637,11 +678,12 @@ block_list: base          { $$ = $1;  }
 ;
 
 f_arglist: f_arguments            { $$ = $1;  }
+  | tAND_BIT arg                  { $$ = $2;  }
   | lparen f_arguments rparen     { $$ = $2;  }
+  | lparen tAND_BIT arg rparen    { $$ = $3;  }
 ;
 
-f_arguments: tAND_BIT arg         { $$ = $2;  }
-  | f_args f_blockarg             { $$ = update_list($1, $2);  }
+f_arguments: f_args f_blockarg    { $$ = update_list($1, $2);  }
   | f_restarg comma f_args f_blockarg
     {
       $$ = create_list($1, update_list($3, $4));
@@ -900,7 +942,7 @@ opt_terms: /* nothing */
 ;
 
 dot_or_scope: tDOT
-  | tSCOPE
+  | tCOLON2
 ;
 
 eol_or_semicolon: EOL
@@ -999,6 +1041,7 @@ array_exp: exp      { $$ = $1;  }
 ;
 
 array_items: array_exp              { $$ = $1;  }
+  | array_items comma               { $$ = $1;  }
   | array_items comma array_exp     { $$ = update_list($1, $3); }
 ;
 
@@ -1031,7 +1074,12 @@ sary: SARY
   }
 ;
 
-hash: lbrace tRBRACE            { $$ = ALLOC_N(token_hash, NULL, NULL); pop_pos(parser, NULL); }
+hash: lbrace tRBRACE
+  { 
+    $$ = alloc_node(token_hash, NULL, NULL);
+    pop_pos(parser, $$);
+    pop_start(parser, $$);
+  }
   | lbrace hash_items rbrace
   {
     pop_pos(parser, parser->last_pos);
@@ -1041,6 +1089,7 @@ hash: lbrace tRBRACE            { $$ = ALLOC_N(token_hash, NULL, NULL); pop_pos(
 ;
 
 hash_items: hash_item           { $$ = $1;  }
+  | hash_items comma            { $$ = $1;  }
   | hash_items comma hash_item  { $$ = update_list($1, $3); }
 ;
 
@@ -1059,7 +1108,9 @@ hash_item: exp tASSOC opt_eol_list exp
 method_call: fname m_call_args
   {
     $$ = alloc_node(token_method_call, $1, $2);
-    if ($2->last != NULL) {
+    if ($2 == NULL) {
+      copy_pos($$, $1);
+    } else if ($2->last != NULL) {
       copy_range($$, $1, $2->last);
     } else {
       copy_range($$, $1, $2);
@@ -1075,7 +1126,7 @@ method_call: fname m_call_args
       $$->r = $2;
     }
   }
-  | const_scope opt_call_args
+  | const_scope m_call_args
   {
     $$ = alloc_node(token_method_call, $1, $2);
     if ($2 == NULL) {
@@ -1100,16 +1151,26 @@ const_scope: const scope_items
       copy_range($$, $1, $2);
     }
   }
-  | const tSCOPE fname
+  | const tCOLON2 fname
   {
     struct node * n = alloc_node(token_object, $1, NULL);
     $$ = pop_list(n, $3);
     copy_range($$, $1, $3);
   }
+  | tCOLON3 const scope_items
+  {
+    struct node * n = alloc_node(token_object, $2, NULL);
+    $$ = pop_list(n, $3);
+    if ($3->last != NULL) {
+      copy_range($$, $2, $3->last);
+    } else {
+      copy_range($$, $2, $3);
+    }
+  }
 ;
 
-scope_items: tSCOPE const               { $$ = $2;  }
-  | scope_items tSCOPE fname_or_const   { $$ = update_list($1, $3); }
+scope_items: tCOLON2 const               { $$ = $2;  }
+  | scope_items tCOLON2 fname_or_const   { $$ = update_list($1, $3); }
 ;
 
 paren_method_call: mcall opt_call_args_paren rparen
@@ -1140,7 +1201,7 @@ paren_method_call: mcall opt_call_args_paren rparen
   }
 ;
 
-const_mcall: const tSCOPE mcall { $$ = ALLOC_N(token_object, $1, $3); }
+const_mcall: const tCOLON2 mcall { $$ = ALLOC_N(token_object, $1, $3); }
 ;
 
 dot_method_call: basic dot_items
@@ -1185,12 +1246,8 @@ dot_item: tDOT fname
   }
 ;
 
-opt_call_args: /* nothing */  { $$ = 0;   }
-  | m_call_args               { $$ = $1;  }
-;
-
 opt_call_args_paren: /* nothing */  { $$ = 0;   }
-  | m_call_args_paren         { $$ = $1;  }
+  | m_call_args_paren               { $$ = $1;  }
 ;
 
 m_call_args: method_call      { $$ = $1;  }
@@ -1214,8 +1271,13 @@ call_args_paren: exp_paren          { $$ = $1;  }
   | call_args_paren comma exp_paren { $$ = update_list($1, $3); }
 ;
 
+exp_or_hash: exp { $$ = $1; }
+  | hash         { $$ = $1; }
+;
+
 /* TODO: hash with exp */
 exp_hash: exp   { $$ = $1;  }
+  | const_scope { $$ = $1;  }
   | hash        { $$ = $1;  }
   | hash_items
   {
@@ -1481,7 +1543,7 @@ void push_string_var(struct parser_t * p, int * curs, char ** ch)
       *ptr++ = *c++;
       *curs = *curs + 1;
     }
-    if (*curs >= p->length || *c == '"') {
+    if ((unsigned int) *curs >= p->length || *c == '"') {
       p->column = possible_error;
       yyerror(p, "expecting '}' token in string");
       *curs = p->length + 1; /* So we can force curs >= len error */
@@ -1697,6 +1759,7 @@ int parser_yylex(struct parser_t * parser)
   char buffer[BSIZE];
   char * c;
   int curs, len;
+  unsigned char space_seen = 0;
   struct pos_t tokp = {-1, -1, -1, -1};
 
   curs = parser->cursor;
@@ -1707,8 +1770,11 @@ int parser_yylex(struct parser_t * parser)
   }
   c = parser->blob + curs;
 
-  /* Ignore whitespaces */
-  for (; isspace(*c) && *c != '\n'; ++c, ++curs, parser->column++, parser->cursor++);
+  /* Ignore whitespaces and backslashes */
+  space_seen = *c;
+  for (; (isspace(*c) || *c == '\\') && *c != '\n';
+      ++c, ++curs, parser->column++, parser->cursor++);
+  (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
 
   if (*c == '#') {
     for (; *c != '\n' && curs < len; ++c, ++curs);
@@ -1779,6 +1845,7 @@ int parser_yylex(struct parser_t * parser)
     int step = 0;
     int ax = 0;
     unsigned char isConstant = 1;
+    unsigned char isGlobal = (*c == '$');
 
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
@@ -1791,10 +1858,9 @@ int parser_yylex(struct parser_t * parser)
         *ptr++ = *c++;
         curs++;
       }
-    } while (curs < len && isNotSep(c));
+    } while (curs < len && ((isGlobal && !isspace(*c)) || isNotSep(c)));
     *ptr = '\0';
     parser->column -= ax;
-
     const struct kwtable *kw = rb_reserved_word(buffer, ptr - buffer);
     if (kw) {
       t = kw->id;
@@ -1808,12 +1874,18 @@ int parser_yylex(struct parser_t * parser)
           parser->dot_seen = 0;
         } else
           parser->class_seen = 1;
-      }
+      } else if (t == tFILE || t == ENCODING || t == LINE)
+        parser->expr_seen = 1;
     } else if ((!strcmp(buffer, "defined")) && (*c == '?')) {
       ++curs;
       t = DEFINED;
+    } else if (isGlobal) {
+      push_stack(parser, buffer);
+      parser->expr_seen = 1;
+      t = GLOBAL;
     } else if (isValidVariableIdentifier(buffer)) {
       push_stack(parser, buffer);
+      parser->expr_seen = 1;
       if (isConstant || is_upper(buffer[0]))
         t = CONST;
       else if (*c == ':' && *(c + 1) != ':') {
@@ -1825,15 +1897,12 @@ int parser_yylex(struct parser_t * parser)
           t = CVAR;
         else if (buffer[0] == '@')
           t = IVAR;
-        else if (buffer[0] == '$')
-          t = GLOBAL;
         else if (isFunction(c)) {
           curs++;
           c++;
           t = FNAME;
         } else
           t = BASE;
-        parser->expr_seen = 1;
         if (parser->class_seen)
           parser->class_seen = 0;
         if (t == BASE && *c == '[') {
@@ -1842,6 +1911,7 @@ int parser_yylex(struct parser_t * parser)
         }
         if (*c == '(' && (t == BASE || t == FNAME)) {
           ++curs;
+          parser->expr_seen = 0;
           t = MCALL;
         }
       }
@@ -1872,6 +1942,7 @@ int parser_yylex(struct parser_t * parser)
     } else if (*(c + 1) == '~') {
       ++curs;
       parser_dot_seen(t, tMATCH);
+      parser->expr_seen = 0;
     } else if (*(c + 1) == '>') {
       ++curs;
       t = tASSOC;
@@ -1957,6 +2028,17 @@ int parser_yylex(struct parser_t * parser)
     if (*(c + 1) == '=') {
       curs++;
       t = tOP_ASGN;
+    } else if (*(c + 1) == '>') {
+      curs++;
+      if (*(c + 2) == '(') {
+        curs++;
+        t = MCALL;
+      } else
+        t = BASE;
+      push_stack(parser, "->");
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
+      tokp.endLine = tokp.startCol + 2;
     } else {
       parser_dot_seen(t, tMINUS);
       if (!parser->expr_seen && t == tMINUS) {
@@ -2110,7 +2192,10 @@ int parser_yylex(struct parser_t * parser)
     curs++;
     if (*(c + 1) == ':') {
       curs++;
-      t = tSCOPE;
+      if (!parser->expr_seen || (parser->expr_seen && space_seen))
+        t = tCOLON3;
+      else
+        t = tCOLON2;
     } else if (isNotSep(c + 1)) {
       char * ptr = buffer;
       int step = 0;
@@ -2212,6 +2297,7 @@ int parser_yylex(struct parser_t * parser)
     t = tRBRACE;
   } else if (*c == ',') {
     curs++;
+    parser->expr_seen = 0;
     t = tCOMMA;
   } else if (*c == '`') {
     int ax = 0;
@@ -2252,12 +2338,12 @@ int parser_yylex(struct parser_t * parser)
     curs++;
     parser_dot_seen(t, tXOR_BIT);
   }
- 
+
   /*
    * Once we have the token id, we should update the parser
    * flags to avoid conflicts and weird behavior :P
    */
-
+/* TODO printf("Kind: %i, Buffer: %s Expr_seen: %i\n", t, buffer, parser->expr_seen); */
   if (t == DO && !parser->no_block) {
     t = DO_BLOCK;
     parser->no_block = 0;
@@ -2287,6 +2373,7 @@ int parser_yylex(struct parser_t * parser)
 int yylex(void * lval, void * p)
 {
   struct parser_t * parser = (struct parser_t *) p;
+  (void) lval;
 
   return parser_yylex(parser);
 }
@@ -2297,18 +2384,20 @@ int yylex(void * lval, void * p)
  */
 void yyerror(struct parser_t * p, const char * s, ...)
 {
-  p->errors[p->error_index].msg = strdup(s);
-  p->errors[p->error_index].line = p->line;
-  p->errors[p->error_index].col = p->column;
-  p->errors[p->error_index].valid = 1;
-  p->error_index++;
+  if (p->error_index < 1) {
+    p->errors[p->error_index].msg = strdup(s);
+    p->errors[p->error_index].line = p->line;
+    p->errors[p->error_index].col = p->column;
+    p->errors[p->error_index].valid = 1;
+    p->error_index++;
+  }
   p->eof_reached = 1;
 }
 
 /*
  * Copy errors to the RubyAst structure.
  */
-void copy_error(RubyAst * ast, int index, struct error_t p)
+void copy_error(Ast * ast, int index, struct error_t p)
 {
   ast->errors[index].valid = p.valid;
   ast->errors[index].line = p.line;
@@ -2316,10 +2405,10 @@ void copy_error(RubyAst * ast, int index, struct error_t p)
   ast->errors[index].msg = p.msg;
 }
 
-RubyAst * rb_compile_file(const char * path, const char * contents)
+Ast * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
-  RubyAst * result;
+  Ast * result;
 
   /* Initialize parser */
   init_parser(&p);
@@ -2333,7 +2422,7 @@ RubyAst * rb_compile_file(const char * path, const char * contents)
   }
 
   /* Let's parse */
-  result = (RubyAst *) malloc (sizeof(RubyAst));
+  result = (Ast *) malloc (sizeof(Ast));
   result->tree = NULL;
   for (;;) {
     yyparse(&p);

@@ -1,6 +1,6 @@
 /* This file is part of KDevelop
  *
- * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright (C) 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -19,37 +19,14 @@
  */
 
 
-#ifndef TYPEBUILDER_H
-#define TYPEBUILDER_H
+#include <KStandardDirs>
+#include "helpers.h"
 
 
-/*
- * TODO: Don't know what to do with this. I'll take a closer look
- * at it as soon as possible.
- */
-
-
-#include <duchain/contextbuilder.h>
-#include <language/duchain/builders/abstracttypebuilder.h>
-
-
-namespace Ruby
+const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
 {
-
-typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
-
-class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
-{
-public:
-    TypeBuilder();
-
-protected:
-    virtual void updateCurrentType();
-    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
-};
-
+    static KDevelop::IndexedString doc_url(KStandardDirs::locate("data", 
+                                          "kdevrubysupport/kernel.rb"));
+    return doc_url;
 }
-
-
-#endif // TYPEBUILDER_H
 

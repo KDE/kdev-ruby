@@ -46,28 +46,31 @@
 #include <language/backgroundparser/backgroundparser.h>
 
 //Ruby plugin
+#include <rubydefs.h>
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
+#include <rubyhighlighting.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
 //END Includes
 
 
-using namespace Ruby;
-
 #define RUBY_FILE_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby File")
 #define RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby Test Function")
 
-K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<RubyLanguageSupport>();)
+K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<Ruby::LanguageSupport>();)
 K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby", ki18n("Ruby Support"), "1.2.60", ki18n("Support for the Ruby Language"), KAboutData::License_GPL)
     .addAuthor(ki18n("Alexander Dymo"), ki18n("Original Author"), "adymo@kdevelop.org")
     .addAuthor(ki18n("Miquel Sabaté"), ki18n("Maintainer, Parser"), "mikisabate@gmail.com")
 ))
 
 
-RubyLanguageSupport * RubyLanguageSupport::m_self = NULL;
+namespace Ruby
+{
 
-RubyLanguageSupport::RubyLanguageSupport(QObject * parent,
+LanguageSupport * LanguageSupport::m_self = NULL;
+
+LanguageSupport::LanguageSupport(QObject * parent,
                                          const QVariantList & /* args */)
         : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
         , KDevelop::ILanguageSupport()
@@ -78,6 +81,7 @@ RubyLanguageSupport::RubyLanguageSupport(QObject * parent,
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
     setXMLFile( "kdevrubysupport.rc" );
     m_self = this;
+    m_highlighting = new RubyHighlighting(this);
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
@@ -135,53 +139,58 @@ RubyLanguageSupport::RubyLanguageSupport(QObject * parent,
     }
 }
 
-RubyLanguageSupport::~RubyLanguageSupport()
+LanguageSupport::~LanguageSupport()
 {
     /* There's nothing to do here! */
 }
 
-RubyLanguageSupport* RubyLanguageSupport::self()
+LanguageSupport* LanguageSupport::self()
 {
     return m_self;
 }
 
-QString RubyLanguageSupport::name() const
+QString LanguageSupport::name() const
 {
     return "Ruby";
 }
 
-KDevelop::ParseJob * RubyLanguageSupport::createParseJob(const KUrl & url)
+KDevelop::ParseJob * LanguageSupport::createParseJob(const KUrl & url)
 {
     return new ParseJob(url, this);
 }
 
-KDevelop::ILanguage * RubyLanguageSupport::language()
+KDevelop::ILanguage * LanguageSupport::language()
 {
     return core()->languageController()->language(name());
 }
 
-QStringList RubyLanguageSupport::extensions() const
+KDevelop::ICodeHighlighting* LanguageSupport::codeHighlighting() const
+{
+    return m_highlighting;
+}
+
+QStringList LanguageSupport::extensions() const
 {
     return QStringList() << "ILanguageSupport";
 }
 
-void RubyLanguageSupport::documentActivated(KDevelop::IDocument * document)
+void LanguageSupport::documentActivated(KDevelop::IDocument * document)
 {
     Q_UNUSED(document)
 }
 
-void RubyLanguageSupport::documentLoaded(KDevelop::IDocument * document)
+void LanguageSupport::documentLoaded(KDevelop::IDocument * document)
 {
-    kDebug() << "loaded document";
+    debug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
-void RubyLanguageSupport::documentClosed(KDevelop::IDocument * document)
+void LanguageSupport::documentClosed(KDevelop::IDocument * document)
 {
     Q_UNUSED(document)
 }
 
-void RubyLanguageSupport::projectOpened(KDevelop::IProject *project)
+void LanguageSupport::projectOpened(KDevelop::IProject *project)
 {
     //parse project files
     KDevelop::BackgroundParser *parser = core()->languageController()->backgroundParser();
@@ -189,18 +198,18 @@ void RubyLanguageSupport::projectOpened(KDevelop::IProject *project)
         parser->addDocument(file->url());
 }
 
-void RubyLanguageSupport::projectClosing(KDevelop::IProject *project)
+void LanguageSupport::projectClosing(KDevelop::IProject *project)
 {
     Q_UNUSED(project)
 }
 
-void RubyLanguageSupport::documentChanged(KDevelop::IDocument *document)
+void LanguageSupport::documentChanged(KDevelop::IDocument *document)
 {
-    kDebug() << "loaded document";
+    debug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
-void RubyLanguageSupport::runCurrentFile()
+void LanguageSupport::runCurrentFile()
 {
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) return;
@@ -220,7 +229,7 @@ void RubyLanguageSupport::runCurrentFile()
     core()->runController()->execute("execute", m_rubyFileLaunchConfiguration);
 }
 
-void RubyLanguageSupport::runCurrentTestFunction()
+void LanguageSupport::runCurrentTestFunction()
 {
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) return;
@@ -247,7 +256,7 @@ void RubyLanguageSupport::runCurrentTestFunction()
     core()->runController()->execute("execute", m_rubyCurrentFunctionLaunchConfiguration);
 }
 
-QString RubyLanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
+QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 {
     QString function;
     KDevelop::DUChainReadLocker lock( KDevelop::DUChain::lock() );
@@ -263,7 +272,7 @@ QString RubyLanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     return context->localScopeIdentifier().toString();
 }
 
-void RubyLanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
+void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
     KUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url());
     if (!railsRoot.isEmpty())
@@ -272,7 +281,7 @@ void RubyLanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, K
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
 }
 
-KDevelop::ILaunchConfiguration* RubyLanguageSupport::findOrCreateLaunchConfiguration(const QString& name)
+KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration(const QString& name)
 {
     foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
         if (config->name() == name) return config;
@@ -302,6 +311,8 @@ KDevelop::ILaunchConfiguration* RubyLanguageSupport::findOrCreateLaunchConfigura
 
     return config;
 }
+
+} // End of namespace Ruby
 
 
 #include "rubylanguagesupport.moc"

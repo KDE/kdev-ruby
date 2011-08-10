@@ -23,6 +23,12 @@
 #define OBJECTTYPE_H
 
 
+/*
+ * TODO: I don't really know what's going to happen to this class.
+ * I'll take a closer look at this as soon as possible.
+ */
+
+
 #include <language/duchain/types/structuretype.h>
 #include <duchain/duchainexport.h>
 

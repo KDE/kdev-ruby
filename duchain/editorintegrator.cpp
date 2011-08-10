@@ -33,7 +33,7 @@ EditorIntegrator::EditorIntegrator()
     /* There's nothing to do here! */
 }
 
-KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge) const
+KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge) const
 {
     Q_ASSERT(node);
 
@@ -44,10 +44,10 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node * node, Edge edge
     if (edge == BackEdge)
         return KDevelop::CursorInRevision(node->endLine, node->endCol);
     else
-        return KDevelop::CursorInRevision(node->startLine, node->startCol - 1);
+        return KDevelop::CursorInRevision(node->startLine, node->startCol);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to)
 {
     KDevelop::CursorInRevision c_from = findPosition(from, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(to, BackEdge);
@@ -55,7 +55,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node * from, Node * to)
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node * node)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node)
 {
     KDevelop::CursorInRevision c_from = findPosition(node, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(node, BackEdge);
@@ -63,7 +63,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node * node)
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-void EditorIntegrator::setUrl(const KDevelop::IndexedString & url)
+void EditorIntegrator::setUrl(const KDevelop::IndexedString &url)
 {
     m_url = url;
 }

@@ -2,6 +2,7 @@
  *
  * Copyright 2010 Niko Sams <niko.sams@gmail.com>
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright (C) 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -24,44 +25,74 @@
 #define CONTEXTBUILDER_H
 
 
+/*
+ * TODO: This file is still under construction.
+ */
+
+
 #include <language/duchain/builders/abstractcontextbuilder.h>
+#include <language/duchain/topducontext.h>
 #include <duchain/duchainexport.h>
-#include <parser/node.h>
+#include <parser/rubyast.h>
+#include <parser/rubyastvisitor.h>
 
 
 namespace Ruby
 {
 
 class EditorIntegrator;
-typedef KDevelop::AbstractContextBuilder<Node, Node> ContextBuilderBase;
+typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
 
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, public RubyAstVisitor
 {
 public:
     ContextBuilder();
     virtual ~ContextBuilder();
 
-    void setEditor(EditorIntegrator* editor);
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, Node * node,
+    void setEditor(EditorIntegrator *editor);
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
+    
+    bool hasUnresolvedImports() const;
 
 protected:
-    EditorIntegrator* editor() const;
+    EditorIntegrator * editor() const;
 
-    virtual KDevelop::TopDUContext* newTopContext(const KDevelop::RangeInRevision& range, KDevelop::ParsingEnvironmentFile* file = 0);
+    virtual KDevelop::DUContext* newContext(const KDevelop::RangeInRevision &range);
+    virtual KDevelop::TopDUContext* newTopContext(const KDevelop::RangeInRevision &range,
+                                                  KDevelop::ParsingEnvironmentFile *file = 0);
 
-    virtual void startVisiting(Node * node);
-    virtual void setContextOnNode(Node * node, KDevelop::DUContext* ctx);
-    virtual KDevelop::DUContext* contextFromNode(Node * node);
+    virtual void startVisiting(RubyAst *node);
+    virtual void setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx);
+    virtual KDevelop::DUContext* contextFromNode(RubyAst *node);
 
-    virtual KDevelop::RangeInRevision editorFindRange(Node * fromRange, Node * toRange);
-    /// Find Cursor for start of a node, useful to limit findLocalDeclarations() searches.
-    KDevelop::CursorInRevision startPos(Node * node);
+    virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange);
+    KDevelop::CursorInRevision startPos(RubyAst *node);
 
-    virtual KDevelop::QualifiedIdentifier identifierForNode(Node * id);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
+
+    /* Re-implementing from RubyAstVistor */
+//     virtual void visitCode(RubyAst *node);
+    virtual void visitClassStatement(RubyAst *node);
+    virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitMethodStatement(RubyAst *node);
+    virtual void visitMethodArguments(RubyAst *node);
+
+    void openContextForClassDefinition(RubyAst *node);
 
     bool m_reportErrors;
-    EditorIntegrator* m_editor;
+    bool m_hasUnresolvedIdentifiers;
+    EditorIntegrator *m_editor;
+    KDevelop::ReferencedTopDUContext m_topContext;
+    KDevelop::TopDUContextPointer m_builtinsContext;
+
+private:
+    RangeInRevision rangeForMethodArguments(RubyAst *node);
+    void addImportedContexts();
+
+private:
+    QList<KDevelop::DUContext *> m_importedParentContexts; //TODO: Really?
+    KDevelop::QualifiedIdentifier lastMethodName;
 };
 
 }

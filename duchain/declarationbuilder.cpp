@@ -22,33 +22,139 @@
 
 
 #include <duchain/declarationbuilder.h>
+#include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/integraltype.h>
+#include "declarations/variabledeclaration.h"
 
 
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder(EditorIntegrator * editor):
+DeclarationBuilder::DeclarationBuilder()
+    : DeclarationBuilderBase()
+{
+    /* There's nothing to do here! */
+}
+
+DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
     DeclarationBuilderBase()
 {
     setEditor(editor);
 }
 
-KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(Node * node)
+DeclarationBuilder::~DeclarationBuilder()
+{
+    /* There's nothing to do here! */
+}
+
+ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyAst *node, ReferencedTopDUContext updateContext)
+{
+    return DeclarationBuilderBase::build(url, node, updateContext);
+}
+
+void DeclarationBuilder::visitClassStatement(RubyAst *node)
+{
+    openClassDeclaration(node, true);
+    RubyAstVisitor::visitClassStatement(node);
+
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        closeContext();
+    }
+    closeType();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::visitModuleStatement(RubyAst* node)
+{
+    openClassDeclaration(node, false);
+    RubyAstVisitor::visitModuleStatement(node);
+
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        closeContext();
+    }
+    closeType();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::visitFunctionStatement(RubyAst *node)
+{
+    openMethodDeclaration(node);
+    visitMethodArguments(node);
+    visitBody(node);
+    closeType();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::visitVariable(RubyAst *node)
+{
+    /* TODO: this is waaay too simple */
+
+    DUChainWriteLocker wlock(DUChain::lock());
+    kDebug() << "Parsing variable declaration: " << node->tree->name << ":" << node->tree->kind;
+    Declaration *decl = openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), editorFindRange(node, node));
+    IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+//     decl->setKind(Declaration::Instance); BUG: Crash!
+//     decl->setType(type);
+    eventuallyAssignInternalContext();
+    closeDeclaration();
+}
+
+void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
+{
+    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(new NameAst(node), node);
+    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+//         decl->setType(type); BUG: Crash!
+    }
+    openType(type);
+}
+
+void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(new NameAst(node), node);
+    eventuallyAssignInternalContext();
+
+    if (isClass) {
+//         decl->setKind(KDevelop::Declaration::Type); BUG: Crash!
+        decl->setClassType(ClassDeclarationData::Class);
+    } else {
+//         decl->setKind(KDevelop::Declaration::Namespace); BUG: Crash!
+        decl->setClassType(ClassDeclarationData::Interface);
+    }
+    decl->clearBaseClasses();
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+    openContextForClassDefinition(node);
+    decl->setInternalContext(currentContext());
+}
+
+KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)
 {
     if (!node)
         return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(node->name);
+    return KDevelop::QualifiedIdentifier(node->value);
 }
 
 void DeclarationBuilder::closeDeclaration()
 {
+    if (currentDeclaration() && lastType()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+//         currentDeclaration()->setType(lastType()); BUG: Crash!
+    }
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
 }
 
 void DeclarationBuilder::updateCurrentType()
 {
-    KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+    DUChainWriteLocker lock(DUChain::lock());
     currentDeclaration()->setAbstractType(currentAbstractType());
 }
 

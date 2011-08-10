@@ -24,12 +24,13 @@
 
 #include <language/interfaces/iproblem.h>
 #include <parser/parserexport.h>
-#include "node.h"
+#include <parser/rubyast.h>
 
 
 using namespace KDevelop;
 
-namespace Ruby {
+namespace Ruby
+{
 
 /**
  * @class RubyParser
@@ -55,14 +56,14 @@ public:
      *
      * @param contents the contents of the file to parse.
      */
-    void setContents(const QByteArray & contents);
+    void setContents(const QByteArray &contents);
 
     /**
      * Set the current document.
      *
      * @param fileName the name of the current document.
      */
-    void setCurrentDocument(const KUrl & fileName);
+    void setCurrentDocument(const KUrl &fileName);
 
     /**
      * @return the name of the current document.
@@ -81,7 +82,7 @@ public:
      *
      * @param ast the RubyAst to free.
      */
-    void freeAst(RubyAst * ast);
+    void freeAst(RubyAst *ast);
 
 private:
     /**
@@ -98,7 +99,7 @@ public:
 
 private:
     IndexedString m_currentDocument;
-    const char * m_contents;
+    const char *m_contents;
 };
 
 

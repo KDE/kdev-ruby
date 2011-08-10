@@ -31,7 +31,7 @@
 
 namespace Ruby {
 
-RailsSwitchers::RailsSwitchers(RubyLanguageSupport* language)
+RailsSwitchers::RailsSwitchers(LanguageSupport* language)
     :QObject(language), m_language(language)
 {
 }

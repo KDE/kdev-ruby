@@ -1,6 +1,6 @@
 /* This file is part of KDevelop
  *
- * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2011 Alexander Dymo <adymo@kdevelop.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -17,39 +17,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+#ifndef RUBYDEFS_H
+#define RUBYDEFS_H
 
-
-#ifndef TYPEBUILDER_H
-#define TYPEBUILDER_H
-
-
-/*
- * TODO: Don't know what to do with this. I'll take a closer look
- * at it as soon as possible.
- */
-
-
-#include <duchain/contextbuilder.h>
-#include <language/duchain/builders/abstracttypebuilder.h>
-
-
-namespace Ruby
+static int debugArea()
 {
-
-typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
-
-class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
-{
-public:
-    TypeBuilder();
-
-protected:
-    virtual void updateCurrentType();
-    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
-};
-
+    static int s_area = KDebug::registerArea("kdevelop (ruby support)");
+    return s_area;
 }
+#define debug() kDebug(debugArea())
 
-
-#endif // TYPEBUILDER_H
-
+#endif

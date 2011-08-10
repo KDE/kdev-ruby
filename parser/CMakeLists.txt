@@ -2,6 +2,7 @@ set(rubyparser_SRCS
     node.c
     parser.c
     rubyparser.cpp
+    rubyastvisitor.cpp
 )
 
 kde4_add_library(kdev4rubyparser SHARED ${rubyparser_SRCS})

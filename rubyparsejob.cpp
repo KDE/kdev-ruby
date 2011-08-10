@@ -24,13 +24,18 @@
 #include <KDebug>
 
 #include <interfaces/ilanguage.h>
+#include <interfaces/ilanguagecontroller.h>
+#include <interfaces/icore.h>
+#include <language/backgroundparser/backgroundparser.h>
+#include <language/interfaces/icodehighlighting.h>
 #include <language/backgroundparser/urlparselock.h>
 
+#include <rubydefs.h>
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
-#include <parser/node.h>
 #include <duchain/declarationbuilder.h>
+#include <duchain/usebuilder.h>
 #include <duchain/editorintegrator.h>
 
 
@@ -39,7 +44,7 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ParseJob::ParseJob(const KUrl & url, RubyLanguageSupport * parent)
+ParseJob::ParseJob(const KUrl & url, LanguageSupport * parent)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
     , m_duContext (NULL)
@@ -53,9 +58,9 @@ ParseJob::~ParseJob()
     /* There's nothing to do here */
 }
 
-RubyLanguageSupport * ParseJob::ruby() const
+LanguageSupport * ParseJob::ruby() const
 {
-    return RubyLanguageSupport::self();
+    return LanguageSupport::self();
 }
 
 void ParseJob::run()
@@ -68,7 +73,8 @@ void ParseJob::run()
         DUChainReadLocker lock(DUChain::lock());
         bool needsUpdate = true;
         static const IndexedString langString("Ruby");                                                                      
-        foreach(const ParsingEnvironmentFilePointer & file, DUChain::self()->allEnvironmentFiles(document())) {
+        foreach(const ParsingEnvironmentFilePointer &file, 
+                DUChain::self()->allEnvironmentFiles(document())) {
             if (file->language() != langString)
                 continue;
             if (file->needsUpdate()) {
@@ -78,7 +84,7 @@ void ParseJob::run()
                 needsUpdate = false;
         }
         if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled) && !needsUpdate) {
-            kDebug() << "Already up to date" << document().str();
+            debug() << "Already up to date" << document().str();
             return;
         }
     }
@@ -97,26 +103,40 @@ void ParseJob::run()
     m_parser->setCurrentDocument(m_url);
     RubyAst * ast = m_parser->parse();
 
-    if (ast != NULL) {
+    if (ast != NULL && ast->tree != NULL) {
         if (abortRequested())
             return abortJob();
 
         EditorIntegrator editor;
-        DeclarationBuilder builder(&editor);
-        m_duContext = builder.build(document(), ast->tree, m_duContext);
         editor.setUrl(IndexedString(m_url));
-        m_parser->freeAst(ast);
+        DeclarationBuilder builder(&editor);
+        m_duContext = builder.build(document(), ast, m_duContext);
+        bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
+        if (abortRequested())
+            return abortJob();
+
+        if (abortRequested())
+            return abortJob();
+
+        if (needsReparse) {
+            //TODO
+        }
 
         {
             DUChainWriteLocker lock(DUChain::lock());
             m_duContext->setFeatures(minimumFeatures());
             KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
-            file->clearModificationRevisions();
             file->setModificationRevision(contents().modification);
             KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
         }
-        kDebug() << "**** Parsing Succeeded ****";
+        m_parser->freeAst(ast);
+
+        if (m_parent && m_parent->codeHighlighting() &&
+            ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
+            ruby()->codeHighlighting()->highlightDUChain(m_duContext);
+        }
+        debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
@@ -125,7 +145,7 @@ void ParseJob::run()
             m_duContext->parsingEnvironmentFile()->clearModificationRevisions();
             m_duContext->clearProblems();
         } else {
-            ParsingEnvironmentFile * file = new ParsingEnvironmentFile(document());
+            ParsingEnvironmentFile *file = new ParsingEnvironmentFile(document());
             static const IndexedString langString("Ruby");
             file->setLanguage(langString);
             m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
@@ -135,7 +155,7 @@ void ParseJob::run()
     }
     DUChainWriteLocker lock(DUChain::lock());
     foreach (ProblemPointer p, m_parser->m_problems) {
-        kDebug() << "Added problem to context";
+        debug() << "Added problem to context";
         m_duContext->addProblem(p);
     }
     setDuChain(m_duContext);
@@ -145,5 +165,4 @@ void ParseJob::run()
 
 
 #include "rubyparsejob.moc"
-
 

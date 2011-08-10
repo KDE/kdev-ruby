@@ -12,3 +12,12 @@ Resulting AST's:
 Next statements: 51(a)[9,18:9,19] 
 Root: 61[9,4:9,21] 
 
+51(path)[11,0:11,4] 66[11,0:11,28] 
+Next statements: 66[11,5:11,28] 
+Root: 
+
+51(validate_user_uniqueness)[14,2:14,26] 66[14,2:14,29] 51($1)[14,27:14,29] 38[13,0:17,3] 51(raise)[16,2:16,7] 66[16,2:16,75] 51(NoMethodError)[16,8:16,21] 
+Next statements: 60[16,23:16,75] 
+Root: 38[15,0:15,4] 
+Condition: 51(ajax_method)[13,3:13,14] 29[13,3:13,36] 61[13,18:13,36] 
+

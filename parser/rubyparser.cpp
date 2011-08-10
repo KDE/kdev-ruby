@@ -36,12 +36,12 @@ RubyParser::~RubyParser()
     /* There's nothing to do here! */
 }
 
-void RubyParser::setContents(const QByteArray & contents)
+void RubyParser::setContents(const QByteArray &contents)
 {
     m_contents = contents.data();
 }
 
-void RubyParser::setCurrentDocument(const KUrl & fileName)
+void RubyParser::setCurrentDocument(const KUrl &fileName)
 {
     m_currentDocument = IndexedString(fileName);
 }
@@ -54,23 +54,26 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    RubyAst * result = rb_compile_file(m_currentDocument.str().toAscii(),
-                                       m_contents);
-    if (result->errors[0].valid) {
-        appendProblem(result->errors[0]);
-        if (result->errors[1].valid)
-            appendProblem(result->errors[1]);
-        rb_free(result);
+    Ast *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
+    RubyAst *ra = new RubyAst(res->tree);
+    if (res->errors[0].valid) {
+        appendProblem(res->errors[0]);
+        if (res->errors[1].valid)
+            appendProblem(res->errors[1]);
+        rb_free(res);
         return NULL;
-    } else
+    } else {
+        free_errors(res->errors);
+        free(res);
         m_problems.clear();
-    return result;
+    }
+    return ra;
 }
 
-void RubyParser::freeAst(RubyAst * ast)
+void RubyParser::freeAst(RubyAst *ast)
 {
     if (ast != NULL)
-        rb_free(ast);
+        free_ast(ast->tree);
 }
 
 void RubyParser::appendProblem(struct error_t givenError)

@@ -127,19 +127,20 @@
      tMOD = 345,
      KEY = 346,
      CONST = 347,
-     tASGN = 348,
-     tOP_ASGN = 349,
-     tCMP = 350,
-     tEQ = 351,
-     tEQQ = 352,
-     tNEQ = 353,
-     tMATCH = 354,
-     tNMATCH = 355,
-     tGEQ = 356,
-     tLEQ = 357,
-     tSCOPE = 358,
-     tDOT3 = 359,
-     tDOT2 = 360
+     tCOLON3 = 348,
+     tASGN = 349,
+     tOP_ASGN = 350,
+     tCMP = 351,
+     tEQ = 352,
+     tEQQ = 353,
+     tNEQ = 354,
+     tMATCH = 355,
+     tNMATCH = 356,
+     tGEQ = 357,
+     tLEQ = 358,
+     tCOLON2 = 359,
+     tDOT3 = 360,
+     tDOT2 = 361
    };
 #endif
 
@@ -150,12 +151,12 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 151 "../parser.y"
+#line 152 "../parser.y"
   struct node * n;  
 
 
 /* Line 2068 of yacc.c  */
-#line 159 "../parser.h"
+#line 160 "../parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

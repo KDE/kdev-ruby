@@ -27,12 +27,13 @@
 #include "rubylanguagesupport.h"
 #include "navigationexport.h"
 
-namespace Ruby {
+namespace Ruby
+{
 
 class KDEVRUBYNAVIGATION_EXPORT RailsSwitchers: public QObject {
     Q_OBJECT
 public:
-    RailsSwitchers(RubyLanguageSupport *language);
+    RailsSwitchers(LanguageSupport *language);
 
     static KUrl::List viewsToSwitch();
     static KUrl::List testsToSwitch();
@@ -45,7 +46,7 @@ public slots:
     void switchToTest();
 
 private:
-    RubyLanguageSupport *m_language;
+    LanguageSupport *m_language;
 };
 
 }

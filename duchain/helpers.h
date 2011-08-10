@@ -1,6 +1,6 @@
 /* This file is part of KDevelop
  *
- * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright (C) 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -19,37 +19,18 @@
  */
 
 
-#ifndef TYPEBUILDER_H
-#define TYPEBUILDER_H
+#ifndef RUBYDUCHAINHELPERS_H_
+#define RUBYDUCHAINHELPERS_H_
 
 
-/*
- * TODO: Don't know what to do with this. I'll take a closer look
- * at it as soon as possible.
- */
-
-
-#include <duchain/contextbuilder.h>
-#include <language/duchain/builders/abstracttypebuilder.h>
+#include "duchainexport.h"
+#include <language/duchain/indexedstring.h>
 
 
 namespace Ruby
 {
-
-typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
-
-class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
-{
-public:
-    TypeBuilder();
-
-protected:
-    virtual void updateCurrentType();
-    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
-};
-
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString& internalBuiltinsFile();
 }
 
 
-#endif // TYPEBUILDER_H
-
+#endif /* RUBYDUCHAINHELPERS_H_ */

@@ -11,9 +11,7 @@ end
 f = FooClass.new
 puts f.foo
 
-class
-  <<
-  f
+class << (a = 0)
   def foo
     'Modified'
   end
@@ -21,8 +19,7 @@ end
 
 puts f.foo
 
-class <<
-  f
+class << { a: 3 }
   def foo
     'Modified2'
   end
@@ -38,3 +35,6 @@ class
 end
 
 puts f.foo
+
+class Lalala << ::FooClass
+end
