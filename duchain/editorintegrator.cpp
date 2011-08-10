@@ -37,14 +37,10 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge)
 {
     Q_ASSERT(node);
 
-    /*
-     * The Ruby parser always sets the column  _after_ the last character
-     * that should be included.
-     */
     if (edge == BackEdge)
-        return KDevelop::CursorInRevision(node->endLine, node->endCol);
+        return KDevelop::CursorInRevision(node->endLine - 1, node->endCol);
     else
-        return KDevelop::CursorInRevision(node->startLine, node->startCol);
+        return KDevelop::CursorInRevision(node->startLine - 1, node->startCol);
 }
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to)
