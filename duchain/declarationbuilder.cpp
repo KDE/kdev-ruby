@@ -25,6 +25,7 @@
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
 #include "declarations/variabledeclaration.h"
+#include <duchain/editorintegrator.h>
 
 
 namespace Ruby
@@ -36,8 +37,8 @@ DeclarationBuilder::DeclarationBuilder()
     /* There's nothing to do here! */
 }
 
-DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor):
-    DeclarationBuilderBase()
+DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
+    : DeclarationBuilderBase(), m_editor(editor)
 {
     setEditor(editor);
 }
@@ -117,14 +118,16 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     StructureType::Ptr type = StructureType::Ptr(new StructureType());
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(new NameAst(node), node);
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
     eventuallyAssignInternalContext();
 
     if (isClass) {
-//         decl->setKind(KDevelop::Declaration::Type); BUG: Crash!
+        decl->setKind(KDevelop::Declaration::Type);
         decl->setClassType(ClassDeclarationData::Class);
     } else {
-//         decl->setKind(KDevelop::Declaration::Namespace); BUG: Crash!
+        decl->setKind(KDevelop::Declaration::Namespace);
         decl->setClassType(ClassDeclarationData::Interface);
     }
     decl->clearBaseClasses();
@@ -133,6 +136,22 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
     openType(type);
     openContextForClassDefinition(node);
     decl->setInternalContext(currentContext());
+}
+
+KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst* node, bool isMethod)
+{
+    Node *name, *tree = node->tree;
+    if (isMethod) {
+        if (tree->cond->r != NULL)
+            name = tree->cond->r;
+        else
+            name = tree->cond;
+    } else if (tree->r->last != NULL)
+        name = tree->r->last;
+    else
+        name = tree->r;
+
+    return m_editor->findRange(name);
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

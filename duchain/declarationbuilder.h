@@ -42,6 +42,7 @@ namespace KDevelop {
 
 namespace Ruby
 {
+class EditorIntegrator;
 
 typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
@@ -71,7 +72,10 @@ protected:
 private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
+    KDevelop::RangeInRevision getNameRange(RubyAst *node, bool isMethod = false);
 
+private:
+    EditorIntegrator *m_editor;
 };
 
 }
