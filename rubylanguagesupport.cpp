@@ -82,6 +82,8 @@ LanguageSupport::LanguageSupport(QObject * parent,
     m_self = this;
     m_highlighting = new RubyHighlighting(this);
 
+    KDebug::registerArea("kdevelop (ruby support)");
+
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
     connect( core()->documentController(), SIGNAL( documentClosed( KDevelop::IDocument* ) ),
