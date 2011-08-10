@@ -91,14 +91,14 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
 {
     /* TODO: this is waaay too simple */
 
-    DUChainWriteLocker wlock(DUChain::lock());
-    kDebug() << "Parsing variable declaration: " << node->tree->name << ":" << node->tree->kind;
-    Declaration *decl = openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), editorFindRange(node, node));
-    IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+//     DUChainWriteLocker wlock(DUChain::lock());
+//     kDebug() << "Parsing variable declaration: " << node->tree->name << ":" << node->tree->kind;
+//     Declaration *decl = openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), editorFindRange(node, node));
+//     IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
 //     decl->setKind(Declaration::Instance); BUG: Crash!
 //     decl->setType(type);
-    eventuallyAssignInternalContext();
-    closeDeclaration();
+//     eventuallyAssignInternalContext();
+//     closeDeclaration();
 }
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)

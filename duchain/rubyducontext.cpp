@@ -37,7 +37,7 @@ REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyNormalDUContext, DUContextData);
 
 template<>
 QWidget* RubyTopDUContext::createNavigationWidget(  Declaration *decl, TopDUContext *topContext,
-                                                    const QString &htmlPrefix, const QString & htmlSufix)
+                                                    const QString &htmlPrefix, const QString & htmlSufix) const
 {
     if (!decl)
         return NULL;
@@ -46,7 +46,7 @@ QWidget* RubyTopDUContext::createNavigationWidget(  Declaration *decl, TopDUCont
 
 template<>
 QWidget* RubyNormalDUContext::createNavigationWidget(   Declaration *decl, TopDUContext *topContext,
-                                                        const QString &htmlPrefix, const QString & htmlSufix)
+                                                        const QString &htmlPrefix, const QString & htmlSufix) const
 {
     if (!decl)
         return NULL;

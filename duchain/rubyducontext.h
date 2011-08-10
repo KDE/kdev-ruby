@@ -79,10 +79,10 @@ public:
      * @param htmlPrefix Html-formatted text that should be prepended before any information shown by this widget
      * @param htmlSuffix Html-formatted text that should be appended to any information shown by this widget
      */
-    virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl,
-                                            KDevelop::TopDUContext *topContext,
-                                            const QString &htmlPrefix,
-                                            const QString &htmlSufix);
+    virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl = 0,
+                                            KDevelop::TopDUContext *topContext = 0,
+                                            const QString &htmlPrefix = QString(),
+                                            const QString &htmlSufix = QString()) const;
 
 public:
     enum { Identity = BaseContext::Identity + 51 };
