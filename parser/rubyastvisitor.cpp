@@ -18,6 +18,7 @@
  */
 
 #include "rubyastvisitor.h"
+#include <rubydefs.h>
 
 
 /* TODO: Under construction */
@@ -37,7 +38,7 @@ RubyAstVisitor::~RubyAstVisitor()
 
 void RubyAstVisitor::visitCode(RubyAst *node)
 {
-    kDebug() << "Visiting Code...";
+    debug() << "Visiting Code...";
     RubyAst *child = new RubyAst(node->tree, node->context);
 
     for (Node *n = node->tree; n != NULL; n = n->next) {

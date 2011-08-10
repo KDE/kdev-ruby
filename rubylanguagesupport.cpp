@@ -46,6 +46,7 @@
 #include <language/backgroundparser/backgroundparser.h>
 
 //Ruby plugin
+#include <rubydefs.h>
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
 #include <rubyhighlighting.h>
@@ -81,8 +82,6 @@ LanguageSupport::LanguageSupport(QObject * parent,
     setXMLFile( "kdevrubysupport.rc" );
     m_self = this;
     m_highlighting = new RubyHighlighting(this);
-
-    KDebug::registerArea("kdevelop (ruby support)");
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
@@ -182,7 +181,7 @@ void LanguageSupport::documentActivated(KDevelop::IDocument * document)
 
 void LanguageSupport::documentLoaded(KDevelop::IDocument * document)
 {
-    kDebug() << "loaded document";
+    debug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
@@ -206,7 +205,7 @@ void LanguageSupport::projectClosing(KDevelop::IProject *project)
 
 void LanguageSupport::documentChanged(KDevelop::IDocument *document)
 {
-    kDebug() << "loaded document";
+    debug() << "loaded document";
     core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
