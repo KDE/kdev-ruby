@@ -79,6 +79,7 @@ protected:
     virtual void visitMethodArguments(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
+    void openContextForMethodDefinition(RubyAst *node);
 
     bool m_reportErrors;
     bool m_hasUnresolvedIdentifiers;

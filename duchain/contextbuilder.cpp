@@ -167,12 +167,10 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 //     TODO
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-    lastMethodName = QualifiedIdentifier(getName(node));
-    openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
-    debug() << "Start Visiting function: " << lastMethodName << " at range: " << editorFindRange(node, node);
+    openContextForMethodDefinition(node);
     RubyAstVisitor::visitMethodStatement(node);
-    debug() << "Closing the context for method: " << getName(node);
     closeContext();
+    debug() << "Closing the context for method: " << getName(node);
 }
 
 void ContextBuilder::visitMethodArguments(RubyAst *node)
@@ -216,6 +214,18 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 debug() << "Open context for class: " << className;
     openContext(node, range, DUContext::Class, className);
     currentContext()->setLocalScopeIdentifier(className);
+    wlock.unlock();
+    addImportedContexts();
+}
+
+void ContextBuilder::openContextForMethodDefinition(RubyAst *node)
+{
+    RangeInRevision range = editorFindRange(node, node);
+    lastMethodName = KDevelop::QualifiedIdentifier(getName(node));
+    DUChainWriteLocker wlock(DUChain::lock());
+debug() << "Open context for method: " << lastMethodName << " range: " << editorFindRange(node, node);
+    openContext(node, range, DUContext::Function, lastMethodName);
+    currentContext()->setLocalScopeIdentifier(lastMethodName);
     wlock.unlock();
     addImportedContexts();
 }

@@ -104,14 +104,17 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
 {
-    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(new NameAst(node), node);
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+
     type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
-    {
-        DUChainWriteLocker lock(DUChain::lock());
-//         decl->setType(type); BUG: Crash!
-    }
+    decl->setType(type);
     openType(type);
+    openContextForMethodDefinition(node);
+    decl->setInternalContext(currentContext());
 }
 
 void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
