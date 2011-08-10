@@ -29,6 +29,7 @@
 # can run it.
 
 require 'find'
+require 'fileutils'
 
 
 ##
@@ -53,8 +54,15 @@ def do_diff(str)
     exec("cd .. && ./ruby-parser tests/#{str} > tests/#{str}.out")
   end
   Process.waitpid(pid)
+
+  expected = str.gsub(/\.rb$/, '.txt')
+  unless File.exists?("../tests/#{expected}")
+      puts "Missing expected test output"
+      FileUtils::touch("../tests/#{expected}")
+  end
+
   pid = fork do
-    exec("cd ../tests && diff -swu #{str.gsub('.rb', '.txt')} #{str}.out > output.txt")
+    exec("cd ../tests && diff -swu #{expected} #{str}.out > output.txt")
   end
   Process.waitpid(pid)
   error = 0
