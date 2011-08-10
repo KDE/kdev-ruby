@@ -163,13 +163,14 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     kDebug() << "Closing class: " << getModuleName(node->tree);
 }
 
+//     TODO
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-//     TODO
     lastMethodName = QualifiedIdentifier(getMethodName(node->tree));
-kDebug() << "Start Visiting function: " << lastMethodName;
     openContext(node, editorFindRange(node, node), DUContext::Function, lastMethodName);
+    kDebug() << "Start Visiting function: " << lastMethodName << " at range: " << editorFindRange(node, node);
     RubyAstVisitor::visitMethodStatement(node);
+    kDebug() << "Closing the context for method: " << getMethodName(node->tree);
     closeContext();
 }
 

@@ -32,6 +32,14 @@ require 'find'
 
 
 ##
+# This is meant to return the name of the test from the given path.
+#
+# @param *String* path The path of the test.
+def sanitize(path)
+  path.gsub /..\/tests\/?/, ''
+end
+
+##
 # This function does the dirty job. Basically it executes the parser to create
 # a file containing the output of the parser. The next step is to make a diff
 # between the expected results and the generated output. It detects this cases:
@@ -46,7 +54,7 @@ def do_diff(str)
   end
   Process.waitpid(pid)
   pid = fork do
-    exec("cd ../tests && diff -swu #{str.gsub('.rb', '.txt')} #{str}.out > output.txt")
+    exec("cd ../tests && diff -sw #{str.gsub('.rb', '.txt')} #{str}.out > output.txt")
   end
   Process.waitpid(pid)
   error = 0
@@ -62,10 +70,10 @@ def do_diff(str)
   end
   if error == 0
     if lines.size == 1
-      puts "Test OK: #{str}"
+      puts "Test OK: #{sanitize(str)}"
       res = :ok
     else
-      puts "Test Failed: #{str}. Generated diff:\n"
+      puts "Test Failed: #{sanitize(str)}. Generated diff:\n"
       puts lines
       res = :fail
     end
@@ -77,11 +85,6 @@ end
 # We just want to run a single test, so run it and then exit
 unless ARGV[0].nil?
   res = do_diff('../tests/' + ARGV[0])
-  if res == :fail
-    puts "Test #{ARGV[0]} failed!"
-  else
-    puts "Passed test #{ARGV[0]}!"
-  end
   exit
 end
 
@@ -91,7 +94,7 @@ oks = 0
 
 # Main procedure. It calls do_diff for all *.rb files located in parser/tests/
 Find.find('../tests') do |f|
-  str = f.gsub(/..\/tests\/?/, '')
+  str = sanitize(f)
   unless str.nil?
     if str.end_with?('rb')
       res = do_diff(str)

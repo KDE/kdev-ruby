@@ -19,7 +19,7 @@
 
 #!/usr/bin/env ruby
 
-#
+##
 # This script is able to: generate the necessary files for the parser
 # in order to compile and remove these files if wanted. In order to do
 # so, this script accepts four rules:
@@ -29,7 +29,13 @@
 #  - purge: remove parser.h, parser.c and hash.c from the root directory.
 #
 
+##
 # Check if the given program exists on your system
+#
+# @param *String* program The name of the program.
+#
+# @return *Boolean* True if the program exists on your system,
+# false otherwise.
 def exists? program
   ENV['PATH'].split(File::PATH_SEPARATOR).any? do |directory|
     File.executable?(File.join(directory, program.to_s))
@@ -54,13 +60,21 @@ GRAMMAR = '../parser.y'
 GFLAGS = '-C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k1,3,$ ../tools/gperf.txt > ../hash.c'
 FILES = '../parser.h ../parser.c ../hash.c'
 
-# Call bison
+##
+# Call bison and beautify the output
 def bison
   puts 'Using bison to generate parser.h and parser.c'
-  `bison #{GRAMMAR} #{YFLAGS}`
+  `bison #{GRAMMAR} #{YFLAGS} &> temp.txt`
+  IO.foreach 'temp.txt' do |line|
+    index = line.index('conflicts:') + 10
+    str = line.slice(index, line.length - index)
+    puts "Conflicts:#{str}"
+  end
+  `rm temp.txt`
 end
 
-# Call gperf and remove warnings from the generated file.
+##
+# Just call gperf
 def gperf
   puts 'Using gperf to generate hash.c'
   `gperf #{GFLAGS}`

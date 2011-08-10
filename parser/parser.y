@@ -1108,7 +1108,9 @@ hash_item: exp tASSOC opt_eol_list exp
 method_call: fname m_call_args
   {
     $$ = alloc_node(token_method_call, $1, $2);
-    if ($2->last != NULL) {
+    if ($2 == NULL) {
+      copy_pos($$, $1);
+    } else if ($2->last != NULL) {
       copy_range($$, $1, $2->last);
     } else {
       copy_range($$, $1, $2);
@@ -1872,7 +1874,8 @@ int parser_yylex(struct parser_t * parser)
           parser->dot_seen = 0;
         } else
           parser->class_seen = 1;
-      }
+      } else if (t == tFILE || t == ENCODING || t == LINE)
+        parser->expr_seen = 1;
     } else if ((!strcmp(buffer, "defined")) && (*c == '?')) {
       ++curs;
       t = DEFINED;
@@ -1908,7 +1911,7 @@ int parser_yylex(struct parser_t * parser)
         }
         if (*c == '(' && (t == BASE || t == FNAME)) {
           ++curs;
-/*           parser->expr_seen = 0; BUG: On 'global' test it makes it to fail */
+          parser->expr_seen = 0;
           t = MCALL;
         }
       }
@@ -1939,6 +1942,7 @@ int parser_yylex(struct parser_t * parser)
     } else if (*(c + 1) == '~') {
       ++curs;
       parser_dot_seen(t, tMATCH);
+      parser->expr_seen = 0;
     } else if (*(c + 1) == '>') {
       ++curs;
       t = tASSOC;

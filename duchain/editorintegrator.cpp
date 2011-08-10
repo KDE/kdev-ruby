@@ -44,7 +44,7 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge)
     if (edge == BackEdge)
         return KDevelop::CursorInRevision(node->endLine, node->endCol);
     else
-        return KDevelop::CursorInRevision(node->startLine, node->startCol - 1);
+        return KDevelop::CursorInRevision(node->startLine, node->startCol);
 }
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to)
