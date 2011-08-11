@@ -52,6 +52,9 @@ public:
     virtual void visitBody(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
     virtual void visitAssignmentStatement(RubyAst *node);
+
+private:
+    void visitStatements(RubyAst *list);
 };
 
 }

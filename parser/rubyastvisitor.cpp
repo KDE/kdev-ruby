@@ -121,7 +121,7 @@ void RubyAstVisitor::visitBody(RubyAst *node)
     if (node->tree == NULL)
         return;
     RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
+    visitStatements(child);
     child->tree = node->tree->r;
     visitNode(child);
     child->tree = node->tree->cond;
@@ -144,6 +144,16 @@ void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
         child->tree = n->next;
     }
     child->tree = node->tree->r;
+    for (Node *n = child->tree; n != NULL; n = n->next) {
+        RubyAstVisitor::visitNode(child);
+        child->tree = n->next;
+    }
+    delete child;
+}
+
+void RubyAstVisitor::visitStatements(RubyAst *list)
+{
+    RubyAst *child = new RubyAst(list->tree, list->context);
     for (Node *n = child->tree; n != NULL; n = n->next) {
         RubyAstVisitor::visitNode(child);
         child->tree = n->next;
