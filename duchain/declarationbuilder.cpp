@@ -79,7 +79,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     closeDeclaration();
 }
 
-void DeclarationBuilder::visitFunctionStatement(RubyAst *node)
+void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
     openMethodDeclaration(node);
     visitMethodArguments(node);
@@ -109,7 +109,7 @@ void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-
+kDebug() << "Declaring " << id << " at range: " << range;
     type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
     decl->setType(type);
     openType(type);
