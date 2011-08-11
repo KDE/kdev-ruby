@@ -26,27 +26,67 @@
 #include <language/duchain/navigation/abstractdeclarationnavigationcontext.h>
 
 
-/*
- * WARNING: This file is under development
- */
-
-
 namespace Ruby
 {
 
-class KDEVRUBYDUCHAIN_EXPORT DeclarationNavigationContext : public KDevelop::AbstractDeclarationNavigationContext
+/**
+ * @class DeclarationNavigationContext
+ *
+ * This class extends KDevelop::AbstractDeclarationNavigationContext so we
+ * can also show to the user some extra information.
+ */
+class KDEVRUBYDUCHAIN_EXPORT DeclarationNavigationContext
+    : public KDevelop::AbstractDeclarationNavigationContext
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param decl The declaration pointer.
+     * @param topContext The top context where this declaration is.
+     * @param prevContext A pointer to the previous context.
+     */
     DeclarationNavigationContext(KDevelop::DeclarationPointer decl,
                                  KDevelop::TopDUContextPointer topContext,
                                  KDevelop::AbstractNavigationContext *prevContext = 0);
 
 protected:
-    QString html(bool shorten = false);
+    /**
+     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
+     * we can improve the html to be rendered with Ruby-specific stuff.
+     */
+    virtual void htmlClass();
+
+    /**
+     * Re-implemented from KDevelop::AbstractNavigationContext so we can also
+     * show to the user if he's looking at an internal (kernel) structure.
+     *
+     * @param name The given name.
+     * @param declaration The involved declaration.
+     * @param actionType Important if this is a JumpToSource action.
+     */
+    virtual void makeLink(const QString &name, KDevelop::DeclarationPointer declaration,
+                          KDevelop::NavigationAction::Type actionType);
+
+    /**
+     * Re-implemented from KDevelop::AbstractNavigationContext so we can also
+     * show to the user if this declaration has some special meaning for
+     * the Ruby interpreter.
+     *
+     * @param decl The involved declaration.
+     */
+    virtual QString declarationKind(KDevelop::DeclarationPointer decl);
+
+    /**
+     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
+     * we can add some extra information about the identified type.
+     */
+    virtual void htmlIdentifiedType(KDevelop::AbstractType::Ptr type,
+                                    const KDevelop::IdentifiedType *idType);
 };
 
 }
 
 
-#endif // DECLARATIONNAVIGATIONWIDGET_H
+#endif /* DECLARATIONNAVIGATIONWIDGET_H */
 

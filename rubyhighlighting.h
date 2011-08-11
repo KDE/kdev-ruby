@@ -55,7 +55,7 @@ public:
                                      KDevelop::DUContext *context) const;
 
     /**
-     * Reimplemented from CodeHighlightingInstance to decide whether to
+     * Re-implemented from CodeHighlightingInstance to decide whether to
      * apply auto-generated rainbow colors or not.
      *
      * @param dec The involved declaration.

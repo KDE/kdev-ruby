@@ -18,25 +18,70 @@
  */
 
 
-#include "declarationnavigationcontext.h"
+// KDE
+#include <KLocalizedString>
+
+// Ruby
+#include <duchain/helpers.h>
+#include <duchain/declarations/classdeclaration.h>
+#include <duchain/navigation/declarationnavigationcontext.h>
 
 
 namespace Ruby
 {
+using namespace KDevelop;
 
-DeclarationNavigationContext::DeclarationNavigationContext( KDevelop::DeclarationPointer decl,
-                                                            KDevelop::TopDUContextPointer topContext,
-                                                            KDevelop::AbstractNavigationContext *prevContext)
+DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer decl,
+                                                            TopDUContextPointer topContext,
+                                                            AbstractNavigationContext *prevContext)
     : AbstractDeclarationNavigationContext(decl, topContext, prevContext)
 {
     /* There's nothing to do here! */
 }
 
-QString DeclarationNavigationContext::html(bool shorten)
+void DeclarationNavigationContext::htmlClass()
+{
+    /*
+     * TODO: There are plenty of thing to do here.
+     */
+    StructureType::Ptr klass = m_declaration->abstractType().cast<StructureType>();
+    Q_ASSERT(klass);
+    ClassDeclaration *classDecl = dynamic_cast<ClassDeclaration *>(klass->declaration(m_topContext.data()));
+
+    if (classDecl) {
+        //TODO: Actually this is not working at all :(
+        if (classDecl->classType() == ClassDeclarationData::Interface)
+            modifyHtml() += "module ";
+        else
+            modifyHtml() += "class ";
+    }
+}
+
+void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPointer declaration,
+                                            NavigationAction::Type actionType)
+{
+    if (actionType == NavigationAction::JumpToSource
+            && declaration->url() == internalBuiltinsFile()) {
+        modifyHtml() += i18n("Ruby Kernel");
+        return;
+    }
+    AbstractDeclarationNavigationContext::makeLink(name, declaration, actionType);
+}
+
+QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
+{
+    /*
+     * TODO: It should show if this declaration has some special meaning
+     * for the Ruby interpreter. Right now it does nothing :(
+     */
+    return KDevelop::AbstractNavigationContext::declarationKind(decl);
+}
+
+void DeclarationNavigationContext::htmlIdentifiedType(AbstractType::Ptr type,
+                                                      const IdentifiedType *idType)
 {
     // TODO
-    Q_UNUSED(shorten); // avoid warnings by now
-    return QString("This plugin is under development, what did you expect? ;)");
+    KDevelop::AbstractDeclarationNavigationContext::htmlIdentifiedType(type, idType);
 }
 
 } // End of namespace Ruby

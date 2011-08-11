@@ -64,7 +64,6 @@ void RubyAstVisitor::visitNode(RubyAst *node)
             visitModuleStatement(node);
             break;
         case token_function:
-            debug() << "Hrtr!";
             visitMethodStatement(node);
             break;
         case token_assign: case token_op_assign:
