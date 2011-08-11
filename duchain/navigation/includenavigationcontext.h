@@ -22,19 +22,28 @@
 #define INCLUDENAVIGATIONCONTEXT_H
 
 
-#include <language/duchain/navigation/abstractincludenavigationcontext.h>
 #include <duchain/duchainexport.h>
+#include <language/duchain/navigation/abstractincludenavigationcontext.h>
 
-/*
- * WARNING: this file is under development
- */
 
 namespace Ruby
 {
 
-class KDEVRUBYDUCHAIN_EXPORT IncludeNavigationContext : public KDevelop::AbstractIncludeNavigationContext
+/**
+ * @class IncludeNavigationContext
+ *
+ * The include navigation context for Ruby scripts.
+ */
+class KDEVRUBYDUCHAIN_EXPORT IncludeNavigationContext
+    : public KDevelop::AbstractIncludeNavigationContext
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param item The include item in which we want to retrieve the info.
+     * @param topContext The top context associated with the given item.
+     */
     IncludeNavigationContext(const KDevelop::IncludeItem &item,
                              KDevelop::TopDUContextPointer topContext);
 };
@@ -42,5 +51,5 @@ public:
 }
 
 
-#endif // INCLUDENAVIGATIONCONTEXT_H
+#endif /* INCLUDENAVIGATIONCONTEXT_H */
 
