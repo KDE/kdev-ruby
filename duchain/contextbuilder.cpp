@@ -153,6 +153,7 @@ void ContextBuilder::visitModuleStatement(RubyAst *node)
     openContextForClassDefinition(node);
     RubyAstVisitor::visitModuleStatement(node);
     closeContext();
+    debug() << "Closing module: " << getName(node);
 }
 
 // TODO : what about singleton classes?
@@ -192,7 +193,7 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
         last->tree = node->tree;
     RangeInRevision range = editorFindRange(node, last);
     delete last;
-
+debug() << "Method arguments' range: " << range;
     return range;
 }
 
@@ -210,11 +211,12 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getName(node));
-    DUChainWriteLocker wlock(DUChain::lock());
-debug() << "Open context for class: " << className;
-    openContext(node, range, DUContext::Class, className);
-    currentContext()->setLocalScopeIdentifier(className);
-    wlock.unlock();
+    debug() << "Open context for class: " << className;
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        openContext(node, range, DUContext::Class, className);
+        currentContext()->setLocalScopeIdentifier(className);
+    }
     addImportedContexts();
 }
 
@@ -222,11 +224,12 @@ void ContextBuilder::openContextForMethodDefinition(RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
     lastMethodName = KDevelop::QualifiedIdentifier(getName(node));
-    DUChainWriteLocker wlock(DUChain::lock());
-debug() << "Open context for method: " << lastMethodName << " range: " << editorFindRange(node, node);
-    openContext(node, range, DUContext::Function, lastMethodName);
-    currentContext()->setLocalScopeIdentifier(lastMethodName);
-    wlock.unlock();
+    debug() << "Open context for method: " << lastMethodName << " range: " << editorFindRange(node, node);
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        openContext(node, range, DUContext::Other, lastMethodName);
+        currentContext()->setLocalScopeIdentifier(lastMethodName);
+    }
     addImportedContexts();
 }
 

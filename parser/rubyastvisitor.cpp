@@ -64,6 +64,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
             visitModuleStatement(node);
             break;
         case token_function:
+            debug() << "Hrtr!";
             visitMethodStatement(node);
             break;
         case token_assign: case token_op_assign:
@@ -99,6 +100,9 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
 void RubyAstVisitor::visitMethodStatement(RubyAst *node)
 {
     Node *n = node->tree;
+    if (n == NULL)
+        return;
+
     RubyAst *child = new RubyAst(n->r, node->context);
     visitMethodArguments(child);
     child->tree = n->l;

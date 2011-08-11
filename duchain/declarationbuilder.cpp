@@ -26,6 +26,7 @@
 #include <language/duchain/types/integraltype.h>
 #include "declarations/variabledeclaration.h"
 #include <duchain/editorintegrator.h>
+#include <rubydefs.h>
 
 
 namespace Ruby
@@ -82,8 +83,12 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
     openMethodDeclaration(node);
-    visitMethodArguments(node);
-    visitBody(node);
+    RubyAstVisitor::visitMethodStatement(node);
+
+    {
+        DUChainWriteLocker wlock(DUChain::lock());
+        closeContext();
+    }
     closeType();
     closeDeclaration();
 }

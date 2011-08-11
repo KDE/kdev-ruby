@@ -75,7 +75,9 @@ public:
      */
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
     {
-        if (tree->kind == token_class || tree->kind == token_module)
+        if (tree == NULL)
+            value = "nil";
+        else if (tree->kind == token_class || tree->kind == token_module)
             value = QString(getNameNode(tree)->name);
         else if (tree->kind == token_function)
             value = QString(getNameNode(tree)->name);
