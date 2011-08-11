@@ -114,7 +114,7 @@ void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-kDebug() << "Declaring " << id << " at range: " << range;
+
     type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
     decl->setType(type);
     openType(type);
@@ -162,7 +162,7 @@ void DeclarationBuilder::closeDeclaration()
 {
     if (currentDeclaration() && lastType()) {
         DUChainWriteLocker wlock(DUChain::lock());
-//         currentDeclaration()->setType(lastType()); BUG: Crash!
+        currentDeclaration()->setType(lastType());
     }
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();

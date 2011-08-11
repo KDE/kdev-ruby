@@ -153,7 +153,6 @@ void ContextBuilder::visitModuleStatement(RubyAst *node)
     openContextForClassDefinition(node);
     RubyAstVisitor::visitModuleStatement(node);
     closeContext();
-    debug() << "Closing module: " << getName(node);
 }
 
 // TODO : what about singleton classes?
@@ -171,7 +170,6 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     openContextForMethodDefinition(node);
     RubyAstVisitor::visitMethodStatement(node);
     closeContext();
-    debug() << "Closing the context for method: " << getName(node);
 }
 
 void ContextBuilder::visitMethodArguments(RubyAst *node)
@@ -193,7 +191,7 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
         last->tree = node->tree;
     RangeInRevision range = editorFindRange(node, last);
     delete last;
-debug() << "Method arguments' range: " << range;
+
     return range;
 }
 
@@ -211,7 +209,7 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getName(node));
-    debug() << "Open context for class: " << className;
+
     {
         DUChainWriteLocker wlock(DUChain::lock());
         openContext(node, range, DUContext::Class, className);
@@ -224,7 +222,7 @@ void ContextBuilder::openContextForMethodDefinition(RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
     lastMethodName = KDevelop::QualifiedIdentifier(getName(node));
-    debug() << "Open context for method: " << lastMethodName << " range: " << editorFindRange(node, node);
+
     {
         DUChainWriteLocker wlock(DUChain::lock());
         openContext(node, range, DUContext::Other, lastMethodName);
