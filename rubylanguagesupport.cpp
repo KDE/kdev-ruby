@@ -81,7 +81,7 @@ LanguageSupport::LanguageSupport(QObject * parent,
     KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
     setXMLFile( "kdevrubysupport.rc" );
     m_self = this;
-    m_highlighting = new RubyHighlighting(this);
+    m_highlighting = new Ruby::Highlighting(this);
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );

@@ -45,7 +45,7 @@ namespace Ruby
 
 class RailsSwitchers;
 class RailsDataProvider;
-class RubyHighlighting;
+class Highlighting;
 
 class LanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
 {
@@ -81,7 +81,7 @@ private:
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
     static LanguageSupport* m_self;
-    RubyHighlighting *m_highlighting;
+    Ruby::Highlighting *m_highlighting;
 
     RailsSwitchers *m_railsSwitchers;
     RailsDataProvider *m_viewsQuickOpenDataProvider;

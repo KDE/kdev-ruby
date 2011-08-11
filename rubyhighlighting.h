@@ -29,12 +29,48 @@ namespace Ruby
 {
 
 /**
- * @class RubyHighlighting
+ * @class HighlightingInstance
+ *
+ * The HighlightingInstance to be applied in a Ruby file.
+ */
+class HighlightingInstance : public KDevelop::CodeHighlightingInstance
+{
+public:
+    /**
+     * Constructor.
+     *
+     * @param highlighting The CodeHighlighting in which an instance
+     * of this class belongs to.
+     */
+    HighlightingInstance(const KDevelop::CodeHighlighting *highlighting);
+
+    /**
+     * Return type of highlighting to be applied according
+     * to the given declaration.
+     *
+     * @param decl The involved declaration.
+     * @param context The context from where the declaration is used.
+     */
+    virtual Types typeForDeclaration(KDevelop::Declaration *decl,
+                                     KDevelop::DUContext *context) const;
+
+    /**
+     * Reimplemented from CodeHighlightingInstance to decide whether to
+     * apply auto-generated rainbow colors or not.
+     *
+     * @param dec The involved declaration.
+     */
+    virtual bool useRainbowColor(KDevelop::Declaration *dec) const;
+};
+
+
+/**
+ * @class Highlighting
  *
  * This is a subclass of KDevelop::CodeHighlighting and it
  * represents the code highlighting for the Ruby language.
  */
-class RubyHighlighting : public KDevelop::CodeHighlighting
+class Highlighting : public KDevelop::CodeHighlighting
 {
     Q_OBJECT
 
@@ -42,9 +78,16 @@ public:
     /**
      * Constructor.
      *
-     * @param parent the QObject this RubyHighlighting is parented to.
+     * @param parent the QObject this Highlighting is parented to.
      */
-    RubyHighlighting(QObject *parent);
+    Highlighting(QObject *parent);
+
+private:
+    /**
+     * Extends base class CodeHighlighting's createInstance() method to use
+     * this plugin's defined one.
+     */
+    virtual KDevelop::CodeHighlightingInstance* createInstance() const;
 };
 
 } // End of namespace Ruby

@@ -18,16 +18,57 @@
  */
 
 
-#include "rubyhighlighting.h"
+//KDevelop
+#include <language/duchain/declaration.h>
+
+//Ruby
+#include <rubyhighlighting.h>
+#include <duchain/declarations/variabledeclaration.h>
+
 
 namespace Ruby
 {
 
-Ruby::RubyHighlighting::RubyHighlighting(QObject *parent)
+//BEGIN RubyHighlightingInstance
+
+HighlightingInstance::HighlightingInstance(const KDevelop::CodeHighlighting *highlighting)
+    : CodeHighlightingInstance(highlighting)
+{
+    /* There's nothing to do here */
+}
+
+KDevelop::HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(KDevelop::Declaration *decl,
+                                                                                    KDevelop::DUContext *context) const
+{
+    if (decl && !decl->isFunctionDeclaration() && decl->abstractType()
+        && !dynamic_cast<VariableDeclaration*>(decl))
+    {
+        return EnumType;
+    } else
+        return CodeHighlightingInstance::typeForDeclaration(decl, context);
+}
+
+bool HighlightingInstance::useRainbowColor(KDevelop::Declaration *dec) const
+{
+    return dynamic_cast<VariableDeclaration *>(dec);
+}
+
+//END RubyHighlightingInstance
+
+//BEGIN RubyHighlighting
+
+Ruby::Highlighting::Highlighting(QObject *parent)
     : CodeHighlighting(parent)
 {
     /* There's nothing to do here! */
 }
+
+KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const
+{
+    return new HighlightingInstance(this);
+}
+
+//END RubyHighlighting
 
 } // End of namespace Ruby
 
