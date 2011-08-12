@@ -27,6 +27,7 @@
 #include "declarations/variabledeclaration.h"
 #include <duchain/editorintegrator.h>
 #include <rubydefs.h>
+#include <duchain/types/objecttype.h>
 
 
 namespace Ruby
@@ -95,6 +96,18 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
+//BEGIN Old implementation
+//     DUChainWriteLocker wlock(DUChain::lock());
+//     RangeInRevision range = editorFindRange(node, node);
+//     QualifiedIdentifier id = identifierForNode(new NameAst(node));
+//     Declaration *decl = openDefinition<VariableDeclaration>(id, range);
+//     IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+//
+//     decl->setKind(Declaration::Instance);
+//     decl->setType(type);
+//     eventuallyAssignInternalContext();
+//     closeDeclaration();
+//END Old Implementation
 //BEGIN New implementation
     Q_ASSERT(node);
     DUChainWriteLocker lock(DUChain::lock());
@@ -122,14 +135,15 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
     }
     //END Debug
 
-    if (existing.isEmpty()) {
-        if (!dec) //TODO: Really ?
-            dec = openDefinition<VariableDeclaration>(id, range);
+    if (remaining.isEmpty()) {
+        //TODO
+        dec = openDeclaration<VariableDeclaration>(id, range);
+        ObjectType::Ptr type(new ObjectType());
 
-        IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
-        closeDeclaration();
         dec->setKind(Declaration::Instance);
         dec->setType(type);
+        eventuallyAssignInternalContext();
+        closeDeclaration();
     } else {
         //TODO: too dumb
 //         IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));

@@ -1,6 +1,7 @@
 /* This file is part of KDevelop
  *
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2011 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -23,42 +24,51 @@
 #include <duchain/types/objecttype.h>
 
 
-using namespace KDevelop;
-
 namespace Ruby
 {
+using namespace KDevelop;
+
 REGISTER_TYPE(ObjectType);
 
-ObjectType::ObjectType() : KDevelop::StructureType(createData<ObjectType>())
+ObjectType::ObjectType() : StructureType(createData<ObjectType>())
 {
     /* There's nothing to do here */
 }
 
-ObjectType::ObjectType(const ObjectType& rhs)
-    : KDevelop::StructureType(copyData<ObjectType>(*rhs.d_func()))
+ObjectType::ObjectType(const ObjectType &rhs)
+    : StructureType(copyData<ObjectType>(*rhs.d_func()))
 {
     /* There's nothing to do here */
 }
 
 ObjectType::ObjectType(ObjectTypeData& data)
-    :KDevelop::StructureType(data)
+    : StructureType(data)
 {
     /* There's nothing to do here */
 }
 
-KDevelop::AbstractType* ObjectType::clone() const
+AbstractType * ObjectType::clone() const
 {
     return new ObjectType(*this);
-}
-
-uint ObjectType::hash() const
-{
-    return 8 * KDevelop::StructureType::hash();
 }
 
 QString ObjectType::toString() const
 {
     return "Object";
+}
+
+uint ObjectType::hash() const
+{
+    return 8 * StructureType::hash();
+}
+
+bool ObjectType::equals(const AbstractType *rhs) const
+{
+    if ( this == rhs )
+        return true;
+    if (!AbstractType::equals(rhs))
+        return false;
+    return true;
 }
 
 } // End of namespace ruby
