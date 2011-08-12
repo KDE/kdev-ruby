@@ -95,18 +95,48 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
-    /* TODO: this is waaay too simple */
-
-    DUChainWriteLocker wlock(DUChain::lock());
+//BEGIN New implementation
+    Q_ASSERT(node);
+    DUChainWriteLocker lock(DUChain::lock());
+    Declaration *dec = 0;
     RangeInRevision range = editorFindRange(node, node);
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
-    Declaration *decl = openDefinition<VariableDeclaration>(id, range);
-    IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+    QList<Declaration *> existing = currentContext()->findDeclarations(id.last(),
+                                                                    CursorInRevision::invalid(), 0,
+                                                                    DUContext::DontSearchInParent);
 
-    decl->setKind(Declaration::Instance);
-    decl->setType(type);
-    eventuallyAssignInternalContext();
-    closeDeclaration();
+    QList<Declaration *> remaining;
+    foreach (Declaration *d, existing) {
+        if (!wasEncountered(d)) {
+            openDeclarationInternal(d);
+            d->setRange(editorFindRange(node, node));
+            setEncountered(d);
+            dec = d;
+        } else
+           remaining << d;
+    }
+
+    //BEGIN Debug, Remove me when everything is fine ;)
+    foreach (const Declaration *decla, remaining) {
+        debug() << "REMAINING: " << decla->qualifiedIdentifier();
+    }
+    //END Debug
+
+    if (existing.isEmpty()) {
+        if (!dec) //TODO: Really ?
+            dec = openDefinition<VariableDeclaration>(id, range);
+
+        IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+        closeDeclaration();
+        dec->setKind(Declaration::Instance);
+        dec->setType(type);
+    } else {
+        //TODO: too dumb
+//         IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
+//         dec->setType(type);
+    }
+
+//END New implementation
 }
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
