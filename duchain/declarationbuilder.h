@@ -64,14 +64,13 @@ protected:
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
-//     virtual void visitMethodArguments(RubyAst *node);
-//     virtual void visitBody(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
-//     virtual void visitAssignmentStatement(RubyAst *node);
 
 private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
+    void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
+                        const KDevelop::QualifiedIdentifier& id, RubyAst *node);
     KDevelop::RangeInRevision getNameRange(RubyAst *node);
 
 private:

@@ -28,6 +28,7 @@
 #include <duchain/editorintegrator.h>
 #include <rubydefs.h>
 #include <duchain/types/objecttype.h>
+#include <language/duchain/types/unsuretype.h>
 
 
 namespace Ruby
@@ -96,61 +97,50 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
-//BEGIN Old implementation
-//     DUChainWriteLocker wlock(DUChain::lock());
-//     RangeInRevision range = editorFindRange(node, node);
-//     QualifiedIdentifier id = identifierForNode(new NameAst(node));
-//     Declaration *decl = openDefinition<VariableDeclaration>(id, range);
-//     IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
-//
-//     decl->setKind(Declaration::Instance);
-//     decl->setType(type);
-//     eventuallyAssignInternalContext();
-//     closeDeclaration();
-//END Old Implementation
-//BEGIN New implementation
-    Q_ASSERT(node);
-    DUChainWriteLocker lock(DUChain::lock());
-    Declaration *dec = 0;
-    RangeInRevision range = editorFindRange(node, node);
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
-    QList<Declaration *> existing = currentContext()->findDeclarations(id.last(),
-                                                                    CursorInRevision::invalid(), 0,
-                                                                    DUContext::DontSearchInParent);
+    AbstractType::Ptr type(new ObjectType());
+    declareVariable(currentContext(), type, id, node);
+}
 
-    QList<Declaration *> remaining;
-    foreach (Declaration *d, existing) {
-        if (!wasEncountered(d)) {
-            openDeclarationInternal(d);
-            d->setRange(editorFindRange(node, node));
-            setEncountered(d);
-            dec = d;
-        } else
-           remaining << d;
+void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
+                                         const QualifiedIdentifier &id, RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    const RangeInRevision range = editorFindRange(node, node);
+
+    /* Let's check if this variable is already declared */
+    QList<Declaration *> decs = ctx->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    if (!decs.isEmpty()) {
+        QList< Declaration* >::const_iterator it = decs.constEnd() - 1;
+        for (;; --it) {
+            if (dynamic_cast<VariableDeclaration *>(*it)) {
+                if (!wasEncountered(*it)) {
+                    setEncountered(*it); //TODO: can be improved
+                    (*it)->setRange(range);
+                }
+                if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
+                    // TODO: there are some validations to do here. Right now, just take this as an Unsure
+
+                    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast((*it)->abstractType());
+                    if ( !unsure ) {
+                        unsure = UnsureType::Ptr(new UnsureType());
+                        unsure->addType((*it)->indexedType());
+                    }
+                    unsure->addType(type->indexed());
+                    (*it)->setType(unsure);
+                }
+                return;
+            }
+            if (it == decs.constBegin())
+                break;
+        }
     }
 
-    //BEGIN Debug, Remove me when everything is fine ;)
-    foreach (const Declaration *decla, remaining) {
-        debug() << "REMAINING: " << decla->qualifiedIdentifier();
-    }
-    //END Debug
-
-    if (remaining.isEmpty()) {
-        //TODO
-        dec = openDeclaration<VariableDeclaration>(id, range);
-        ObjectType::Ptr type(new ObjectType());
-
-        dec->setKind(Declaration::Instance);
-        dec->setType(type);
-        eventuallyAssignInternalContext();
-        closeDeclaration();
-    } else {
-        //TODO: too dumb
-//         IntegralType::Ptr type(new IntegralType(IntegralType::TypeNull));
-//         dec->setType(type);
-    }
-
-//END New implementation
+    VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
+    dec->setKind(Declaration::Instance);
+    dec->setType(type);
+    eventuallyAssignInternalContext();
+    DeclarationBuilderBase::closeDeclaration();
 }
 
 void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
