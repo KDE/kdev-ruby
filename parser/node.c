@@ -180,7 +180,6 @@ void free_ast(struct node * n)
   free_ast(n->ensure);
   if (n->name != NULL)
     free(n->name);
-  free(n);
 }
 
 void free_errors(struct error_t * errors)

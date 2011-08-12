@@ -139,7 +139,7 @@ void ParseJob::run()
         debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
-        DUChainWriteLocker lock;
+        DUChainWriteLocker lock(DUChain::lock());
         m_duContext = DUChain::self()->chainForDocument(document());
         if (m_duContext) {
             m_duContext->parsingEnvironmentFile()->clearModificationRevisions();
