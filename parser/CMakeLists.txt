@@ -22,7 +22,7 @@ target_link_libraries( kdev4rubyparser
 
 # Installing the parser executable and its test suite
 kde4_add_executable( ruby-parser main.c )
-install(DIRECTORY tests tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+install(DIRECTORY tests DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Building the kdev4rubyparser library
 target_link_libraries(ruby-parser kdev4rubyparser)
