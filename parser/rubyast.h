@@ -22,9 +22,12 @@
 #define RUBYAST_H
 
 
-#include <parser/node.h>
 #include <language/duchain/ducontext.h>
+#include <parser/node.h>
 
+
+namespace Ruby
+{
 
 /**
  * @class RubyAst
@@ -91,6 +94,8 @@ public:
      */
     QString value;
 };
+
+} // End of namespace Ruby
 
 
 #endif // RUBYAST_H

@@ -18,7 +18,7 @@
  */
 
 
-#include "rubyparser.h"
+#include <parser/rubyparser.h>
 
 
 using namespace KDevelop;
