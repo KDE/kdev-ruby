@@ -29,6 +29,7 @@
 #include <rubydefs.h>
 #include <duchain/types/objecttype.h>
 #include <language/duchain/types/unsuretype.h>
+#include <KLocale>
 
 
 namespace Ruby
@@ -100,6 +101,22 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
     AbstractType::Ptr type(new ObjectType());
     declareVariable(currentContext(), type, id, node);
+}
+
+void DeclarationBuilder::visitReturnStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitReturnStatement(node);
+    if (node->tree->l != NULL) {
+        if (!hasCurrentType()) {
+            appendProblem(node->tree->l, "Return statement not within"
+                                         " function declaration");
+            return;
+        }
+        TypePtr<FunctionType> t = currentType<FunctionType>();
+        AbstractType::Ptr encountered(new ObjectType()); // TODO: Should be the last type
+        t->setReturnType(encountered);
+    }
+    setLastType(AbstractType::Ptr(0));
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
@@ -185,9 +202,29 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
     decl->setInternalContext(currentContext());
 }
 
+void DeclarationBuilder::appendProblem(Node *node, const QByteArray &msg)
+{
+    DUChainWriteLocker lock(DUChain::lock());
+    KDevelop::Problem *p = new KDevelop::Problem();
+
+    p->setFinalLocation(getDocumentRange(node));
+    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setDescription(i18n(msg));
+    p->setSeverity(KDevelop::ProblemData::Error);
+    topContext()->addProblem(ProblemPointer(p));
+}
+
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node)
 {
     return m_editor->findRange(getNameNode(node->tree));
+}
+
+DocumentRange DeclarationBuilder::getDocumentRange(Node *node)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange range(node->startLine - 1, node->startCol,
+                      node->endLine - 1, node->endCol - 1);
+    return DocumentRange(ind, range);
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

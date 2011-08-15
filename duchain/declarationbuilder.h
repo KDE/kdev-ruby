@@ -65,13 +65,16 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
+    virtual void visitReturnStatement(RubyAst *node);
 
 private:
     void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
                         const KDevelop::QualifiedIdentifier& id, RubyAst *node);
+    void appendProblem(Node* node, const QByteArray& msg);
     KDevelop::RangeInRevision getNameRange(RubyAst *node);
+    KDevelop::DocumentRange getDocumentRange(Node* node);
 
 private:
     EditorIntegrator *m_editor;
