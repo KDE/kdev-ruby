@@ -77,7 +77,7 @@ private:
     EditorIntegrator *m_editor;
 };
 
-}
+} // End of namespace Ruby
 
 
 #endif // DECLARATIONBUILDER_H

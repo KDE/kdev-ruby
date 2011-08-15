@@ -17,11 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "rubyastvisitor.h"
-#include <rubydefs.h>
 
+#include <parser/rubyastvisitor.h>
+#include <rubydefs.h> //TODO: Should be removed in the future
 
-/* TODO: Under construction */
 
 namespace Ruby
 {
@@ -56,6 +55,12 @@ void RubyAstVisitor::visitNode(RubyAst *node)
     if (!n || n->kind == token_invalid)
         return;
     switch (n->kind) {
+        case token_while: case token_until:
+            visitWhileStatement(node);
+            break;
+        case token_for:
+            visitForStatement(node);
+            break;
         case token_class:
         case token_singleton_class:
             visitClassStatement(node);
@@ -119,6 +124,26 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitForStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->r, node->context);
+    visitStatements(child);
+    child->tree = node->tree->cond;
+    visitNode(child);
+    child->tree = node->tree->l;
+    visitStatements(child);
+    delete child;
+}
+
+void RubyAstVisitor::visitWhileStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->cond, node->context);
+    visitNode(child);
+    child->tree = node->tree->l;
+    visitStatements(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitBody(RubyAst *node)
 {
     if (node->tree == NULL)
@@ -165,6 +190,5 @@ void RubyAstVisitor::visitStatements(RubyAst *list)
 }
 
 
-}
-
+} // End of namespace Ruby
 

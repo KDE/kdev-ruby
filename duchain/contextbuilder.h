@@ -96,7 +96,7 @@ private:
     KDevelop::QualifiedIdentifier lastMethodName;
 };
 
-}
+} // End of namespace Ruby
 
 
 #endif // CONTEXTBUILDER_H
