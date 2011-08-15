@@ -60,20 +60,24 @@ public:
 protected:
     // TODO: The methods below lack of documentation right now :(
 
-    virtual void visitModuleStatement(RubyAst *node);
-    virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
-    virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitMethodArguments(RubyAst *node);
+    virtual void visitVariable(RubyAst *node);
+    virtual void visitBody(RubyAst *node);
+    virtual void visitAssignmentStatement(RubyAst *node);
+    virtual void visitIfStatement(RubyAst *node);
+    virtual void visitCaseStatement(RubyAst *node);
+    virtual void visitBeginStatement(RubyAst *node);
+    virtual void visitUpBeginEndStatement(RubyAst *node);
     virtual void visitWhileStatement(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
-    virtual void visitBody(RubyAst *node);
-    virtual void visitVariable(RubyAst *node);
-    virtual void visitAssignmentStatement(RubyAst *node);
+    virtual void visitMethodStatement(RubyAst *node);
+    virtual void visitMethodArguments(RubyAst *node);
+    virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
+    virtual void visitModuleStatement(RubyAst *node);
 
 private:
     /**
      * @internal Given a node, it calls the appropiate method in order to
-     * visit this node.
+     * successfully visit this node.
      *
      * @param node The given node.
      */
@@ -85,6 +89,22 @@ private:
      * @param list A node that is the first item of a list of nodes.
      */
     void visitStatements(RubyAst *list);
+
+    /**
+     * @internal Helper method used for the visitIfStatement method. Its
+     * goal is to visit a tail of an if statement.
+     *
+     * @param tail The tail of an if statement.
+     */
+    void visitIfTail(RubyAst *tail);
+
+    /**
+     * @internal Helper method that goes through a list of when statements.
+     * Obviously, this method is used by the visitCaseStatement method.
+     *
+     * @param list A node that is the first item of a list of when statements.
+     */
+    void visitWhenStatements(RubyAst *list);
 };
 
 } // End of namespace Ruby
