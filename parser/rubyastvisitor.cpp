@@ -72,6 +72,36 @@ void RubyAstVisitor::visitBody(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitReturnStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    delete child;
+}
+
+void RubyAstVisitor::visitUndefStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->r, node->context);
+    visitStatements(child);
+    delete child;
+}
+
+void RubyAstVisitor::visitAliasStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    child->tree = node->tree->r;
+    visitNode(child);
+    delete child;
+}
+
+void RubyAstVisitor::visitYieldStatement(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    delete child;    
+}
+
 void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
 {
     RubyAst *child = new RubyAst(node->tree->l, node->context);
@@ -190,40 +220,24 @@ void RubyAstVisitor::visitNode(RubyAst *node)
     if (!n || n->kind == token_invalid)
         return;
     switch (n->kind) {
-        case token_if: case token_unless:
-            visitIfStatement(node);
-            break;
-        case token_exception:
-            visitBeginStatement(node);
-            break;
-        case token_up_begin: case token_up_end:
-            visitUpBeginEndStatement(node);
-            break;
-        case token_case:
-            visitCaseStatement(node);
-            break;
-        case token_while: case token_until:
-            visitWhileStatement(node);
-            break;
-        case token_for:
-            visitForStatement(node);
-            break;
+        case token_return: visitReturnStatement(node); break;
+        case token_yield: visitYieldStatement(node); break;
+        case token_alias: visitAliasStatement(node); break;
+        case token_undef: visitUndefStatement(node); break;
+        case token_if: case token_unless: visitIfStatement(node); break;
+        case token_exception: visitBeginStatement(node); break;
+        case token_up_begin:
+        case token_up_end: visitUpBeginEndStatement(node); break;
+        case token_case: visitCaseStatement(node); break;
+        case token_while: case token_until: visitWhileStatement(node); break;
+        case token_for: visitForStatement(node); break;
         case token_class:
-        case token_singleton_class:
-            visitClassStatement(node);
-            break;
-        case token_module:
-            visitModuleStatement(node);
-            break;
-        case token_function:
-            visitMethodStatement(node);
-            break;
-        case token_assign: case token_op_assign:
-            visitAssignmentStatement(node);
-            break;
-        case token_object:
-            visitVariable(node);
-            break;
+        case token_singleton_class: visitClassStatement(node); break;
+        case token_module: visitModuleStatement(node); break;
+        case token_function: visitMethodStatement(node); break;
+        case token_assign:
+        case token_op_assign: visitAssignmentStatement(node); break;
+        case token_object: visitVariable(node); break;
         case token_numeric: case token_symbol:
         case token_break: case token_next: case token_redo: case token_retry:
             return;

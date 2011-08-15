@@ -62,6 +62,10 @@ protected:
 
     virtual void visitVariable(RubyAst *node);
     virtual void visitBody(RubyAst *node);
+    virtual void visitReturnStatement(RubyAst *node);
+    virtual void visitUndefStatement(RubyAst *node);
+    virtual void visitAliasStatement(RubyAst *node);
+    virtual void visitYieldStatement(RubyAst *node);
     virtual void visitAssignmentStatement(RubyAst *node);
     virtual void visitIfStatement(RubyAst *node);
     virtual void visitCaseStatement(RubyAst *node);
