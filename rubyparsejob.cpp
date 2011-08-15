@@ -69,23 +69,24 @@ void ParseJob::run()
         return abortJob();
 
     KDevelop::UrlParseLock urlLock(document());
-    {
+    if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled)) {
         DUChainReadLocker lock(DUChain::lock());
-        bool needsUpdate = true;
         static const IndexedString langString("Ruby");                                                                      
         foreach(const ParsingEnvironmentFilePointer &file, 
                 DUChain::self()->allEnvironmentFiles(document())) {
             if (file->language() != langString)
                 continue;
-            if (file->needsUpdate()) {
-                needsUpdate = true;
-                break;
-            } else
-                needsUpdate = false;
-        }
-        if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled) && !needsUpdate) {
-            debug() << "Already up to date" << document().str();
-            return;
+            if (!file->needsUpdate() && file->featuresSatisfied(minimumFeatures())) {
+                debug() << "Already up to date" << document().str();
+                setDuChain(file->topContext());
+                if (m_parent && m_parent->codeHighlighting() &&
+                    ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
+                    lock.unlock();
+                    ruby()->codeHighlighting()->highlightDUChain(duChain());
+                }
+                return;
+            }
+            break;
         }
     }
 
