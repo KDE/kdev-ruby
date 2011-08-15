@@ -113,7 +113,9 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     if (!decs.isEmpty()) {
         QList< Declaration* >::const_iterator it = decs.constEnd() - 1;
         for (;; --it) {
+           debug() << "Here";
             if (dynamic_cast<VariableDeclaration *>(*it)) {
+                debug() << "Variable Declaration";
                 if (!wasEncountered(*it)) {
                     setEncountered(*it); //TODO: can be improved
                     (*it)->setRange(range);
@@ -128,6 +130,7 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                     }
                     unsure->addType(type->indexed());
                     (*it)->setType(unsure);
+                    debug() << "Unsure: " << (*it)->qualifiedIdentifier();
                 }
                 return;
             }
@@ -151,7 +154,7 @@ void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
 
-    type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    type->setReturnType(AbstractType::Ptr(new ObjectType));
     decl->setType(type);
     openType(type);
     openContextForMethodDefinition(node);
@@ -171,7 +174,7 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
         decl->setKind(KDevelop::Declaration::Type);
         decl->setClassType(ClassDeclarationData::Class);
     } else {
-        decl->setKind(KDevelop::Declaration::Namespace);
+        decl->setKind(KDevelop::Declaration::Type);
         decl->setClassType(ClassDeclarationData::Interface);
     }
     decl->clearBaseClasses();

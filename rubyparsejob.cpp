@@ -113,8 +113,6 @@ void ParseJob::run()
         m_duContext = builder.build(document(), ast, m_duContext);
         bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
-        if (abortRequested())
-            return abortJob();
 
         if (abortRequested())
             return abortJob();

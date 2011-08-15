@@ -49,11 +49,15 @@ void DeclarationNavigationContext::htmlClass()
     ClassDeclaration *classDecl = dynamic_cast<ClassDeclaration *>(klass->declaration(m_topContext.data()));
 
     if (classDecl) {
-        //TODO: Actually this is not working at all :(
+        /* Write class type */
         if (classDecl->classType() == ClassDeclarationData::Interface)
             modifyHtml() += "module ";
         else
             modifyHtml() += "class ";
+
+        /* Write identifier */
+        eventuallyMakeTypeLinks(m_declaration->abstractType());
+        modifyHtml() += " ";
     }
 }
 
