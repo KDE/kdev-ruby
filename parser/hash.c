@@ -1,5 +1,5 @@
 /* C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k'1,3,$' ../tools/gperf.txt  */
+/* Command-line: gperf -C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k'1,3,$' gperf.txt  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
       && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
@@ -28,13 +28,13 @@
 error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
-#line 1 "../tools/gperf.txt"
+#line 1 "gperf.txt"
 
 struct kwtable {const char *name; int id;};
 const struct kwtable *rb_reserved_word(const char *, unsigned int);
 static const struct kwtable *reserved_word(const char *, unsigned int);
 #define rb_reserved_word(str, len) reserved_word(str, len)
-#line 8 "../tools/gperf.txt"
+#line 8 "gperf.txt"
 struct kwtable;
 
 #define TOTAL_KEYWORDS 41
@@ -114,88 +114,88 @@ rb_reserved_word (str, len)
   static const struct kwtable wordlist[] =
     {
       {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1},
-#line 18 "../tools/gperf.txt"
+#line 18 "gperf.txt"
       {"break", BREAK},
-#line 24 "../tools/gperf.txt"
+#line 24 "gperf.txt"
       {"else", ELSE},
-#line 34 "../tools/gperf.txt"
+#line 34 "gperf.txt"
       {"nil", NIL},
-#line 27 "../tools/gperf.txt"
+#line 27 "gperf.txt"
       {"ensure", ENSURE},
-#line 26 "../tools/gperf.txt"
+#line 26 "gperf.txt"
       {"end", END},
-#line 43 "../tools/gperf.txt"
+#line 43 "gperf.txt"
       {"then", THEN},
-#line 35 "../tools/gperf.txt"
+#line 35 "gperf.txt"
       {"not", KWNOT},
-#line 28 "../tools/gperf.txt"
+#line 28 "gperf.txt"
       {"false", tFALSE},
-#line 41 "../tools/gperf.txt"
+#line 41 "gperf.txt"
       {"self", SELF},
-#line 25 "../tools/gperf.txt"
+#line 25 "gperf.txt"
       {"elsif", ELSIF},
-#line 38 "../tools/gperf.txt"
+#line 38 "gperf.txt"
       {"rescue", RESCUE},
-#line 44 "../tools/gperf.txt"
+#line 44 "gperf.txt"
       {"true", tTRUE},
-#line 47 "../tools/gperf.txt"
+#line 47 "gperf.txt"
       {"until", UNTIL},
-#line 46 "../tools/gperf.txt"
+#line 46 "gperf.txt"
       {"unless", UNLESS},
-#line 40 "../tools/gperf.txt"
+#line 40 "gperf.txt"
       {"return", RETURN},
-#line 21 "../tools/gperf.txt"
+#line 21 "gperf.txt"
       {"def", DEF},
-#line 16 "../tools/gperf.txt"
+#line 16 "gperf.txt"
       {"and", KWAND},
-#line 23 "../tools/gperf.txt"
+#line 23 "gperf.txt"
       {"do", DO},
-#line 50 "../tools/gperf.txt"
+#line 50 "gperf.txt"
       {"yield", YIELD},
-#line 29 "../tools/gperf.txt"
+#line 29 "gperf.txt"
       {"for", FOR},
-#line 45 "../tools/gperf.txt"
+#line 45 "gperf.txt"
       {"undef", UNDEF},
-#line 36 "../tools/gperf.txt"
+#line 36 "gperf.txt"
       {"or", KWOR},
-#line 31 "../tools/gperf.txt"
+#line 31 "gperf.txt"
       {"in", IN},
-#line 48 "../tools/gperf.txt"
+#line 48 "gperf.txt"
       {"when", WHEN},
-#line 39 "../tools/gperf.txt"
+#line 39 "gperf.txt"
       {"retry", RETRY},
-#line 30 "../tools/gperf.txt"
+#line 30 "gperf.txt"
       {"if", IF},
-#line 19 "../tools/gperf.txt"
+#line 19 "gperf.txt"
       {"case", CASE},
-#line 37 "../tools/gperf.txt"
+#line 37 "gperf.txt"
       {"redo", REDO},
-#line 33 "../tools/gperf.txt"
+#line 33 "gperf.txt"
       {"next", NEXT},
-#line 42 "../tools/gperf.txt"
+#line 42 "gperf.txt"
       {"super", SUPER},
-#line 32 "../tools/gperf.txt"
+#line 32 "gperf.txt"
       {"module", MODULE},
-#line 17 "../tools/gperf.txt"
+#line 17 "gperf.txt"
       {"begin", BEGIN},
-#line 11 "../tools/gperf.txt"
+#line 11 "gperf.txt"
       {"__LINE__", LINE},
-#line 12 "../tools/gperf.txt"
+#line 12 "gperf.txt"
       {"__FILE__", tFILE},
-#line 10 "../tools/gperf.txt"
+#line 10 "gperf.txt"
       {"__ENCODING__", ENCODING},
-#line 14 "../tools/gperf.txt"
+#line 14 "gperf.txt"
       {"END", upEND},
-#line 15 "../tools/gperf.txt"
+#line 15 "gperf.txt"
       {"alias", ALIAS},
-#line 13 "../tools/gperf.txt"
+#line 13 "gperf.txt"
       {"BEGIN", upBEGIN},
-#line 22 "../tools/gperf.txt"
+#line 22 "gperf.txt"
       {"defined?", DEFINED},
-#line 20 "../tools/gperf.txt"
+#line 20 "gperf.txt"
       {"class", CLASS},
       {"", -1}, {"", -1},
-#line 49 "../tools/gperf.txt"
+#line 49 "gperf.txt"
       {"while", WHILE}
     };
 
@@ -213,6 +213,6 @@ rb_reserved_word (str, len)
     }
   return 0;
 }
-#line 51 "../tools/gperf.txt"
+#line 51 "gperf.txt"
 
  
