@@ -23,15 +23,31 @@
 #define RUBYDUCHAINHELPERS_H_
 
 
-#include "duchainexport.h"
-#include <language/duchain/indexedstring.h>
+#include <duchain/duchainexport.h>
 #include <parser/rubyast.h>
+
 
 namespace Ruby
 {
-    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString& internalBuiltinsFile();
+
+    /**
+     * Get the url of the Ruby builtins file.
+     *
+     * @return A KDevelop::IndexedString that contains the url of the Ruby
+     * builtins file.
+     */
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString & internalBuiltinsFile();
+
+    /**
+     * Given a RubyAst, return its name.
+     *
+     * @param ast The given RubyAst.
+     * @return A QString containing the name of the given RubyAst.
+     */
     KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst *ast);
-}
+
+} // End of namespace Ruby
 
 
 #endif /* RUBYDUCHAINHELPERS_H_ */
+

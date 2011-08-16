@@ -20,19 +20,24 @@
 
 
 #include <KStandardDirs>
-#include "helpers.h"
-#include <parser/rubyast.h>
+#include <duchain/helpers.h>
 
 
-const KDevelop::IndexedString& Ruby::internalBuiltinsFile()
+namespace Ruby
 {
-    static KDevelop::IndexedString doc_url(KStandardDirs::locate("data", 
-                                          "kdevrubysupport/kernel.rb"));
+using namespace KDevelop;
+
+const IndexedString & internalBuiltinsFile()
+{
+    static IndexedString doc_url(KStandardDirs::locate("data",
+                                                "kdevrubysupport/kernel.rb"));
     return doc_url;
 }
 
-const QString Ruby::getName(RubyAst *ast)
+const QString getName(RubyAst *ast)
 {
     return QString(getNameNode(ast->tree)->name);
 }
+
+} // End of namespace Ruby
 
