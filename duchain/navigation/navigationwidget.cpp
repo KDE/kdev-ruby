@@ -18,9 +18,9 @@
  */
 
 
-#include "navigationwidget.h"
-#include "declarationnavigationcontext.h"
-#include "includenavigationcontext.h"
+#include <duchain/navigation/navigationwidget.h>
+#include <duchain/navigation/declarationnavigationcontext.h>
+#include <duchain/navigation/includenavigationcontext.h>
 
 
 namespace Ruby

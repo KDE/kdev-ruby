@@ -22,43 +22,77 @@
 #define NAVIGATIONWIDGET_H
 
 
-#include <duchain/duchainexport.h>
 #include <language/duchain/navigation/abstractnavigationwidget.h>
+#include <duchain/duchainexport.h>
+
 
 /*
- * WARNING: this file is under development
+ * TODO: I find interesting the way that the PHP plugin
+ * handles "magic" constants :D
  */
+
 
 namespace KDevelop { struct IncludeItem; }
 
 namespace Ruby
 {
 
+/**
+ * @class NavigationWidget
+ *
+ * The NavigationWidget for the Ruby plugin.
+ */
 class KDEVRUBYDUCHAIN_EXPORT NavigationWidget : public KDevelop::AbstractNavigationWidget
 {
     Q_OBJECT
 
 public:
+    /**
+     * Constructor.
+     *
+     * @param decl A pointer to the involved declaration.
+     * @param topContext The involved Top Context.
+     * @param htmlPrefix Html-formatted text that should be prepended
+     * before any information shown by this widget
+     * @param htmlSuffix Html-formatted text that should be appended to any
+     * information shown by this widget
+     */
     NavigationWidget(KDevelop::DeclarationPointer decl,
                      KDevelop::TopDUContextPointer topContext,
                      const QString &htmlPrefix = QString(),
                      const QString &htmlSuffix = QString());
 
+    /**
+     * Constructor.
+     *
+     * @param item The involved Include Item.
+     * @param topContext The involved Top Context.
+     * @param htmlPrefix Html-formatted text that should be prepended
+     * before any information shown by this widget
+     * @param htmlSuffix Html-formatted text that should be appended to any
+     * information shown by this widget
+     */
     NavigationWidget(const KDevelop::IncludeItem &item,
                      KDevelop::TopDUContextPointer topContext,
                      const QString &htmlPrefix = QString(),
                      const QString &htmlSuffix = QString());
 
-    /*
-     * TODO: I find interesting the way that the PHP plugin
-     * handles "magic" constants :D
+    /**
+     * Creates a compact html description given a Declaration.
+     *
+     * @param decl The given Declaration.
      */
-
     static QString shortDescription(KDevelop::Declaration *decl);
+
+    /**
+     * Creates a compact html description given an Include item.
+     *
+     * @param decl The given Include item.
+     */
     static QString shortDescription(KDevelop::IncludeItem &item);
 };
 
-}
+} // End of namespace Ruby
 
 
 #endif // NAVIGATIONWIDGET_H
