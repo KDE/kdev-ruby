@@ -18,14 +18,21 @@
  */
 
 
-#include "usebuilder.h"
+#include <duchain/usebuilder.h>
+
 
 namespace Ruby
 {
 
 UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 {
-    setEditor(editor);
+    m_editor = editor;
+}
+
+void UseBuilder::visitVariable(RubyAst* node)
+{
+    // TODO
+    Q_UNUSED(node)
 }
 
 } // End of namespace Ruby

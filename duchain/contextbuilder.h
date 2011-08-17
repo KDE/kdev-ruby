@@ -49,7 +49,7 @@ public:
     ContextBuilder();
     virtual ~ContextBuilder();
 
-    void setEditor(EditorIntegrator *editor);
+    void setEditor(EditorIntegrator *editor); //TODO: remove?
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
     

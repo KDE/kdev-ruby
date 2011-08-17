@@ -21,29 +21,43 @@
 #ifndef USEBUILDER_H
 #define USEBUILDER_H
 
-/*
- * TODO: This file is still under construction.
- */
 
-
-#include "contextbuilder.h"
 #include <language/duchain/builders/abstractusebuilder.h>
-#include "duchainexport.h"
-#include "editorintegrator.h"
+#include <duchain/contextbuilder.h>
+#include <duchain/duchainexport.h>
 
 
 namespace Ruby
 {
 typedef KDevelop::AbstractUseBuilder<RubyAst, NameAst, ContextBuilder> UseBuilderBase;
 
+/**
+ * @class UseBuilder
+ *
+ * A class which iterates the AST to extract uses of definitions.
+ */
 class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param editor The EditorIntegrator for this class.
+     */
     UseBuilder(EditorIntegrator *editor);
 
+protected:
+    /**
+     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
+     * of variables.
+     *
+     * @param node The given variable.
+     */
+    virtual void visitVariable(RubyAst *node);
 };
 
 } // End of namespace Ruby
 
 
 #endif // USEBUILDER_H
+
