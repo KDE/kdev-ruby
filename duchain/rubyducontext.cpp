@@ -18,21 +18,20 @@
  */
 
 
-#include "rubyducontext.h"
-
+// KDevelop
 #include <language/duchain/topducontextdata.h>
 #include <language/duchain/duchainregister.h>
-#include "navigation/navigationwidget.h"
+
+// Ruby
+#include <duchain/rubyducontext.h>
+#include <duchain/navigation/navigationwidget.h>
 
 
 namespace Ruby
 {
 using namespace KDevelop;
 
-typedef RubyDUContext<TopDUContext> RubyTopDUContext;
 REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyTopDUContext, TopDUContextData);
-
-typedef RubyDUContext<DUContext> RubyNormalDUContext;
 REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyNormalDUContext, DUContextData);
 
 template<>

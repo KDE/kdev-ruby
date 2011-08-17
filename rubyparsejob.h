@@ -89,5 +89,5 @@ private:
 } // End of namespace ruby
 
 
-#endif
+#endif /* RUBY_PARSEJOB_H */
 

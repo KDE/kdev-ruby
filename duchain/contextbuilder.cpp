@@ -77,7 +77,7 @@ void ContextBuilder::setEditor(EditorIntegrator *editor)
 
 DUContext * ContextBuilder::newContext(const RangeInRevision &range)
 {
-    return new RubyDUContext<DUContext>(range, currentContext());
+    return new RubyNormalDUContext(range, currentContext());
 }
 
 KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision &range,
@@ -88,7 +88,7 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
         file = new KDevelop::ParsingEnvironmentFile(doc);
         file->setLanguage(KDevelop::IndexedString("Ruby"));
     }
-    TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
+    TopDUContext *top = new RubyTopDUContext(doc, range, file);
     top->setType(DUContext::Global);
     m_topContext = ReferencedTopDUContext(top);
     return top;
