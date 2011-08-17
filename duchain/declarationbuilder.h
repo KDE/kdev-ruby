@@ -60,7 +60,7 @@ protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();
     virtual void updateCurrentType();
-
+    virtual void startVisiting(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
@@ -78,6 +78,7 @@ private:
 
 private:
     EditorIntegrator *m_editor;
+    bool m_preBuilding;
 };
 
 } // End of namespace Ruby

@@ -82,7 +82,7 @@ protected:
     void openContextForMethodDefinition(RubyAst *node);
 
     bool m_reportErrors;
-    bool m_hasUnresolvedIdentifiers;
+    bool m_hasUnresolvedImports;
     EditorIntegrator *m_editor;
     KDevelop::ReferencedTopDUContext m_topContext;
     KDevelop::TopDUContextPointer m_builtinsContext;

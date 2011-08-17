@@ -69,7 +69,7 @@ void ParseJob::run()
         return abortJob();
 
     KDevelop::UrlParseLock urlLock(document());
-    if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Resheduled)) {
+    if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Rescheduled)) {
         DUChainReadLocker lock(DUChain::lock());
         static const IndexedString langString("Ruby");                                                                      
         foreach(const ParsingEnvironmentFilePointer &file, 
@@ -111,7 +111,7 @@ void ParseJob::run()
         EditorIntegrator editor;
         editor.setUrl(IndexedString(m_url));
         DeclarationBuilder builder(&editor);
-        m_duContext = builder.build(document(), ast, m_duContext);
+        m_duContext = builder.build(editor.url(), ast, m_duContext);
         bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
 
@@ -121,6 +121,9 @@ void ParseJob::run()
         if (needsReparse) {
             //TODO
         }
+
+        if (abortRequested())
+            return abortJob();
 
         {
             DUChainWriteLocker lock(DUChain::lock());
@@ -150,14 +153,13 @@ void ParseJob::run()
             m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
             DUChain::self()->addDocumentChain(m_duContext);
         }
+
+        foreach (ProblemPointer p, m_parser->m_problems) {
+            debug() << "Added problem to context";
+            m_duContext->addProblem(p);
+        }
         setDuChain(m_duContext);
     }
-    DUChainWriteLocker lock(DUChain::lock());
-    foreach (ProblemPointer p, m_parser->m_problems) {
-        debug() << "Added problem to context";
-        m_duContext->addProblem(p);
-    }
-    setDuChain(m_duContext);
 }
 
 } // End of namespace ruby

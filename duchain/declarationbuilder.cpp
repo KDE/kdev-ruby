@@ -57,6 +57,12 @@ ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyA
     return DeclarationBuilderBase::build(url, node, updateContext);
 }
 
+void DeclarationBuilder::startVisiting(RubyAst* node)
+{
+    m_hasUnresolvedImports = false;
+    DeclarationBuilderBase::startVisiting(node);
+}
+
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
     openClassDeclaration(node, true);

@@ -37,7 +37,7 @@ namespace Ruby
 {
 
 ContextBuilder::ContextBuilder() 
-    : m_reportErrors(true), m_hasUnresolvedIdentifiers(false)
+    : m_reportErrors(true), m_hasUnresolvedImports(false)
 {
     /* There's nothing to do here! */
 }
@@ -67,7 +67,7 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
 
 bool ContextBuilder::hasUnresolvedImports() const
 {
-    return m_hasUnresolvedIdentifiers;
+    return m_hasUnresolvedImports;
 }
 
 void ContextBuilder::setEditor(EditorIntegrator *editor)
@@ -104,7 +104,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             internal = DUChain::self()->chainForDocument(doc_url);
         }
         if (!internal) {
-            m_hasUnresolvedIdentifiers = true;
+            m_hasUnresolvedImports = true;
             DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
         } else {
             debug() << "Adding kernel context";

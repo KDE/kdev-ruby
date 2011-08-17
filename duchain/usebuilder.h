@@ -41,11 +41,6 @@ class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
 public:
     UseBuilder(EditorIntegrator *editor);
 
-protected:
-    //TODO visitors :D
-
-private:
-//     EditorIntegrator *m_editor; TODO: why?
 };
 
 } // End of namespace Ruby

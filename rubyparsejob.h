@@ -45,7 +45,7 @@ class ParseJob : public KDevelop::ParseJob
     Q_OBJECT
 
 public:
-    enum { Resheduled = KDevelop::TopDUContext::LastFeature };
+    enum { Rescheduled = KDevelop::TopDUContext::LastFeature };
 
     /**
      * Constructor.
