@@ -26,8 +26,6 @@
 #include <language/backgroundparser/parsejob.h>
 
 
-class KUrl;
-
 namespace Ruby
 {
 
@@ -51,9 +49,8 @@ public:
      * Constructor.
      *
      * @param url the url of the file to parse.
-     * @param parent the RubyLanguageSupport this ParseJob is parented to.
      */
-    ParseJob(const KUrl &url, LanguageSupport *parent);
+    ParseJob(const KUrl &url);
 
     /**
      * Destructor.
@@ -73,9 +70,19 @@ private:
     LanguageSupport * ruby() const;
 
 private:
-    const LanguageSupport *m_parent;
+    /**
+     * Url of the current document.
+     */
     KUrl m_url;
+
+    /**
+     * Ruby parser.
+     */
     RubyParser *m_parser;
+
+    /**
+     * A reference to the current TopDUContext.
+     */
     KDevelop::ReferencedTopDUContext m_duContext;
 };
 

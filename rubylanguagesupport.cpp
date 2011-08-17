@@ -156,7 +156,7 @@ QString LanguageSupport::name() const
 
 KDevelop::ParseJob * LanguageSupport::createParseJob(const KUrl & url)
 {
-    return new ParseJob(url, this);
+    return new ParseJob(url);
 }
 
 KDevelop::ILanguage * LanguageSupport::language()

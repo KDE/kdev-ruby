@@ -44,18 +44,17 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ParseJob::ParseJob(const KUrl & url, LanguageSupport * parent)
+ParseJob::ParseJob(const KUrl &url)
     : KDevelop::ParseJob(url)
     , m_parser (new RubyParser)
     , m_duContext (NULL)
 {
-    m_parent = parent;
     m_url = url;
 }
 
 ParseJob::~ParseJob()
 {
-    /* There's nothing to do here */
+    delete m_parser;
 }
 
 LanguageSupport * ParseJob::ruby() const
@@ -79,7 +78,7 @@ void ParseJob::run()
             if (!file->needsUpdate() && file->featuresSatisfied(minimumFeatures())) {
                 debug() << "Already up to date" << document().str();
                 setDuChain(file->topContext());
-                if (m_parent && m_parent->codeHighlighting() &&
+                if (ruby() && ruby()->codeHighlighting() &&
                     ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
                     lock.unlock();
                     ruby()->codeHighlighting()->highlightDUChain(duChain());
@@ -134,7 +133,7 @@ void ParseJob::run()
         }
         m_parser->freeAst(ast);
 
-        if (m_parent && m_parent->codeHighlighting() &&
+        if (ruby() && ruby()->codeHighlighting() &&
             ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
             ruby()->codeHighlighting()->highlightDUChain(m_duContext);
         }
