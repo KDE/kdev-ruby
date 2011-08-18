@@ -37,6 +37,7 @@
 #include <duchain/declarationbuilder.h>
 #include <duchain/usebuilder.h>
 #include <duchain/editorintegrator.h>
+#include <duchain/helpers.h>
 
 
 using namespace KDevelop;
@@ -108,11 +109,17 @@ void ParseJob::run()
             return abortJob();
 
         EditorIntegrator editor;
-        editor.setUrl(IndexedString(m_url));
+        editor.setUrl(m_parser->currentDocument());
         DeclarationBuilder builder(&editor);
         m_duContext = builder.build(editor.url(), ast, m_duContext);
         bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
+
+        if (abortRequested())
+            return abortJob();
+
+        UseBuilder useBuilder(&editor);
+        useBuilder.buildUses(ast);
 
         if (abortRequested())
             return abortJob();

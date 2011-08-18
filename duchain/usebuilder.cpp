@@ -19,6 +19,7 @@
 
 
 #include <duchain/usebuilder.h>
+#include <rubydefs.h> // TODO: remove this ;)
 
 
 namespace Ruby
@@ -32,6 +33,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 void UseBuilder::visitVariable(RubyAst* node)
 {
     // TODO
+    debug() << "UseBuilder: Visiting variable";
     Q_UNUSED(node)
 }
 

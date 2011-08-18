@@ -78,7 +78,6 @@ private:
 
 private:
     EditorIntegrator *m_editor;
-    bool m_preBuilding;
 };
 
 } // End of namespace Ruby

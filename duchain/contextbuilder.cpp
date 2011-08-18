@@ -97,6 +97,7 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
 void ContextBuilder::startVisiting(RubyAst *node)
 {
     IndexedString doc_url = internalBuiltinsFile();
+
     if (m_editor->url() != doc_url) {
         TopDUContext *internal;
         {
