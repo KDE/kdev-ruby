@@ -121,7 +121,7 @@ public:
     virtual bool equals(const AbstractType *rhs) const;
 
     
-    enum { Identity = 60 /** The id of this Type. */ };
+    enum { Identity = 40 /** The id of this Type. */ };
 
     /// A TypePtr of the ObjectType class.
     typedef TypePtr<ObjectType> Ptr;

@@ -34,7 +34,7 @@ namespace KDevelop
 namespace Ruby
 {
 
-template<class BaseContext, int IdentityT>
+template<class BaseContext>
 class RubyDUContext : public BaseContext
 {	
 public:
@@ -85,11 +85,11 @@ public:
                                             const QString &htmlSufix = QString()) const;
 
 public:
-    enum { Identity = IdentityT };
+    enum { Identity = BaseContext::Identity + 41 };
 };
 
-typedef RubyDUContext<KDevelop::TopDUContext, 100> RubyTopDUContext;
-typedef RubyDUContext<KDevelop::DUContext, 101> RubyNormalDUContext;
+typedef RubyDUContext<KDevelop::TopDUContext> RubyTopDUContext;
+typedef RubyDUContext<KDevelop::DUContext> RubyNormalDUContext;
 
 }
 
