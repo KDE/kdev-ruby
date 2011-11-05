@@ -20,6 +20,9 @@
 
 #include <duchain/usebuilder.h>
 #include <rubydefs.h> // TODO: remove this ;)
+#include "helpers.h"
+#include "editorintegrator.h"
+#include <KLocale>
 
 
 namespace Ruby
@@ -30,11 +33,33 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
 }
 
+// TODO
 void UseBuilder::visitVariable(RubyAst* node)
 {
-    // TODO
-    debug() << "UseBuilder: Visiting variable";
-    Q_UNUSED(node)
+    NameAst *name = new NameAst(node);
+    const RangeInRevision &range = editorFindRange(node, node);
+    const QualifiedIdentifier &id = identifierForNode(name);
+    const KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+
+    if (!decl) {
+        KDevelop::Problem *p = new KDevelop::Problem();
+        p->setFinalLocation(DocumentRange(m_editor->url(), range.castToSimpleRange()));
+        p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+        p->setSeverity(KDevelop::ProblemData::Hint);
+        p->setDescription(i18n("Undefined variable: %1", name->value));
+        {
+            DUChainWriteLocker wlock(DUChain::lock());
+            ProblemPointer ptr(p);
+            topContext()->addProblem(ptr);
+        }
+    } else if (decl->range() == range) {
+        delete name;
+        return;
+    }
+    /// TODO: clean this
+    debug() << "UseBuilder: Visiting variable: " << node->tree->name;
+//     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
+    delete name;
 }
 
 } // End of namespace Ruby

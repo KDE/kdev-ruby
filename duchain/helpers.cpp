@@ -21,6 +21,10 @@
 
 #include <KStandardDirs>
 #include <duchain/helpers.h>
+#include <language/duchain/identifier.h>
+#include <language/duchain/duchain.h>
+#include <language/duchain/duchainlock.h>
+// #include <
 
 
 namespace Ruby
@@ -37,6 +41,28 @@ const IndexedString & internalBuiltinsFile()
 const QString getName(RubyAst *ast)
 {
     return QString(getNameNode(ast->tree)->name);
+}
+
+const Declaration *declarationForNode(const QualifiedIdentifier &id,
+                                      const RangeInRevision &range,
+                                      DUContextPointer context)
+{
+    QList<Declaration *> decls;
+
+    {
+        DUChainReadLocker lock(DUChain::lock());
+        if (context.data() == context->topContext())
+            decls = context->topContext()->findDeclarations(id, range.end);
+        else
+            decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
+        if (!decls.length()) {
+            decls = context->findLocalDeclarations(id.last(), range.end);
+            if (!decls.length())
+                decls = context->findDeclarations(id.last(), range.end);
+        }
+    }
+
+    return (decls.length()) ? decls.last() : NULL;
 }
 
 } // End of namespace Ruby
