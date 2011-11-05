@@ -59,13 +59,18 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node)
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-void EditorIntegrator::setUrl(const KDevelop::IndexedString &url)
-{
-    m_url = url;
-}
-
 KDevelop::IndexedString EditorIntegrator::url() const
 {
-    return m_url;
+    return m_session->currentDocument();
+}
+
+void EditorIntegrator::setParseSession(RubyParser *session)
+{
+    m_session = session;
+}
+
+RubyParser* EditorIntegrator::parseSession()
+{
+    return m_session;
 }
 

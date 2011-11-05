@@ -28,6 +28,7 @@
 
 
 using namespace KDevelop;
+typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 
 namespace Ruby
 {
@@ -83,6 +84,12 @@ public:
      * @param ast the RubyAst to free.
      */
     void freeAst(RubyAst *ast);
+
+    void mapAstUse(RubyAst *node, const SimpleUse &use)
+    {
+        Q_UNUSED(node);
+        Q_UNUSED(use);
+    }
 
 private:
     /**

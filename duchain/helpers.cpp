@@ -43,9 +43,9 @@ const QString getName(RubyAst *ast)
     return QString(getNameNode(ast->tree)->name);
 }
 
-const Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                      const RangeInRevision &range,
-                                      DUContextPointer context)
+Declaration *declarationForNode(const QualifiedIdentifier &id,
+                                const RangeInRevision &range,
+                                DUContextPointer context)
 {
     QList<Declaration *> decls;
 

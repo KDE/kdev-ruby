@@ -52,9 +52,9 @@ namespace Ruby
     /**
      * TODO: Under construction
      */
-    KDEVRUBYDUCHAIN_EXPORT const Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                                                 const RangeInRevision &range,
-                                                                 DUContextPointer context);
+    KDEVRUBYDUCHAIN_EXPORT Declaration *declarationForNode(const QualifiedIdentifier &id,
+                                                           const RangeInRevision &range,
+                                                           DUContextPointer context);
 
 } // End of namespace Ruby
 

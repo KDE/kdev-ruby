@@ -33,13 +33,13 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
 }
 
-// TODO
+// TODO: under consttruction
 void UseBuilder::visitVariable(RubyAst* node)
 {
     NameAst *name = new NameAst(node);
     const RangeInRevision &range = editorFindRange(node, node);
     const QualifiedIdentifier &id = identifierForNode(name);
-    const KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+    KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
 
     if (!decl) {
         KDevelop::Problem *p = new KDevelop::Problem();
@@ -56,9 +56,9 @@ void UseBuilder::visitVariable(RubyAst* node)
         delete name;
         return;
     }
-    /// TODO: clean this
+    /// TODO: clean this debug message
     debug() << "UseBuilder: Visiting variable: " << node->tree->name;
-//     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
+    UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
     delete name;
 }
 

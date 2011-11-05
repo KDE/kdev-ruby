@@ -109,7 +109,7 @@ void ParseJob::run()
             return abortJob();
 
         EditorIntegrator editor;
-        editor.setUrl(m_parser->currentDocument());
+        editor.setParseSession(m_parser);
         DeclarationBuilder builder(&editor);
         m_duContext = builder.build(editor.url(), ast, m_duContext);
         bool needsReparse = builder.hasUnresolvedImports();

@@ -81,6 +81,7 @@ protected:
     void openContextForClassDefinition(RubyAst *node);
     void openContextForMethodDefinition(RubyAst *node);
 
+    bool m_mapAst; // AbstractUseBuilder requires this :S
     bool m_reportErrors;
     bool m_hasUnresolvedImports;
     EditorIntegrator *m_editor;

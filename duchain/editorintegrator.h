@@ -29,10 +29,12 @@
 #include <language/editor/rangeinrevision.h>
 #include <duchain/duchainexport.h>
 #include <parser/node.h>
+#include <parser/rubyparser.h>
 
 
 namespace Ruby
 {
+
 
 /**
  * @class EditorIntegrator
@@ -73,11 +75,11 @@ public:
     KDevelop::RangeInRevision findRange(Node * node);
 
     /**
-     * Set the url of the document we are editing.
+     * Set the parse session (parser) for this EditorIntegrator.
      *
-     * @param url the url of the document we are editing.
+     * @param session the given RubyParser.
      */
-    void setUrl(const KDevelop::IndexedString & url);
+    void setParseSession(RubyParser *session);
 
     /**
      * Get the url of the document we are editing.
@@ -86,11 +88,16 @@ public:
      */
     KDevelop::IndexedString url() const;
 
+    /**
+     * @return Get the parse session for this EditorIntegrator.
+     */
+    RubyParser *parseSession();
+
 private:
     /**
-     * The url of the current document.
+     * The parse session for this EditorIntegrator.
      */
-    KDevelop::IndexedString m_url;
+    RubyParser *m_session;
 };
 
 }
