@@ -19,12 +19,16 @@
  */
 
 
+// KDE
 #include <KStandardDirs>
-#include <duchain/helpers.h>
+
+// KDevelop
 #include <language/duchain/identifier.h>
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
-// #include <
+
+// Ruby
+#include <duchain/helpers.h>
 
 
 namespace Ruby
@@ -50,6 +54,11 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
     QList<Declaration *> decls;
 
     {
+        /*
+         * Find the declarations at the topContext(). If no declaration was
+         * found, we have to look for local declarations. If this fails, we
+         * should find for global declarations.
+         */
         DUChainReadLocker lock(DUChain::lock());
         if (context.data() == context->topContext())
             decls = context->topContext()->findDeclarations(id, range.end);

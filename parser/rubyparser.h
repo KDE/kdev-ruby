@@ -85,6 +85,9 @@ public:
      */
     void freeAst(RubyAst *ast);
 
+    /**
+     * Implemented to make the AbstractUseBuilder happy.
+     */
     void mapAstUse(RubyAst *node, const SimpleUse &use)
     {
         Q_UNUSED(node);
