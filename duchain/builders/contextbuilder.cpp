@@ -98,7 +98,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
 {
     IndexedString doc_url = internalBuiltinsFile();
 
-    if (m_editor->url() != doc_url) {
+    if (compilingContexts() && m_editor->url() != doc_url) {
         TopDUContext *internal;
         {
             DUChainReadLocker rlock(DUChain::lock());
