@@ -20,16 +20,20 @@
  */
 
 
+// Qt + KDE
 #include <QReadLocker>
 #include <KDebug>
 
+// KDevelop
 #include <interfaces/ilanguage.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/icore.h>
 #include <language/backgroundparser/backgroundparser.h>
 #include <language/interfaces/icodehighlighting.h>
 #include <language/backgroundparser/urlparselock.h>
+#include <language/duchain/duchainutils.h>
 
+// Ruby
 #include <rubydefs.h>
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
@@ -104,6 +108,24 @@ void ParseJob::run()
     m_parser->setCurrentDocument(m_url);
     RubyAst * ast = m_parser->parse();
 
+    /* Setting up the TopDUContext features */
+    KDevelop::ReferencedTopDUContext toUpdate;
+    {
+        KDevelop::DUChainReadLocker duchainlock(KDevelop::DUChain::lock());
+        toUpdate = KDevelop::DUChainUtils::standardContextForUrl(document().toUrl());
+    }
+
+    KDevelop::TopDUContext::Features newFeatures = minimumFeatures();
+    if (toUpdate)
+        newFeatures = (KDevelop::TopDUContext::Features)(newFeatures | toUpdate->features());
+
+    /* Remove update-flags like 'Recursive' or 'ForceUpdate' */
+    newFeatures = static_cast<KDevelop::TopDUContext::Features>(newFeatures & KDevelop::TopDUContext::AllDeclarationsContextsUsesAndAST);
+
+    /*
+     * And finally we do all the work if parsing was successful. Otherwise,
+     * we have to add a new problem
+     */
     if (ast != NULL && ast->tree != NULL) {
         if (abortRequested())
             return abortJob();
@@ -118,8 +140,13 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        UseBuilder useBuilder(&editor);
-        useBuilder.buildUses(ast);
+        if (newFeatures & TopDUContext::AllDeclarationsContextsAndUses
+                && document() != internalBuiltinsFile())
+        {
+            UseBuilder useBuilder(&editor);
+            useBuilder.buildUses(ast);
+            //TODO: Handle useBuilder unresolved identifiers
+        }
 
         if (abortRequested())
             return abortJob();
@@ -133,7 +160,7 @@ void ParseJob::run()
 
         {
             DUChainWriteLocker lock(DUChain::lock());
-            m_duContext->setFeatures(minimumFeatures());
+            m_duContext->setFeatures(newFeatures);
             KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
             file->setModificationRevision(contents().modification);
             KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());

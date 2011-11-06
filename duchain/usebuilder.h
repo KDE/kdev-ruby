@@ -22,7 +22,10 @@
 #define USEBUILDER_H
 
 
+// KDE
 #include <language/duchain/builders/abstractusebuilder.h>
+
+// Ruby
 #include <duchain/contextbuilder.h>
 #include <duchain/duchainexport.h>
 

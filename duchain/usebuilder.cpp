@@ -33,7 +33,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
 }
 
-// TODO: under consttruction
+// TODO: under construction
 void UseBuilder::visitVariable(RubyAst* node)
 {
     NameAst *name = new NameAst(node);
