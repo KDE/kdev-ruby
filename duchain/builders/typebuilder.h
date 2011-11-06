@@ -23,14 +23,9 @@
 #define TYPEBUILDER_H
 
 
-/*
- * TODO: Don't know what to do with this. I'll take a closer look
- * at it as soon as possible.
- */
-
-
-#include <duchain/builders/contextbuilder.h>
+// KDevelop + Ruby
 #include <language/duchain/builders/abstracttypebuilder.h>
+#include <duchain/builders/contextbuilder.h>
 
 
 namespace Ruby
@@ -38,14 +33,25 @@ namespace Ruby
 
 typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
 
+/**
+ * @class TypeBuilder
+ *
+ * Create types from a RubyAst.
+ */
 class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
 {
 public:
+    /**
+     * Constructor.
+     */
     TypeBuilder();
 
 protected:
+    /**
+     * The DeclarationBuilder implements this method in order update
+     * the type of the current declaration.
+     */
     virtual void updateCurrentType();
-    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
 };
 
 }

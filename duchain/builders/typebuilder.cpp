@@ -32,12 +32,7 @@ TypeBuilder::TypeBuilder(): TypeBuilderBase()
 
 void TypeBuilder::updateCurrentType()
 {
-    /* reimplemented in DeclarationBuilder */
-}
-
-void TypeBuilder::supportBuild(RubyAst* ast, DUContext* ctx)
-{
-    TypeBuilderBase::supportBuild(ast, ctx);
+    /* reimplemented in the DeclarationBuilder */
 }
 
 }
