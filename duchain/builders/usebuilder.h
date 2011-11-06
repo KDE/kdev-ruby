@@ -26,7 +26,7 @@
 #include <language/duchain/builders/abstractusebuilder.h>
 
 // Ruby
-#include <duchain/contextbuilder.h>
+#include <duchain/builders/contextbuilder.h>
 #include <duchain/duchainexport.h>
 
 

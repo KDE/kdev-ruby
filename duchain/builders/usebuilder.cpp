@@ -18,10 +18,10 @@
  */
 
 
-#include <duchain/usebuilder.h>
+#include <duchain/builders/usebuilder.h>
 #include <rubydefs.h> // TODO: remove this ;)
-#include "helpers.h"
-#include "editorintegrator.h"
+#include <duchain/helpers.h>
+#include <duchain/editorintegrator.h>
 #include <KLocale>
 
 

@@ -31,9 +31,9 @@
 
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
-#include <duchain/typebuilder.h>
+#include <duchain/builders/typebuilder.h>
 #include <parser/rubyast.h>
-#include "declarations/classdeclaration.h"
+#include <duchain/declarations/classdeclaration.h>
 
 
 namespace KDevelop {

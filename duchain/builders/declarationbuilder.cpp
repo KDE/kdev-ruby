@@ -21,10 +21,10 @@
  */
 
 
-#include <duchain/declarationbuilder.h>
+#include <duchain/builders/declarationbuilder.h>
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
-#include "declarations/variabledeclaration.h"
+#include <duchain/declarations/variabledeclaration.h>
 #include <duchain/editorintegrator.h>
 #include <rubydefs.h>
 #include <duchain/types/objecttype.h>

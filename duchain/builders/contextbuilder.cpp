@@ -24,10 +24,10 @@
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/icompletionsettings.h>
-#include <duchain/contextbuilder.h>
+#include <duchain/builders/contextbuilder.h>
 #include <duchain/editorintegrator.h>
-#include "rubyducontext.h"
-#include "helpers.h"
+#include <duchain/rubyducontext.h>
+#include <duchain/helpers.h>
 #include <KStandardDirs>
 #include <rubydefs.h>
 

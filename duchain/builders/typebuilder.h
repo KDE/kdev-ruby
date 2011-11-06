@@ -19,26 +19,37 @@
  */
 
 
-#include <duchain/typebuilder.h>
+#ifndef TYPEBUILDER_H
+#define TYPEBUILDER_H
+
+
+/*
+ * TODO: Don't know what to do with this. I'll take a closer look
+ * at it as soon as possible.
+ */
+
+
+#include <duchain/builders/contextbuilder.h>
+#include <language/duchain/builders/abstracttypebuilder.h>
 
 
 namespace Ruby
 {
 
-TypeBuilder::TypeBuilder(): TypeBuilderBase()
-{
-    /* There's nothing to do here! */
-}
+typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
 
-void TypeBuilder::updateCurrentType()
+class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
 {
-    /* reimplemented in DeclarationBuilder */
-}
+public:
+    TypeBuilder();
 
-void TypeBuilder::supportBuild(RubyAst* ast, DUContext* ctx)
-{
-    TypeBuilderBase::supportBuild(ast, ctx);
-}
+protected:
+    virtual void updateCurrentType();
+    virtual void supportBuild(RubyAst *ast, DUContext *ctx);
+};
 
 }
+
+
+#endif // TYPEBUILDER_H
 

@@ -38,8 +38,8 @@
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
-#include <duchain/declarationbuilder.h>
-#include <duchain/usebuilder.h>
+#include <duchain/builders/declarationbuilder.h>
+#include <duchain/builders/usebuilder.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/helpers.h>
 

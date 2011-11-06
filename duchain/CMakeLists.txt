@@ -1,11 +1,11 @@
 set(rubyduchain_SRCS
     editorintegrator.cpp
-    declarationbuilder.cpp
-    usebuilder.cpp
-    contextbuilder.cpp
-    typebuilder.cpp
     rubyducontext.cpp
     helpers.cpp
+    builders/declarationbuilder.cpp
+    builders/usebuilder.cpp
+    builders/contextbuilder.cpp
+    builders/typebuilder.cpp
     types/objecttype.cpp
     navigation/declarationnavigationcontext.cpp
     navigation/navigationwidget.cpp
