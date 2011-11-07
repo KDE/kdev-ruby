@@ -133,19 +133,23 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
 
     /* Let's check if this variable is already declared */
     QList<Declaration *> decs = ctx->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    // TODO: Not sure if this is properly working...
     if (!decs.isEmpty()) {
-        QList< Declaration* >::const_iterator it = decs.constEnd() - 1;
+        QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
         for (;; --it) {
-           debug() << "Here";
             if (dynamic_cast<VariableDeclaration *>(*it)) {
-                debug() << "Variable Declaration";
                 if (!wasEncountered(*it)) {
-                    setEncountered(*it); //TODO: can be improved
+                    setEncountered(*it);
                     (*it)->setRange(range);
                 }
                 if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
-                    // TODO: there are some validations to do here. Right now, just take this as an Unsure
-
+                    if ( IntegralType::Ptr integral = IntegralType::Ptr::dynamicCast((*it)->abstractType()) ) {
+                        if ( integral->dataType() == IntegralType::TypeMixed ) {
+                            // mixed to @p type
+                            (*it)->setType(type);
+                            return;
+                        }
+                    }
                     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast((*it)->abstractType());
                     if ( !unsure ) {
                         unsure = UnsureType::Ptr(new UnsureType());
@@ -153,7 +157,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                     }
                     unsure->addType(type->indexed());
                     (*it)->setType(unsure);
-                    debug() << "Unsure: " << (*it)->qualifiedIdentifier();
                 }
                 return;
             }

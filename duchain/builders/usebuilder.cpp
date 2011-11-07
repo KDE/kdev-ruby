@@ -46,7 +46,8 @@ void UseBuilder::visitVariable(RubyAst* node)
         p->setFinalLocation(DocumentRange(m_editor->url(), range.castToSimpleRange()));
         p->setSource(KDevelop::ProblemData::SemanticAnalysis);
         p->setSeverity(KDevelop::ProblemData::Hint);
-        p->setDescription(i18n("Undefined variable: %1", name->value));
+        p->setDescription(i18n("Undefined variable or method: %1",
+                               name->value));
         {
             DUChainWriteLocker wlock(DUChain::lock());
             ProblemPointer ptr(p);
