@@ -34,6 +34,9 @@
 #include "parser.h"
 
 
+#define STACK_SIZE 128
+
+
 /* Flags used by the lexer */
 struct flags_t {
   unsigned char eof_reached : 1;
@@ -56,6 +59,12 @@ struct flags_t {
 struct pos_t {
   int startLine, endLine;
   int startCol, endCol;
+};
+
+/* A comment has a text and a line */
+struct comment_t {
+  char *comment;
+  int line;
 };
 
 
@@ -89,6 +98,11 @@ struct parser_t {
   struct node * string_names;
   int sp;
 
+  /* The last allocated comment + the comment stack  */
+  struct comment_t last_comment;
+  char *comment_stack[STACK_SIZE];
+  int comment_index;
+
   /* Info about the content to parse */
   unsigned long cursor;
   unsigned long length;
@@ -100,7 +114,6 @@ struct parser_t {
 
 #define yyparse ruby_yyparse
 #define YYLEX_PARAM parser
-#define STACK_SIZE 128
 
 
 /* yy's functions */
@@ -123,6 +136,8 @@ void pop_string(struct parser_t * parser, struct node * n);
 #define POP_STR pop_string(parser, yyval.n)
 void push_string(struct parser_t * parser, char * buffer);
 void multiple_string(struct parser_t * parser, struct node * n);
+void push_last_comment(struct parser_t * parser);
+void pop_comment(struct parser_t * parser, struct node *n);
 
 
 void fix_pos(struct parser_t * parser, struct node * n);
@@ -160,7 +175,7 @@ void pop_end(struct parser_t * parser, struct node * n);
 /* Declare tokens */
 %token EOL CVAR NUMBER SYMBOL FNAME BASE STRING REGEXP MCALL ARRAY SARY
 %token IVAR GLOBAL tLBRACKET tRBRACKET tDOT tTILDE tBACKTICK tCOMMA tCOLON
-%token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON
+%token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON COMMENT
 %token tOR tAND tAND_BIT tOR_BIT tXOR_BIT tLBRACE tRBRACE tLPAREN tRPAREN
 %token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST tCOLON3
 %token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tCOLON2
@@ -393,9 +408,10 @@ cmpd_stmt: k_if exp then
     {
       parser->in_def--;
       $$ = ALLOC_C(token_function, $2, $5, $4);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }
-	| k_def single_name_mcall
+  | k_def single_name_mcall
     {
       parser->in_def++;
     }
@@ -403,6 +419,7 @@ cmpd_stmt: k_if exp then
     {
       parser->in_def--;
       $$ = ALLOC_C(token_function, $2, $6, $4);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }
   | k_module module_name
@@ -414,6 +431,7 @@ cmpd_stmt: k_if exp then
     END
     {
       $$ = ALLOC_N(token_module, $4, $2);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }
   | k_class module_name
@@ -425,6 +443,7 @@ cmpd_stmt: k_if exp then
     END
     {
       $$ = ALLOC_C(token_class, NULL, $4, $2);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }  
   | k_class module_name superclass
@@ -436,6 +455,7 @@ cmpd_stmt: k_if exp then
     END
     {
       $$ = ALLOC_C(token_class, $3, $5, $2);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }
   | k_class tLSHIFT exp_or_hash
@@ -448,6 +468,7 @@ cmpd_stmt: k_if exp then
     END
     {
       $$ = ALLOC_N(token_singleton_class, $6, $3);
+      pop_comment(parser, $$);
       pop_start(parser, $$);
     }
 ;
@@ -1405,6 +1426,8 @@ void init_parser(struct parser_t * p)
   p->auxiliar.endLine = -1;
   p->errors[0].valid = 0;
   p->errors[1].valid = 0;
+  p->last_comment.comment = NULL;
+  p->comment_index = 0;
 }
 
 void free_parser(struct parser_t * p)
@@ -1416,6 +1439,8 @@ void free_parser(struct parser_t * p)
   free(p->pos_stack);
   free(p->blob);
   free(p->name);
+  if (p->last_comment.comment != NULL)
+    free(p->last_comment.comment);
 }
 
 /* Read the file's source code and allocate it for further inspection. */
@@ -1709,6 +1734,22 @@ void pop_end(struct parser_t * parser, struct node * n)
   pop_pos(parser, NULL);
 }
 
+void push_last_comment(struct parser_t * parser)
+{
+  if ((parser->line - parser->last_comment.line) < 2)
+    parser->comment_stack[parser->comment_index] = parser->last_comment.comment;
+  else
+    parser->comment_stack[parser->comment_index] = NULL;
+  parser->comment_index++;
+  parser->last_comment.comment = NULL;
+}
+
+void pop_comment(struct parser_t * parser, struct node *n)
+{
+  parser->comment_index--;
+  n->comment = parser->comment_stack[parser->comment_index];
+}
+
 /*
  * The following macros are helpers to the fix_pos function.
  */
@@ -1747,6 +1788,87 @@ void fix_pos(struct parser_t * parser, struct node * n)
   }
 }
 
+#define __check_should_break { \
+  if (*c != '#') { \
+    int aux = is_indented_comment(c); \
+    if (!aux) \
+      break; \
+    else { \
+      c += aux; \
+      curs += aux; \
+      i += aux; \
+    } \
+  } \
+}
+
+#define __check_buffer_size(N) { \
+  if (count > N) { \
+    count = 0; \
+    scale++; \
+    buffer = (char *) realloc(buffer, scale * 1024); \
+  } \
+}
+
+#define __handle_comment_eol { \
+  c++; curs++; \
+  i = 0; \
+  parser->line++; \
+}
+
+void store_comment(struct parser_t *parser, char *comment)
+{
+  if (parser->last_comment.comment != NULL)
+    free(parser->last_comment.comment);
+  parser->last_comment.comment = strdup(comment);
+  parser->last_comment.line = parser->line;
+  free(comment);
+}
+
+int is_indented_comment(char *c)
+{
+  char *original = c;
+
+  for (; *c == ' ' || *c == '\t'; ++c);
+  return (*c == '#') ? (c - original) : 0;
+}
+
+int get_comment(struct parser_t *parser, char *c, int curs)
+{
+  int len = parser->length;
+  int initial = curs;
+  int i = parser->column;
+  int count = 0, scale = 1;
+  char *buffer = (char *) malloc(1024);
+
+  for (;; ++count) {
+    __check_should_break;
+
+    /* We don't want to store initial #'s */
+    for (; *c == '#' && curs < len; ++c, ++curs, ++i);
+
+    if (*c == '\n') {
+      buffer[count] = *c;
+      __handle_comment_eol;
+    } else {
+      for (; curs < len; ++c, ++curs, ++i, ++count) {
+        __check_buffer_size(1000);
+        buffer[count] = *c;
+        if (*c == '\n') {
+          __handle_comment_eol;
+          break;
+        }
+      }
+    }
+  }
+
+  buffer[count] = '\0';
+  store_comment(parser, buffer);
+
+  /* Magic to preserve the integrity of the column/cursor counting */
+  parser->column = i;
+  return curs - initial;
+}
+
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
@@ -1775,8 +1897,10 @@ int parser_yylex(struct parser_t * parser)
   (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
 
   if (*c == '#') {
-    for (; *c != '\n' && curs < len; ++c, ++curs);
-    t = EOL;
+    int inc = get_comment(parser, c, curs);
+    curs += inc;
+    c += inc;
+    t = COMMENT;
   } else if (*c == '\n') {
     t = EOL;
     parser->no_block = 0;
@@ -1864,14 +1988,20 @@ int parser_yylex(struct parser_t * parser)
       t = kw->id;
       if (t == WHILE || t == UNTIL || t == FOR)
         parser->no_block = 1;
-      else if (t == CLASS) {
+      else if (t == DEF) {
+        push_last_comment(parser);
+      } else if (t == MODULE) {
+        push_last_comment(parser);
+      } else if (t == CLASS) {
         /* check for class() method */
         if (parser->dot_seen) {
           push_stack(parser, buffer);
           t = FNAME;
           parser->dot_seen = 0;
-        } else
+        } else {
+          push_last_comment(parser);
           parser->class_seen = 1;
+        }
       } else if (t == tFILE || t == ENCODING || t == LINE)
         parser->expr_seen = 1;
     } else if ((!strcmp(buffer, "defined")) && (*c == '?')) {
@@ -2347,7 +2477,12 @@ int parser_yylex(struct parser_t * parser)
     parser->dot_seen = 0;
   }
 
-  parser->column += curs - parser->cursor;
+  /* TODO: clean this */
+  if (t == COMMENT) {
+    t = EOL;
+  } else
+    parser->column += curs - parser->cursor;
+
   parser->cursor = curs;
   if (tokp.startLine > 0) {
     if (t != HEREDOC)

@@ -39,6 +39,7 @@ struct node * alloc_node(int kind, struct node * l, struct node * r)
   }
   n->kind = kind;
   n->name = NULL;
+  n->comment = NULL;
   n->next = NULL;
   n->last = NULL;
   n->cond = NULL;
@@ -180,6 +181,8 @@ void free_ast(struct node * n)
   free_ast(n->ensure);
   if (n->name != NULL)
     free(n->name);
+  if (n->comment != NULL)
+    free(n->comment);
 }
 
 void free_errors(struct error_t * errors)

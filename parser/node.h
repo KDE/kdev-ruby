@@ -36,7 +36,8 @@ extern "C" {
 enum node_t {
   token_invalid = -1,
   token_whitespace = 0,
-  token_plus = 2,
+  token_comment = 1,
+  token_plus,
   token_minus,
   token_mul,
   token_exp,
@@ -145,6 +146,7 @@ struct node {
 /* Node info */
   int kind;
   char * name;
+  char * comment;
 
 /* Node's position */
   int startLine, endLine;
