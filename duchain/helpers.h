@@ -23,8 +23,10 @@
 #define RUBYDUCHAINHELPERS_H_
 
 
+// KDevelop
 #include <language/duchain/declaration.h>
 
+// Ruby
 #include <duchain/duchainexport.h>
 #include <parser/rubyast.h>
 
@@ -39,7 +41,7 @@ namespace Ruby
      * @return A KDevelop::IndexedString that contains the url of the Ruby
      * builtins file.
      */
-    KDEVRUBYDUCHAIN_EXPORT const IndexedString &internalBuiltinsFile();
+    KDEVRUBYDUCHAIN_EXPORT const IndexedString & internalBuiltinsFile();
 
     /**
      * Given a RubyAst, return its name.
@@ -49,7 +51,15 @@ namespace Ruby
      */
     KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst *ast);
 
-    /** TODO */
+    /**
+     * Given a RubyAst, return the documentation comment.
+     *
+     * @param ast The given RubyAst.
+     * @return a QByteArray containing the documentation comment for a
+     * class/module/method definition if it's available. It will return
+     * an empty QByteArray otherwise, or if the AST does not represent
+     * the situations described above.
+     */
     KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(RubyAst *ast);
 
     /**
