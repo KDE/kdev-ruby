@@ -49,6 +49,9 @@ namespace Ruby
      */
     KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst *ast);
 
+    /** TODO */
+    KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(RubyAst *ast);
+
     /**
      * Find the declaration for a specified node. If no declaration was found,
      * it will return NULL.

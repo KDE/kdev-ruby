@@ -47,6 +47,12 @@ const QString getName(RubyAst *ast)
     return QString(getNameNode(ast->tree)->name);
 }
 
+const QByteArray getComment(RubyAst *ast)
+{
+    char *m_comment = ast->tree->comment;
+    return (m_comment != NULL) ? QByteArray(m_comment) : QByteArray("");
+}
+
 Declaration *declarationForNode(const QualifiedIdentifier &id,
                                 const RangeInRevision &range,
                                 DUContextPointer context)

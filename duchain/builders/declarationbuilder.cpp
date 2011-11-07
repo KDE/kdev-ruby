@@ -30,6 +30,7 @@
 #include <duchain/types/objecttype.h>
 #include <language/duchain/types/unsuretype.h>
 #include <KLocale>
+#include <duchain/helpers.h>
 
 
 namespace Ruby
@@ -65,6 +66,7 @@ void DeclarationBuilder::startVisiting(RubyAst* node)
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
+    setComment(getComment(node));
     openClassDeclaration(node, true);
     RubyAstVisitor::visitClassStatement(node);
 
@@ -78,6 +80,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
 void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 {
+    setComment(getComment(node));
     openClassDeclaration(node, false);
     RubyAstVisitor::visitModuleStatement(node);
 
@@ -91,6 +94,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
+    setComment(getComment(node));
     openMethodDeclaration(node);
     RubyAstVisitor::visitMethodStatement(node);
 
