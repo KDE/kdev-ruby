@@ -20,6 +20,7 @@
 
 
 //BEGIN Includes
+#include <QtCore/QTimer>
 //KDE
 #include <KAction>
 #include <KActionCollection>
@@ -52,6 +53,7 @@
 #include <rubyhighlighting.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
+#include "duchain/helpers.h"
 //END Includes
 
 
@@ -71,15 +73,15 @@ namespace Ruby
 LanguageSupport * LanguageSupport::m_self = NULL;
 
 LanguageSupport::LanguageSupport(QObject * parent,
-                                         const QVariantList & /* args */)
+                                 const QVariantList & /* args */)
         : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
         , KDevelop::ILanguageSupport()
         , m_railsSwitchers(new Ruby::RailsSwitchers(this))
         , m_rubyFileLaunchConfiguration(NULL)
         , m_rubyCurrentFunctionLaunchConfiguration(NULL)
 {
-    KDEV_USE_EXTENSION_INTERFACE( KDevelop::ILanguageSupport )
-    setXMLFile( "kdevrubysupport.rc" );
+    KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
+    setXMLFile("kdevrubysupport.rc");
     m_self = this;
     m_highlighting = new Ruby::Highlighting(this);
 
@@ -167,46 +169,6 @@ KDevelop::ILanguage * LanguageSupport::language()
 KDevelop::ICodeHighlighting* LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
-}
-
-QStringList LanguageSupport::extensions() const
-{
-    return QStringList() << "ILanguageSupport";
-}
-
-void LanguageSupport::documentActivated(KDevelop::IDocument * document)
-{
-    Q_UNUSED(document)
-}
-
-void LanguageSupport::documentLoaded(KDevelop::IDocument * document)
-{
-    debug() << "loaded document";
-    core()->languageController()->backgroundParser()->addDocument(document->url());
-}
-
-void LanguageSupport::documentClosed(KDevelop::IDocument * document)
-{
-    Q_UNUSED(document)
-}
-
-void LanguageSupport::projectOpened(KDevelop::IProject *project)
-{
-    //parse project files
-    KDevelop::BackgroundParser *parser = core()->languageController()->backgroundParser();
-    foreach (const KDevelop::ProjectFileItem *file, project->files())
-        parser->addDocument(file->url());
-}
-
-void LanguageSupport::projectClosing(KDevelop::IProject *project)
-{
-    Q_UNUSED(project)
-}
-
-void LanguageSupport::documentChanged(KDevelop::IDocument *document)
-{
-    debug() << "loaded document";
-    core()->languageController()->backgroundParser()->addDocument(document->url());
 }
 
 void LanguageSupport::runCurrentFile()

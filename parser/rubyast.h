@@ -22,6 +22,7 @@
 #define RUBYAST_H
 
 
+// KDevelop + Ruby
 #include <language/duchain/ducontext.h>
 #include <parser/node.h>
 

@@ -23,13 +23,15 @@
 #define KDEVRUBYLANGUAGESUPPORT_H
 
 
+// Qt
+#include <QReadLocker>
+
+// KDevelop
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
+#include <language/duchain/indexedstring.h>
+#include <language/duchain/topducontext.h>
 
-/*
- * WARNING: This file (and class) is a complete mess. It should be properly
- * polished as soon as possible.
- */
 
 class KConfigGroup;
 
@@ -47,39 +49,87 @@ class RailsSwitchers;
 class RailsDataProvider;
 class Highlighting;
 
+/**
+ * @class LanguageSupport
+ *
+ * This is the class that represents the KDevelop Ruby Plugin. This class
+ * also connects all the actions related to Rails navigation. And last, but
+ * not least, this class also enables the plugin to execute the current Ruby
+ * file or test functions.
+ */
 class LanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
 {
     Q_OBJECT
-    Q_INTERFACES( KDevelop::ILanguageSupport )
+    Q_INTERFACES(KDevelop::ILanguageSupport)
 
 public:
-    LanguageSupport(QObject * parent, const QVariantList &args = QVariantList());
+    /**
+     * Constructor.
+     *
+     * @param parent The QObject this LanguageSupport is parented to.
+     * @param args A QVariantList that can be passed to this plugin as parameters.
+     */
+    LanguageSupport(QObject *parent, const QVariantList &args = QVariantList());
+
+    /**
+     * Destructor.
+     */
     virtual ~LanguageSupport();
 
+    /**
+     * @return an instance of this LanguageSupport.
+     */
     static LanguageSupport * self();
-    virtual QString name() const;
-    virtual KDevelop::ParseJob * createParseJob(const KUrl &);
-    virtual KDevelop::ILanguage * language();
-    virtual KDevelop::ICodeHighlighting* codeHighlighting() const;
 
-    QStringList extensions() const;
+    /**
+     * @return the name of the language.
+     */
+    virtual QString name() const;
+
+    /**
+     * @return the ParseJob that is going to be used by the Background
+     * parser to parse the given @p url.
+     */
+    virtual KDevelop::ParseJob * createParseJob(const KUrl &url);
+
+    /**
+     * @return the language for this support.
+     */
+    virtual KDevelop::ILanguage * language();
+
+    /**
+     * @return the Code Highlighting for the Ruby language.
+     */
+    virtual KDevelop::ICodeHighlighting * codeHighlighting() const;
+
+private:
+    /**
+     * @internal Find or create a launch for a the given @p name.
+     * @return the launcj configuration for the given @p name.
+     */
+    KDevelop::ILaunchConfiguration *findOrCreateLaunchConfiguration(const QString &name);
+
+    /**
+     * @internal Set up the launch configuration before the run occurs.
+     * @param cfg the KConfigGroup for this launch.
+     * @param activeDocument the currently active document.
+     */
+    void setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument);
+
+    /**
+     * @internal Find the method under the cursor in the given \p doc. It's
+     * used by the runCurrentTestFunction() slot.
+     */
+    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
 private Q_SLOTS:
-    void documentLoaded(KDevelop::IDocument * document);
-    void documentClosed(KDevelop::IDocument * document);
-    void projectOpened(KDevelop::IProject * project);
-    void projectClosing(KDevelop::IProject * project);
-    void documentChanged( KDevelop::IDocument * document );
-    void documentActivated( KDevelop::IDocument * document );
-
+     /// The slot that allows this plugin to run the current Ruby file.
     void runCurrentFile();
+
+    /// The slot that allows this plugin to run the current test function.
     void runCurrentTestFunction();
 
 private:
-    KDevelop::ILaunchConfiguration *findOrCreateLaunchConfiguration(const QString &name);
-    void setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument);
-    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
-
     static LanguageSupport* m_self;
     Ruby::Highlighting *m_highlighting;
 
@@ -88,11 +138,10 @@ private:
     RailsDataProvider *m_testsQuickOpenDataProvider;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
-
 };
 
 } // End of namespace Ruby
 
 
-#endif
+#endif // KDEVRUBYLANGUAGESUPPORT_H
 

@@ -22,16 +22,18 @@
 #define RUBYPARSER_H
 
 
+// KDevelop + Ruby
 #include <language/interfaces/iproblem.h>
 #include <parser/parserexport.h>
 #include <parser/rubyast.h>
 
 
 using namespace KDevelop;
-typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 
 namespace Ruby
 {
+/// Convenient typedef that packs a DUContextPointer and a RangeInRevision.
+typedef QPair<DUContextPointer, RangeInRevision> SimpleUse;
 
 /**
  * @class RubyParser
