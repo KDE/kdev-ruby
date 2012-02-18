@@ -1,0 +1,10 @@
+
+ However, now we're talking about a documentation comment.
+ We want to store this comment
+
+ This is also a documentation comment, store it!
+
+ I'm a useful comment
+ But this one is not
+ Store this comment
+ and this one too. 

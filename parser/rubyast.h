@@ -82,9 +82,9 @@ public:
         if (tree == NULL)
             value = "nil";
         else if (tree->kind == token_class || tree->kind == token_module)
-            value = QString(getNameNode(tree)->name);
+            value = QString(rb_name_node(tree)->name);
         else if (tree->kind == token_function)
-            value = QString(getNameNode(tree)->name);
+            value = QString(rb_name_node(tree)->name);
         else
             value = QString(tree->name);
     };

@@ -230,7 +230,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_alias: visitAliasStatement(node); break;
         case token_undef: visitUndefStatement(node); break;
         case token_if: case token_unless: visitIfStatement(node); break;
-        case token_exception: visitBeginStatement(node); break;
+//         case token_exception: visitBeginStatement(node); break;
         case token_up_begin:
         case token_up_end: visitUpBeginEndStatement(node); break;
         case token_case: visitCaseStatement(node); break;

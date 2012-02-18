@@ -26,7 +26,6 @@
 extern "C" {
 #endif
 
-
 /**
  * This enumeration contains all the available tokens
  * used by this parser. This values are important for the
@@ -40,7 +39,7 @@ enum node_t {
   token_plus,
   token_minus,
   token_mul,
-  token_exp,
+  token_pow,
   token_div,
   token_mod,
   token_bit_and,
@@ -82,7 +81,7 @@ enum node_t {
   token_up_begin,
   token_up_end,
   token_for,
-  token_exception,
+  token_begin,
   token_rescue_arg,
   token_rescue,
   token_ensure,         /* 50 */
@@ -113,7 +112,7 @@ enum node_t {
   token_defined,
   token_undef,
   token_array_value,
-  token_backtick,       /* 78 */
+  token__end__,         /* 78 */
 };
 
 
@@ -135,7 +134,7 @@ struct error_t {
 typedef struct {
   struct node * tree;
   struct error_t errors[2];
-} Ast;
+} RAst;
 
 
 /**
@@ -184,21 +183,21 @@ typedef struct node Node;
  *        if you want that the parser retrieves the contents for you.
  * @return an AST that represents the code.
  */
-Ast * rb_compile_file(const char * path, const char * contents);
+    RAst * rb_compile_file(const char * path, const char * contents);
 
 /**
  * Free a RubyAst.
  *
- * @param ra the Ast you want to free.
+ * @param ra the RubyAst you want to free.
  */
-void rb_free(Ast * ra);
+void rb_free(RAst * ra);
 
 /**
  * Get the name node.
  *
  * @param n The root node.
  */
-struct node * getNameNode(struct node *n);
+struct node * rb_name_node(struct node * n);
 
 /*
  * There are three ways to allocate a node. The simplest one is
@@ -241,4 +240,3 @@ void free_errors(struct error_t * errors);
 
 
 #endif /* NODE_H_ */
-

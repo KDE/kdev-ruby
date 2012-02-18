@@ -54,7 +54,7 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    Ast *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
+    RAst *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
     RubyAst *ra = new RubyAst(res->tree);
     if (res->errors[0].valid) {
         appendProblem(res->errors[0]);

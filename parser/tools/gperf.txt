@@ -1,0 +1,51 @@
+%{
+struct kwtable {const char *name; int id;};
+const struct kwtable *rb_reserved_word(const char *, unsigned int);
+static const struct kwtable *reserved_word(const char *, unsigned int);
+#define rb_reserved_word(str, len) reserved_word(str, len)
+%}
+
+struct kwtable;
+%%
+__ENCODING__, tENCODING
+__LINE__, tLINE
+__FILE__, tFILE
+BEGIN, upBEGIN
+END, upEND
+alias, tALIAS
+and, tKWAND
+begin, tBEGIN
+break, tBREAK
+case, tCASE
+class, tCLASS
+def, tDEF
+defined?, tDEFINED
+do, tDO
+else, tELSE
+elsif, tELSIF
+end, tEND
+ensure, tENSURE
+false, tFALSE
+for, tFOR
+if, tIF
+in, tIN
+module, tMODULE
+next, tNEXT
+nil, tNIL
+not, tKWNOT
+or, tKWOR
+redo, tREDO
+rescue, tRESCUE
+retry, tRETRY
+return, tRETURN
+self, tSELF
+super, tSUPER
+then, tTHEN
+true, tTRUE
+undef, tUNDEF
+unless, tUNLESS
+until, tUNTIL
+when, tWHEN
+while, tWHILE
+yield, tYIELD
+%%

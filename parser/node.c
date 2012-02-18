@@ -95,36 +95,6 @@ struct node * concat_list(struct node * head, struct node * tail)
   return head;
 }
 
-
-/*
- * Interface to the parser
- */
-
-void rb_free(Ast * ra)
-{
-  free_ast(ra->tree);
-  free_errors(ra->errors);
-  free(ra);
-}
-
-struct node * getNameNode(struct node *n)
-{
-    struct node *name;
-    const char isMethod = (n->kind == token_function);
-
-    if (isMethod) {
-        if (n->cond->r != NULL)
-            name = n->cond->r;
-        else
-            name = n->cond;
-    } else if (n->r->last != NULL)
-        name = n->r->last;
-    else
-        name = n->r;
-    return name;
-}
-
-
 /*
  * Auxiliar functions
  */
@@ -160,12 +130,12 @@ void print_node(struct node * n)
 
 void print_errors(struct error_t * errors)
 {
-  int i;
-
-  for (i = 0; i < 2; ++i) {
-    if (errors[i].valid == 1) {
-      printf("Line: %i, Column: %i; %s\n",  errors[i].line,
-                                            errors[i].col, errors[i].msg);
+  if (errors[0].valid == 1) {
+    printf("Line: %i, Column: %i; %s\n",  errors[0].line,
+                                          errors[0].col, errors[0].msg);
+    if (errors[1].valid == 1) {
+      printf("Line: %i, Column: %i; %s\n",  errors[1].line,
+                                            errors[1].col, errors[1].msg);
     }
   }
 }
@@ -183,15 +153,37 @@ void free_ast(struct node * n)
     free(n->name);
   if (n->comment != NULL)
     free(n->comment);
+  free(n);
 }
 
 void free_errors(struct error_t * errors)
 {
-  int i;
-
-  for (i = 0; i < 2; ++i) {
-    if (errors[i].valid == 1)
-      free(errors[i].msg);
+  if (errors[0].valid == 1) {
+    free(errors[0].msg);
+    if (errors[1].valid == 1)
+      free(errors[1].msg);
   }
 }
 
+/*
+ * Interface to the parser
+ */
+
+void rb_free(RAst * ra)
+{
+  free_ast(ra->tree);
+  free_errors(ra->errors);
+  free(ra);
+}
+
+struct node * rb_name_node(struct node *n)
+{
+  struct node *name;
+  const char isMethod = (n->kind == token_function);
+
+  if (isMethod)
+    name = (n->cond->r != NULL) ? n->cond->r : n->cond;
+  else
+    name = (n->r->last != NULL) ? n->r->last : n->r;
+  return name;
+}

@@ -229,7 +229,7 @@ void DeclarationBuilder::appendProblem(Node *node, const QByteArray &msg)
 
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node)
 {
-    return m_editor->findRange(getNameNode(node->tree));
+    return m_editor->findRange(rb_name_node(node->tree));
 }
 
 DocumentRange DeclarationBuilder::getDocumentRange(Node *node)

@@ -44,7 +44,7 @@ const IndexedString & internalBuiltinsFile()
 
 const QString getName(RubyAst *ast)
 {
-    return QString(getNameNode(ast->tree)->name);
+    return QString(rb_name_node(ast->tree)->name);
 }
 
 const QByteArray getComment(RubyAst *ast)

@@ -115,88 +115,88 @@ rb_reserved_word (str, len)
     {
       {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1}, {"", -1},
 #line 18 "gperf.txt"
-      {"break", BREAK},
+      {"break", tBREAK},
 #line 24 "gperf.txt"
-      {"else", ELSE},
+      {"else", tELSE},
 #line 34 "gperf.txt"
-      {"nil", NIL},
+      {"nil", tNIL},
 #line 27 "gperf.txt"
-      {"ensure", ENSURE},
+      {"ensure", tENSURE},
 #line 26 "gperf.txt"
-      {"end", END},
+      {"end", tEND},
 #line 43 "gperf.txt"
-      {"then", THEN},
+      {"then", tTHEN},
 #line 35 "gperf.txt"
-      {"not", KWNOT},
+      {"not", tKWNOT},
 #line 28 "gperf.txt"
       {"false", tFALSE},
 #line 41 "gperf.txt"
-      {"self", SELF},
+      {"self", tSELF},
 #line 25 "gperf.txt"
-      {"elsif", ELSIF},
+      {"elsif", tELSIF},
 #line 38 "gperf.txt"
-      {"rescue", RESCUE},
+      {"rescue", tRESCUE},
 #line 44 "gperf.txt"
       {"true", tTRUE},
 #line 47 "gperf.txt"
-      {"until", UNTIL},
+      {"until", tUNTIL},
 #line 46 "gperf.txt"
-      {"unless", UNLESS},
+      {"unless", tUNLESS},
 #line 40 "gperf.txt"
-      {"return", RETURN},
+      {"return", tRETURN},
 #line 21 "gperf.txt"
-      {"def", DEF},
+      {"def", tDEF},
 #line 16 "gperf.txt"
-      {"and", KWAND},
+      {"and", tKWAND},
 #line 23 "gperf.txt"
-      {"do", DO},
+      {"do", tDO},
 #line 50 "gperf.txt"
-      {"yield", YIELD},
+      {"yield", tYIELD},
 #line 29 "gperf.txt"
-      {"for", FOR},
+      {"for", tFOR},
 #line 45 "gperf.txt"
-      {"undef", UNDEF},
+      {"undef", tUNDEF},
 #line 36 "gperf.txt"
-      {"or", KWOR},
+      {"or", tKWOR},
 #line 31 "gperf.txt"
-      {"in", IN},
+      {"in", tIN},
 #line 48 "gperf.txt"
-      {"when", WHEN},
+      {"when", tWHEN},
 #line 39 "gperf.txt"
-      {"retry", RETRY},
+      {"retry", tRETRY},
 #line 30 "gperf.txt"
-      {"if", IF},
+      {"if", tIF},
 #line 19 "gperf.txt"
-      {"case", CASE},
+      {"case", tCASE},
 #line 37 "gperf.txt"
-      {"redo", REDO},
+      {"redo", tREDO},
 #line 33 "gperf.txt"
-      {"next", NEXT},
+      {"next", tNEXT},
 #line 42 "gperf.txt"
-      {"super", SUPER},
+      {"super", tSUPER},
 #line 32 "gperf.txt"
-      {"module", MODULE},
+      {"module", tMODULE},
 #line 17 "gperf.txt"
-      {"begin", BEGIN},
+      {"begin", tBEGIN},
 #line 11 "gperf.txt"
-      {"__LINE__", LINE},
+      {"__LINE__", tLINE},
 #line 12 "gperf.txt"
       {"__FILE__", tFILE},
 #line 10 "gperf.txt"
-      {"__ENCODING__", ENCODING},
+      {"__ENCODING__", tENCODING},
 #line 14 "gperf.txt"
       {"END", upEND},
 #line 15 "gperf.txt"
-      {"alias", ALIAS},
+      {"alias", tALIAS},
 #line 13 "gperf.txt"
       {"BEGIN", upBEGIN},
 #line 22 "gperf.txt"
-      {"defined?", DEFINED},
+      {"defined?", tDEFINED},
 #line 20 "gperf.txt"
-      {"class", CLASS},
+      {"class", tCLASS},
       {"", -1}, {"", -1},
 #line 49 "gperf.txt"
-      {"while", WHILE}
+      {"while", tWHILE}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -215,4 +215,3 @@ rb_reserved_word (str, len)
 }
 #line 51 "gperf.txt"
 
- 

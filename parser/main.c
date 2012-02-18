@@ -32,11 +32,10 @@ extern int rb_debug_file(const char *);
  */
 int main(int argc, char * argv[])
 {
-    if (argc != 2) {
-        printf("Usage: ruby-parser file\n\n");
-        printf("KDevelop Ruby parser debugging utility\n");
-        exit(0);
-    }
-    return rb_debug_file(argv[argc - 1]);
+  if (argc != 2) {
+      printf("Usage: ruby-parser file\n\n");
+      printf("KDevelop Ruby parser debugging utility\n");
+      exit(0);
+  }
+  return rb_debug_file(argv[argc - 1]);
 }
-

@@ -30,11 +30,11 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include <node.h>
+#include "node.h"
 #include "parser.h"
 
-
 #define STACK_SIZE 128
+#define BSIZE STACK_SIZE
 
 
 /* Flags used by the lexer */
@@ -42,17 +42,32 @@ struct flags_t {
   unsigned char eof_reached : 1;
   unsigned char expr_seen : 1;
   unsigned char class_seen : 1;
-  unsigned char no_block : 1;
   unsigned char dot_seen : 1;
   unsigned char last_is_paren : 1;
+  unsigned char special_arg : 1;
+  unsigned char cond_seen : 1;
+  unsigned char cmd_arg : 1;
+  unsigned char brace_arg : 1;
+  unsigned char def_seen : 1;
+  unsigned char in_alias : 1;
 };
 
 #define eof_reached lexer_flags.eof_reached
 #define expr_seen lexer_flags.expr_seen
 #define class_seen lexer_flags.class_seen
-#define no_block lexer_flags.no_block
 #define dot_seen lexer_flags.dot_seen
 #define last_is_paren lexer_flags.last_is_paren
+#define special_arg lexer_flags.special_arg
+#define cmd_arg lexer_flags.cmd_arg
+#define brace_arg lexer_flags.brace_arg
+#define def_seen lexer_flags.def_seen
+#define cond_seen lexer_flags.cond_seen
+#define in_alias lexer_flags.in_alias
+
+#define PUSH_CLASS() parser->class_seen = 1;
+#define POP_CLASS() parser->class_seen = 0;
+#define PUSH_COND() parser->cond_seen = 1;
+#define POP_COND() parser->cond_seen = 0;
 
 
 /* Structure representing a position */
@@ -84,10 +99,13 @@ struct parser_t {
   unsigned char call_args : 1;
   int stack_scale;
   int pos_size;
+  int name_length;
 
   /* Flags used by the parser */
   struct flags_t lexer_flags;
   int in_def;
+  int paren_nest;
+  int lpar_beg;
 
   /* Errors on the file */
   struct error_t errors[2];
@@ -95,6 +113,7 @@ struct parser_t {
 
   /* Stack of names */
   char * stack[2];
+  char * aux; /* TODO: free */
   struct node * string_names;
   int sp;
 
@@ -117,110 +136,102 @@ struct parser_t {
 
 
 /* yy's functions */
-int yylex(void *, void *);
-void yyerror(struct parser_t * p, const char * s, ...);
+static int yylex(void *, void *);
+static void yyerror(struct parser_t * p, const char * s, ...);
 
-/* Parser auxiliar functions */
-void init_parser(struct parser_t * p);
-void free_parser(struct parser_t * p);
-int check_lhs(struct node * n);
-int retrieve_source(struct parser_t * p, const char * path);
+/* The static functions below deal with stacks. */
 
 #define ALLOC_N(kind, l, r) alloc_node(kind, l, r); fix_pos(parser, yyval.n);
 #define ALLOC_C(kind, cond, l, r) alloc_cond(kind, cond, l, r); fix_pos(parser, yyval.n);
+#define ALLOC_TERN(kind, cond, l, r) alloc_cond(kind, cond, l, r); fix_ternary(yyval.n);
 #define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond);
 
-void pop_stack(struct parser_t * parser, struct node * n);
+static void pop_stack(struct parser_t * parser, struct node * n);
 #define POP_STACK pop_stack(parser, yyval.n)
-void pop_string(struct parser_t * parser, struct node * n);
+static void pop_string(struct parser_t * parser, struct node * n);
 #define POP_STR pop_string(parser, yyval.n)
-void push_string(struct parser_t * parser, char * buffer);
-void multiple_string(struct parser_t * parser, struct node * n);
-void push_last_comment(struct parser_t * parser);
-void pop_comment(struct parser_t * parser, struct node *n);
+static void push_string(struct parser_t * parser, char * buffer);
+static void multiple_string(struct parser_t * parser, struct node * n);
+static void push_last_comment(struct parser_t * parser);
+static void pop_comment(struct parser_t * parser, struct node *n);
 
-
-void fix_pos(struct parser_t * parser, struct node * n);
-void push_pos(struct parser_t * parser, struct pos_t tokp);
-void pop_pos(struct parser_t * parser, struct node * n);
-void pop_start(struct parser_t * parser, struct node * n);
-void pop_end(struct parser_t * parser, struct node * n);
-#define copy_start(dest, src) dest->startLine = src->startLine; dest->startCol = src->startCol
-#define copy_end(dest, src) dest->endLine = src->endLine; dest->endCol = src->endCol
-#define copy_range(dest, src1, src2) copy_start(dest, src1); copy_end(dest, src2)
+static void fix_pos(struct parser_t * parser, struct node * n);
+static void fix_ternary(struct node * n);
+struct node * fix_star(struct parser_t * parser);
+static void push_pos(struct parser_t * parser, struct pos_t tokp);
+static void pop_pos(struct parser_t * parser, struct node * n);
+static void pop_start(struct parser_t * parser, struct node * n);
+static void copy_last(struct node * head, struct node * tail);
+static void copy_wc_range(struct node * res, struct node * h, struct node * t);
+static void copy_wc_range_ext(struct node * res, struct node * h, struct node * t);
+#define discard_pos() pop_pos(parser, NULL)
+#define copy_start(dest, src) ({ dest->startLine = src->startLine; dest->startCol = src->startCol; })
+#define copy_end(dest, src) ({ dest->endLine = src->endLine; dest->endCol = src->endCol; })
+#define copy_range(dest, src1, src2) ({ copy_start(dest, src1); copy_end(dest, src2); })
 #define copy_pos(dest, src) copy_range(dest, src, src);
-#define manual_fix() {\
-    struct node * n = parser->last_pos; \
-    struct pos_t tp = { n->startLine, n->startCol, n->endLine, n->endCol }; \
-    pop_pos(parser, parser->last_pos); \
-    push_pos(parser, tp);\
-  }
-#define fix_mrhs(n) { if (n->r->last != NULL) { copy_end(n, n->r->last); } }
-#define fix_mrhs_left(n) { if (n->l->last != NULL) { copy_end(n, n->l->last); } }
+#define copy_op(op) { parser->aux = strdup(op); parser->name_length = strlen(op);}
 #define CONCAT_STRING     parser->auxiliar.endLine = parser->pos_stack[parser->pos_size - 1].endLine; \
                           parser->auxiliar.endCol = parser->pos_stack[parser->pos_size - 1].endCol;
 %}
 
 %pure_parser
 %parse-param {struct parser_t * parser }
+%union { struct node * n; int num; }
 
-%union {  struct node * n;  }
+/* Tokens */
+%token <n> tCLASS tMODULE tDEF tUNDEF tBEGIN tRESCUE tENSURE tEND tIF tUNLESS
+%token <n> tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
+%token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
+%token <n> tALIAS tDEFINED upBEGIN upEND tHEREDOC tTRUE tFALSE tNIL tENCODING
+%token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA STRING
+%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND
+%token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
+%token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
 
-/* Reserved words */
-%token CLASS MODULE DEF UNDEF BEGIN RESCUE ENSURE END IF UNLESS THEN ELSIF
-%token ELSE CASE WHEN WHILE UNTIL FOR BREAK NEXT REDO RETRY IN DO DO_BLOCK
-%token RETURN YIELD KWAND KWOR KWNOT ALIAS DEFINED upBEGIN upEND
-%token HEREDOC tTRUE tFALSE NIL ENCODING tFILE LINE SELF SUPER
+/* Types */
+%type <n> singleton strings string regexp literal numeric cpath rescue_arg
+%type <n> top_compstmt top_stmt bodystmt compstmt stmts stmt expr arg primary
+%type <n> command command_call method_call if_tail opt_else case_body cases
+%type <n> opt_rescue exc_list exc_var opt_ensure args call_args opt_call_args
+%type <n> paren_args opt_paren_args super aref_args opt_block_arg block_arg
+%type <n> mrhs superclass block_call block_command f_block_optarg f_block_opt
+%type <n> const f_arglist f_args f_arg f_arg_item f_optarg f_marg f_marg_list
+%type <n> f_margs assoc_list assocs assoc undef_list backref for_var bvar base
+%type <n> block_param opt_block_param block_param_def f_opt bv_decls label none
+%type <n> lambda f_larglist lambda_body command_args opt_bv_decl lhs do_block
+%type <n> mlhs mlhs_head mlhs_basic mlhs_item mlhs_node mlhs_post mlhs_inner
+%type <n> fsym variable symbol operation operation2 operation3 other_vars 
+%type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg 
+%type <n> brace_block cmd_brace_block f_bad_arg
 
-/* Declare tokens */
-%token EOL CVAR NUMBER SYMBOL FNAME BASE STRING REGEXP MCALL ARRAY SARY
-%token IVAR GLOBAL tLBRACKET tRBRACKET tDOT tTILDE tBACKTICK tCOMMA tCOLON
-%token tPOW tUMINUS tUPLUS tLSHIFT tRSHIFT tASSOC tQUESTION tSEMICOLON COMMENT
-%token tOR tAND tAND_BIT tOR_BIT tXOR_BIT tLBRACE tRBRACE tLPAREN tRPAREN
-%token tLESSER tGREATER tNOT tPLUS tMINUS tMUL tDIV tMOD KEY CONST tCOLON3
-%token tASGN tOP_ASGN tCMP tEQ tEQQ tNEQ tMATCH tNMATCH tGEQ tLEQ tCOLON2
+/* precedence table */
+%nonassoc tLOWEST
+%nonassoc tLBRACE_ARG
 
-
-/* Precedence table */
-%nonassoc IF UNLESS WHILE UNTIL
-%left  KWOR KWAND
-%right KWNOT
-%nonassoc DEFINED
-%right tASGN tOP_ASGN
-%right tQUESTION tCOLON
+%nonassoc  modifier_if modifier_unless modifier_while modifier_until
+%left  tKWOR tKWAND
+%right tKWNOT
+%nonassoc tDEFINED
+%right '=' tOP_ASGN
+%left modifier_rescue
+%right '?' ':'
 %nonassoc tDOT2 tDOT3
-%left tOR
-%left tAND
+%left  tOR
+%left  tAND
 %nonassoc  tCMP tEQ tEQQ tNEQ tMATCH tNMATCH
-%left  tGREATER tGEQ tLESSER tLEQ
-%left  tOR_BIT tXOR_BIT
-%left  tAND_BIT
+%left  '>' tGEQ '<' tLEQ
+%left  '|' '^'
+%left  '&'
 %left  tLSHIFT tRSHIFT
-%left  tPLUS tMINUS
-%left  tMUL tDIV tMOD
-%nonassoc tUMINUS
+%left  '+' '-'
+%left  '*' '/' '%'
+%right tUMINUS_NUM tUMINUS
 %right tPOW
-%right tNOT tTILDE tUPLUS
+%right '!' '~' tUPLUS
 
-
-%type <n> exp stmt simple_stmt cmpd_stmt return_stmt yield_stmt const_mcall base
-%type <n> if_tail opt_else case_body cases opt_rescue opt_ensure const_scope mcall
-%type <n> compstmt stmts lhs assign superclass mlhs mrhs paren_method_call lhs_list
-%type <n> item SYMBOL NUMBER REGEXP basic variable not_empty_compstmt module_name
-%type <n> exc_var rescue_arg bodystmt f_arglist arg f_blockarg fname single_name
-%type <n> f_arguments f_args f_restarg f_optarg primary f_opt primary1 primary2
-%type <n> array array_items hash hash_items hash_item method_call call_args
-%type <n> opt_lambda_body lambda_body brace_block do_block bv_decls block_list
-%type <n> block_args exp_for exc_list rescue_list rescue_item function_args block_params
-%type <n> f_bad_arg simple_assign item_list opt_rescue_arg symbol exp_or_hash
-%type <n> bracket_list bracket_item array_exp m_call_args exp_hash sary const single_name_mcall
-%type <n> dot_method_call dot_items dot_item scope_items array_value opt_bracket_list key
-%type <n> m_call_args_paren opt_call_args_paren call_args_paren exp_paren fname_or_const
-
-%start parser_start
 %%
-parser_start: /* nothing */ EOL   { parser->ast = NULL; YYACCEPT; }
-  | stmt
+
+top_compstmt: top_stmt
   {
     if (parser->errors[0].valid == 1) {
       free_ast(parser->ast);
@@ -229,1140 +240,1236 @@ parser_start: /* nothing */ EOL   { parser->ast = NULL; YYACCEPT; }
       parser->ast = $1;
     YYACCEPT;
   }
+  | term { $$ = 0; YYACCEPT; }
 ;
 
-stmt: simple_stmt
-  | cmpd_stmt
-  | assign                { fix_mrhs($$); }
-  | method_call opt_lambda_body
-  {
-    $$ = update_list($1, $2);
-    parser->call_args = 0;
-  }
-  | hash
-  | stmt m_if exp         { $$ = ALLOC_MOD(token_if, $3, $1, NULL);     }
-  | stmt m_unless exp     { $$ = ALLOC_MOD(token_unless, $3, $1, NULL); }
-  | stmt m_while exp      { $$ = ALLOC_MOD(token_while, $3, $1, NULL);  }
-  | stmt m_until exp      { $$ = ALLOC_MOD(token_until, $3, $1, NULL);  }
-  | exp
-;
-
-stmts: stmt               { $$ = $1;  }
-  | stmts terms stmt      { $$ = update_list($1, $3);  }
-;
-
-basic: variable           { $$ = $1;  }
-  | NUMBER                { $$ = ALLOC_N(token_numeric, NULL, NULL);   }
-  | symbol                { $$ = $1;  }
-  | string
-  {
-    $$ = ALLOC_N(token_string, NULL, NULL); POP_STR;
-    multiple_string(parser, $$);
-  }
-  | REGEXP                { $$ = ALLOC_N(token_regexp, NULL, NULL); POP_STR;    }
-  | HEREDOC               { $$ = ALLOC_N(token_heredoc, NULL, NULL);   }
-  | tBACKTICK             { $$ = ALLOC_N(token_backtick, NULL, NULL); POP_STR;  }
-  | other_keywords        { $$ = ALLOC_N(token_object, NULL, NULL);    }
-;
-
-other_keywords: tFALSE
-  | tTRUE
-  | NIL
-  | ENCODING
-  | tFILE
-  | LINE
-  | SELF
-  | SUPER
-;
-
-string: STRING
-  | string STRING
-  {
-    CONCAT_STRING;
-    pop_pos(parser, NULL);
-  }
-;
-
-primary: basic            { $$ = $1;  }
-  | array                 { $$ = $1;  }
-  | paren_method_call     { $$ = $1;  }
-  | dot_method_call       { $$ = $1;  }
-;
-
-primary1: variable        { $$ = $1;  }
-  | paren_method_call     { $$ = $1;  }
-  | dot_method_call       { $$ = $1;  }
-;
-
-primary2: NUMBER          { $$ = ALLOC_N(token_numeric, NULL, NULL);   }
-  | symbol                { $$ = $1;  }
-  | string
-  {
-    $$ = ALLOC_N(token_string, NULL, NULL); POP_STR;
-    multiple_string(parser, $$);
-  }
-  | REGEXP                { $$ = ALLOC_N(token_regexp, NULL, NULL); POP_STR;   }
-  | HEREDOC               { $$ = ALLOC_N(token_heredoc, NULL, NULL);   }
-  | tBACKTICK             { $$ = ALLOC_N(token_backtick, NULL, NULL); POP_STR; }
-  | array                 { $$ = $1;  }
-  | other_keywords        { $$ = ALLOC_N(token_object, NULL, NULL);    }
-;
-
-simple_stmt: BREAK        { $$ = ALLOC_N(token_break, NULL, NULL);   }
-  | REDO                  { $$ = ALLOC_N(token_redo, NULL, NULL);    }
-  | RETRY                 { $$ = ALLOC_N(token_retry, NULL, NULL);   }
-  | NEXT                  { $$ = ALLOC_N(token_next, NULL, NULL);    }
-  | UNDEF item_list       { $$ = ALLOC_N(token_undef, NULL, $2); fix_mrhs($$);      }
-  | ALIAS item item       { $$ = ALLOC_N(token_alias, $2, $3); copy_end($$,$3);     }
-  | yield_stmt            { $$ = $1;  }
-  | return_stmt           { $$ = $1;  }
-;
-
-yield_stmt: YIELD         { $$ = ALLOC_N(token_yield, NULL, NULL);   }
-  | YIELD exp             { $$ = ALLOC_N(token_yield, $2, NULL);     }
-;
-
-return_stmt: RETURN       { $$ = ALLOC_N(token_return, NULL, NULL);  }
-  | RETURN exp            { $$ = ALLOC_N(token_return, $2, NULL); copy_end($$, $2);   }
-;
-
-item_list: item           { $$ = $1;  }
-  | item comma item_list  { $$ = update_list($1, $3); }
-;
-
-item: BASE                { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | FNAME                 { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | symbol                { $$ = $1; }
-;
-
-cmpd_stmt: k_if exp then
-  compstmt
-  if_tail
-  END
-  {
-    $$ = ALLOC_C(token_if, $2, $4, $5);
-    pop_start(parser, $$);
-  }
-  | k_unless exp then
-    compstmt
-    if_tail
-    END
-    {
-      $$ = ALLOC_C(token_unless, $2, $4, $5);
-      pop_start(parser, $$);
-    }
-  | k_while exp do
-    compstmt
-    END
-    {
-      $$ = ALLOC_C(token_while, $2, $4, NULL);
-      pop_start(parser, $$);
-    }
-  | k_until exp do
-    compstmt
-    END
-    {
-      $$ = ALLOC_C(token_until, $2, $4, NULL);
-      pop_start(parser, $$);
-    }
-  | k_case exp opt_terms
-    case_body
-    END
-    {
-      $$ = ALLOC_C(token_case, $2, $4, NULL);
-      pop_start(parser, $$);
-    }
-  | k_case case_body END
-    {
-      $$ = ALLOC_C(token_case, NULL, $2, NULL);
-      pop_start(parser, $$);
-    }
-  | upBEGIN tLBRACE compstmt tRBRACE
-    {
-      $$ = ALLOC_N(token_up_begin, $3, NULL);
-      pop_pos(parser, NULL);
-      pop_start(parser, $$);
-    }
-  | upEND tLBRACE compstmt tRBRACE
-    {
-      $$ = ALLOC_N(token_up_end, $3, NULL);
-      pop_pos(parser, NULL);
-      pop_start(parser, $$);
-    }
-  | k_for mlhs k_in exp_for do compstmt END
-    {
-      $$ = ALLOC_C(token_for, $4, $6, $2);
-      pop_pos(parser, NULL);
-      pop_start(parser, $$);
-    }
-  | BEGIN bodystmt END
-    {
-      $$ = ALLOC_N(token_exception, $2, NULL);
-      pop_start(parser, $$);
-    }
-  | k_def single_name
-    {
-      parser->in_def++;
-    }
-    function_args bodystmt END
-    {
-      parser->in_def--;
-      $$ = ALLOC_C(token_function, $2, $5, $4);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }
-  | k_def single_name_mcall
-    {
-      parser->in_def++;
-    }
-    f_arglist tRPAREN bodystmt END
-    {
-      parser->in_def--;
-      $$ = ALLOC_C(token_function, $2, $6, $4);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }
-  | k_module module_name
-    {
-      if (parser->in_def)
-        yyerror(parser, "module definition in method body");
-    }
-    bodystmt
-    END
-    {
-      $$ = ALLOC_N(token_module, $4, $2);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }
-  | k_class module_name
-    {
-      if (parser->in_def)
-        yyerror(parser, "class definition in method body");
-    }
-    bodystmt
-    END
-    {
-      $$ = ALLOC_C(token_class, NULL, $4, $2);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }  
-  | k_class module_name superclass
-    {
-      if (parser->in_def)
-        yyerror(parser, "class definition in method body");
-    }
-    bodystmt
-    END
-    {
-      $$ = ALLOC_C(token_class, $3, $5, $2);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }
-  | k_class tLSHIFT exp_or_hash
-    {
-      if (parser->in_def)
-        yyerror(parser, "class definition in method body");
-    }
-    term
-    bodystmt
-    END
-    {
-      $$ = ALLOC_N(token_singleton_class, $6, $3);
-      pop_comment(parser, $$);
-      pop_start(parser, $$);
-    }
-;
-
-fname: FNAME    { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | base        { $$ = $1;  }
-;
-
-fname_or_const: fname { $$ = $1;  }
-  | const             { $$ = $1;  }
-;
-
-single_name: base dot_or_scope fname
-  {
-    $$ = alloc_node(token_object, $1, $3);
-    copy_range($$, $1, $3);
-  }
-  | fname   { $$ = $1;  }
-;
-
-single_name_mcall: base dot_or_scope mcall
-	{
-    $$ = alloc_node(token_object, $1, $3);
-    copy_range($$, $1, $3);		
-	}
-	| mcall		{ $$ = $1;	}
-;
-
-function_args: f_arglist eol_or_semicolon  { $$ = $1;  }
-  | eol_or_semicolon  { $$ = 0; }
-;
-
-module_name: CONST  { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | const_scope     { $$ = $1;  }
-  | BASE
-  {
-    yyerror(parser, "class/module name must be CONSTANT");
-  }
-;
-
-variable: base  { $$ = $1; }
-  | CVAR        { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | GLOBAL      { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | IVAR        { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | CONST       { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-;
-
-base: BASE      { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-;
-
-mcall: MCALL    { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; $$->endCol--; }
-;
-
-const: CONST    { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-;
-
-symbol: SYMBOL  { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
-;
-
-key: KEY        { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
-;
-
-if_tail: opt_else
-  | k_elsif exp then
-    compstmt
-    if_tail
-    {
-      $$ = ALLOC_C(token_if, $2, $4, $5);
-      struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
-
-      pop_pos(parser, $$);
-      push_pos(parser, tp);
-    }
-;
-
-opt_else: /* nothing */     { $$ = 0; }
-  | ELSE compstmt
-  {
-    $$ = ALLOC_C(token_if, NULL, $2, NULL);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
-
-    pop_pos(parser, $$);
-    push_pos(parser, tp);
-  }
-;
-
-opt_ensure: /* nothing */   { $$ = 0; }
-  | ENSURE compstmt
-  {
-    $$ = ALLOC_N(token_ensure, $2, NULL);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
-
-    pop_pos(parser, $$);
-    push_pos(parser, tp);    
-  }
-;
-
-opt_rescue: /* nothing */   { $$ = 0;   }
-  | rescue_list             { $$ = $1;  }
-;
-
-rescue_list: rescue_item    { $$ = $1;  }
-  | rescue_list rescue_item { $$ = update_list($1, $2); }
-;
-
-rescue_item: RESCUE opt_rescue_arg then compstmt
-  {
-    $$ = ALLOC_N(token_rescue, $2, $4);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
-
-    pop_pos(parser, $$);
-    push_pos(parser, tp);
-  }
+top_stmt: none
+  | stmt
+  | error stmt { $$ = $2; }
 ;
 
 bodystmt: compstmt opt_rescue opt_else opt_ensure
   {
     $$ = alloc_ensure(token_body, $1, $2, $3, $4);
-    if ($1 != NULL) {
-      if ($1->last != NULL) {
-        copy_range($$, $1, $1->last);
-      } else {
-        copy_range($$, $1, $1);
-      }
-    }
+    copy_wc_range($$, $1, $1);
   }
 ;
 
-superclass: tLESSER opt_eol_list module_name  { $$ = $3;  }
+compstmt: stmts opt_terms { $$ = $1; }
 ;
 
-opt_lambda_body: /* nothing */  { $$ = 0;   }
-  | lambda_body                 { $$ = $1;  }
+stmts: none
+  | stmt
+  | stmts terms stmt { $$ = ($1 == NULL) ? $3 : update_list($1, $3); }
+  | error stmt { $$ = $2; }
 ;
 
-lambda_body: brace_block  { $$ = $1;  }
-  | do_block              { $$ = $1;  }
-;
-
-brace_block: lbrace block_args not_empty_compstmt tRBRACE
+stmt: tALIAS fsym fsym
   {
+    $$ = ALLOC_N(token_alias, $2, $3); copy_end($$, $3);
+  }
+  | tALIAS GLOBAL GLOBAL
+  {
+    /* Ugly as hell, but it works */
+    struct node * l = ALLOC_N(token_object, NULL, NULL);
+    struct node * r = ALLOC_N(token_object, NULL, NULL);
+    fix_pos(parser, r);
+    fix_pos(parser, l);
+    pop_stack(parser, l);
+    pop_stack(parser, r);
+    $$ = ALLOC_N(token_alias, l, r); copy_end($$, r);
+  }
+  | tALIAS GLOBAL tNTH_REF
+  {
+    yyerror(parser, "can't make alias for the number variables");
+  }
+  | tUNDEF undef_list
+  {
+    $$ = ALLOC_N(token_undef, NULL, $2); copy_last($$, $2);
+  }
+  | stmt modifier_if expr
+  {
+    $$ = ALLOC_MOD(token_if, $3, $1, NULL);
+  }
+  | stmt modifier_unless expr
+  {
+    $$ = ALLOC_MOD(token_unless, $3, $1, NULL);
+  }
+  | stmt modifier_while expr
+  {
+    $$ = ALLOC_MOD(token_while, $3, $1, NULL);
+  }
+  | stmt modifier_until expr
+  {
+    $$ = ALLOC_MOD(token_until, $3, $1, NULL);
+  }
+  | stmt modifier_rescue stmt
+  {
+    $$ = ALLOC_MOD(token_rescue, $3, $1, NULL);
+  }
+  | upBEGIN
+  {
+    if (parser->in_def)
+      yyerror(parser, "BEGIN in method");
+  }
+  '{' compstmt '}'
+  {
+    $$ = ALLOC_N(token_up_begin, $4, NULL);
     pop_pos(parser, NULL);
+    pop_start(parser, $$);
+  }
+  | upEND '{' compstmt '}'
+  {
+    $$ = ALLOC_N(token_up_end, $3, NULL);
+    pop_pos(parser, NULL);
+    pop_start(parser, $$);
+  }
+  | lhs '=' command_call { $$ = ALLOC_N(token_assign, $1, $3); }
+  | mlhs '=' command_call { $$ = ALLOC_N(token_assign, $1, $3); }
+  | variable tOP_ASGN command_call { $$ = ALLOC_N(token_op_assign, $1, $3); }
+  | primary '[' opt_call_args rbracket tOP_ASGN command_call
+  {
+    struct node *aux = alloc_node(token_array_value, $1, $3);
+    $$ = alloc_node(token_op_assign, aux, $6);
+  }
+  | primary '.' base tOP_ASGN command_call
+  {
+    struct node *aux = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_op_assign, aux, $5);
+  }
+  | primary '.' const tOP_ASGN command_call
+  {
+    struct node *aux = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_op_assign, aux, $5);
+  }
+  | primary tCOLON2 const tOP_ASGN command_call
+  {
+    yyerror(parser, "constant re-assignment");
+  }
+  | primary tCOLON2 base tOP_ASGN command_call
+  {
+    struct node *aux = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_op_assign, aux, $5);
+  }
+  | backref tOP_ASGN command_call { $$ = ALLOC_N(token_op_assign, $1, $3); }
+  | lhs '=' mrhs { $$ = ALLOC_N(token_assign, $1, $3); }
+  | mlhs '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
+  | mlhs '=' mrhs { $$ = ALLOC_N(token_assign, $1, $3); }
+  | expr
+  | tpEND { $$ = ALLOC_N(token__end__, NULL, NULL); }
+;
+
+expr: command_call
+  | expr tKWAND expr { $$ = ALLOC_N(token_kw_and, $1, $3); discard_pos(); }
+  | expr tKWOR expr { $$ = ALLOC_N(token_kw_or, $1, $3);  discard_pos(); }
+  | tKWNOT opt_eol expr { $$ = ALLOC_N(token_kw_not, $3, NULL);}
+  | '!' command_call { $$ = ALLOC_N(token_not, $2, NULL); }
+  | arg
+;
+
+command_call: command | block_command
+;
+
+block_command: block_call
+  | block_call '.' operation2 command_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+  }
+  | block_call tCOLON2 operation2 command_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+  }
+;
+
+cmd_brace_block: tLBRACE_ARG opt_block_param compstmt '}'
+  {
+    discard_pos();
     $$ = ALLOC_N(token_block, $3, $2);
-    if ($3->last != NULL) {
-      copy_end($$, $3->last);
-    } else {
-      copy_end($$, $3);
-    }
-  }
-  | lbrace not_empty_compstmt tRBRACE
-  {
-    pop_pos(parser, NULL);
-    $$ = ALLOC_N(token_block, $2, NULL);
-    if ($2->last != NULL) {
-      copy_end($$, $2->last);
-    } else {
-      copy_end($$, $2);
-    }
+    copy_last($$, $3);
   }
 ;
 
-do_block: k_do_block endl block_args compstmt END
+command: operation command_args       %prec tLOWEST
   {
-    pop_pos(parser, parser->last_pos);
-    $$ = ALLOC_N(token_block, $4, $3);
-    if ($4 != NULL) {
-      if ($4->last != NULL) {
-        copy_end($$, $4->last);
-      } else {
-        copy_end($$, $4);
-      }
-    } else { 
-      copy_pos($$, parser->last_pos);
-    }
+    $$ = alloc_node(token_method_call, $1, $2);
+    copy_wc_range($$, $1, $2);
   }
-  | k_do_block compstmt END
+  | operation command_args cmd_brace_block
   {
-    pop_pos(parser, parser->last_pos);
-    $$ = ALLOC_N(token_block, $2, NULL);
-    if ($2 != NULL) {
-      if ($2->last != NULL) {
-        copy_end($$, $2->last);
-      } else {
-        copy_end($$, $2);
-      }
-    } else {
-      copy_pos($$, parser->last_pos);
-    }
+    $$ = alloc_node(token_method_call, $1, $2);
+    copy_wc_range($$, $1, $2);
+    $$ = update_list($$, $3);
+  }
+  | primary '.' operation2 command_args     %prec tLOWEST
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+  }
+  | primary '.' operation2 command_args cmd_brace_block
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+    $$ = update_list($$, $5);
+  }
+  | primary tCOLON2 operation2 command_args %prec tLOWEST
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+  }
+  | primary tCOLON2 operation2 command_args cmd_brace_block
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+    $$ = update_list($$, $5);
+  }
+  | tSUPER call_args
+  {
+    $$ = ALLOC_N(token_method_call, $2, NULL);
+    copy_last($$, $2);
+  }
+  | tYIELD call_args
+  {
+    $$ = ALLOC_N(token_yield, $2, NULL);
+    copy_last($$, $2);
+  }
+  | tRETURN call_args
+  {
+    $$ = ALLOC_N(token_return, $2, NULL);
+    copy_last($$, $2);
+  }
+  | tBREAK call_args
+  {
+    $$ = ALLOC_N(token_break, $2, NULL);
+    copy_last($$, $2);
+  }
+  | tNEXT call_args
+  {
+    $$ = ALLOC_N(token_next, $2, NULL);
+    copy_last($$, $2);
   }
 ;
 
-block_params: f_arguments { $$ = $1;  }
-  | comma tAND_BIT arg    { $$ = $3;  }
-  | f_args comma          { $$ = $1;  }
-  | f_args comma f_restarg f_blockarg
-  {
-    $$ = concat_list($1, update_list($3, $4));
-  }
-  | f_args comma f_restarg comma f_args f_blockarg
-  {
-    $$ = concat_list($1, create_list($3, update_list($5, $6)));
-  }
+mlhs: mlhs_basic
+  | tLPAREN mlhs_inner rparen { $$ = $2; }
 ;
 
-block_args: tOR_BIT block_params bv_decls tOR_BIT
+mlhs_inner: mlhs_basic
+  | tLPAREN mlhs_inner rparen { $$ = $2; }
+;
+
+mlhs_basic: mlhs_head
+  | mlhs_head mlhs_item { $$ = update_list($1, $2); }
+  | mlhs_head tSTAR mlhs_node { $$ = update_list($1, $3); }
+  | mlhs_head tSTAR mlhs_node ',' mlhs_post
   {
-    $$ = alloc_node(token_object, $2, $3);
-    copy_range($$, $2, $3); 
+    $$ = concat_list($1, update_list($3, $5));
   }
-  | tOR_BIT bv_decls tOR_BIT
+  | mlhs_head tSTAR { $$ = fix_star(parser); $$ = update_list($1, $$); }
+  | mlhs_head tSTAR ',' mlhs_post
   {
-    $$ = alloc_node(token_object, NULL, $2);
-    copy_range($$, $2, $2); 
+    $$ = fix_star(parser);
+    $$ = update_list($1, $$);
+    $$ = concat_list($$, $4);
   }
-  | tOR_BIT block_params tOR_BIT
+  | tSTAR mlhs_node { $$ = $2; }
+  | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); }
+  | tSTAR { $$ = fix_star(parser); }
+  | tSTAR ',' mlhs_post { $$ = $3; }
+;
+
+mlhs_item: mlhs_node
+  | tLPAREN mlhs_inner rparen
   {
     $$ = alloc_node(token_object, $2, NULL);
-    copy_range($$, $2, $2); 
+    copy_wc_range($$, $2, $2);
   }
 ;
 
-bv_decls: tSEMICOLON block_list   { $$ = $2;  }
+mlhs_head: mlhs_item ',' { $$ = $1; }
+  | mlhs_head mlhs_item ',' { $$ = update_list($1, $2); }
 ;
 
-block_list: base          { $$ = $1;  }
-  | block_list comma base { $$ = update_list($1, $3); }
+mlhs_post: mlhs_item { $$ = $1; }
+  | mlhs_post ',' mlhs_item { $$ = update_list($1, $3); }
 ;
 
-f_arglist: f_arguments            { $$ = $1;  }
-  | tAND_BIT arg                  { $$ = $2;  }
-  | lparen f_arguments rparen     { $$ = $2;  }
-  | lparen tAND_BIT arg rparen    { $$ = $3;  }
+mlhs_node: variable { $$ = $1; }
+  | primary '[' opt_call_args rbracket
+  {
+    $$ = ALLOC_N(token_array_value, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | primary '.' base
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | primary tCOLON2 base
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | primary '.' const
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | primary tCOLON2 const
+  {
+    if (parser->in_def)
+      yyerror(parser, "dynamic constant assignment");
+    $$ = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | tCOLON3 const
+  {
+    if (parser->in_def)
+      yyerror(parser, "dynamic constant assignment");
+    $$ = $2;
+  }
+  | backref
 ;
 
-f_arguments: f_args f_blockarg    { $$ = update_list($1, $2);  }
-  | f_restarg comma f_args f_blockarg
-    {
-      $$ = create_list($1, update_list($3, $4));
-    }
-  | f_restarg f_blockarg { $$ = update_list($1, $2);  }
-  | f_optarg comma f_args f_blockarg
-    {
-      $$ = concat_list($1, update_list($3, $4));
-    }
-  | f_optarg f_blockarg  { $$ = update_list($1, $2);  }
-  | f_optarg comma f_restarg comma f_args f_blockarg
-    {
-      $$ = concat_list($1, create_list($3, update_list($5, $6)));
-    }
-  | f_optarg comma f_restarg f_blockarg
-    {
-      $$ = concat_list($1, update_list($3, $4));
-    }
-  | f_args comma f_optarg comma f_args f_blockarg
-    {
-      $$ = concat_list($1, concat_list($3, update_list($5, $6)));
-    }
-  | f_args comma f_optarg f_blockarg
-    {
-      $$ = concat_list($1, update_list($3, $4));
-    }
-  | f_args comma f_optarg comma f_restarg comma
-    f_args f_blockarg
-    {
-      $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
-    }
-  | f_args comma f_optarg comma f_restarg f_blockarg
-    {
-      $$ = concat_list($1, concat_list($3, update_list($5, $6)));
-    }
+lhs: variable { $$ = $1; }
+  | primary '[' opt_call_args rbracket
+  {    
+    $$ = ALLOC_N(token_array_value, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+  | primary '.' base
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);
+  }
+  | primary tCOLON2 base
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);
+  }
+  | primary '.' const
+  {
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);
+  }
+  | primary tCOLON2 const
+  {
+    if (parser->in_def)
+      yyerror(parser, "dynamic constant assignment");
+    $$ = alloc_node(token_object, $1, $3);
+    copy_range($$, $1, $3);
+  }
+  | tCOLON3 const
+  {
+    if (parser->in_def)
+      yyerror(parser, "dynamic constant assignment");
+    $$ = $2;
+  }
 ;
 
-f_blockarg: /* nothing */ { $$ = 0;   }
-  | comma tAND_BIT arg    { $$ = $3;  }
+cname: BASE
+  {
+    yyerror(parser, "class/module name must be CONSTANT");
+  }
+  | const
 ;
 
-f_args: arg               { $$ = $1;  }
-  | f_args comma arg      { $$ = update_list($1, $3); }
-;
-
-f_restarg: tMUL arg       { $$ = $2;  }
-;
-
-f_opt: arg tASGN primary
+cpath: tCOLON3 cname { $$ = $2; }
+  | cname { $$ = $1; }
+  | primary tCOLON2 cname
   {
     $$ = alloc_node(token_object, $1, $3);
     copy_range($$, $1, $3);
   }
 ;
 
-f_optarg: f_opt           { $$ = $1;  }
-  | f_optarg comma f_opt  { $$ = update_list($1, $3); }
+/* TODO: reswords, push to the stack ?¿ */
+fname: base
+  | const
+  | op
+  {
+    $$ = alloc_node(token_object, NULL, NULL);
+    $$->name = parser->aux;
+    $$->startLine = $$->endLine = parser->line;
+    $$->endCol = parser->column - 1;
+    $$->startCol = $$->endCol - parser->name_length;
+  }
+  | reswords { $$ = ALLOC_N(token_object, NULL, NULL); }
 ;
 
-arg: BASE                 { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | f_bad_arg             { $$ = 0; }
+fsym: fname | symbol
 ;
 
-f_bad_arg: CONST
-  {
-    yyerror(parser, "formal argument cannot be a constant");
-    $$ = 0;
-  }
-  |  IVAR
-  {
-    yyerror(parser, "formal argument cannot be an instance variable");
-    $$ = 0;
-  }
-  | GLOBAL
-  {
-    yyerror(parser, "formal argument cannot be a global variable");
-    $$ = 0;
-  }
-  | CVAR
-  {
-    yyerror(parser, "formal argument cannot be a class variable");
-    $$ = 0;
-  }
+undef_list: fsym
+  | undef_list ',' fsym { $$ = update_list($1, $3); }
 ;
 
-opt_rescue_arg: /* nothing */   { $$ = 0;   }
-  | rescue_arg                  { $$ = $1;  }
+op: '|' { copy_op("|"); } | '^' { copy_op("^"); } | '&' { copy_op("&"); }
+  | tCMP { copy_op("<=>"); } | tEQ { copy_op("=="); } | tEQQ { copy_op("===");}
+  | tMATCH { copy_op("=~"); } | tNMATCH {copy_op("!~");} | '>' { copy_op(">");}
+  | tGEQ { copy_op(">="); } | '<' { copy_op("<"); } | tLEQ { copy_op("<="); }
+  | tNEQ {copy_op("!=");} | tLSHIFT {copy_op("<<");} | tRSHIFT {copy_op(">>");}
+  | '+' { copy_op("+"); } | '-' { copy_op("-"); } | '*' { copy_op("*"); }
+  | tSTAR { copy_op("*"); } | '/' { copy_op("/"); } | '%' { copy_op("%"); }
+  | tPOW { copy_op("**"); } | tAREF { copy_op("[]"); } | '`' { copy_op("`");}
+  | tUPLUS { copy_op("+"); discard_pos(); } | tASET { copy_op("[]="); }
+  | tUMINUS { copy_op("-");discard_pos(); }
+  | '!' { copy_op("!"); discard_pos(); } | '~' { copy_op("~"); discard_pos(); }
 ;
 
-rescue_arg: exc_list exc_var
+reswords: tLINE | tFILE | tENCODING | upBEGIN | upEND | tALIAS | tKWAND
+  | tBEGIN | tBREAK | tCASE | tCLASS | tDEF | tDEFINED | tDO | tELSE | tELSIF
+  | tEND | tENSURE | tFALSE | tFOR | tIN | tMODULE | tNEXT | tNIL | tKWNOT
+  | tKWOR | tREDO | tRESCUE | tRETRY | tRETURN | tSELF | tSUPER | tTHEN | tTRUE
+  | tUNDEF | tWHEN | tYIELD | tIF | tUNLESS | tWHILE | tUNTIL
+;
+
+arg: lhs '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
+  | lhs '=' arg modifier_rescue arg
   {
-    $$ = alloc_node(token_rescue_arg, $1, $2);
-    if ($2 != NULL) {
-      copy_range($$, $1, $2);
-    } else {
-      copy_range($$, $1, $1);
+    struct node *aux = ALLOC_MOD(token_rescue, $5, $3, NULL);
+    $$ = ALLOC_N(token_assign, $1, aux);
+  }
+  | variable tOP_ASGN arg { $$ = ALLOC_N(token_op_assign, $1, $3); }
+  | variable tOP_ASGN arg modifier_rescue arg
+  {
+    struct node *aux = ALLOC_MOD(token_rescue, $5, $3, NULL);
+    $$ = ALLOC_N(token_op_assign, $1, aux);
+  }
+  | primary '[' opt_call_args rbracket tOP_ASGN arg
+  {
+    discard_pos();
+    struct node *aux = alloc_node(token_array_value, $1, $3);
+    copy_wc_range_ext(aux, $1, $3);
+    $$ = ALLOC_N(token_op_assign, aux, $6);
+  }
+  | primary '.' base tOP_ASGN arg
+  {
+    struct node *aux  = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext(aux, $1, $3);
+    $$ = ALLOC_N(token_op_assign, aux, $5);
+  }
+  | primary '.' const tOP_ASGN arg
+  {
+    struct node *aux  = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext(aux, $1, $3);
+    $$ = ALLOC_N(token_op_assign, aux, $5);
+  }
+  | primary tCOLON2 base tOP_ASGN arg
+  {
+    struct node *aux  = alloc_node(token_object, $1, $3);
+    copy_wc_range_ext(aux, $1, $3);
+    $$ = ALLOC_N(token_op_assign, aux, $5);
+  }
+  | primary tCOLON2 const tOP_ASGN arg
+  {
+    yyerror(parser, "constant re-assignment");
+  }
+  | tCOLON3 const tOP_ASGN arg
+  {
+    yyerror(parser, "constant re-assignment");
+  }
+  | backref tOP_ASGN arg { $$ = ALLOC_N(token_assign, $1, $3); }
+  | arg tDOT2 arg { $$ = ALLOC_N(token_dot2, $1, $3); }
+  | arg tDOT3 arg { $$ = ALLOC_N(token_dot3, $1, $3);}
+  | arg '+' arg { $$ = ALLOC_N(token_plus, $1, $3); }
+  | arg '-' arg { $$ = ALLOC_N(token_minus, $1, $3);}
+  | arg '*' arg { $$ = ALLOC_N(token_mul, $1, $3);}
+  | arg '/' arg { $$ = ALLOC_N(token_div, $1, $3);}
+  | arg '%' arg { $$ = ALLOC_N(token_mod, $1, $3);}
+  | arg tPOW arg { $$ = ALLOC_N(token_pow, $1, $3);}
+  | tUPLUS arg  { $$ = ALLOC_N(token_unary_plus, $2, NULL);  }
+  | tUMINUS arg { $$ = ALLOC_N(token_unary_minus, $2, NULL); }
+  | arg '|' arg { $$ = ALLOC_N(token_bit_or, $1, $3);  }
+  | arg '^' arg { $$ = ALLOC_N(token_bit_xor, $1, $3);  }
+  | arg '&' arg { $$ = ALLOC_N(token_bit_and, $1, $3);  }
+  | arg tCMP arg  { $$ = ALLOC_N(token_cmp, $1, $3);  }
+  | arg '>' arg  { $$ = ALLOC_N(token_greater, $1, $3);  }
+  | arg tGEQ arg  { $$ = ALLOC_N(token_geq, $1, $3);  }
+  | arg '<' arg  { $$ = ALLOC_N(token_lesser, $1, $3);  }
+  | arg tLEQ arg  { $$ = ALLOC_N(token_leq, $1, $3);  }
+  | arg tEQ arg  { $$ = ALLOC_N(token_eq, $1, $3);  }
+  | arg tEQQ arg  { $$ = ALLOC_N(token_eqq, $1, $3);  }
+  | arg tNEQ arg  { $$ = ALLOC_N(token_neq, $1, $3);  }
+  | arg tMATCH arg  { $$ = ALLOC_N(token_match, $1, $3); }
+  | arg tNMATCH arg  { $$ = ALLOC_N(token_nmatch, $1, $3);  }
+  | '!' arg  { $$ = ALLOC_N(token_not, $2, NULL);  }
+  | '~' arg { $$ = ALLOC_N(token_neg, $2, NULL);  }
+  | arg tLSHIFT arg { $$ = ALLOC_N(token_lshift, $1, $3); }
+  | arg tRSHIFT arg { $$ = ALLOC_N(token_rshift, $1, $3); }
+  | arg tAND arg { $$ = ALLOC_N(token_and, $1, $3); }
+  | arg tOR arg { $$ = ALLOC_N(token_or, $1, $3); }
+  | tDEFINED opt_eol arg
+  {
+    $$ = ALLOC_N(token_defined, $3, NULL);
+    copy_end($$, $3);
+  }
+  | arg '?' arg opt_eol ':' arg { $$ = ALLOC_TERN(token_ternary, $1, $3, $6); }
+  | primary
+;
+
+aref_args: none
+  | args trailer { $$ = $1; }
+  | args ',' assocs trailer { $$ = update_list($1, $3); }
+  | assocs trailer { $$ = $1; }
+;
+
+paren_args: '(' opt_call_args rparen { $$ = $2; }
+;
+
+opt_paren_args : none | paren_args
+;
+
+opt_call_args: none | call_args
+;
+
+call_args: command
+  | args opt_block_arg { $$ = update_list($1, $2); }
+  | assocs opt_block_arg { $$ = update_list($1, $2); }
+  | args ',' assocs opt_block_arg
+  {
+    struct node *n = update_list($3, $4);
+    $$ = concat_list($1, n);
+  }
+  | block_arg
+;
+
+command_args: { parser->cmd_arg = 1; } call_args { $$ = $2; }
+;
+
+block_arg: tAMPER arg { $$ = $2; }
+;
+
+opt_block_arg: ',' block_arg { $$ = $2; }
+  | ',' { $$ = 0; }
+  | none
+;
+
+args: arg
+  | tSTAR arg { $$ = $2; }
+  | args ',' arg { $$ = update_list($1, $3); }
+  | args ',' tSTAR arg { $$ = update_list($1, $4); }
+;
+
+mrhs: args ',' arg { $$ = update_list($1, $3); }
+  | args ',' tSTAR arg { $$ = update_list($1, $4); }
+  | tSTAR arg { $$ = $2; }
+;
+
+primary: literal
+  | strings
+  | regexp
+  | variable
+  | backref
+  | tBEGIN bodystmt tEND
+  {
+    $$ = ALLOC_N(token_begin, $2, NULL);
+    pop_start(parser, $$);
+  }
+  | tLPAREN_ARG expr rparen { $$ = $2; }
+  | tLPAREN compstmt ')' { $$ = $2; }
+  | primary tCOLON2 const
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, NULL);
+    copy_range($$, $1, $3);
+  }
+  | tCOLON3 const { $$ = $2; }
+  | ARRAY { $$ = ALLOC_N(token_array, NULL, NULL); }
+  | tLBRACKET aref_args ']'
+  {
+    $$ = ALLOC_N(token_array, $2, NULL);
+    if ($2 != NULL && $2->last != NULL) {
+      if ($2->last->endLine >= parser->last_pos->endLine)
+        copy_end($$, $2->last);
+      else
+        copy_end($$, parser->last_pos);
     }
   }
+  | tLBRACE assoc_list '}'
+  {
+    pop_pos(parser, parser->last_pos);
+    $$ = ALLOC_N(token_hash, $2, NULL);
+    if ($2 != NULL && $2->last != NULL) {
+      if ($2->last->endLine >= parser->last_pos->endLine) {
+        copy_end($$, $2->last);
+      } else {
+        copy_end($$, parser->last_pos);
+      }
+    }
+  }
+  | tRETURN { $$ = ALLOC_N(token_return, NULL, NULL); }
+  | tYIELD '(' call_args rparen
+  {
+    $$ = ALLOC_N(token_yield, $3, NULL);
+    copy_last($$, $3);
+  }
+  | tYIELD '(' rparen { $$ = ALLOC_N(token_yield, NULL, NULL); }
+  | tYIELD { $$ = ALLOC_N(token_yield, NULL, NULL); }
+  | tDEFINED opt_eol '(' expr rparen
+  {
+    $$ = ALLOC_N(token_defined, $4, NULL);
+    copy_end($$, $4);
+  }
+  | tKWNOT '(' expr rparen { $$ = ALLOC_N(token_kw_not, $3, NULL);}
+  | tKWNOT '(' rparen { $$ = ALLOC_N(token_kw_not, NULL, NULL);}
+  | operation brace_block
+  {
+    struct node * aux = alloc_node(token_method_call, $1, NULL);
+    $$ = update_list(aux, $2);
+    copy_range($$, $1, $2);
+  }
+  | method_call
+  | method_call brace_block { $$ = update_list($1, $2); }
+  | tLAMBDA lambda { $$ = $2; }
+  | tIF expr then compstmt if_tail tEND
+  {
+    $$ = ALLOC_C(token_if, $2, $4, $5);
+    pop_start(parser, $$);
+  }
+  | tUNLESS expr then compstmt opt_else tEND
+  {
+    $$ = ALLOC_C(token_unless, $2, $4, $5);
+    pop_start(parser, $$);
+  }
+  | tWHILE { PUSH_COND(); } expr do { POP_COND(); } compstmt tEND
+  {
+    $$ = ALLOC_C(token_while, $3, $6, NULL);
+    pop_start(parser, $$);
+  }
+  | tUNTIL { PUSH_COND(); } expr do { POP_COND(); } compstmt tEND
+  {
+    $$ = ALLOC_C(token_while, $3, $6, NULL);
+    pop_start(parser, $$);
+  }
+  | tCASE expr opt_terms case_body tEND
+  {
+    $$ = ALLOC_C(token_case, $2, $4, NULL);
+    pop_start(parser, $$);
+  }
+  | tCASE opt_terms case_body tEND
+  {
+    $$ = ALLOC_N(token_case, $3, NULL);
+    pop_start(parser, $$);
+  }
+  | tFOR for_var tIN { PUSH_COND(); } expr do { POP_COND(); } compstmt tEND
+  {
+    $$ = ALLOC_C(token_for, $5, $8, $2);
+    pop_pos(parser, NULL);
+    pop_start(parser, $$);
+  }
+  | tCLASS cpath superclass
+  {
+    if (parser->in_def)
+      yyerror(parser, "class definition in method body");
+  }
+  bodystmt tEND
+  {
+    $$ = ALLOC_C(token_class, $3, $5, $2);
+    pop_comment(parser, $$);
+    pop_start(parser, $$);
+  }
+  | tCLASS { PUSH_CLASS(); } opt_terms tLSHIFT { POP_CLASS(); } expr
+    term bodystmt tEND
+  {
+    $$ = ALLOC_N(token_singleton_class, $8, $6);
+    pop_comment(parser, $$);
+    pop_start(parser, $$);
+  }
+  | tMODULE cpath
+  {
+    if (parser->in_def)
+      yyerror(parser, "module definition in method body");
+  }
+  bodystmt tEND
+  {
+    $$ = ALLOC_N(token_module, $4, $2);
+    pop_comment(parser, $$);
+    pop_start(parser, $$);
+  }
+  | tDEF fname
+  {
+    parser->def_seen = 0;
+    parser->in_def++;
+  }
+  f_arglist bodystmt tEND
+  {
+    parser->in_def--;
+    $$ = ALLOC_C(token_function, $2, $5, $4);
+    pop_comment(parser, $$);
+    if (parser->pos_size > 0)
+      pop_start(parser, $$);
+  }
+  | tDEF singleton dot_or_colon fname
+  {
+    parser->def_seen = 0;
+    parser->in_def++;
+  }
+  f_arglist bodystmt tEND
+  {
+    $$ = alloc_node(token_object, $2, $4);
+    copy_range($$, $2, $4);
+    $$ = ALLOC_C(token_function, $$, $7, $6);
+    pop_comment(parser, $$);
+    pop_start(parser, $$);
+    parser->in_def--;
+  }
+  | tBREAK { $$ = ALLOC_N(token_break, NULL, NULL);   }
+  | tNEXT { $$ = ALLOC_N(token_next, NULL, NULL);    }
+  | tREDO { $$ = ALLOC_N(token_redo, NULL, NULL);    }
+  | tRETRY { $$ = ALLOC_N(token_retry, NULL, NULL);   }
 ;
 
-exc_list: exp           { $$ = $1;  }
-  | exc_list comma exp  { $$ = update_list($1, $3); }
+then: term
+  | tTHEN { discard_pos(); }
+  | term tTHEN { discard_pos(); }
 ;
 
-exc_var: /* nothing */            { $$ = 0;   }
-  | tASSOC opt_eol_list variable  { $$ = $3;  }
+do: term
+  | tDO_COND { discard_pos(); }
 ;
 
-case_body: k_when exp then compstmt cases
+if_tail: opt_else
+  | tELSIF expr then compstmt if_tail
+  {
+    $$ = ALLOC_C(token_if, $2, $4, $5);
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+
+    pop_pos(parser, $$);
+    push_pos(parser, tp);
+    if ($4 != NULL)
+      copy_end($$, $4);
+  }
+;
+
+opt_else: none
+  | tELSE compstmt
+  {
+    $$ = ALLOC_N(token_if, $2, NULL);
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+
+    pop_pos(parser, $$);
+    push_pos(parser, tp);
+    if ($2 != NULL)
+      copy_end($$, $2);
+  }
+;
+
+for_var: lhs | mlhs
+;
+
+f_marg: f_norm_arg { $$ = $1; }
+  | tLPAREN f_margs rparen { $$ = $2; }
+;
+
+f_marg_list: f_marg
+  | f_marg_list ',' f_marg { $$ = update_list($1, $3); }
+;
+
+f_margs: f_marg_list { $$ = $1; }
+  | f_marg_list ',' tSTAR f_norm_arg { $$ = update_list($1, $4); }
+  | f_marg_list ',' tSTAR f_norm_arg ',' f_marg_list
+  {
+    $$ = concat_list($1, update_list($4, $6));
+  }
+  | f_marg_list ',' tSTAR
+  {
+    struct node *n = alloc_node(token_object, NULL, NULL);
+    $$ = update_list($1, n);
+  }
+  | f_marg_list ',' tSTAR ',' f_marg_list
+  {
+    struct node *n = alloc_node(token_object, NULL, NULL);
+    $$ = concat_list($1, update_list(n, $5));
+  }
+  | tSTAR f_norm_arg { $$ = $2; }
+  | tSTAR f_norm_arg ',' f_marg_list { $$ = update_list($2, $4); }
+  | tSTAR { $$ = alloc_node(token_object, NULL, NULL); }
+  | tSTAR ',' f_marg_list
+  {
+    struct node *n = alloc_node(token_object, NULL, NULL);
+    $$ = update_list(n, $3);
+  }
+;
+
+block_param: f_arg ',' f_block_optarg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg ',' f_block_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
+  }
+  | f_arg ',' f_block_optarg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_arg ',' f_block_optarg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = update_list($1, update_list($3, $4));
+  }
+  | f_arg ',' { $$ = $1; }
+  | f_arg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_block_optarg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_block_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, create_list($3, update_list($5, $6)));
+  }
+  | f_block_optarg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_block_optarg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_rest_arg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = create_list($1, update_list($3, $4));
+  }
+  | f_block_arg
+;
+
+opt_block_param : none
+  | block_param_def
+;
+
+block_param_def : '|' opt_bv_decl '|' { $$ = $2; }
+  | tOR { $$ = 0; }
+  | '|' block_param opt_bv_decl '|' { $$ = update_list($2, $3); }
+;
+
+opt_bv_decl: none
+  | ';' bv_decls { $$ = $2; }
+;
+
+bv_decls: bvar
+  | bv_decls ',' bvar { $$ = update_list($1, $3); }
+;
+
+bvar: base
+  | f_bad_arg { $$ = 0; }
+;
+
+lambda:
+  {
+    $<num>$ = parser->lpar_beg;
+    parser->lpar_beg = ++parser->paren_nest;
+  }
+  f_larglist lambda_body
+  {
+    parser->lpar_beg = $<num>1;
+    discard_pos();
+    $$ = ALLOC_N(token_block, $2, $3);
+    if ($3 != NULL)
+      copy_last($$, $3);
+    parser->last_pos = NULL;
+  }
+;
+
+f_larglist: '(' f_args opt_bv_decl rparen { $$ = update_list($2, $3); }
+  | f_args
+;
+
+lambda_body: tLAMBEG compstmt '}' { $$ = $2; }
+  | tDO_LAMBDA compstmt tEND { $$ = $2; }
+;
+
+do_block: tDO_BLOCK opt_block_param compstmt tEND
+  {
+    discard_pos();
+    $$ = ALLOC_N(token_block, $3, $2);
+    if ($3 != NULL)
+      copy_last($$, $3);
+    else if ($2 != NULL)
+      copy_last($$, $2);
+  }
+;
+
+block_call: command do_block
+  {
+    $$ = update_list($1, $2);
+  }
+  | block_call '.' operation2 opt_paren_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = update_list(aux, $4);
+  }
+  | block_call tCOLON2 operation2 opt_paren_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = update_list(aux, $4);
+  }
+;
+
+method_call: operation paren_args
+  {
+    $$ = alloc_node(token_method_call, $1, $2);
+    copy_wc_range($$, $1, $2);
+  }
+  | primary '.' operation2 opt_paren_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+  }
+  | primary tCOLON2 operation2 paren_args
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, $4);
+    ($4 == NULL) ? copy_range($$, $1, $3) : copy_range($$, $1, $4);
+  }
+  | primary tCOLON2 operation3
+  {
+    struct node *aux = update_list($1, $3);
+    $$ = alloc_node(token_method_call, aux, NULL);
+    copy_range($$, $1, $3);
+  }
+  | primary '.' paren_args
+  {
+    $$ = alloc_node(token_method_call, $1, $3);
+  }
+  | primary tCOLON2 paren_args
+  {
+    $$ = alloc_node(token_method_call, $1, $3);
+  }
+  | super paren_args { $$ = update_list($1, $2); }
+  | super
+  | primary '[' opt_call_args rbracket
+  {
+    $$ = ALLOC_N(token_array_value, $1, $3);
+    copy_wc_range_ext($$, $1, $3);
+  }
+;
+
+brace_block: '{' opt_block_param compstmt '}'
+  {
+    discard_pos();
+    $$ = ALLOC_N(token_block, $3, $2);
+    if ($3 != NULL)
+      copy_last($$, $3);
+    else if ($2 != NULL)
+      copy_last($$, $2);
+  }
+  | tDO opt_block_param compstmt tEND
+  {
+    discard_pos();
+    $$ = ALLOC_N(token_block, $3, $2);
+    if ($3 != NULL)
+      copy_last($$, $3);
+    else if ($2 != NULL)
+      copy_last($$, $2);
+  }
+;
+
+case_body: tWHEN { parser->expr_seen = 0; } args then compstmt cases
   {
     /* The following statements fixes some issues around positions. */
     $$ = ALLOC_N(token_object, NULL, NULL);
     struct pos_t t = {$$->startLine, $$->endLine, $$->startCol, $$->endCol};
-    $$ = ALLOC_C(token_when, $2, $4, $5);
+    $$ = ALLOC_C(token_when, $3, $5, $6);
     push_pos(parser, t);
+    if ($5 != NULL)
+      copy_last($$, $5);
   }
 ;
 
-cases: opt_else
-  | case_body
+cases: opt_else | case_body
 ;
 
-then: term
-  | THEN      { pop_pos(parser, NULL);  }
-  | term THEN { pop_pos(parser, NULL);  }
-;
-
-do: term
-  | DO
+opt_rescue: tRESCUE rescue_arg then compstmt opt_rescue
   {
-    if (!parser->call_args) {
-      pop_pos(parser, parser->last_pos);
-      parser->call_args = 1;
-    } else
-      pop_pos(parser, NULL);
-  }
-;
+     $$ = ALLOC_N(token_rescue, $2, $4);
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
 
-k_do_block: DO_BLOCK
-  {
-    struct node * n = parser->last_pos;
-    struct pos_t tp = { n->startLine, n->endLine, n->startCol, n->endCol };
-
-    if (parser->call_args) {
-      pop_pos(parser, parser->last_pos);
-      push_pos(parser, tp);
-      parser->call_args = 0;
-    }
-  }
-;
-
-k_if: IF opt_eol_list
-;
-
-m_if: IF  { manual_fix(); }
-;
-
-m_unless: UNLESS    { manual_fix(); }
-;
-
-m_while: WHILE      { manual_fix(); }
-;
-
-m_until: UNTIL      { manual_fix(); }
-;
-
-k_elsif: ELSIF opt_eol_list
-;
-
-k_unless: UNLESS opt_eol_list
-;
-
-k_while: WHILE opt_eol_list
-;
-
-k_until: UNTIL opt_eol_list
-;
-
-k_case: CASE opt_eol_list
-;
-
-k_when: WHEN opt_eol_list
-;
-
-k_for: FOR opt_eol_list   { parser->call_args = 1;  }
-;
-
-k_def: DEF opt_eol_list
-;
-
-k_module: MODULE opt_eol_list
-;
-
-k_class: CLASS opt_eol_list
-;
-
-k_in: IN opt_eol_list
-;
-
-endl: /* nothing */
-  | EOL
-;
-
-comma: tCOMMA opt_eol_list
-;
-
-lparen: tLPAREN opt_eol_list
-;
-
-rparen: opt_eol_list tRPAREN
-;
-
-lbracket: tLBRACKET opt_eol_list
-;
-
-rbracket: opt_eol_list tRBRACKET
-;
-
-lbrace: tLBRACE opt_eol_list
-;
-
-rbrace: opt_eol_list tRBRACE
-;
-
-asgn: tASGN opt_eol_list
-;
-
-op_asgn: tOP_ASGN opt_eol_list
-;
-
-compstmt: opt_terms stmts opt_terms   { $$ = $2;  }
-  | opt_terms                         { $$ = 0;   }
-;
-
-not_empty_compstmt: stmts opt_terms   { $$ = $1;  }
-;
-
-opt_eol_list: /* nothing */
-  | eol_list
-;
-
-eol_list: EOL
-  | eol_list EOL
-;
-
-term: tSEMICOLON
-  | EOL
-;
-
-terms: term
-  | terms term
-;
-
-opt_terms: /* nothing */
-  | terms
-;
-
-dot_or_scope: tDOT
-  | tCOLON2
-;
-
-eol_or_semicolon: EOL
-  | tSEMICOLON
-;
-
-lhs_list: mlhs comma lhs    { $$ = update_list($1, $3);  }
-  | mlhs comma              { $$ = $1;  }
-;
-
-lhs: exp
-  {
-    /* TODO: Implement a better way to do this, check_lhs can be expensive :( */
-    if (check_lhs($1))
-      $$ = $1;
-    else {
-      $$ = 0;
-      yyerror(parser, "syntax error, unexpected '=', expecting $end");
-    }
-  }
-  | lparen lhs_list rparen
-  {
-    $$ = alloc_node(token_object, $2, NULL);
-    if ($2->last != NULL) {
-      copy_range($$, $2, $2->last);
-    } else {
-      copy_range($$, $2, $2);
-    }
-  }
-  | tMUL variable             { $$ = $2;  }
-  | tMUL
-  {
-    $$ = alloc_node(token_object, NULL, NULL);
-    $$->startLine = $$->endLine = parser->auxiliar.startLine;
-    $$->startCol = parser->auxiliar.startCol;
-    $$->endCol = $$->startCol + 1;
-    parser->auxiliar.endLine = -1;
-  }
-;
-
-opt_bracket_list: /* nothing */ { $$ = 0; }
-  | bracket_list                { $$ = $1;  }
-;
-
-bracket_list: bracket_item      { $$ = $1;  }
-  | bracket_list bracket_item   { $$ = update_list($1, $2); }
-;
-
-bracket_item: lbracket array_exp rbracket { $$ = $2; pop_pos(parser, NULL); }
-;
-
-mlhs: exp           { $$ = $1;  }
-  | mlhs comma      { $$ = $1;  }
-  | mlhs comma lhs  { $$ = update_list($1, $3); }
-;
-
-mrhs: exp                   { $$ = $1;  }
-  | mrhs comma exp          { $$ = update_list($1, $3); }
-;
-
-simple_assign: variable asgn primary  { $$ = ALLOC_N(token_assign, $1, $3);    }
-  | variable op_asgn primary          { $$ = ALLOC_N(token_op_assign, $1, $3); }
-  | variable asgn hash                { $$ = ALLOC_N(token_assign, $1, $3);    }
-  | variable op_asgn hash             { $$ = ALLOC_N(token_op_assign, $1, $3); }
-;
-
-assign: mlhs asgn mrhs       { $$ = ALLOC_N(token_assign, $1, $3);   }
-  | mlhs op_asgn mrhs        { $$ = ALLOC_N(token_op_assign, $1, $3); }
-  | mlhs asgn method_call opt_lambda_body
-  {
-    $$ = ALLOC_N(token_assign, $1, $3);
-    $$ = update_list($$, $4);
-    parser->call_args = 0;
-  }
-  | mlhs op_asgn method_call opt_lambda_body
-  {
-    $$ = ALLOC_N(token_op_assign, $1, $3);
-    $$ = update_list($$, $4);
-    parser->call_args = 0;
-  }
-  | mlhs asgn hash           { $$ = ALLOC_N(token_assign, $1, $3);     }
-  | mlhs op_asgn hash        { $$ = ALLOC_N(token_op_assign, $1, $3);  }
-  | mlhs asgn cmpd_stmt      { $$ = ALLOC_N(token_assign, $1, $3);     }
-  | mlhs op_asgn cmpd_stmt   { $$ = ALLOC_N(token_op_assign, $1, $3);  }
-;
-
-array: lbracket tRBRACKET               { $$ = ALLOC_N(token_array, NULL, NULL); }
-  | lbracket array_items rbracket       { $$ = ALLOC_N(token_array, $2, NULL); fix_mrhs_left($$);  }
-  | ARRAY                               { $$ = ALLOC_N(token_array, NULL, NULL); POP_STR; }
-;
-
-array_exp: exp      { $$ = $1;  }
-  | simple_assign   { $$ = $1;  }
-  | hash            { $$ = $1;  }
-;
-
-array_items: array_exp              { $$ = $1;  }
-  | array_items comma               { $$ = $1;  }
-  | array_items comma array_exp     { $$ = update_list($1, $3); }
-;
-
-array_value: sary opt_eol_list array_exp rbracket opt_bracket_list
-  {
-    struct node * n = $3;
-    n->next = $5;
-    $$ = alloc_node(token_array_value, $1, n);
-    if ($5 != NULL) {
-      if ($5->last != NULL) {
-        copy_range($$, $1, $5->last);
-      } else {
-        copy_range($$, $1, $5);
-      }
-    } else {
-      copy_range($$, $1, $3);
-    }
-  }/* TODO */
-/*  | variable bracket_item bracket_list
-  {
-    $$ = alloc_node(token_array_value, $1, create_list($2, $3));
-  }*/
-;
-
-sary: SARY
-  {
-    $$ = ALLOC_N(token_object, NULL, NULL);
-    $$->endCol--;
-    POP_STACK;
-  }
-;
-
-hash: lbrace tRBRACE
-  { 
-    $$ = alloc_node(token_hash, NULL, NULL);
     pop_pos(parser, $$);
-    pop_start(parser, $$);
+    push_pos(parser, tp);
+    if ($4 != NULL)
+      copy_last($$, $4);
+    else if ($2 != NULL)
+      copy_end($$, $2);
   }
-  | lbrace hash_items rbrace
+  | none
+;
+
+rescue_arg: exc_list exc_var
   {
-    pop_pos(parser, parser->last_pos);
-    $$ = ALLOC_N(token_hash, $2, NULL);
-    fix_mrhs_left($$);
+    if ($2 != NULL) {
+      $$ = alloc_node(token_rescue_arg, $1, $2);
+      ($1 != NULL) ? copy_range($$, $1, $2) : copy_range($$, $2, $2);
+    } else if ($1 != NULL) {
+      $$ = alloc_node(token_rescue_arg, $1, $2);
+      copy_range($$, $1, $1);
+    } else
+      $$ = 0;
   }
 ;
 
-hash_items: hash_item           { $$ = $1;  }
-  | hash_items comma            { $$ = $1;  }
-  | hash_items comma hash_item  { $$ = update_list($1, $3); }
+exc_list: arg | mrhs | none
 ;
 
-hash_item: exp tASSOC opt_eol_list exp
+exc_var: none | tASSOC lhs { $$ = $2; }
+;
+
+opt_ensure: none
+  | tENSURE compstmt
   {
-    $$ = alloc_node(token_object, $1, $4);
-    copy_range($$, $1, $4);
+    $$ = ALLOC_N(token_ensure, $2, NULL);
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+
+    pop_pos(parser, $$);
+    push_pos(parser, tp);
+    if ($2 != NULL)
+      copy_end($$, $2);
   }
-  | key opt_eol_list exp
+;
+
+literal: numeric | symbol
+;
+
+strings: string
+  {
+    $$ = ALLOC_N(token_string, NULL, NULL); POP_STR;
+    multiple_string(parser, $$);
+  }
+  | tHEREDOC { $$ = ALLOC_N(token_heredoc, NULL, NULL);   }
+;
+
+string: STRING
+  | tBACKTICK
+  | string STRING { CONCAT_STRING; pop_pos(parser, NULL); }
+;
+
+regexp: REGEXP { $$ = ALLOC_N(token_regexp, NULL, NULL); POP_STR; }
+;
+
+symbol: SYMBOL { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
+;
+
+numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
+;
+
+variable: base
+  | IVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | const
+  | CVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | other_vars { $$ = ALLOC_N(token_object, NULL, NULL); }
+;
+
+other_vars: tNIL | tSELF | tTRUE | tFALSE | tFILE | tLINE | tENCODING
+;
+
+backref: tNTH_REF { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+;
+
+superclass: term { $$ = 0; }
+  | '<' { parser->expr_seen = 0; } expr term { $$ = $3; }
+  | error term { yyerrok; $$ = 0; }
+;
+
+f_arglist: '(' f_args rparen { $$ = $2; }
+  | f_args term { $$ = $1; }
+;
+
+f_args: f_arg ',' f_optarg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg ',' f_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
+  }
+  | f_arg ',' f_optarg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_arg ',' f_optarg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_arg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+  }
+  | f_arg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_optarg ',' f_rest_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, create_list($3, update_list($5, $6)));
+  }
+  | f_optarg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_optarg ',' f_arg opt_f_block_arg
+  {
+    $$ = concat_list($1, update_list($3, $4));
+  }
+  | f_rest_arg opt_f_block_arg { $$ = update_list($1, $2); }
+  | f_rest_arg ',' f_arg opt_f_block_arg
+  {
+    $$ = create_list($1, update_list($3, $4));
+  }
+  | f_block_arg
+  | none
+;
+
+f_bad_arg: CONST { yyerror(parser, "formal argument cannot be a constant"); }
+  | IVAR { yyerror(parser, "formal argument cannot be an instance variable"); }
+  | GLOBAL { yyerror(parser, "formal argument cannot be a global variable"); }
+  | CVAR { yyerror(parser, "formal argument cannot be a class variable"); }
+;
+
+f_norm_arg: f_bad_arg | base
+;
+
+f_arg_item: f_norm_arg { $$ = $1; }
+  | tLPAREN f_margs rparen { $$ = $2; }
+;
+
+f_arg: f_arg_item
+  | f_arg ',' f_arg_item { $$ = update_list($1, $3); }
+;
+
+f_opt: base '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
+;
+
+f_block_opt: base '=' primary { $$ = ALLOC_N(token_assign, $1, $3); }
+;
+
+f_block_optarg  : f_block_opt { $$ = $1; }
+  | f_block_optarg ',' f_block_opt { $$ = update_list($1, $3); }
+;
+
+f_optarg: f_opt
+  | f_optarg ',' f_opt { $$ = update_list($1, $3); }
+;
+
+restarg_mark: '*' | tSTAR
+;
+
+f_rest_arg: restarg_mark base { $$ = $2; }
+  | restarg_mark { $$ = alloc_node(token_object, NULL, NULL); }
+;
+
+blkarg_mark: '&' | tAMPER
+;
+
+f_block_arg: blkarg_mark base { $$ = $2; }
+;
+
+opt_f_block_arg : ',' f_block_arg { $$ = $2; }
+  | none
+;
+
+singleton: variable { $$ = $1; }
+  | '(' expr rparen
+  {
+    if ($2 == 0)
+      yyerror(parser, "can't define singleton method for ().");
+    else {
+      switch ($2->kind) {
+        case token_string:
+        case token_regexp:
+        case token_numeric:
+        case token_symbol:
+        case token_array:
+          yyerror(parser, "can't define singleton method for literals");
+      }
+    }
+    $$ = $2;
+  }
+;
+
+const: CONST { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+;
+
+base: BASE { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+;
+
+assoc_list: none
+  | assocs trailer { $$ = $1; }
+;
+
+assocs: assoc
+  | assocs ',' assoc { $$ = update_list($1, $3); }
+;       
+
+assoc: arg tASSOC arg
   {
     $$ = alloc_node(token_object, $1, $3);
     copy_range($$, $1, $3);
   }
-;
-
-method_call: fname m_call_args
+  | label arg
   {
-    $$ = alloc_node(token_method_call, $1, $2);
-    if ($2 == NULL) {
-      copy_pos($$, $1);
-    } else if ($2->last != NULL) {
-      copy_range($$, $1, $2->last);
-    } else {
-      copy_range($$, $1, $2);
-    }
-  }
-  | dot_method_call m_call_args
-  {
-    if (parser->last_is_paren) {
-      yyerror(parser, "bad parameter list");
-      $$ = 0;
-    } else {
-      $$ = $1;
-      $$->r = $2;
-    }
-  }
-  | const_scope m_call_args
-  {
-    $$ = alloc_node(token_method_call, $1, $2);
-    if ($2 == NULL) {
-      copy_range($$, $1, $1);
-    } else {
-      if ($2->last != NULL) {
-        copy_range($$, $1, $2->last);
-      } else {
-        copy_range($$, $1, $2);
-      }
-    }
+    $$ = alloc_node(token_object, $1, $2);
+    copy_range($$, $1, $2);
   }
 ;
 
-const_scope: const scope_items
-  {
-    struct node * n = alloc_node(token_object, $1, NULL);
-    $$ = pop_list(n, $2);
-    if ($2->last != NULL) {
-      copy_range($$, $1, $2->last);
-    } else {
-      copy_range($$, $1, $2);
-    }
-  }
-  | const tCOLON2 fname
-  {
-    struct node * n = alloc_node(token_object, $1, NULL);
-    $$ = pop_list(n, $3);
-    copy_range($$, $1, $3);
-  }
-  | tCOLON3 const scope_items
-  {
-    struct node * n = alloc_node(token_object, $2, NULL);
-    $$ = pop_list(n, $3);
-    if ($3->last != NULL) {
-      copy_range($$, $2, $3->last);
-    } else {
-      copy_range($$, $2, $3);
-    }
-  }
+operation: base
+  | const
 ;
 
-scope_items: tCOLON2 const               { $$ = $2;  }
-  | scope_items tCOLON2 fname_or_const   { $$ = update_list($1, $3); }
+operation2: base
+  | const
+  | op { $$ = alloc_node(token_object, NULL, NULL); $$->name = parser->aux; }
 ;
 
-paren_method_call: mcall opt_call_args_paren rparen
-  {
-    $$ = alloc_node(token_method_call, $1, $2);
-    if ($2 == NULL) {
-      copy_range($$, $1, $1);
-    } else {
-      if ($2->last != NULL) {
-        copy_range($$, $1, $2->last);
-      } else {
-        copy_range($$, $1, $2);
-      }
-    }
-  }
-  | const_mcall opt_call_args_paren rparen
-  {
-    $$ = alloc_node(token_method_call, $1, $2);
-    if ($2 == NULL) {
-      copy_range($$, $1, $1);
-    } else {
-      if ($2->last != NULL) {
-        copy_range($$, $1, $2->last);
-      } else {
-        copy_range($$, $1, $2);
-      }
-    }
-  }
+operation3: base
+  | op { $$ = alloc_node(token_object, NULL, NULL); $$->name = parser->aux; }
 ;
 
-const_mcall: const tCOLON2 mcall { $$ = ALLOC_N(token_object, $1, $3); }
+label: tKEY { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
 ;
 
-dot_method_call: basic dot_items
-  {
-    struct node * n = alloc_node(token_method_call, $1, NULL);
-    $$ = pop_list(n, $2);
-    if ($2->last != NULL) {
-      copy_range($$, $1, $2->last);
-    } else {
-      copy_range($$, $1, $2);
-    }
-  }
-  | lparen exp rparen dot_items
-  {
-    struct node * n = alloc_node(token_method_call, $2, NULL);
-    $$ = pop_list(n, $4);
-    if ($4->last != NULL) {
-      copy_range($$, $2, $4->last);
-    } else {
-      copy_range($$, $2, $4);
-    }
-  }
-  | paren_method_call dot_items
-  {
-    $$ = pop_list($1, $2);
-  }
+super: tSUPER { $$ = ALLOC_N(token_method_call, NULL, NULL); }
 ;
 
-dot_items: dot_item     { $$ = $1; }
-  | dot_items dot_item  { $$ = update_list($1, $2); }
+dot_or_colon: '.' | tCOLON2
 ;
 
-dot_item: tDOT fname
-  {
-    $$ = $2;
-    parser->last_is_paren = 0;
-  }
-  | tDOT paren_method_call
-  {
-    $$ = $2;
-    parser->last_is_paren = 1;
-  }
+opt_terms: /* none */ | terms
 ;
 
-opt_call_args_paren: /* nothing */  { $$ = 0;   }
-  | m_call_args_paren               { $$ = $1;  }
+opt_eol: /* none */ | EOL
 ;
 
-m_call_args: method_call      { $$ = $1;  }
-  | call_args
-  {
-    $$ = $1;
-    parser->call_args = 1;
-  }
+rparen: opt_eol ')'
 ;
 
-m_call_args_paren: method_call  { $$ = $1;  }
-  | call_args_paren             { $$ = $1;  }
+rbracket: opt_eol ']'
 ;
 
-/* TODO: tMUL and tAND_BIT ambiguity :S */
-call_args: exp                { $$ = $1;  }
-  | call_args comma exp_hash  { $$ = update_list($1, $3); }
+trailer: opt_eol | ','
 ;
 
-call_args_paren: exp_paren          { $$ = $1;  }
-  | call_args_paren comma exp_paren { $$ = update_list($1, $3); }
+term: ';' {yyerrok;} | EOL
 ;
 
-exp_or_hash: exp { $$ = $1; }
-  | hash         { $$ = $1; }
+terms: term | terms ';' {yyerrok;}
 ;
 
-/* TODO: hash with exp */
-exp_hash: exp   { $$ = $1;  }
-  | const_scope { $$ = $1;  }
-  | hash        { $$ = $1;  }
-  | hash_items
-  {
-    $$ = alloc_node(token_hash, $1, NULL);
-    if ($1->last != NULL) {
-      copy_range($$, $1, $1->last);
-    } else {
-      copy_range($$, $1, $1);
-    }
-  }
-;
-
-exp_paren: exp_hash   { $$ = $1;  }
-  | tAND_BIT exp      { $$ = $2;  }
-  | tMUL exp          { $$ = $2;  }
-;
-
-/* TODO: hash with exp */
-exp_for: exp    { $$ = $1;  }
-  | hash        { $$ = $1;  }
-;
-
-exp: exp tPLUS opt_eol_list exp       { $$ = ALLOC_N(token_plus, $1, $4);    }
-  | exp tMINUS opt_eol_list exp       { $$ = ALLOC_N(token_minus, $1, $4);   }
-  | exp tMUL opt_eol_list exp         { $$ = ALLOC_N(token_mul, $1, $4);     }
-  | exp tDIV opt_eol_list exp         { $$ = ALLOC_N(token_div, $1, $4);     }
-  | exp tMOD opt_eol_list exp         { $$ = ALLOC_N(token_mod, $1, $4);     }
-  | exp tPOW opt_eol_list exp         { $$ = ALLOC_N(token_exp, $1, $4);     }
-  | exp tAND_BIT opt_eol_list exp     { $$ = ALLOC_N(token_bit_and, $1, $4); }
-  | exp tOR_BIT opt_eol_list exp      { $$ = ALLOC_N(token_bit_or, $1, $4);  }
-  | exp tXOR_BIT opt_eol_list exp     { $$ = ALLOC_N(token_bit_xor, $1, $4); }
-  | exp tLSHIFT opt_eol_list exp      { $$ = ALLOC_N(token_lshift, $1, $4);  }
-  | exp tRSHIFT opt_eol_list exp      { $$ = ALLOC_N(token_rshift, $1, $4);  }
-  | lparen exp rparen                 { $$ = $2;  }
-  | lparen assign rparen              { $$ = $2; fix_mrhs($$);  }
-  | lparen method_call rparen         { $$ = $2;  }
-  | exp tCMP opt_eol_list exp         { $$ = ALLOC_N(token_cmp, $1, $4);     }
-  | exp tEQ opt_eol_list exp          { $$ = ALLOC_N(token_eq, $1, $4);      }
-  | exp tNEQ opt_eol_list exp         { $$ = ALLOC_N(token_neq, $1, $4);     }
-  | exp tEQQ opt_eol_list exp         { $$ = ALLOC_N(token_eqq, $1, $4);     }
-  | exp tMATCH opt_eol_list exp       { $$ = ALLOC_N(token_match, $1, $4);   }
-  | exp tNMATCH opt_eol_list exp      { $$ = ALLOC_N(token_nmatch, $1, $4);  }
-  | exp tGREATER opt_eol_list exp     { $$ = ALLOC_N(token_greater, $1, $4); }
-  | exp tLESSER opt_eol_list exp      { $$ = ALLOC_N(token_lesser, $1, $4);  }
-  | exp tGEQ opt_eol_list exp         { $$ = ALLOC_N(token_geq, $1, $4);     }
-  | exp tLEQ opt_eol_list exp         { $$ = ALLOC_N(token_leq, $1, $4);     }
-  | exp tOR opt_eol_list exp          { $$ = ALLOC_N(token_or, $1, $4);      }
-  | exp tAND opt_eol_list exp         { $$ = ALLOC_N(token_and, $1, $4);     }
-  | exp KWOR opt_eol_list exp         { $$ = ALLOC_N(token_kw_or, $1, $4);   }
-  | exp KWAND opt_eol_list exp        { $$ = ALLOC_N(token_kw_and, $1, $4);  }
-  | exp tDOT2 opt_eol_list exp        { $$ = ALLOC_N(token_dot2, $1, $4);    }
-  | exp tDOT3 opt_eol_list exp        { $$ = ALLOC_N(token_dot3, $1, $4);    }
-  | exp tQUESTION opt_eol_list exp opt_eol_list tCOLON opt_eol_list exp
-  {
-    $$ = ALLOC_C(token_ternary, $1, $4, $8);
-  }
-  | KWNOT opt_eol_list exp            { $$ = ALLOC_N(token_kw_not, $3, NULL);}
-  | tTILDE opt_eol_list exp           { $$ = ALLOC_N(token_neg, $3, NULL);   }
-  | tNOT opt_eol_list exp             { $$ = ALLOC_N(token_not, $3, NULL);   }
-  | tUPLUS opt_eol_list exp           { $$ = ALLOC_N(token_unary_plus, $3, NULL);  }
-  | tUMINUS opt_eol_list exp          { $$ = ALLOC_N(token_unary_minus, $3, NULL); }
-  | DEFINED opt_eol_list exp          { $$ = ALLOC_N(token_defined, $3, NULL); copy_end($$, $3);  }
-  | primary1 opt_lambda_body          { $$ = update_list($1, $2); }
-  | primary2                          { $$ = $1;  }
-  | array_value                       { $$ = $1;  }
-  | FNAME                             { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+none : /* none */ { $$ = 0; }
 ;
 
 %%
@@ -1375,32 +1482,25 @@ exp: exp tPLUS opt_eol_list exp       { $$ = ALLOC_N(token_plus, $1, $4);    }
 
 /* Let's define some useful macros :D */
 
-#define BSIZE 128
 #define to_upper(a) (a & ~32)
 #define is_upper(c) (c >= 'A' && c <= 'Z')
 #define multiline_comment(c) (*(c+1) == 'b' && *(c+2) == 'e' && *(c+3) == 'g' \
                               && *(c+4) == 'i' && *(c+5) == 'n')
 #define multiline_end(c) (*c == '=' && *(c+1) == 'e' && *(c+2) == 'n' \
                           && *(c+3) == 'd')
-#define isFunction(c) (*c == '!' || *c == '=' || *c == '?')
-#define isSimple(c) (c == '(' || c == '{' || c == '[')
-#define isShortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
-                      || c == 'x' || isSimple(c))
-#define isNotSep(c) (isValidVariableIdentifier(c) || is_utf8_digit(c) \
+#define is_function(c) (*c == '!' || *c == '?')
+#define is_simple(c) (c == '(' || c == '{' || c == '[' || c == '|' || c == '<' || c == '/' || c == '$')
+#define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
+                      || c == 'x' || is_simple(c))
+#define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
                     || *c == '_' || *c == '$' || *c == '@')
-#define isSpecialMethod(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
+#define is_special_method(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
                                 buffer[1] == '_' && buffer[strlen(buffer) - 2] == '_' && \
                                 buffer[strlen(buffer) - 1] == '_')
-#define parser_dot_seen(t, OP) { if (parser->dot_seen) { \
-                                  parser->dot_seen = 0; \
-                                  t = FNAME; \
-                                } else \
-                                  t = OP; \
-                                }
 #define cannot_be_heredoc (parser->class_seen || parser->expr_seen || parser->dot_seen)
 
 
-void init_parser(struct parser_t * p)
+static void init_parser(struct parser_t * p)
 {
   p->ast = NULL;
   p->blob = NULL;
@@ -1408,10 +1508,16 @@ void init_parser(struct parser_t * p)
   p->eof_reached = 0;
   p->expr_seen = 0;
   p->class_seen = 0;
-  p->no_block = 0;
   p->dot_seen = 0;
   p->last_is_paren = 0;
+  p->cond_seen = 0;
+  p->special_arg = 0;
+  p->cmd_arg = 0;
+  p->brace_arg = 0;
   p->in_def = 0;
+  p->in_alias = 0;
+  p->lpar_beg = 0;
+  p->paren_nest = 0;
   p->error_index = 0;
   p->sp = 0;
   p->line = 1;
@@ -1430,7 +1536,7 @@ void init_parser(struct parser_t * p)
   p->comment_index = 0;
 }
 
-void free_parser(struct parser_t * p)
+static void free_parser(struct parser_t * p)
 {
   int index;
 
@@ -1444,7 +1550,7 @@ void free_parser(struct parser_t * p)
 }
 
 /* Read the file's source code and allocate it for further inspection. */
-int retrieve_source(struct parser_t * p, const char * path)
+static int retrieve_source(struct parser_t * p, const char * path)
 {
   int length;
 
@@ -1476,18 +1582,6 @@ int retrieve_source(struct parser_t * p, const char * path)
   return 1;
 }
 
-int check_lhs(struct node * n)
-{
-  if (n == NULL || n->kind == token_array_value)
-    return 1;
-  if (n->kind > token_object)
-    return 0;
-  if (check_lhs(n->l))
-    return check_lhs(n->r);
-  return 0;
-}
-
-
 /*
  * Some macros to make easier the UTF-8 support
  */
@@ -1501,7 +1595,7 @@ int check_lhs(struct node * n)
  * rules. Therefore, this function will return 1 if the character
  * is in plain-ASCII, and greater than 1 otherwise.
  */
-int utf8_charsize(const char * s)
+static int utf8_charsize(const char * s)
 {
   int size = 0;
   int i = 0;
@@ -1513,28 +1607,22 @@ int utf8_charsize(const char * s)
   return size;
 }
 
-int is_utf8_alpha(char * str)
+static int is_utf8_alpha(const char * str)
 {
   return is_special(str) ? 1 : isalpha(*str);
 }
 
-int is_utf8_graph(char * str)
+static int is_utf8_graph(const char * str)
 {
   return is_special(str) ? 1 : isgraph(*str);
 }
 
-int is_utf8_digit(char * str)
+static int is_utf8_digit(const char * str)
 {
   return is_special(str) ? 0 : isdigit(*str);
 }
 
-unsigned char isValidKeyword(char * c)
-{
-  return ((isalpha(*c) || *c == '_' || *c == '$' || *c == '@')
-          && !isdigit(*c) && !is_special(c));
-}
-
-int isValidVariableIdentifier(char * c)
+static int is_valid_identifier(const char * c)
 {
   if (is_utf8_alpha(c))
     return 1;
@@ -1547,21 +1635,24 @@ int isValidVariableIdentifier(char * c)
   return 0;
 }
 
-void push_string_var(struct parser_t * p, int * curs, char ** ch)
+static void push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
 {
   char *c = *ch;
-  struct pos_t tp = { p->line, p->line, p->column + (*curs - p->cursor + 2), -1 };
+  int diff = *curs - p->cursor - oax + 2;
+  struct pos_t tp = { p->line, p->line, p->column + diff, -1 };
   int possible_error = *curs + 1;
   char buffer[BSIZE];
   char * ptr = buffer;
-  int step = 0; /* How many bytes the actual utf8 char has */
-  int ax = 0; /* Used to properly update the column when the utf8 chars appear */
+  int step = 0; /* How many bytes the actual utf8 character has */
+  int ax = 0; /* Used to properly update the column when utf8 chars appear */
+  int i = 0;
 
   c += 2;
   *curs += 2;
   while (*c != '}') {
     step = utf8_charsize(c);
     ax += step - 1;
+    i++;
     while (step-- > 0) {
       *ptr++ = *c++;
       (*curs)++;
@@ -1576,88 +1667,106 @@ void push_string_var(struct parser_t * p, int * curs, char ** ch)
   *ch = c;
   *ptr = '\0';
   p->column -= ax;
-  tp.endCol = p->column + *curs - p->cursor;
+  tp.endCol = tp.startCol + i;
   push_pos(p, tp);
   push_string(p, buffer);
 }
 
-int parse_heredoc(struct parser_t * p, char * c, int * curs, int len)
+static int parse_heredoc(struct parser_t * p, char * c, int * curs)
 {
   char buffer[BSIZE], aux[BSIZE];
-  int i, l = 0;
+  unsigned char quote_seen = 0, term;
+  unsigned char dash_seen = 0;
+  int i, l = 0, spaces = 0;
+  int len = p->length;
 
   /* Check for <<- case */
   if (*(c + 2) == '-') {
+    dash_seen = 1;
     c += 3;
     (*curs)++;
   } else
     c += 2;
-  for (i = 0; *c != '\n' && *curs <= len; (*curs)++, ++l)
+  if (*c == '\'' || *c == '"') {
+    term = *c;
+    c++; (*curs)++;
+    quote_seen = 1;
+  }
+  for (i = 0; *c != '\n' && *c != ' ' && *curs <= len; (*curs)++, ++l)
     buffer[i++] = *c++;
-  buffer[i] = '\0';
+  if (quote_seen && *(c - 1) != term)
+    yyerror(p, "unterminated here document identifier");
+  buffer[i - quote_seen] = '\0';
+  l -= quote_seen;
 
   for (i = 0; *curs <= len; i++, c++, (*curs)++) {
+    /* Ignore initial spaces if dash seen */
+    if (i == 0 && dash_seen)
+      for (; isspace(*c) && *c != '\n' && *curs <= len; c++, (*curs)++, spaces++);
     aux[i] = *c;
     if (*c == '\n') {
       p->line++;
       aux[i + 1] = '\0';
       if (!strncmp(buffer, aux, l) && (l == i)) {
         p->line--;
-        p->column = i;
-        return HEREDOC;
+        p->column = i + spaces;
+        return tHEREDOC;
       }
+      spaces = 0;
       i = -1;
     }
+    if (i > l)
+      i = -1;
   }
-  strcpy(aux, "Can't find string \"");
-  strcat(aux, buffer);
-  yyerror(p, strcat(aux, "\" anywhere before EOF"));
+  sprintf(aux, "Can't find string \"%s\" anywhere before EOF", buffer);
+  yyerror(p, aux);
   return token_invalid;
 }
 
 /* Return what's the char that closes c */
-char closing_char(char c)
+static char closing_char(char c)
 {
-  if (c == '(')
-    return ')';
-  else if (c == '{')
-    return '}';
-  else
-    return ']';
+  switch (c) {
+    case '[': return ']';
+    case '(': return ')';
+    case '<': return '>';
+    case '{': return '}';
+    default: return c;
+  }
 }
 
 /*
  * Let's guess the kind depending on the character after the
  * %-character of expressions like %W
  */
-int guess_kind(char c)
+static int guess_kind(char c)
 {
-  if (isSimple(c) || to_upper(c) == 'Q' || c == 'x')
+  if (!isalpha(c) || to_upper(c) == 'Q' || c == 'x')
     return STRING;
   else if (to_upper(c) == 'W')
     return ARRAY;
-  else
-    return REGEXP;
+  return REGEXP;
 }
 
 /* Push name to the stack */
-void push_stack(struct parser_t * parser, const char * buf)
+static void push_stack(struct parser_t * parser, const char * buf)
 {
   parser->stack[parser->sp] = strdup(buf);
   parser->sp++;
 }
 
 /* Pop name from the stack. */
-void pop_stack(struct parser_t * parser, struct node * n)
-{
-  n->name = parser->stack[0];
+static void pop_stack(struct parser_t * parser, struct node * n)
+{/* TODO: if null we have to free ? */
+  if (n != NULL)
+    n->name = parser->stack[0];
   parser->stack[0] = parser->stack[1];
   parser->stack[1] = NULL;
   parser->sp--;
 }
 
 /* Push a string variable */
-void push_string(struct parser_t * parser, char * buffer)
+static void push_string(struct parser_t * parser, char * buffer)
 {
   struct node * new_node = alloc_node(token_object, NULL, NULL);
 
@@ -1670,13 +1779,13 @@ void push_string(struct parser_t * parser, char * buffer)
 }
 
 /* Pop a list of string variables */
-void pop_string(struct parser_t * parser, struct node * n)
+static void pop_string(struct parser_t * parser, struct node * n)
 {
   n->l = parser->string_names;
   parser->string_names = NULL;
 }
 
-void multiple_string(struct parser_t * parser, struct node * n)
+static void multiple_string(struct parser_t * parser, struct node * n)
 {
   if (parser->auxiliar.endLine > 0) {
     n->endLine = parser->auxiliar.endLine;
@@ -1685,7 +1794,7 @@ void multiple_string(struct parser_t * parser, struct node * n)
   }
 }
 
-void push_pos(struct parser_t * parser, struct pos_t tokp)
+static void push_pos(struct parser_t * parser, struct pos_t tokp)
 {
   int scale = STACK_SIZE * parser->stack_scale;
 
@@ -1699,7 +1808,7 @@ void push_pos(struct parser_t * parser, struct pos_t tokp)
   parser->pos_stack[parser->pos_size + scale - 1] = tokp;
 }
 
-void pop_pos(struct parser_t * parser, struct node * n)
+static void pop_pos(struct parser_t * parser, struct node * n)
 {
   int scale = STACK_SIZE * parser->stack_scale;
   int pos = parser->pos_size - 1 + scale;
@@ -1720,21 +1829,33 @@ void pop_pos(struct parser_t * parser, struct node * n)
   }
 }
 
-void pop_start(struct parser_t * parser, struct node * n)
+static void pop_start(struct parser_t * parser, struct node * n)
 {
   n->startLine = parser->pos_stack[parser->pos_size - 1].startLine;
   n->startCol = parser->pos_stack[parser->pos_size - 1].startCol;
   pop_pos(parser, NULL);
 }
 
-void pop_end(struct parser_t * parser, struct node * n)
+static void copy_wc_range(struct node * res, struct node * h, struct node * t)
 {
-  n->endLine = parser->pos_stack[parser->pos_size - 1].endLine;
-  n->endCol = parser->pos_stack[parser->pos_size - 1].endCol;
-  pop_pos(parser, NULL);
+  if (t != NULL)
+    (t->last != NULL) ? copy_range(res, h, t->last) : copy_range(res, h, t);
 }
 
-void push_last_comment(struct parser_t * parser)
+static void copy_wc_range_ext(struct node * res, struct node * h, struct node * t)
+{
+  if (t != NULL)
+    (t->last != NULL) ? copy_range(res, h, t->last) : copy_range(res, h, t);
+  else
+    copy_range(res, h, h);
+}
+
+static void copy_last(struct node * h, struct node * t)
+{
+  (t->last != NULL) ? copy_end(h, t->last) : copy_end(h, t);
+}
+
+static void push_last_comment(struct parser_t * parser)
 {
   if ((parser->line - parser->last_comment.line) < 2)
     parser->comment_stack[parser->comment_index] = parser->last_comment.comment;
@@ -1744,7 +1865,7 @@ void push_last_comment(struct parser_t * parser)
   parser->last_comment.comment = NULL;
 }
 
-void pop_comment(struct parser_t * parser, struct node *n)
+static void pop_comment(struct parser_t * parser, struct node *n)
 {
   parser->comment_index--;
   n->comment = parser->comment_stack[parser->comment_index];
@@ -1757,36 +1878,62 @@ void pop_comment(struct parser_t * parser, struct node *n)
 #define has_operators(kind) ((kind > 1 && kind < token_neg && kind != token_kw_not) || \
                             (kind > token_unary_minus && kind < token_ternary))
 #define is_unary(kind) (kind >= token_neg && kind <= token_unary_minus)
-#define kw_not_or_hash(kind) (kind == token_hash || kind == token_kw_not)
 
 
-void fix_pos(struct parser_t * parser, struct node * n)
+static void fix_pos(struct parser_t * parser, struct node * n)
 {
   int kind;
+  struct node * aux;
 
   if (n == NULL)
     return;
 
   kind = n->kind;
   if (has_operators(kind) && kind != token_hash) {
-    n->startLine = n->l->startLine;
-    n->startCol = n->l->startCol;
-    n->endLine = n->r->endLine;
-    n->endCol = n->r->endCol;
-  } else if (is_unary(kind) || kw_not_or_hash(kind)) {
+    copy_start(n, n->l);
+    aux = (n->r->last != NULL) ? n->r->last : n->r;
+    copy_end(n, aux);
+  } else if (is_unary(kind) || kind == token_kw_not) {
     pop_pos(parser, n);
     n->endLine = n->l->endLine;
-    n->endCol = n->l->endCol;    
-  } else if (kind == token_ternary) {
-    n->startLine = n->cond->startLine;
-    n->startCol = n->cond->startCol;
-    n->endLine = n->r->endLine;
-    n->endCol = n->r->endCol;
+    n->endCol = n->l->endCol;
+  } else if (kind == token_hash) {
+    pop_pos(parser, n);
+    if (n->l != NULL) {
+      n->endLine = n->l->endLine;
+      n->endCol = n->l->endCol;
+    }
   } else {
     pop_pos(parser, n);
     parser->last_pos = n;
   }
 }
+
+/* Specialized version of the fix_pos function for ternary operators */
+static void fix_ternary(struct node * n)
+{
+  if (n == NULL)
+    return;
+
+  n->startLine = n->cond->startLine;
+  n->startCol = n->cond->startCol;
+  n->endLine = n->r->endLine;
+  n->endCol = n->r->endCol;
+}
+
+struct node * fix_star(struct parser_t * parser)
+{
+  struct node *res = alloc_node(token_object, NULL, NULL);
+  res->startLine = res->endLine = parser->auxiliar.startLine;
+  res->startCol = parser->auxiliar.startCol;
+  res->endCol = res->startCol + 1;
+  parser->auxiliar.endLine = -1;
+  return res;
+}
+
+/*
+ * The following macros and functions make all the magic of fetching comments.
+ */
 
 #define __check_should_break { \
   if (*c != '#') { \
@@ -1815,7 +1962,7 @@ void fix_pos(struct parser_t * parser, struct node * n)
   parser->line++; \
 }
 
-void store_comment(struct parser_t *parser, char *comment)
+static void store_comment(struct parser_t *parser, char *comment)
 {
   if (parser->last_comment.comment != NULL)
     free(parser->last_comment.comment);
@@ -1824,7 +1971,7 @@ void store_comment(struct parser_t *parser, char *comment)
   free(comment);
 }
 
-int is_indented_comment(char *c)
+static int is_indented_comment(char *c)
 {
   char *original = c;
 
@@ -1832,7 +1979,7 @@ int is_indented_comment(char *c)
   return (*c == '#') ? (c - original) : 0;
 }
 
-int get_comment(struct parser_t *parser, char *c, int curs)
+static int get_comment(struct parser_t *parser, char *c, int curs)
 {
   int len = parser->length;
   int initial = curs;
@@ -1869,11 +2016,75 @@ int get_comment(struct parser_t *parser, char *c, int curs)
   return curs - initial;
 }
 
+static int parse_string(struct parser_t *p, char *c, int curs)
+{
+  int step = 0; /* How many bytes the actual utf8 character has */
+  int ax = 0; /* Used to properly update the column when utf8 chars appear */
+  int len = p->length;
+  int init = curs;
+  char term = *c;
+  unsigned char vars = (term == '"' || term == '`' || term == '/');
+
+  curs++; c++;
+  while (*c != term) {
+    if (vars && *c == '#' && *(c + 1) == '{')
+      push_string_var(p, &curs, &c, ax);
+    step = utf8_charsize(c);
+    ax += step - 1;
+    for (; step-- > 0; c++, curs++);
+    for (; *c == '\\' && *(c + 1) == term; c += 2, curs += 2);
+    if (curs >= len) {
+      yyerror(p, "unterminated string meets end of file");
+      break;
+    }
+  }
+  curs++;
+  p->column -= ax;
+  p->expr_seen = 1;
+  return curs - init;
+}
+
+static int parse_word(struct parser_t *p, char *c, int curs, char *buffer)
+{
+  int step = 0; /* How many bytes the actual utf8 character has */
+  int ax = 0; /* Used to properly update the column when utf8 chars appear */
+  int len = p->length;
+  char *ptr = buffer;
+
+  do {
+    step = utf8_charsize(c);
+    ax += step - 1;
+    while (step-- > 0) {
+      *ptr++ = *c++;
+      curs++;
+    }
+  } while (curs < len && not_sep(c));
+  if (is_function(c) || (*c == '=' && (p->def_seen || p->in_alias)))
+    *ptr++ = *c++;
+  *ptr = '\0';
+  p->column -= ax;
+  return ptr - buffer;
+}
+
+static int parse_re_options(struct parser_t *p, char *c, int curs)
+{
+  int init = curs++;
+  char aux[64];
+  for (c++; isalpha(*c); c++, curs++) {
+    if (*c != 'i' && *c != 'm' && *c != 'x' && *c != 'o' &&
+        *c != 'u' && *c != 'e' && *c != 's' && *c != 'n') {
+      sprintf(aux, "unknown regexp option - %c", *c);
+      yyerror(p, aux);
+    }
+  }
+  return curs - init;
+}
+
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
  */
-int parser_yylex(struct parser_t * parser)
+static int parser_yylex(struct parser_t * parser)
 {
   int t = YYEOF;
   char buffer[BSIZE];
@@ -1884,7 +2095,7 @@ int parser_yylex(struct parser_t * parser)
 
   curs = parser->cursor;
   len = parser->length;
-  if (curs >= len) {
+  if (curs >= len || parser->eof_reached) {
     parser->eof_reached = 1;
     return 0;
   }
@@ -1892,28 +2103,39 @@ int parser_yylex(struct parser_t * parser)
 
   /* Ignore whitespaces and backslashes */
   space_seen = *c;
-  for (; (isspace(*c) || *c == '\\') && *c != '\n';
-      ++c, ++curs, parser->column++, parser->cursor++);
+  for (; isspace(*c) || *c == '\\'; ++c, ++curs, parser->column++, parser->cursor++) {
+    if (*c == '\n') {
+      if (!parser->expr_seen) {
+        parser->column = -1;
+        parser->line++;
+      } else
+        break;
+    }
+  }
   (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
 
   if (*c == '#') {
-    int inc = get_comment(parser, c, curs);
+    int inc = get_comment(parser, c, curs) - 1;
     curs += inc;
     c += inc;
-    t = COMMENT;
+    parser->line--;
+    if (curs + 1 >= len) {
+      parser->eof_reached = 1;
+      return 0;
+    }
+    t = tCOMMENT;
   } else if (*c == '\n') {
     t = EOL;
-    parser->no_block = 0;
-    parser->expr_seen = 0;
     parser->dot_seen = 0;
+    parser->cmd_arg = 0;
     parser->column = -1; /* So it's correct after curs++ */
+    parser->in_alias = 0;
     parser->line++;
     curs++;
+    parser->expr_seen = 0;
   } else if (isdigit(*c)) {
-    char hex = 0;
-    char bin = 0;
-    char hasPoint = 0;
-    char aux = 0;
+    char hex, bin, has_point, aux;
+    hex = bin = has_point = aux = 0;
 
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
@@ -1922,8 +2144,7 @@ int parser_yylex(struct parser_t * parser)
         hex = 1;
         curs++;
         c++;
-      }
-      else if (to_upper(*(c + 1)) == 'B') {
+      } else if (to_upper(*(c + 1)) == 'B') {
         bin = 1;
         curs++;
         c++;
@@ -1931,13 +2152,13 @@ int parser_yylex(struct parser_t * parser)
       curs++;
       c++;
     }
-    while (curs < len && ((isdigit(*c) && !bin) || (!hex && !bin && !hasPoint && *c == '.')
+    while (curs < len && ((isdigit(*c) && !bin) || (!hex && !bin && !has_point && *c == '.')
           || (hex && to_upper(*c) >= 'A' && to_upper(*c) < 'G')
-          || (bin && (*c == '1' || *c == '0')))) {
+          || (bin && (*c == '1' || *c == '0')) || *c == '_')) {
       if (*c == '.') {
         if (!isdigit(*(c + 1)))
           break; /* Don't mess with ranges */
-        hasPoint = 1;
+        has_point = 1;
       }
       aux = 1;
       c++;
@@ -1947,132 +2168,182 @@ int parser_yylex(struct parser_t * parser)
       yyerror(parser, "numeric literal without digits");
     /* is it an exponential number ? */
     if (!bin && !hex && to_upper(*c) == 'E' && (isdigit(*(c + 1)) ||
-       ((*(c + 1) == '+' || *(c + 1) == '-') && isdigit(*(c + 2))))) {
+        ((*(c + 1) == '+' || *(c + 1) == '-') && isdigit(*(c + 2))))) {
       c++;
       curs++;
       if (*c == '+' || *c == '-') {
         c++;
         curs++;
       }
-      while ((curs < len) && isdigit(*c)) {
-        c++;
-        curs++;
-      }
+      for (; (curs < len) && isdigit(*c); c++, curs++);
     }
     parser->expr_seen =  1;
     parser->dot_seen = 0;
-    t = NUMBER;
-  } else if (isNotSep(c)) {
-    char * ptr = buffer;
-    int step = 0; /* How many bytes the actual utf8 char has */
-    int ax = 0; /* Used to properly update the column when the utf8 chars appear */
-    unsigned char isConstant = 1;
-    unsigned char isGlobal = (*c == '$');
+    t = NUMERIC;
+  } else if (*c == '$') {
+    int inc = 1;
+    curs++;
+    tokp.startLine = tokp.endLine = parser->line;
+    tokp.startCol = parser->column;
+    buffer[0] = '$';
+    switch (*(c + 1)) {
+      case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+        t = tNTH_REF;
+      case '~': case '*': case '$': case '?': case '!': case '@':
+      case '/': case '\\': case ';': case ',': case '.': case '=':
+      case ':': case '<': case '>': case '\"':
+      case '&': case '`': case '\'': case '+':
+      case '0':
+        if (t != tNTH_REF)
+          t = GLOBAL;
+        curs++;
+        buffer[inc++] = *(c + 1);
+        buffer[inc] = '\0';
+        break;
+      case '-':
+        buffer[inc++] = *(c + 1);
+        curs++;
+      default:
+        t = GLOBAL;
+        inc = parse_word(parser, c + inc, curs + inc, buffer + inc);
+        curs += inc;
+        break;
+    }
+    parser->expr_seen = 1;
+    parser->dot_seen = 0;
+    push_stack(parser, buffer);
+  } else if (*c == '@') {
+    tokp.startLine = tokp.endLine = parser->line;
+    tokp.startCol = parser->column;
+    int inc = parse_word(parser, c, curs, buffer);
+    t = (inc > 1 && buffer[1] == '@') ? CVAR : IVAR;
+    curs += inc;
+    push_stack(parser, buffer);
+    parser->expr_seen = 1;
+    parser->dot_seen = 0;
+  } else if (not_sep(c)) {
+    int diff;
 
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
-    do {
-      if (is_special(c) || (*c > 'Z' && !isdigit(*c)))
-        isConstant = 0;
-      step = utf8_charsize(c);
-      ax += step - 1;
-      while (step-- > 0) {
-        *ptr++ = *c++;
-        curs++;
-      }
-    } while (curs < len && ((isGlobal && !isspace(*c)) || isNotSep(c)));
-    *ptr = '\0';
-    parser->column -= ax;
-    const struct kwtable *kw = rb_reserved_word(buffer, ptr - buffer);
-    if (kw) {
-      t = kw->id;
-      if (t == WHILE || t == UNTIL || t == FOR)
-        parser->no_block = 1;
-      else if (t == DEF) {
-        push_last_comment(parser);
-      } else if (t == MODULE) {
-        push_last_comment(parser);
-      } else if (t == CLASS) {
-        /* check for class() method */
+    diff = parse_word(parser, c, curs, buffer);
+    c += diff; curs += diff;
+
+    if (*c == '(') {
+      t = BASE;
+      push_stack(parser, buffer);
+      parser->expr_seen = 0;
+      parser->special_arg = 1;
+    } else {
+      int modifier = 0;
+      const struct kwtable *kw = rb_reserved_word(buffer, diff);
+      if (kw) {
+        t = kw->id;
         if (parser->dot_seen) {
           push_stack(parser, buffer);
-          t = FNAME;
+          t = BASE;
           parser->dot_seen = 0;
+          parser->expr_seen = 1;
         } else {
-          push_last_comment(parser);
-          parser->class_seen = 1;
+          switch (t) {
+            case tDEF:
+              parser->def_seen = 1;
+            case tMODULE: case tCLASS:
+              push_last_comment(parser);
+              break;
+            case tALIAS:
+              parser->in_alias = 1;
+              break;
+            case tEND:
+              parser->cmd_arg = 0;
+              break;
+            default:
+              if (parser->expr_seen) {
+                switch (t) {
+                  case tIF: t = modifier_if; modifier = 1; break;
+                  case tWHILE: t = modifier_while; modifier = 1; break;
+                  case tUNTIL: t = modifier_until; modifier = 1; break;
+                  case tUNLESS: t = modifier_unless; modifier = 1; break;
+                  case tRESCUE: t = modifier_rescue; modifier = 1; break;
+                }
+              }
+          }
+          /* TODO: improve this */
+          parser->expr_seen = (t != tKWAND && t != tKWOR && !modifier && t != tIF && t != tUNLESS);
         }
-      } else if (t == tFILE || t == ENCODING || t == LINE)
+      } else if (is_valid_identifier(buffer)) {
         parser->expr_seen = 1;
-    } else if ((!strcmp(buffer, "defined")) && (*c == '?')) {
-      ++curs;
-      t = DEFINED;
-    } else if (isGlobal) {
-      push_stack(parser, buffer);
-      parser->expr_seen = 1;
-      t = GLOBAL;
-    } else if (isValidVariableIdentifier(buffer)) {
-      push_stack(parser, buffer);
-      parser->expr_seen = 1;
-      if (isConstant || is_upper(buffer[0]))
-        t = CONST;
-      else if (*c == ':' && *(c + 1) != ':') {
-        t = KEY;
-        ++c;
-        ++curs;
-      } else {
-        if (buffer[0] == '@' && strlen(buffer) > 1 && buffer[1] == '@')
-          t = CVAR;
-        else if (buffer[0] == '@')
-          t = IVAR;
-        else if (isFunction(c)) {
-          curs++;
-          c++;
-          t = FNAME;
+        if (is_upper(buffer[0]))
+          t = CONST;
+        else if (*c == ':' && *(c + 1) != ':') {
+          t = tKEY;
+          parser->expr_seen = 0;
+          ++curs;
         } else
           t = BASE;
-        if (parser->class_seen)
-          parser->class_seen = 0;
-        if (t == BASE && *c == '[') {
-          ++curs;
-          t = SARY;
-        }
-        if (*c == '(' && (t == BASE || t == FNAME)) {
-          ++curs;
-          parser->expr_seen = 0;
-          t = MCALL;
+        push_stack(parser, buffer);
+      } else if (is_special_method(buffer)) {
+        if (!strcmp(buffer, "__END__")) {
+          parser->eof_reached = 1;
+          t = tpEND;
+        } else {
+          push_stack(parser, buffer);
+          t = BASE;
         }
       }
-    } else if (isSpecialMethod(buffer)) {
-      push_stack(parser, buffer);
-      t = BASE;
-    } else
-      t = token_invalid;
+    }
     parser->dot_seen = 0;
   } else if (*c == '[') {
-    tokp.startLine = tokp.endLine = parser->line;
-    tokp.startCol = parser->column;
-    t = tLBRACKET;
+    unsigned char should_store = 1;
     curs++;
+    parser->paren_nest++;
+    parser->cmd_arg = 0;
+    if (parser->dot_seen || parser->def_seen) {
+      if (*(c + 1) == ']') {
+        ++curs;
+        should_store = 0;
+        if (*(c + 2) == '=') {
+          ++curs;
+          t = tASET;
+        } else
+          t = tAREF;
+      } else if (!parser->def_seen)
+        t = '[';
+    } else if (!parser->expr_seen || space_seen) {
+      t = tLBRACKET;
+    } else {
+      t = '[';
+    }
+    if (should_store) {
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
+    }
+    parser->expr_seen = 0;
   } else if (*c == ']') {
-    t = tRBRACKET;
+    parser->paren_nest--;
+    parser->expr_seen = 1;
+    parser->brace_arg = 1;
+    t = ']';
     curs++;
   } else if (*c == '=') {
     curs++;
     if (*(c + 1) == '=') {
       ++curs;
+      parser->expr_seen = 0;
       if (*(c + 2) == '=') {
-        parser_dot_seen(t, tEQQ);
+        t = tEQQ;
         curs++;
       } else
-        parser_dot_seen(t, tEQ);
-      ++curs;
+        t = tEQ;
     } else if (*(c + 1) == '~') {
       ++curs;
-      parser_dot_seen(t, tMATCH);
+      parser->expr_seen = 0;
+      t = tMATCH;
       parser->expr_seen = 0;
     } else if (*(c + 1) == '>') {
       ++curs;
+      parser->expr_seen = 0;
       t = tASSOC;
     } else if (multiline_comment(c)) {
       curs += 5;
@@ -2081,9 +2352,9 @@ int parser_yylex(struct parser_t * parser)
         if (*c == '\n')
           parser->line++;
       curs += 3;
-      t = EOL;
+      t = tCOMMENT;
     } else
-      t = tASGN;
+      t = '=';
   } else if (*c == '<') {
     curs++;
     if (*(c + 1) == '<') {
@@ -2093,50 +2364,60 @@ int parser_yylex(struct parser_t * parser)
         t = tOP_ASGN;
       } else {
         if (cannot_be_heredoc) {
-          parser_dot_seen(t, tLSHIFT);
+          parser->expr_seen = 0;
+          t = tLSHIFT;
         } else {
           tokp.startLine = parser->line;
           tokp.startCol = parser->column;
-          t = parse_heredoc(parser, c, &curs, len);
+          t = parse_heredoc(parser, c, &curs);
           tokp.endLine = parser->line;
           tokp.endCol = parser->column;
+          parser->expr_seen = 1;
         }
       }
     } else if (*(c + 1) == '=') {
       curs++;
+      parser->expr_seen = 0;
       if (*(c + 2) == '>') {
         curs++;
-        parser_dot_seen(t, tCMP);
+        t = tCMP;
       } else
-        parser_dot_seen(t, tLEQ);
-    } else
-      parser_dot_seen(t, tLESSER);
+        t = tLEQ;
+    } else {
+      parser->expr_seen = 0;
+      t = '<';
+    }
   } else if (*c == '>') {
     curs++;
+    parser->expr_seen = 0;
     if (*(c + 1) == '>') {
       curs++;
       if (*(c + 2) == '=') {
         curs++;
         t = tOP_ASGN;
       } else
-        parser_dot_seen(t, tRSHIFT);
+        t = tRSHIFT;
     } else if (*(c + 1) == '=') {
       curs++;
-      parser_dot_seen(t, tGEQ);
+      t = tGEQ;
     } else
-      parser_dot_seen(t, tGREATER);
+      t = '>';
   } else if (*c == '!') {
     curs++;
     if (*(c + 1) == '=') {
       curs++;
-      parser_dot_seen(t, tNEQ);
+      parser->expr_seen = 0;
+      t = tNEQ;
     } else if (*(c + 1) == '~') {
       curs++;
-      parser_dot_seen(t, tNMATCH);
+      parser->expr_seen = 0;
+      t = tNMATCH;
     } else {
       tokp.startLine = tokp.endLine = parser->line;
       tokp.startCol = parser->column;
-      parser_dot_seen(t, tNOT);
+      if (parser->def_seen && *(c + 1) == '@')
+        curs++;
+      t = '!';
     }
   } else if (*c == '+') {
     curs++;
@@ -2144,12 +2425,22 @@ int parser_yylex(struct parser_t * parser)
       curs++;
       t = tOP_ASGN;
     } else {
-      parser_dot_seen(t, tPLUS);
-      if (!parser->expr_seen && t == tPLUS) {
+      t = '+';
+      if (!parser->expr_seen) {
         tokp.startLine = tokp.endLine = parser->line;
         tokp.startCol = parser->column;
         t = tUPLUS;
-      }
+      } else if (parser->def_seen && *(c + 1) == '@') {
+        curs++;
+        tokp.startLine = tokp.endLine = parser->line;
+        tokp.startCol = parser->column;
+        t = tUPLUS;
+      } else if (parser->expr_seen && space_seen && !isspace(*(c + 1))) {
+        tokp.startLine = tokp.endLine = parser->line;
+        tokp.startCol = parser->column;
+        t = tUPLUS;
+      } else
+        parser->expr_seen = 0;
     }
   } else if (*c == '-') {
     curs++;
@@ -2158,22 +2449,25 @@ int parser_yylex(struct parser_t * parser)
       t = tOP_ASGN;
     } else if (*(c + 1) == '>') {
       curs++;
-      if (*(c + 2) == '(') {
-        curs++;
-        t = MCALL;
-      } else
-        t = BASE;
-      push_stack(parser, "->");
-      tokp.startLine = tokp.endLine = parser->line;
-      tokp.startCol = parser->column;
-      tokp.endLine = tokp.startCol + 2;
+      t = tLAMBDA;
     } else {
-      parser_dot_seen(t, tMINUS);
-      if (!parser->expr_seen && t == tMINUS) {
+      t = '-';
+      if (!parser->expr_seen) {
         tokp.startLine = tokp.endLine = parser->line;
         tokp.startCol = parser->column;
         t = tUMINUS;
-      }
+      } else if (parser->def_seen && *(c + 1) == '@') {
+        curs++;
+        tokp.startLine = tokp.endLine = parser->line;
+        tokp.startCol = parser->column;
+        t = tUMINUS;
+      }  else if (parser->expr_seen && space_seen && !isspace(*(c + 1))) {
+        parser->expr_seen = 0;
+        tokp.startLine = tokp.endLine = parser->line;
+        tokp.startCol = parser->column;
+        t = tUMINUS;
+      } else
+        parser->expr_seen = 0;
     }
   } else if (*c == '*') {
     curs++;
@@ -2182,13 +2476,18 @@ int parser_yylex(struct parser_t * parser)
       t = tOP_ASGN;
     } else if (*(c + 1) == '*') {
       ++curs;
+      parser->expr_seen = 0;
       if (*(c + 2) == '=') {
         ++curs;
         t = tOP_ASGN;
       } else
-        parser_dot_seen(t, tPOW);
+        t = tPOW;
     } else {
-      parser_dot_seen(t, tMUL);
+      if (!parser->expr_seen || parser->dot_seen)
+        t = tSTAR;
+      else
+        t = '*';
+      parser->expr_seen = 0;
       parser->auxiliar.startLine = parser->line;
       parser->auxiliar.startCol = parser->column;
     }
@@ -2199,62 +2498,51 @@ int parser_yylex(struct parser_t * parser)
       t = tOP_ASGN;
     } else {
       if (parser->expr_seen) {
-        parser_dot_seen(t, tDIV);
+        t = '/';
+        parser->expr_seen = 0;
       } else {
+        int diff;
         tokp.startLine = tokp.endLine = parser->line;
         tokp.startCol = parser->column;
-        ++c;
-        for (; *c != '/'; ++c, ++curs) {
-          if (*c == '#' && *(c + 1) == '{')
-            push_string_var(parser, &curs, &c);
-          if (*c == '\\' && *(c + 1) == '/') {
-            curs++;
-            c++;
-          }
-        }
+        diff = parse_string(parser, c, curs) - 1;
+        curs += diff;
+        c += diff;
+        if (isalpha(*(c + 1)))
+          curs += parse_re_options(parser, c, curs) - 1;
         t = REGEXP;
-        curs++;
       }
-      parser->expr_seen = 0;
     }
   } else if (*c == '%') {
     ++curs;
     if (*(c + 1) == '=') {
       curs++;
       t = tOP_ASGN;
-    } else if (isShortcut(*(c + 1))) {
+    } else if (is_shortcut(*(c + 1))) {
       int catalan = 1;
       int kind = guess_kind(*(c + 1));
-      unsigned char is_simple = isSimple(*(c + 1));
+      unsigned char is_simple = !isalpha(*(c + 1));
       char open, close;
-      int inc = curs + 2 - is_simple;
       int ax = 0;
       int step = 0;
 
       tokp.startLine = tokp.endLine = parser->line;
       tokp.startCol = parser->column;
-      if (*(c + 2) != '(' && *(c + 2) != '[' && *(c + 2) != '{' && !is_simple) {
-        yyerror(parser, "unterminated string meets end of file");
-        t = token_invalid;
-        catalan = -1;
-      }
-      curs = inc;
+      curs += 2 - is_simple;
       c += 3 - is_simple;
       open = *(c - 1);
       close = closing_char(*(c - 1));
       while (catalan != -1) {
         if (*c == '#' && *(c + 1) == '{') {
-          push_string_var(parser, &curs, &c);
+          push_string_var(parser, &curs, &c, 0);
           ++curs;
           ++c;
         }
-        if (*c == open)
-          ++catalan;
-        else if (*c == close) {
+        if (*c == close) {
           --catalan;
           if (!catalan)
             break;
-        }
+        } else if (*c == open)
+          ++catalan;
         if (curs >= len) {
           yyerror(parser, "unterminated string meets end of file");
           t = token_invalid;
@@ -2266,15 +2554,22 @@ int parser_yylex(struct parser_t * parser)
         ax += step - 1;
         parser->column -= step - 1;
         for (; step-- > 0; c++, curs++);
+        if (*c == '\n') {
+          tokp.endLine++;
+          parser->line++;
+          parser->cursor = curs + 1;
+        }
       }
       /* Don't overwrite token kind if an error occurred */
       if (!catalan) {
         t = kind;
-        if (kind == STRING)
-          ++curs;
+        ++curs;
       }
-    } else
-      parser_dot_seen(t, tMOD);
+      parser->expr_seen = 1;
+    } else {
+      t = '%';
+      parser->expr_seen = 0;
+    }
   } else if (*c == '&') {
     ++curs;
     if (*(c + 1) == '&') {
@@ -2287,8 +2582,11 @@ int parser_yylex(struct parser_t * parser)
     } else if (*(c + 1) == '=') {
       ++curs;
       t = tOP_ASGN;
-    } else
-      parser_dot_seen(t, tAND_BIT);
+    } else if (!parser->expr_seen || parser->dot_seen)
+      t = tAMPER;
+    else
+      t = '&';
+    parser->expr_seen = 0;
   } else if (*c == '|') {
     ++curs;
     if (*(c + 1) == '|') {
@@ -2302,18 +2600,20 @@ int parser_yylex(struct parser_t * parser)
       ++curs;
       t = tOP_ASGN;
     } else
-      parser_dot_seen(t, tOR_BIT);
+      t = '|';
+    parser->expr_seen = 0;
   } else if (*c == '.') {
     curs++;
     if (*(c + 1) == '.') {
       curs++;
+      parser->expr_seen = 0;
       if (*(c + 2) == '.') {
         curs++;
         t = tDOT3;
       } else
         t = tDOT2;
     } else {
-      t = tDOT;
+      t = '.';
       parser->dot_seen = 1;
     }
   } else if (*c == ':') {
@@ -2324,197 +2624,171 @@ int parser_yylex(struct parser_t * parser)
         t = tCOLON3;
       else
         t = tCOLON2;
-    } else if (isNotSep(c + 1)) {
-      char * ptr = buffer;
-      int step = 0;
-      int ax = 0;
-      curs--;
-      do {
-        step = utf8_charsize(c);
-        ax += step - 1;
-        while (step-- > 0) {
-          *ptr++ = *c++;
-          curs++;
-        }
-      } while (curs < len && isNotSep(c));
-      *ptr = '\0';
-      push_stack(parser, buffer);
+    } else if (*(c + 1) == '\'' || *(c + 1) == '"') {
       tokp.startLine = tokp.endLine = parser->line;
-      parser->column -= ax;
       tokp.startCol = parser->column;
+      curs += parse_string(parser, ++c, curs);
+      parser->expr_seen = 1;
       t = SYMBOL;
-    } else
-      t = tCOLON;
+    } else if (not_sep(c + 1)) {
+      curs--;
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
+      curs += parse_word(parser, c, curs, buffer);
+      push_stack(parser, buffer);
+      parser->expr_seen = 1;
+      t = SYMBOL;
+    } else {
+      parser->expr_seen = 0;
+      t = ':';
+    }
   } else if (*c == ';') {
     curs++;
-    t = tSEMICOLON;
+    parser->expr_seen = 0;
+    t = ';';
   } else if (*c == '?') {
     curs++;
-    t = tQUESTION;
+    if (isalnum(*(c + 1))) {
+      if (!parser->expr_seen) {
+        curs++;
+        tokp.startLine = tokp.endLine = parser->line;
+        tokp.startCol = parser->column;
+        tokp.endCol = tokp.startCol + 2;
+        t = STRING;
+        parser->expr_seen = 1;
+      } else
+        t = '?';
+    } else
+      t = '?';
   } else if (*c == '\'') {
-    int step = 0;
-    int ax = 0;
-
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
-    curs++;
-    ++c;
-    while (1) {
-      step = utf8_charsize(c);
-      ax += step - 1;
-      if (*c == '\'')
-        break;
-      for (; step-- > 0; c++, curs++);
-      if (*c == '\\' && *(c + 1) == '\'') {
-        c += 2;
-        curs += 2;
-      }
-      if (curs >= len) {
-        yyerror(parser, "unterminated string meets end of file");
-        t = token_invalid;
-        break;
-      }
-    }
-    parser->column -= ax;
-    parser->expr_seen = 1;
-    curs++;
+    curs += parse_string(parser, c, curs);
     t = STRING;
   } else if (*c == '"') {
-    int step = 0;
-    int ax = 0;
-
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
-    curs++;
-    ++c;
-    while (*c != '"') {
-      step = utf8_charsize(c);
-      ax += step - 1;
-      parser->column -= step - 1;
-      for (; step-- > 0; c++, curs++);
-      if (*c == '#' && *(c + 1) == '{')
-        push_string_var(parser, &curs, &c);
-      if (*c == '\\' && *(c + 1) == '"') {
-        c += 2;
-        curs += 2;
-      }
-      if (curs >= len) {
-        yyerror(parser, "unterminated string meets end of file");
-        t = token_invalid;
-        break;
-      }
-    }
-    parser->expr_seen = 1;
-    curs++;
+    curs += parse_string(parser, c, curs);
     t = STRING;
   } else if (*c == '(') {
+    parser->paren_nest++;
+    parser->cmd_arg = 0;
+    if (parser->special_arg) {
+      parser->special_arg = 0;
+      t = '(';
+    } else if (!parser->expr_seen || parser->cond_seen)
+      t = tLPAREN;
+    else
+      t = '(';
     curs++;
-    t = tLPAREN;
   } else if (*c == ')') {
+    parser->paren_nest--;
     curs++;
-    t = tRPAREN;
+    parser->expr_seen = 1;
+    t = ')';
   } else if (*c == '{') {
+    if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
+      parser->lpar_beg = 0;
+      parser->paren_nest--;
+      t = tLAMBEG; /* this is a lambda ->() {} construction */
+    } else if (!parser->expr_seen || parser->cond_seen)
+      t = tLBRACE; /* smells like hash */
+    else if (parser->brace_arg)
+      t = tLBRACE_ARG; /* block (expr) */
+    else
+      t = '{'; /* block (primary) */
+    parser->cmd_arg = 0;
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
     curs++;
-    t = tLBRACE;
   } else if (*c == '}') {
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
+    parser->expr_seen = 1;
+    parser->brace_arg = 1;
+    parser->cmd_arg = 0;
     curs++;
-    t = tRBRACE;
+    t = '}';
   } else if (*c == ',') {
     curs++;
     parser->expr_seen = 0;
-    t = tCOMMA;
+    t = ',';
   } else if (*c == '`') {
-    int ax = 0;
-    int step = 0;
-
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = parser->column;
-    curs++;
-    ++c;
-    while (1) {
-      step = utf8_charsize(c);
-      ax += step - 1;
-      parser->column -= step - 1;
-      for (; step-- > 0; c++, curs++);
-      if (*c == '#' && *(c + 1) == '{')
-        push_string_var(parser, &curs, &c);
-      if (*c == '\\' && *(c + 1) == '`') {
-        curs += 2;
-        c += 2;
-      }
-      if (*c == '`')
-        break;
-      if (curs >= len) {
-        yyerror(parser, "unterminated backtick command meets end of file");
-        t = token_invalid;
-        break;
-      }
-    }
-    parser->expr_seen = 1;
-    curs++;
+    curs += parse_string(parser, c, curs);
     t = tBACKTICK;
   } else if (*c == '~') {
     curs++;
     tokp.startLine = tokp.endLine = parser->line;
     tokp.startCol = tokp.endCol = parser->column;
-    parser_dot_seen(t, tTILDE);
+    if (parser->def_seen && *(c + 1) == '@')
+      curs++;
+    t = '~';
   } else if (*c == '^') {
     curs++;
-    parser_dot_seen(t, tXOR_BIT);
+    t = '^';
+    parser->expr_seen = 0;
   }
 
-  /*
-   * Once we have the token id, we should update the parser
-   * flags to avoid conflicts and weird behavior :P
-   */
-  if (t == DO && !parser->no_block) {
-    t = DO_BLOCK;
-    parser->no_block = 0;
+  /* Let's fix the tDO token */
+  if (t == tDO) {
+    if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
+      parser->lpar_beg = 0;
+      parser->paren_nest--;
+      t = tDO_LAMBDA;
+    } else if (parser->cond_seen) {
+      t = tDO_COND;
+    } else if (parser->cmd_arg || !parser->expr_seen || parser->brace_arg) {
+      parser->cmd_arg = 0;
+      t = tDO_BLOCK;
+    } else
+      t = tDO;
     parser->dot_seen = 0;
+    parser->expr_seen = 0;
   }
 
-  /* TODO: clean this */
-  if (t == COMMENT) {
-    t = EOL;
-  } else
+  /* Unset some flags if necessary */
+  if (parser->brace_arg && *c != '}' && *c != ']')
+    parser->brace_arg = 0;
+  if (t == tOP_ASGN || t == '=')
+    parser->expr_seen = 0;
+
+  if (t != tCOMMENT)
     parser->column += curs - parser->cursor;
 
   parser->cursor = curs;
   if (tokp.startLine > 0) {
-    if (t != HEREDOC)
+    if (t != tHEREDOC)
       tokp.endCol = parser->column;
     push_pos(parser, tokp);
   }
-
+/* printf("Token: %i\n", t); //TODO */
+  /* it's the end... */
   if (curs >= len)
     parser->eof_reached = 1;
-  if (t == tOP_ASGN || t == tASGN)
-    parser->expr_seen = 0;
-  if (t == token_whitespace)
-    t = EOL;
   return t;
 }
 
 /*
  * Standard yylex.
  */
-int yylex(void * lval, void * p)
+static int yylex(void * lval, void * p)
 {
   struct parser_t * parser = (struct parser_t *) p;
-  (void) lval;
+  int ret;
+  (void) lval; /* like Q_UNUSED */
 
-  return parser_yylex(parser);
+  /* This parser does not like comments inside the grammar */
+  while ((ret = parser_yylex(parser)) == tCOMMENT);
+  return ret;
 }
 
 /*
  * Error handling. Take the formmated string s and append the error
  * string to the list of errors p->errors.
  */
-void yyerror(struct parser_t * p, const char * s, ...)
+static void yyerror(struct parser_t * p, const char * s, ...)
 {
   if (p->error_index < 1) {
     p->errors[p->error_index].msg = strdup(s);
@@ -2529,7 +2803,7 @@ void yyerror(struct parser_t * p, const char * s, ...)
 /*
  * Copy errors to the RubyAst structure.
  */
-void copy_error(Ast * ast, int index, struct error_t p)
+static void copy_error(RAst * ast, int index, struct error_t p)
 {
   ast->errors[index].valid = p.valid;
   ast->errors[index].line = p.line;
@@ -2537,10 +2811,10 @@ void copy_error(Ast * ast, int index, struct error_t p)
   ast->errors[index].msg = p.msg;
 }
 
-Ast * rb_compile_file(const char * path, const char * contents)
+RAst * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
-  Ast * result;
+    RAst * result;
 
   /* Initialize parser */
   init_parser(&p);
@@ -2549,12 +2823,12 @@ Ast * rb_compile_file(const char * path, const char * contents)
     if (!retrieve_source(&p, path))
       return NULL;
   } else {
-    p.blob = strdup(contents);
     p.length = strlen(contents);
+    p.blob = strdup(contents);
   }
 
   /* Let's parse */
-  result = (Ast *) malloc (sizeof(Ast));
+  result = (RAst *) malloc (sizeof(RAst));
   result->tree = NULL;
   for (;;) {
     yyparse(&p);
