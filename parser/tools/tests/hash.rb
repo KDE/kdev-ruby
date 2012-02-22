@@ -20,3 +20,4 @@ a = {
       :b => 2
     }
 d = {:a => 'aa'}
+{ 'UNIX' => '/', 'WINDOWS' => "\\", 'MACINTOSH' => ':' }

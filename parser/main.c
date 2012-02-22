@@ -20,9 +20,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "node.h"
 
 extern int rb_debug_file(const char *);
+
+/*
+ * This is a recursive function that steps over the AST to fetch
+ * all the comments that the parser has stored. All the comments
+ * are printed to the stdout.
+ */
+void fetch_comments(struct node *tree)
+{
+  if (!tree)
+    return;
+  if (tree->comment != NULL)
+    printf("%s", tree->comment);
+
+  fetch_comments(tree->l);
+  fetch_comments(tree->r);
+  fetch_comments(tree->next);
+}
 
 
 /**
@@ -32,10 +49,24 @@ extern int rb_debug_file(const char *);
  */
 int main(int argc, char * argv[])
 {
-  if (argc != 2) {
-      printf("Usage: ruby-parser file\n\n");
+  RAst *ast;
+
+  switch (argc) {
+    case 2:
+      return rb_debug_file(argv[argc - 1]);
+    case 3:
+      ast = rb_compile_file(argv[argc - 2], NULL);
+      if (ast->errors[0].valid) {
+        print_errors(ast->errors);
+        printf("This is unexpected...\n");
+        exit(1);
+      }
+      fetch_comments(ast->tree);
+      rb_free(ast);
+      break;
+    default:
+      printf("Usage: ruby-parser file [opt]\n\n");
       printf("KDevelop Ruby parser debugging utility\n");
-      exit(0);
   }
-  return rb_debug_file(argv[argc - 1]);
+  return 0;
 }

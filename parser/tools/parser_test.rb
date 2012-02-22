@@ -34,14 +34,14 @@ class AssertSameTest < Test::Unit::TestCase
   end
 
   def test_comments_fetching
-    output = `#{CDIR}/comments-test #{CDIR}/test.rb`
-    assert_same output, :log => "#{CDIR}/expected.txt"
+    comments = get_ast("#{CDIR}/test.rb", true)
+    assert_same comments, :log => "#{CDIR}/expected.txt"
   end
 
 private
 
-  def get_ast(filename)
+  def get_ast(filename, opt = nil)
     # FIXME: adymo: properly find ruby-parser executable
-    `#{File.dirname(__FILE__)}/../ruby-parser #{filename}`
+    `#{File.dirname(__FILE__)}/../ruby-parser #{filename} #{opt}`
   end
 end

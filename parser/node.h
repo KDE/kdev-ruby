@@ -183,7 +183,7 @@ typedef struct node Node;
  *        if you want that the parser retrieves the contents for you.
  * @return an AST that represents the code.
  */
-    RAst * rb_compile_file(const char * path, const char * contents);
+RAst * rb_compile_file(const char * path, const char * contents);
 
 /**
  * Free a RubyAst.

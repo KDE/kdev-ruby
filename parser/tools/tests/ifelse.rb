@@ -36,7 +36,7 @@ else
 end
 
 if b == c then a += 1
-elsif b > a then c = 1
+elsif (b > a) then c = 1
 else b = 5
 end
 

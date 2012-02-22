@@ -19,3 +19,5 @@ end
 /asd/mo
 %r\asd\
 %r-asd-
+
+return /IIS\/(\d+)/

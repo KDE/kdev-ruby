@@ -77,3 +77,5 @@ open a do |os|
     a
   end
 end
+
+remove_method(:alternate=)

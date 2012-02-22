@@ -50,6 +50,7 @@ struct flags_t {
   unsigned char brace_arg : 1;
   unsigned char def_seen : 1;
   unsigned char in_alias : 1;
+  unsigned char symbeg : 1;
 };
 
 #define eof_reached lexer_flags.eof_reached
@@ -63,6 +64,7 @@ struct flags_t {
 #define def_seen lexer_flags.def_seen
 #define cond_seen lexer_flags.cond_seen
 #define in_alias lexer_flags.in_alias
+#define symbeg lexer_flags.symbeg
 
 #define PUSH_CLASS() parser->class_seen = 1;
 #define POP_CLASS() parser->class_seen = 0;
@@ -106,6 +108,7 @@ struct parser_t {
   int in_def;
   int paren_nest;
   int lpar_beg;
+  int expr_mid;
 
   /* Errors on the file */
   struct error_t errors[2];
@@ -184,7 +187,7 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
 %token <n> tALIAS tDEFINED upBEGIN upEND tHEREDOC tTRUE tFALSE tNIL tENCODING
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA STRING
-%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND
+%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND tSYMBEG
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
 %token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
 
@@ -200,9 +203,9 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 %type <n> block_param opt_block_param block_param_def f_opt bv_decls label none
 %type <n> lambda f_larglist lambda_body command_args opt_bv_decl lhs do_block
 %type <n> mlhs mlhs_head mlhs_basic mlhs_item mlhs_node mlhs_post mlhs_inner
-%type <n> fsym variable symbol operation operation2 operation3 other_vars 
-%type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg 
-%type <n> brace_block cmd_brace_block f_bad_arg
+%type <n> fsym variable symbol operation operation2 operation3 other_vars
+%type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg
+%type <n> brace_block cmd_brace_block f_bad_arg sym
 
 /* precedence table */
 %nonassoc tLOWEST
@@ -271,8 +274,11 @@ stmt: tALIAS fsym fsym
   | tALIAS GLOBAL GLOBAL
   {
     /* Ugly as hell, but it works */
-    struct node * l = ALLOC_N(token_object, NULL, NULL);
-    struct node * r = ALLOC_N(token_object, NULL, NULL);
+    struct node * l = alloc_node(token_object, NULL, NULL);
+    struct node * r = alloc_node(token_object, NULL, NULL);
+/* TODO */
+/*    fix_pos(parser, l);
+    fix_pos(parser, r);*/
     fix_pos(parser, r);
     fix_pos(parser, l);
     pop_stack(parser, l);
@@ -538,7 +544,7 @@ mlhs_node: variable { $$ = $1; }
 
 lhs: variable { $$ = $1; }
   | primary '[' opt_call_args rbracket
-  {    
+  {
     $$ = ALLOC_N(token_array_value, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
@@ -1257,7 +1263,19 @@ string: STRING
 regexp: REGEXP { $$ = ALLOC_N(token_regexp, NULL, NULL); POP_STR; }
 ;
 
-symbol: SYMBOL { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
+symbol: tSYMBEG sym
+  {
+    $$ = ALLOC_N(token_symbol, NULL, NULL);
+    copy_end($$, $2);
+    $$->name = $2->name;
+  }
+;
+
+sym: fname
+  | strings
+  | IVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | CVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
 ;
 
 numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
@@ -1412,7 +1430,7 @@ assoc_list: none
 
 assocs: assoc
   | assocs ',' assoc { $$ = update_list($1, $3); }
-;       
+;
 
 assoc: arg tASSOC arg
   {
@@ -1516,6 +1534,8 @@ static void init_parser(struct parser_t * p)
   p->brace_arg = 0;
   p->in_def = 0;
   p->in_alias = 0;
+  p->symbeg = 0;
+  p->expr_mid = 0;
   p->lpar_beg = 0;
   p->paren_nest = 0;
   p->error_index = 0;
@@ -1542,7 +1562,9 @@ static void free_parser(struct parser_t * p)
 
   for (index = 0; index < p->sp; index++)
     free(p->stack[index]);
-  free(p->pos_stack);
+  /* TODO */
+/*   if (p->pos_stack != NULL) */
+/*     free(p->pos_stack); */
   free(p->blob);
   free(p->name);
   if (p->last_comment.comment != NULL)
@@ -2027,12 +2049,14 @@ static int parse_string(struct parser_t *p, char *c, int curs)
 
   curs++; c++;
   while (*c != term) {
+    for (; *c == '\\' && (*(c + 1) == term || *(c + 1) == '\\'); c += 2, curs += 2);
+    if (*c == term)
+      break;
     if (vars && *c == '#' && *(c + 1) == '{')
       push_string_var(p, &curs, &c, ax);
     step = utf8_charsize(c);
     ax += step - 1;
     for (; step-- > 0; c++, curs++);
-    for (; *c == '\\' && *(c + 1) == term; c += 2, curs += 2);
     if (curs >= len) {
       yyerror(p, "unterminated string meets end of file");
       break;
@@ -2059,7 +2083,7 @@ static int parse_word(struct parser_t *p, char *c, int curs, char *buffer)
       curs++;
     }
   } while (curs < len && not_sep(c));
-  if (is_function(c) || (*c == '=' && (p->def_seen || p->in_alias)))
+  if (is_function(c) || (*c == '=' && (p->def_seen || p->in_alias || p->symbeg)))
     *ptr++ = *c++;
   *ptr = '\0';
   p->column -= ax;
@@ -2259,7 +2283,7 @@ static int parser_yylex(struct parser_t * parser)
               parser->cmd_arg = 0;
               break;
             default:
-              if (parser->expr_seen) {
+              if (parser->expr_seen || parser->expr_mid > 0) {
                 switch (t) {
                   case tIF: t = modifier_if; modifier = 1; break;
                   case tWHILE: t = modifier_while; modifier = 1; break;
@@ -2270,9 +2294,19 @@ static int parser_yylex(struct parser_t * parser)
               }
           }
           /* TODO: improve this */
-          parser->expr_seen = (t != tKWAND && t != tKWOR && !modifier && t != tIF && t != tUNLESS);
+          parser->expr_seen = (t != tRETURN && t != tKWAND && t != tKWOR && !modifier && t != tIF && t != tELSIF && t != tUNLESS);
+          if (t == tRETURN)
+            parser->expr_mid = 2;
         }
-      } else if (is_valid_identifier(buffer)) {
+      } else if (is_special_method(buffer)) {
+        if (!strcmp(buffer, "__END__")) {
+          parser->eof_reached = 1;
+          t = tpEND;
+        } else {
+          push_stack(parser, buffer);
+          t = BASE;
+        }
+      } else if (not_sep(buffer)) {
         parser->expr_seen = 1;
         if (is_upper(buffer[0]))
           t = CONST;
@@ -2283,14 +2317,6 @@ static int parser_yylex(struct parser_t * parser)
         } else
           t = BASE;
         push_stack(parser, buffer);
-      } else if (is_special_method(buffer)) {
-        if (!strcmp(buffer, "__END__")) {
-          parser->eof_reached = 1;
-          t = tpEND;
-        } else {
-          push_stack(parser, buffer);
-          t = BASE;
-        }
       }
     }
     parser->dot_seen = 0;
@@ -2493,24 +2519,22 @@ static int parser_yylex(struct parser_t * parser)
     }
   } else if (*c == '/') {
     curs++;
-    if (*(c + 1) == '=') {
+    if (!parser->expr_seen) {
+      int diff;
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
+      diff = parse_string(parser, c, curs) - 1;
+      curs += diff;
+      c += diff;
+      if (isalpha(*(c + 1)))
+        curs += parse_re_options(parser, c, curs) - 1;
+      t = REGEXP;
+    } else if (*(c + 1) == '=') {
       curs++;
       t = tOP_ASGN;
     } else {
-      if (parser->expr_seen) {
-        t = '/';
-        parser->expr_seen = 0;
-      } else {
-        int diff;
-        tokp.startLine = tokp.endLine = parser->line;
-        tokp.startCol = parser->column;
-        diff = parse_string(parser, c, curs) - 1;
-        curs += diff;
-        c += diff;
-        if (isalpha(*(c + 1)))
-          curs += parse_re_options(parser, c, curs) - 1;
-        t = REGEXP;
-      }
+      t = '/';
+      parser->expr_seen = 0;
     }
   } else if (*c == '%') {
     ++curs;
@@ -2624,20 +2648,12 @@ static int parser_yylex(struct parser_t * parser)
         t = tCOLON3;
       else
         t = tCOLON2;
-    } else if (*(c + 1) == '\'' || *(c + 1) == '"') {
+    } else if (!isspace(*(c + 1))) {
       tokp.startLine = tokp.endLine = parser->line;
       tokp.startCol = parser->column;
-      curs += parse_string(parser, ++c, curs);
+      t = tSYMBEG;
+      parser->symbeg = 1;
       parser->expr_seen = 1;
-      t = SYMBOL;
-    } else if (not_sep(c + 1)) {
-      curs--;
-      tokp.startLine = tokp.endLine = parser->line;
-      tokp.startCol = parser->column;
-      curs += parse_word(parser, c, curs, buffer);
-      push_stack(parser, buffer);
-      parser->expr_seen = 1;
-      t = SYMBOL;
     } else {
       parser->expr_seen = 0;
       t = ':';
@@ -2648,7 +2664,7 @@ static int parser_yylex(struct parser_t * parser)
     t = ';';
   } else if (*c == '?') {
     curs++;
-    if (isalnum(*(c + 1))) {
+    if (!isspace(*(c + 1))) {
       if (!parser->expr_seen) {
         curs++;
         tokp.startLine = tokp.endLine = parser->line;
@@ -2754,6 +2770,12 @@ static int parser_yylex(struct parser_t * parser)
   if (t == tOP_ASGN || t == '=')
     parser->expr_seen = 0;
 
+  parser->expr_mid--;
+  if (parser->symbeg && t != tSYMBEG) {
+    parser->symbeg = 0;
+    parser->expr_seen = 1;
+  }
+
   if (t != tCOMMENT)
     parser->column += curs - parser->cursor;
 
@@ -2763,7 +2785,7 @@ static int parser_yylex(struct parser_t * parser)
       tokp.endCol = parser->column;
     push_pos(parser, tokp);
   }
-/* printf("Token: %i\n", t); //TODO */
+
   /* it's the end... */
   if (curs >= len)
     parser->eof_reached = 1;
@@ -2814,7 +2836,7 @@ static void copy_error(RAst * ast, int index, struct error_t p)
 RAst * rb_compile_file(const char * path, const char * contents)
 {
   struct parser_t p;
-    RAst * result;
+  RAst * result;
 
   /* Initialize parser */
   init_parser(&p);
