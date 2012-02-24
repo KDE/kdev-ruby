@@ -1506,7 +1506,6 @@ none : /* none */ { $$ = 0; }
                               && *(c+4) == 'i' && *(c+5) == 'n')
 #define multiline_end(c) (*c == '=' && *(c+1) == 'e' && *(c+2) == 'n' \
                           && *(c+3) == 'd')
-#define is_function(c) (*c == '!' || *c == '?')
 #define is_simple(c) (c == '(' || c == '{' || c == '[' || c == '|' || c == '<' || c == '/' || c == '$')
 #define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
                       || c == 'x' || is_simple(c))
@@ -1609,6 +1608,7 @@ static int retrieve_source(struct parser_t * p, const char * path)
  */
 #define is_utf(c) ((c & 0xC0) != 0x80)
 #define is_special(c) (utf8_charsize(c) > 1)
+#define is_identchar(c) (is_utf8_alnum(c) || *c == '_')
 
 /*
  * This function is really simple. It steps over a char of
@@ -1632,6 +1632,11 @@ static int utf8_charsize(const char * s)
 static int is_utf8_alpha(const char * str)
 {
   return is_special(str) ? 1 : isalpha(*str);
+}
+
+static int is_utf8_alnum(const char * str)
+{
+  return is_special(str) ? 1 : isalnum(*str);
 }
 
 static int is_utf8_graph(const char * str)
@@ -1697,7 +1702,7 @@ static void push_string_var(struct parser_t * p, int * curs, char ** ch, int oax
 static int parse_heredoc(struct parser_t * p, char * c, int * curs)
 {
   char buffer[BSIZE], aux[BSIZE];
-  unsigned char quote_seen = 0, term;
+  unsigned char quote_seen = 0, term = ' ';
   unsigned char dash_seen = 0;
   int i, l = 0, spaces = 0;
   int len = p->length;
@@ -1714,11 +1719,11 @@ static int parse_heredoc(struct parser_t * p, char * c, int * curs)
     c++; (*curs)++;
     quote_seen = 1;
   }
-  for (i = 0; *c != '\n' && *c != ' ' && *curs <= len; (*curs)++, ++l)
+  for (i = 0; (is_identchar(c) || *c == term) && *curs <= len; (*curs)++, ++l)
     buffer[i++] = *c++;
+  buffer[i - quote_seen] = '\0';
   if (quote_seen && *(c - 1) != term)
     yyerror(p, "unterminated here document identifier");
-  buffer[i - quote_seen] = '\0';
   l -= quote_seen;
 
   for (i = 0; *curs <= len; i++, c++, (*curs)++) {
@@ -2083,9 +2088,18 @@ static int parse_word(struct parser_t *p, char *c, int curs, char *buffer)
       curs++;
     }
   } while (curs < len && not_sep(c));
-  if (is_function(c) || (*c == '=' && (p->def_seen || p->in_alias || p->symbeg)))
-    *ptr++ = *c++;
+  switch (*c) {
+    case '=':
+      if (!p->def_seen && !p->symbeg && !p->in_alias)
+        break;
+      if (*(c + 1) == '>')
+        break;
+    case '!': case '?':
+      *ptr++ = *c++;
+  }
   *ptr = '\0';
+  if (p->def_seen && (isspace(*c) || *c == '('))
+    p->def_seen = 0;
   p->column -= ax;
   return ptr - buffer;
 }
