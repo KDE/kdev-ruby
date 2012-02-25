@@ -116,7 +116,7 @@ struct parser_t {
 
   /* Stack of names */
   char * stack[2];
-  char * aux; /* TODO: free */
+  char * aux;
   struct node * string_names;
   int sp;
 
@@ -276,9 +276,6 @@ stmt: tALIAS fsym fsym
     /* Ugly as hell, but it works */
     struct node * l = alloc_node(token_object, NULL, NULL);
     struct node * r = alloc_node(token_object, NULL, NULL);
-/* TODO */
-/*    fix_pos(parser, l);
-    fix_pos(parser, r);*/
     fix_pos(parser, r);
     fix_pos(parser, l);
     pop_stack(parser, l);
@@ -1784,7 +1781,7 @@ static void push_stack(struct parser_t * parser, const char * buf)
 
 /* Pop name from the stack. */
 static void pop_stack(struct parser_t * parser, struct node * n)
-{/* TODO: if null we have to free ? */
+{
   if (n != NULL)
     n->name = parser->stack[0];
   parser->stack[0] = parser->stack[1];
