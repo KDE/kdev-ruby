@@ -79,3 +79,6 @@ end
 
 def a.b=(val)
 end
+
+def initialize parent=nil
+end

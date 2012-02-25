@@ -45,3 +45,7 @@ MSGEND
       </body>
     </html>
   MSGEND
+
+a = <<-'erb1',
+  sdasda
+erb1

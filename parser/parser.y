@@ -2273,45 +2273,35 @@ static int parser_yylex(struct parser_t * parser)
       push_stack(parser, buffer);
       parser->expr_seen = 0;
       parser->special_arg = 1;
+    } else if (parser->dot_seen) {
+      push_stack(parser, buffer);
+      t = BASE;
+      parser->dot_seen = 0;
+      parser->expr_seen = 1;
     } else {
-      int modifier = 0;
       const struct kwtable *kw = rb_reserved_word(buffer, diff);
       if (kw) {
-        t = kw->id;
-        if (parser->dot_seen) {
-          push_stack(parser, buffer);
-          t = BASE;
-          parser->dot_seen = 0;
-          parser->expr_seen = 1;
-        } else {
-          switch (t) {
-            case tDEF:
-              parser->def_seen = 1;
-            case tMODULE: case tCLASS:
-              push_last_comment(parser);
-              break;
-            case tALIAS:
-              parser->in_alias = 1;
-              break;
-            case tEND:
-              parser->cmd_arg = 0;
-              break;
-            default:
-              if (parser->expr_seen || parser->expr_mid > 0) {
-                switch (t) {
-                  case tIF: t = modifier_if; modifier = 1; break;
-                  case tWHILE: t = modifier_while; modifier = 1; break;
-                  case tUNTIL: t = modifier_until; modifier = 1; break;
-                  case tUNLESS: t = modifier_unless; modifier = 1; break;
-                  case tRESCUE: t = modifier_rescue; modifier = 1; break;
-                }
-              }
-          }
-          /* TODO: improve this */
-          parser->expr_seen = (t != tRETURN && t != tKWAND && t != tKWOR && !modifier && t != tIF && t != tELSIF && t != tUNLESS);
-          if (t == tRETURN)
+        t = kw->id[0];
+        switch (t) {
+          case tDEF:
+            parser->def_seen = 1;
+          case tMODULE: case tCLASS:
+            push_last_comment(parser);
+            break;
+          case tALIAS:
+            parser->in_alias = 1;
+            break;
+          case tEND:
+            parser->cmd_arg = 0;
+            break;
+          case tRETURN:
             parser->expr_mid = 2;
         }
+        if (t != kw->id[1] && (parser->expr_seen || parser->expr_mid > 0)) {
+          t = kw->id[1];
+          parser->expr_seen = 0;
+        } else
+          parser->expr_seen = kw->expr;
       } else if (is_special_method(buffer)) {
         if (!strcmp(buffer, "__END__")) {
           parser->eof_reached = 1;

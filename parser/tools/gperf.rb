@@ -48,6 +48,6 @@ GFLAGS = '-C -p -j1 -i 1 -g -o -t -N rb_reserved_word -k1,3,$ gperf.txt > ../has
 
 puts 'Using gperf to generate hash.c'
 `gperf #{GFLAGS}`
-text = (File.read '../hash.c').gsub /{""}/, '{"", -1}'
+text = File.read('../hash.c').gsub /{""}/, '{"", {0,0}, 0}'
 File.open('../hash.c', 'w') { |file| file.puts text }
 

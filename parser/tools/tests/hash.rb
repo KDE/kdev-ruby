@@ -21,3 +21,4 @@ a = {
     }
 d = {:a => 'aa'}
 { 'UNIX' => '/', 'WINDOWS' => "\\", 'MACINTOSH' => ':' }
+@options={:accept_charset=>@@accept_charset}
