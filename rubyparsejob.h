@@ -69,6 +69,11 @@ private:
      */
     LanguageSupport * ruby() const;
 
+    /**
+     * @return true if highlighting can be applied, false otherwise.
+     */
+    inline bool canHighlight() const;
+
 private:
     /**
      * Url of the current document.

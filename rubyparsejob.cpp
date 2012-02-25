@@ -67,6 +67,12 @@ LanguageSupport * ParseJob::ruby() const
     return LanguageSupport::self();
 }
 
+inline bool ParseJob::canHighlight() const
+{
+    return ruby() && ruby()->codeHighlighting() &&
+        ICore::self()->languageController()->backgroundParser()->trackerForUrl(document());
+}
+
 void ParseJob::run()
 {
     if (!ruby() || abortRequested())
@@ -83,8 +89,7 @@ void ParseJob::run()
             if (!file->needsUpdate() && file->featuresSatisfied(minimumFeatures())) {
                 debug() << "Already up to date" << document().str();
                 setDuChain(file->topContext());
-                if (ruby() && ruby()->codeHighlighting() &&
-                    ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
+                if (canHighlight()) {
                     lock.unlock();
                     ruby()->codeHighlighting()->highlightDUChain(duChain());
                 }
@@ -167,10 +172,8 @@ void ParseJob::run()
         }
         m_parser->freeAst(ast);
 
-        if (ruby() && ruby()->codeHighlighting() &&
-            ICore::self()->languageController()->backgroundParser()->trackerForUrl(document())) {
+        if (canHighlight())
             ruby()->codeHighlighting()->highlightDUChain(m_duContext);
-        }
         debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
