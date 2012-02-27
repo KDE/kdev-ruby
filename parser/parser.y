@@ -51,6 +51,7 @@ struct flags_t {
   unsigned char def_seen : 1;
   unsigned char in_alias : 1;
   unsigned char symbeg : 1;
+  unsigned char mcall : 1;
 };
 
 #define eof_reached lexer_flags.eof_reached
@@ -65,6 +66,7 @@ struct flags_t {
 #define cond_seen lexer_flags.cond_seen
 #define in_alias lexer_flags.in_alias
 #define symbeg lexer_flags.symbeg
+#define mcall lexer_flags.mcall
 
 #define PUSH_CLASS() parser->class_seen = 1;
 #define POP_CLASS() parser->class_seen = 0;
@@ -187,7 +189,7 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
 %token <n> tALIAS tDEFINED upBEGIN upEND tHEREDOC tTRUE tFALSE tNIL tENCODING
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA STRING
-%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND tSYMBEG
+%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND tSYMBEG tHERE_PAR
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
 %token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
 
@@ -723,6 +725,7 @@ aref_args: none
 ;
 
 paren_args: '(' opt_call_args rparen { $$ = $2; }
+  | '(' tHERE_PAR { $$ = ALLOC_N(token_heredoc, NULL, NULL);   }
 ;
 
 opt_paren_args : none | paren_args
@@ -1531,6 +1534,7 @@ static void init_parser(struct parser_t * p)
   p->in_def = 0;
   p->in_alias = 0;
   p->symbeg = 0;
+  p->mcall = 0;
   p->expr_mid = 0;
   p->lpar_beg = 0;
   p->paren_nest = 0;
@@ -2121,7 +2125,7 @@ static int parse_re_options(struct parser_t *p, char *c, int curs)
  */
 static int parser_yylex(struct parser_t * parser)
 {
-  int t = YYEOF;
+  int t = token_invalid;
   char buffer[BSIZE];
   char * c;
   int curs, len;
@@ -2270,6 +2274,7 @@ static int parser_yylex(struct parser_t * parser)
       push_stack(parser, buffer);
       parser->expr_seen = 0;
       parser->special_arg = 1;
+      parser->mcall = 1;
     } else if (parser->dot_seen) {
       push_stack(parser, buffer);
       t = BASE;
@@ -2400,6 +2405,10 @@ static int parser_yylex(struct parser_t * parser)
           tokp.endLine = parser->line;
           tokp.endCol = parser->column;
           parser->expr_seen = 1;
+          if (parser->mcall) {
+            t = tHERE_PAR;
+            parser->mcall = 0;
+          }
         }
       }
     } else if (*(c + 1) == '=') {
@@ -2702,6 +2711,8 @@ static int parser_yylex(struct parser_t * parser)
     parser->paren_nest--;
     curs++;
     parser->expr_seen = 1;
+    if (!parser->paren_nest)
+      parser->mcall = 0;
     t = ')';
   } else if (*c == '{') {
     if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
@@ -2782,7 +2793,7 @@ static int parser_yylex(struct parser_t * parser)
 
   parser->cursor = curs;
   if (tokp.startLine > 0) {
-    if (t != tHEREDOC)
+    if (t != tHEREDOC && t != tHERE_PAR)
       tokp.endCol = parser->column;
     push_pos(parser, tokp);
   }

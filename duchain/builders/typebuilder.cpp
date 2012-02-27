@@ -25,7 +25,7 @@
 namespace Ruby
 {
 
-TypeBuilder::TypeBuilder(): TypeBuilderBase()
+TypeBuilder::TypeBuilder() : TypeBuilderBase()
 {
     /* There's nothing to do here! */
 }

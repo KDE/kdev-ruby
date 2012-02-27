@@ -49,3 +49,9 @@ MSGEND
 a = <<-'erb1',
   sdasda
 erb1
+
+modul_eval(<<-asd, __FILE__, __LINE__ + 1)
+  def #{name}
+    #{val}
+  end
+asd

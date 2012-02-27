@@ -111,7 +111,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             debug() << "Adding kernel context";
             DUChainWriteLocker wlock(DUChain::lock());
             currentContext()->addImportedParentContext(internal);
-            m_builtinsContext = TopDUContextPointer(internal);
+            m_builtinsContext = KDevelop::TopDUContextPointer(internal);
         }
     }
     RubyAstVisitor::visitCode(node);
