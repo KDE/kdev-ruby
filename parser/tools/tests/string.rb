@@ -47,3 +47,10 @@ c = ?a
 c = ?-
 a = b ?1 : c
 a = (b) ?1 : c
+
+a = 'asdas
+asd'
+
+a = 'asd
+asdasd
+asdasdasdasd'

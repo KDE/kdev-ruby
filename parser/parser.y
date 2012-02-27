@@ -1663,7 +1663,7 @@ static int is_valid_identifier(const char * c)
   return 0;
 }
 
-static void push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
+static int push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
 {
   char *c = *ch;
   int diff = *curs - p->cursor - oax + 2;
@@ -1698,6 +1698,7 @@ static void push_string_var(struct parser_t * p, int * curs, char ** ch, int oax
   tp.endCol = tp.startCol + i;
   push_pos(p, tp);
   push_string(p, buffer);
+  return i;
 }
 
 static int parse_heredoc(struct parser_t * p, char * c, int * curs)
@@ -2048,18 +2049,24 @@ static int parse_string(struct parser_t *p, char *c, int curs)
 {
   int step = 0; /* How many bytes the actual utf8 character has */
   int ax = 0; /* Used to properly update the column when utf8 chars appear */
+  int extra, i;
   int len = p->length;
   int init = curs;
   char term = *c;
   unsigned char vars = (term == '"' || term == '`' || term == '/');
 
   curs++; c++;
-  while (*c != term) {
-    for (; *c == '\\' && (*(c + 1) == term || *(c + 1) == '\\'); c += 2, curs += 2);
+  for (extra = 0, i = p->column + 2; *c != term; i++) {
+    for (; *c == '\\' && (*(c + 1) == term || *(c + 1) == '\\'); c += 2, curs += 2, i += 2);
     if (*c == term)
       break;
+    if (*c == '\n') {
+      p->line++;
+      extra += i;
+      i = 0;
+    }
     if (vars && *c == '#' && *(c + 1) == '{')
-      push_string_var(p, &curs, &c, ax);
+      i += push_string_var(p, &curs, &c, ax) + 2;
     step = utf8_charsize(c);
     ax += step - 1;
     for (; step-- > 0; c++, curs++);
@@ -2069,7 +2076,7 @@ static int parse_string(struct parser_t *p, char *c, int curs)
     }
   }
   curs++;
-  p->column -= ax;
+  p->column -= ax + extra;
   p->expr_seen = 1;
   return curs - init;
 }
@@ -2531,9 +2538,10 @@ static int parser_yylex(struct parser_t * parser)
     curs++;
     if (!parser->expr_seen) {
       int diff;
-      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startLine = parser->line;
       tokp.startCol = parser->column;
       diff = parse_string(parser, c, curs) - 1;
+      tokp.endLine = parser->line;
       curs += diff;
       c += diff;
       if (isalpha(*(c + 1)))
@@ -2687,14 +2695,16 @@ static int parser_yylex(struct parser_t * parser)
     } else
       t = '?';
   } else if (*c == '\'') {
-    tokp.startLine = tokp.endLine = parser->line;
+    tokp.startLine = parser->line;
     tokp.startCol = parser->column;
     curs += parse_string(parser, c, curs);
+    tokp.endLine = parser->line;
     t = STRING;
   } else if (*c == '"') {
-    tokp.startLine = tokp.endLine = parser->line;
+    tokp.startLine = parser->line;
     tokp.startCol = parser->column;
     curs += parse_string(parser, c, curs);
+    tokp.endLine = parser->line;
     t = STRING;
   } else if (*c == '(') {
     parser->paren_nest++;
@@ -2742,9 +2752,10 @@ static int parser_yylex(struct parser_t * parser)
     parser->expr_seen = 0;
     t = ',';
   } else if (*c == '`') {
-    tokp.startLine = tokp.endLine = parser->line;
+    tokp.startLine = parser->line;
     tokp.startCol = parser->column;
     curs += parse_string(parser, c, curs);
+    tokp.endLine = parser->line;
     t = tBACKTICK;
   } else if (*c == '~') {
     curs++;
@@ -2793,7 +2804,7 @@ static int parser_yylex(struct parser_t * parser)
 
   parser->cursor = curs;
   if (tokp.startLine > 0) {
-    if (t != tHEREDOC && t != tHERE_PAR)
+    if (tokp.endCol < 0)
       tokp.endCol = parser->column;
     push_pos(parser, tokp);
   }
