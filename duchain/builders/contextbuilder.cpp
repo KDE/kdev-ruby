@@ -165,21 +165,30 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
     debug() << "Closing class: " << getName(node);
 }
 
-//     TODO
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-    openContextForMethodDefinition(node);
-    RubyAstVisitor::visitMethodStatement(node);
-    closeContext();
-}
-
-void ContextBuilder::visitMethodArguments(RubyAst *node)
-{
+    QualifiedIdentifier name = identifierForNode(new NameAst(node));
+    Node *aux = node->tree;
+    node->tree = node->tree->r;
     RangeInRevision rg = rangeForMethodArguments(node);
-    DUContext *ctx = openContext(node, rg, DUContext::Function, lastMethodName);
+
+    /* Check the parameters */
+    DUContext *params = openContext(node, rg, DUContext::Function, name);
     RubyAstVisitor::visitMethodArguments(node);
     closeContext();
-    m_importedParentContexts.append(ctx);
+
+    /* And now take care of the method body */
+    node->tree = aux->l;
+    if (node->tree) {
+        DUContext *body = openContext(node, DUContext::Other, name);
+            if (compilingContexts()) {
+                DUChainWriteLocker lock(DUChain::lock());
+                body->addImportedParentContext(params);
+                body->setInSymbolTable(false);
+            }
+        RubyAstVisitor::visitBody(node);
+        closeContext();
+    }
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
@@ -218,20 +227,6 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     }
     addImportedContexts();
 }
-
-void ContextBuilder::openContextForMethodDefinition(RubyAst *node)
-{
-    RangeInRevision range = editorFindRange(node, node);
-    lastMethodName = KDevelop::QualifiedIdentifier(getName(node));
-
-    {
-        DUChainWriteLocker wlock(DUChain::lock());
-        openContext(node, range, DUContext::Other, lastMethodName);
-        currentContext()->setLocalScopeIdentifier(lastMethodName);
-    }
-    addImportedContexts();
-}
-
 
 }
 

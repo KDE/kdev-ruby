@@ -68,7 +68,6 @@ protected:
     virtual void visitReturnStatement(RubyAst *node);
 
 private:
-    void openMethodDeclaration(RubyAst *node);
     void openClassDeclaration(RubyAst *node, bool isClass);
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
                         const KDevelop::QualifiedIdentifier& id, RubyAst *node);

@@ -94,16 +94,23 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
-    setComment(getComment(node));
-    openMethodDeclaration(node);
-    RubyAstVisitor::visitMethodStatement(node);
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
+    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
 
-    {
-        DUChainWriteLocker wlock(DUChain::lock());
-        closeContext();
-    }
+    openType(type);
+    decl->setInSymbolTable(false);
+    DeclarationBuilderBase::visitMethodStatement(node);
     closeType();
     closeDeclaration();
+
+    if (!type->returnType()) {
+        /* TODO: return the type of the last statement instead */
+        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    }
+    decl->setType(type);
 }
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
@@ -174,21 +181,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     dec->setType(type);
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
-}
-
-void DeclarationBuilder::openMethodDeclaration(RubyAst* node)
-{
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
-    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
-    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-
-    type->setReturnType(AbstractType::Ptr(new ObjectType));
-    decl->setType(type);
-    openType(type);
-    openContextForMethodDefinition(node);
-    decl->setInternalContext(currentContext());
 }
 
 void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)

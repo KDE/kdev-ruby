@@ -72,14 +72,11 @@ protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
 
     /* Re-implementing from RubyAstVistor */
-//     virtual void visitCode(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitMethodArguments(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
-    void openContextForMethodDefinition(RubyAst *node);
 
     bool m_mapAst; // AbstractUseBuilder requires this :S
     bool m_reportErrors;

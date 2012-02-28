@@ -148,8 +148,8 @@ void ParseJob::run()
         if (newFeatures & TopDUContext::AllDeclarationsContextsAndUses
                 && document() != internalBuiltinsFile())
         {
-//             UseBuilder useBuilder(&editor);
-//             useBuilder.buildUses(ast);
+            UseBuilder useBuilder(&editor);
+            useBuilder.buildUses(ast);
             //TODO: Handle useBuilder unresolved identifiers
         }
 
