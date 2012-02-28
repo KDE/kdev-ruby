@@ -2235,14 +2235,17 @@ static int parser_yylex(struct parser_t * parser)
     switch (*(c + 1)) {
       case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
+        for (c += 1; isdigit(*c); c++, curs++)
+          buffer[inc++] = *c;
+        buffer[inc] = '\0';
         t = tNTH_REF;
+        break;
       case '~': case '*': case '$': case '?': case '!': case '@':
       case '/': case '\\': case ';': case ',': case '.': case '=':
       case ':': case '<': case '>': case '\"':
       case '&': case '`': case '\'': case '+':
       case '0':
-        if (t != tNTH_REF)
-          t = GLOBAL;
+        t = GLOBAL;
         curs++;
         buffer[inc++] = *(c + 1);
         buffer[inc] = '\0';
