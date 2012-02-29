@@ -101,14 +101,29 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
 void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 {
-    setComment(getComment(node));
-    openClassDeclaration(node, false);
-    RubyAstVisitor::visitModuleStatement(node);
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = identifierForNode(new NameAst(node));
 
-    {
-        DUChainWriteLocker wlock(DUChain::lock());
-        closeContext();
-    }
+    setComment(getComment(node));
+    /* TODO: should this get a ModuleDeclaration or so? */
+    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
+    decl->setKind(KDevelop::Declaration::Type);
+    decl->clearBaseClasses();
+    decl->setClassType(ClassDeclarationData::Interface);
+
+    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+
+    openContextForClassDefinition(node);
+    decl->setInternalContext(currentContext());
+    lock.unlock();
+    DeclarationBuilderBase::visitModuleStatement(node);
+    lock.lock();
+    closeContext();
+
     closeType();
     closeDeclaration();
 }

@@ -151,9 +151,8 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)
 {
-    openContextForClassDefinition(node);
-    RubyAstVisitor::visitModuleStatement(node);
-    closeContext();
+    node->tree = node->tree->l;
+    visitBody(node);
 }
 
 // TODO : what about singleton classes?
