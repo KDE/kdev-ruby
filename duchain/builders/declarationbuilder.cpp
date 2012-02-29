@@ -66,14 +66,35 @@ void DeclarationBuilder::startVisiting(RubyAst* node)
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
-    setComment(getComment(node));
-    openClassDeclaration(node, true);
-    RubyAstVisitor::visitClassStatement(node);
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = identifierForNode(new NameAst(node));
 
-    {
-        DUChainWriteLocker wlock(DUChain::lock());
-        closeContext();
+    setComment(getComment(node));
+    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
+    decl->setKind(KDevelop::Declaration::Type);
+    decl->clearBaseClasses();
+    decl->setClassType(ClassDeclarationData::Class);
+
+    Node *aux = node->tree;
+    node->tree = node->tree->cond;
+    if (node->tree) {
+        /* TODO: base class */
     }
+    node->tree = aux;
+
+    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+
+    openContextForClassDefinition(node);
+    decl->setInternalContext(currentContext());
+    lock.unlock();
+    DeclarationBuilderBase::visitClassStatement(node);
+    lock.lock();
+    closeContext();
+
     closeType();
     closeDeclaration();
 }

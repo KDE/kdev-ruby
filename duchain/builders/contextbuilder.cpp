@@ -159,10 +159,8 @@ void ContextBuilder::visitModuleStatement(RubyAst *node)
 // TODO : what about singleton classes?
 void ContextBuilder::visitClassStatement(RubyAst *node)
 {
-    openContextForClassDefinition(node);
-    RubyAstVisitor::visitClassStatement(node);
-    closeContext();
-    debug() << "Closing class: " << getName(node);
+    node->tree = node->tree->l;
+    visitBody(node);
 }
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
@@ -217,14 +215,13 @@ void ContextBuilder::addImportedContexts()
 
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
+    DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getName(node));
 
-    {
-        DUChainWriteLocker wlock(DUChain::lock());
-        openContext(node, range, DUContext::Class, className);
-        currentContext()->setLocalScopeIdentifier(className);
-    }
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
+    wlock.unlock();
     addImportedContexts();
 }
 
