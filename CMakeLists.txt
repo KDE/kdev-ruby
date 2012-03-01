@@ -17,6 +17,7 @@ include_directories(
 add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(navigation)
+add_subdirectory(completion)
 add_subdirectory(app_templates)
 
 set(kdevrubylanguagesupport_PART_SRCS
@@ -36,6 +37,7 @@ target_link_libraries(kdevrubylanguagesupport
     kdev4rubyparser
     kdev4rubyduchain
     kdev4rubynavigation
+    kdev4rubycompletion
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -45,6 +45,7 @@
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchainutils.h>
 #include <language/backgroundparser/backgroundparser.h>
+#include <language/codecompletion/codecompletion.h>
 
 //Ruby plugin
 #include <rubydefs.h>
@@ -53,7 +54,8 @@
 #include <rubyhighlighting.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
-#include "duchain/helpers.h"
+#include <duchain/helpers.h>
+#include <completion/model.h>
 //END Includes
 
 
@@ -84,6 +86,8 @@ LanguageSupport::LanguageSupport(QObject * parent,
     setXMLFile("kdevrubysupport.rc");
     m_self = this;
     m_highlighting = new Ruby::Highlighting(this);
+    CodeCompletionModel *rModel = new CodeCompletionModel(this);
+    new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
     connect( core()->documentController(), SIGNAL( documentLoaded( KDevelop::IDocument* ) ),
              this, SLOT( documentLoaded( KDevelop::IDocument* ) ) );
