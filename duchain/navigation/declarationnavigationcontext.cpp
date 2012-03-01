@@ -21,6 +21,9 @@
 // KDE
 #include <KLocalizedString>
 
+#include <language/duchain/types/abstracttype.h>
+#include <language/duchain/types/indexedtype.h>
+
 // Ruby
 #include <duchain/helpers.h>
 #include <duchain/declarations/classdeclaration.h>
@@ -57,6 +60,12 @@ void DeclarationNavigationContext::htmlClass()
 
         /* Write identifier */
         eventuallyMakeTypeLinks(m_declaration->abstractType());
+        /* Write inheritance */
+        if (classDecl->baseClassesSize() > 0) {
+            AbstractType::Ptr base = classDecl->baseClasses()->baseClass.abstractType();
+            modifyHtml() += " is a subclass of ";
+            eventuallyMakeTypeLinks(base);
+        }
         modifyHtml() += " ";
     }
 }
