@@ -33,8 +33,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
 }
 
-// TODO: under construction
-void UseBuilder::visitVariable(RubyAst* node)
+void UseBuilder::visitVariable(RubyAst *node)
 {
     NameAst *name = new NameAst(node);
     const RangeInRevision &range = editorFindRange(node, node);
@@ -57,8 +56,7 @@ void UseBuilder::visitVariable(RubyAst* node)
         delete name;
         return;
     }
-    /// TODO: clean this debug message
-    debug() << "UseBuilder: Visiting variable: " << node->tree->name;
+
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
     delete name;
 }

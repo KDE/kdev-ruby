@@ -240,16 +240,11 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
     delete child;
 }
 
-void RubyAstVisitor::visitBaseClass(RubyAst *node)
-{
-    Q_UNUSED(node)
-}
-
 void RubyAstVisitor::visitClassStatement(RubyAst *node)
 {
     Node *n = node->tree;
     RubyAst *child = new RubyAst(n->cond, node->context);
-    visitBaseClass(child);
+    visitVariable(child);
     child->tree = n->l;
     visitBody(child);
     delete child;

@@ -79,7 +79,24 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     if (node->tree) {
-        /* TODO: base class */
+        QualifiedIdentifier baseId = identifierForNode(new NameAst(node));
+        KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
+        if (!baseDecl) {
+            /* TODO: append proper problem: no declaration found */
+        } else {
+            ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
+            if (!realClass) {
+                /* TODO: append problem: this is not a class! */
+            } else if (realClass->classType() == ClassDeclarationData::Interface) {
+                /* TODO: append problem: this is a module, suggest module mix-in ;) */
+            } else {
+                BaseClassInstance base;
+                StructureType::Ptr baseType = baseDecl->type<StructureType>();
+                base.baseClass = baseType->indexed();
+                base.access = KDevelop::Declaration::Public;
+                decl->addBaseClass(base);
+            }
+        }
     }
     node->tree = aux;
 
