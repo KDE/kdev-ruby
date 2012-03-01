@@ -70,25 +70,28 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
 
+    /* First of all, open the declaration and set the comment */
     setComment(getComment(node));
     ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
     decl->setClassType(ClassDeclarationData::Class);
 
+    /*
+     * Now let's check for the base class. Ruby does not support multiple
+     * inheritance, and the access is always public.
+     */
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     if (node->tree) {
         QualifiedIdentifier baseId = identifierForNode(new NameAst(node));
         KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
         if (!baseDecl) {
-            /* TODO: append proper problem: no declaration found */
+            appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
         } else {
             ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
-            if (!realClass) {
-                /* TODO: append problem: this is not a class! */
-            } else if (realClass->classType() == ClassDeclarationData::Interface) {
-                /* TODO: append problem: this is a module, suggest module mix-in ;) */
+            if (!realClass || realClass->classType() == ClassDeclarationData::Interface) {
+                appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
             } else {
                 BaseClassInstance base;
                 StructureType::Ptr baseType = baseDecl->type<StructureType>();
@@ -100,6 +103,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     }
     node->tree = aux;
 
+    /*  Setup types and go for the class body */
     StructureType::Ptr type = StructureType::Ptr(new StructureType());
     type->setDeclaration(decl);
     decl->setType(type);
@@ -260,14 +264,14 @@ void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
     decl->setInternalContext(currentContext());
 }
 
-void DeclarationBuilder::appendProblem(Node *node, const QByteArray &msg)
+void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
 {
     DUChainWriteLocker lock(DUChain::lock());
     KDevelop::Problem *p = new KDevelop::Problem();
 
     p->setFinalLocation(getDocumentRange(node));
     p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-    p->setDescription(i18n(msg));
+    p->setDescription(msg);
     p->setSeverity(KDevelop::ProblemData::Error);
     topContext()->addProblem(ProblemPointer(p));
 }
@@ -281,7 +285,7 @@ DocumentRange DeclarationBuilder::getDocumentRange(Node *node)
 {
     IndexedString ind(m_editor->url());
     SimpleRange range(node->startLine - 1, node->startCol,
-                      node->endLine - 1, node->endCol - 1);
+                      node->endLine - 1, node->endCol);
     return DocumentRange(ind, range);
 }
 

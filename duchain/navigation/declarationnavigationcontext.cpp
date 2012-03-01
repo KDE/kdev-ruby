@@ -21,6 +21,7 @@
 // KDE
 #include <KLocalizedString>
 
+// KDevelop
 #include <language/duchain/types/abstracttype.h>
 #include <language/duchain/types/indexedtype.h>
 
@@ -44,9 +45,6 @@ DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer d
 
 void DeclarationNavigationContext::htmlClass()
 {
-    /*
-     * TODO: There are plenty of thing to do here.
-     */
     StructureType::Ptr klass = m_declaration->abstractType().cast<StructureType>();
     Q_ASSERT(klass);
     ClassDeclaration *classDecl = dynamic_cast<ClassDeclaration *>(klass->declaration(m_topContext.data()));
