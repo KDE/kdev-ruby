@@ -170,6 +170,23 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     decl->setType(type);
 }
 
+void DeclarationBuilder::visitParameter(RubyAst *node)
+{
+    AbstractFunctionDeclaration *funcDecl = dynamic_cast<AbstractFunctionDeclaration*>(currentDeclaration());
+    AbstractType::Ptr type(new ObjectType());
+
+    /* TODO: handle default, star and block parameters */
+
+    // create variable declaration for argument
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = m_editor->findRange(node->tree);
+    openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
+    currentDeclaration()->setKind(Declaration::Instance);
+    currentDeclaration()->setType(type);
+    DeclarationBuilderBase::visitParameter(node);
+    closeDeclaration();
+}
+
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
     QualifiedIdentifier id = identifierForNode(new NameAst(node));

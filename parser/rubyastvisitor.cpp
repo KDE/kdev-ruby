@@ -234,10 +234,15 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
 {
     RubyAst *child = new RubyAst(node->tree, node->context);
     for (Node *n = node->tree; n != NULL; n = n->next) {
-        visitNode(child);
+        visitParameter(child);
         child->tree = n->next;
     }
     delete child;
+}
+
+void RubyAstVisitor::visitParameter(RubyAst *node)
+{
+    Q_UNUSED(node)
 }
 
 void RubyAstVisitor::visitClassStatement(RubyAst *node)

@@ -81,6 +81,7 @@ protected:
     virtual void visitForStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitMethodArguments(RubyAst *node);
+    virtual void visitParameter(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
