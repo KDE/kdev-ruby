@@ -22,25 +22,37 @@
 require 'rdoc/rdoc'
 
 
-class KDevRubyDoc < RDoc::RDoc
+##
+# Re-open the RDoc::RDoc class in order to re-implement some key methods.
+class RDoc::RDoc
+  ##
+  # Constructor. Just call super and create a dummy value for @options.
   def initialize
     super
     @options = RDoc::Options.new
   end
 
-  def parse_files(dir)
-    files = get_files_from dir
+  ##
+  # Re-implemented from RDoc::RDoc. Parse the files from the given +directory+.
+  #
+  # @return *Array* of RDoc::TopLevel's.
+  def parse_files(directory)
+    files = get_files_from directory
     @stats = RDoc::Stats.new files.size, @options.verbosity
     top_levels = []
     files.each { |f| top_levels << parse_file(f) }
     top_levels
   end
 
-  def parse_file(filename)
-    content = IO.read filename
-    top_level = RDoc::TopLevel.new filename
+  ##
+  # Re-implemented from RDoc::RDoc. Given a file +name+, parse it.
+  #
+  # @return *RDoc::TopLevel* that represents the parsed file.
+  def parse_file(name)
+    content = IO.read name
+    top_level = RDoc::TopLevel.new name
     puts "Parsing: #{top_level.relative_name}"
-    parser = RDoc::Parser.for top_level, filename, content, @options, @stats
+    parser = RDoc::Parser.for top_level, name, content, @options, @stats
     return unless parser
 
     parser.scan
@@ -49,20 +61,31 @@ class KDevRubyDoc < RDoc::RDoc
 
   private
 
-  def get_files_from(dir)
+  ##
+  # @internal
+  # @return *Array* containing all the files inside the directory +d+.
+  def get_files_from(d)
     files = []
-    Dir.glob(File.join(dir, "*.{c, rb}")).each { |f| files << f if File.file? f }
+    Dir.glob(File.join(d, "*.{c, rb}")).each { |f| files << f if File.file? f }
     files
   end
 end
 
+##
+# Re-open the File class so we can print the results of the RDoc::TopLevel's
+# into files in an easier way.
 class File
+  ##
+  # Print the given +comment+.
   def print_comment(comment)
     return if comment.empty?
     puts '##'
     puts comment.split("\n").each { |c| c.insert(0, '# ') << "\n" }.join
   end
 
+  ##
+  # Print the given +hash+ of modules that we can retrieve by
+  # calling RDoc::TopLevel#modules_hash.
   def print_modules(hash)
     hash.each do |o|
       next if o.empty?
@@ -76,6 +99,9 @@ class File
     end
   end
 
+  ##
+  # Print the given +hash+ of classes that we can retrieve by
+  # calling RDoc::TopLevel#classes_hash.
   def print_classes(hash)
     hash.each do |o|
       next if o.empty?
@@ -94,6 +120,9 @@ class File
     end
   end
 
+  ##
+  # Print the given +hash+ of methods that we can retrieve by
+  # calling RDoc::TopLevel#methods_hash.
   def print_methods(hash)
     hash.each do |o|
       next if o.empty?
@@ -109,6 +138,10 @@ class File
 end
 
 
+##
+# Here starts the main program
+
+
 if ARGV.size != 2
   print <<-USAGE
 KDevelop Ruby Documentation generator.
@@ -119,8 +152,8 @@ Usage:
 end
 ruby_dir, ruby_out = ARGV
 
-
-doc = KDevRubyDoc.new
+# Print all the documentation that we can get from the ruby_dir
+doc = RDoc::RDoc.new
 puts 'Generating documentation. Please be patient, this may take a while.'
 results = doc.parse_files ruby_dir
 output = File.open ruby_out, 'w'
@@ -132,7 +165,7 @@ results.each do |r|
   end
 end
 
-
+# Print all the pre-defined global variables.
 {
   '$!' => "The exception information message set by 'raise'. ",
   '$@' => 'Array of backtrace of the last exception thrown.',
@@ -175,6 +208,7 @@ end
   '$-w' => 'True if option -w is set.'
 }.each { |k, v| output.puts "# #{v}\n#{k}\n\n" }
 
+# Print all the pre-defined constants.
 {
   'TRUE' => 'The typical true value.',
   'FALSE' => 'The false itself.',
