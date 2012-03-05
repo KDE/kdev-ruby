@@ -1,3 +1,18 @@
+KDevelop Ruby Support
+=====================
+
+Authors
+=======
+
+- Alexander Dymo <adymo@kdevelop.org>
+  (Started the plugin)
+
+- Miquel Sabaté <mikisabate@gmail.com>
+  (Maintainer, Parser)
+
+Hacking
+=======
+
 Are you without a nice project and just dying to cut your teeth
 on the Ruby plugin for KDevelop?
 
