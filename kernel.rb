@@ -1,2 +1,0 @@
-def puts(string)
-end

@@ -38,7 +38,7 @@ using namespace KDevelop;
 const IndexedString & internalBuiltinsFile()
 {
     static IndexedString doc_url(KStandardDirs::locate("data",
-                                                "kdevrubysupport/kernel.rb"));
+                                "kdevrubysupport/documentation/builtins.rb"));
     return doc_url;
 }
 
