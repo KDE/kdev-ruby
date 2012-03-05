@@ -34,14 +34,11 @@ class RDoc::RDoc
 
   ##
   # Re-implemented from RDoc::RDoc. Parse the files from the given +directory+.
-  #
-  # @return *Array* of RDoc::TopLevel's.
   def parse_files(directory)
     files = get_files_from directory
     @stats = RDoc::Stats.new files.size, @options.verbosity
     top_levels = []
     files.each { |f| top_levels << parse_file(f) }
-    top_levels
   end
 
   ##
@@ -152,18 +149,16 @@ Usage:
 end
 ruby_dir, ruby_out = ARGV
 
-# Print all the documentation that we can get from the ruby_dir
+# Parse all the files contained inside the +ruby_dir+ directory.
 doc = RDoc::RDoc.new
 puts 'Generating documentation. Please be patient, this may take a while.'
-results = doc.parse_files ruby_dir
+doc.parse_files ruby_dir
+
+# Print everything into the +ruby_out+ file.
 output = File.open ruby_out, 'w'
-results.each do |r|
-  unless r.nil?
-    output.print_modules(r.modules_hash)
-    output.print_classes(r.classes_hash)
-    output.print_methods(r.methods_hash)
-  end
-end
+output.print_modules RDoc::TopLevel.modules_hash
+output.print_classes RDoc::TopLevel.classes_hash
+
 
 # Print all the pre-defined global variables.
 {
