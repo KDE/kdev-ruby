@@ -29,6 +29,12 @@
 #include <language/codegen/overridespage.h>
 
 
+/*
+ * TODO: under construction
+ */
+
+
+
 namespace Ruby
 {
 
@@ -55,6 +61,17 @@ public:
     virtual KDevelop::OverridesPage * newOverridesPage();
 };
 
+/*
+ * TODO: We need to subclass the IdentifierPage so we can implement the
+ * following ideas:
+ *      -> In ruby multiple inheritance is not allowed.
+ *      -> The user might want to add include's/extend's
+ */
+
+/*
+ * TODO: The tree should be populated with the methods from the superclass, the
+ * included/extended methods and the methods from the Class class.
+ */
 class RubyOverridesPage : public KDevelop::OverridesPage
 {
   Q_OBJECT
@@ -64,6 +81,12 @@ public:
 
     virtual void populateOverrideTree(const QList<KDevelop::DeclarationPointer> & baseList);
 };
+
+/*
+ * TODO: for the other pages:
+ *      - In the license page it seems that there's only licenses with C++ comments.
+ *      - In the output page, it makes no sense to output two files.
+ */
 
 
 }

@@ -20,8 +20,8 @@
 
 
 //BEGIN Includes
+// Qt + KDE
 #include <QtCore/QTimer>
-//KDE
 #include <KAction>
 #include <KActionCollection>
 

@@ -22,11 +22,17 @@
 #include <codegen/rubynewclass.h>
 #include <duchain/types/objecttype.h>
 #include <language/codegen/documentchangeset.h>
+#include <language/duchain/duchain.h>
+#include <language/duchain/duchainlock.h>
 #include <KTemporaryFile>
+#include <KLocale>
+#include <QTreeWidgetItem>
+#include <rubydefs.h>
 
 
 namespace Ruby
 {
+using namespace KDevelop;
 
 RubyNewClass::RubyNewClass(KDevelop::ProjectBaseItem *parentItem)
     : m_parentItem(parentItem)
@@ -60,15 +66,8 @@ RubyNewClassWizard::RubyNewClassWizard(QWidget *parent, RubyNewClass *gen, KUrl 
 
 KDevelop::ClassIdentifierPage* RubyNewClassWizard::newIdentifierPage()
 {
-    /*
-     * TODO: Idea:
-     *  - The user can somehow tell KDevelop that this is a class
-     *  following Rails conventions so we can:
-     *    -> Autocomplete the name of the class somehow :P
-     *    -> Guess the superclass
-     *    -> Guess the url
-     */
-    return NULL;
+    /* TODO: Under construction */
+    return new KDevelop::ClassIdentifierPage(this);
 }
 
 KDevelop::OverridesPage* RubyNewClassWizard::newOverridesPage()
@@ -84,7 +83,8 @@ RubyOverridesPage::RubyOverridesPage(KDevelop::ClassGenerator *gen, QWizard *par
 
 void RubyOverridesPage::populateOverrideTree(const QList<KDevelop::DeclarationPointer> & baseList)
 {
-    KDevelop::OverridesPage::populateOverrideTree(baseList);
+    /* TODO: read the TODO from the RubyOverridesPage class declaration */
+    OverridesPage::populateOverrideTree(baseList);
 
     // Generate ruby code with some default methods
     const QString newClass = generator()->name();
@@ -94,10 +94,21 @@ void RubyOverridesPage::populateOverrideTree(const QList<KDevelop::DeclarationPo
     file.open();
     QTextStream stream(&file);
     stream << "class " << newClass << "\n"
-        << "def initialize; end\n" << "def to_s; end\n end";
+        << "  def initialize\n  end\n" << "  def to_s\n  end\nend";
     file.close();
 
-    /* TODO: get context, declarations and populate the tree */
+    ReferencedTopDUContext context(DUChain::self()->waitForUpdate(IndexedString(file.fileName()),
+                                                                KDevelop::TopDUContext::AllDeclarationsAndContexts));
+    DUChainReadLocker lock;
+    if (!context || !context->childContexts().size() == 1) {
+        kWarning() << "invalid context for generated ruby file with default methods" << file.fileName();
+        file.remove();
+        return;
+    }
+
+    QTreeWidgetItem *items = new QTreeWidgetItem(overrideTree(), QStringList() << i18n("Default methods"));
+    foreach (Declaration *decl, context->childContexts().first()->localDeclarations())
+        OverridesPage::addPotentialOverride(items, DeclarationPointer(decl));
 
     file.remove();
 }

@@ -57,6 +57,13 @@ void RubyRefactoring::doContextMenu(KDevelop::ContextMenuExtension &extension,
 
 void RubyRefactoring::createNewClass(KDevelop::ProjectBaseItem *item)
 {
+    /*
+     * TODO: the code below is not complete. It should detect if this is a Rails
+     * application. If it's so, then it has to check if the user clicked
+     * over a "relevant" directory (models, controllers,...). Otherwise we
+     * have to retrieve the url just like the c++ plugin does.
+     * TODO: move this code to the RubyNewClass class.
+     */
     KUrl u = KUrl();
     if (item) {
         KDevelop::ProjectBaseItem *ff = item->folder();
