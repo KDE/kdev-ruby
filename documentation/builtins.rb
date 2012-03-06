@@ -15,7 +15,7 @@ module Kernel
 # <em>produces:</em>
 # 
 #    goodbye cruel world
-def at_exit; end
+def at_exit(); end
 
 ##
 # Seeds the pseudorandom number generator to the value of
@@ -26,7 +26,7 @@ def at_exit; end
 # <code>srand</code>, but without the sequence.) By setting the seed
 # to a known value, scripts can be made deterministic during testing.
 # The previous seed value is returned. Also see <code>Kernel::rand</code>.
-def srand; end
+def srand(p1=0); end
 
 ##
 # If <i>max</i> is +Range+, returns a pseudorandom number where
@@ -50,7 +50,7 @@ def srand; end
 #    [ rand(10), rand(1000) ]   #=> [6, 817]
 #    srand 1234                 #=> 1234
 #    [ rand,  rand ]            #=> [0.191519450163469, 0.49766366626136]
-def rand; end
+def rand(p1=0); end
 
 ##
 #  Uses the integer <i>aCmd</i> to perform various tests on
@@ -106,16 +106,16 @@ def rand; end
 #         |         | is prior to that of file2
 #    ">"  | boolean | True if the modification time of file1
 #         |         | is after that of file2
-def test; end
+def test(*args); end
 
 ##
 # Equivalent to <code>Proc.new</code>.
-def proc; end
+def proc(); end
 
 ##
 # Equivalent to <code>Proc.new</code>, except the resulting Proc objects
 # check the number of parameters passed when called.
-def lambda; end
+def lambda(); end
 
 ##
 # Returns a +Binding+ object, describing the variable and
@@ -128,35 +128,35 @@ def lambda; end
 #    end
 #    b = get_binding("hello")
 #    eval("param", b)   #=> "hello"
-def binding; end
+def binding(); end
 
 ##
 # Returns x/y;
-def Rational; end
+def Rational(*args); end
 
 ##
 # Equivalent to <code>$_.sub(<i>args</i>)</code>, except that
 # <code>$_</code> will be updated if substitution occurs.
 # Available only when -p/-n command line option specified.
-def sub; end
+def sub(*args); end
 
 ##
 # Equivalent to <code>$_.gsub...</code>, except that <code>$_</code>
 # receives the modified result.
 # Available only when -p/-n command line option specified.
-def gsub; end
+def gsub(*args); end
 
 ##
 # Equivalent to <code>($_.dup).chop!</code>, except <code>nil</code>
 # is never returned. See <code>String#chop!</code>.
 # Available only when -p/-n command line option specified.
-def chop; end
+def chop(); end
 
 ##
 # Equivalent to <code>$_ = $_.chomp(<em>string</em>)</code>. See
 # <code>String#chomp</code>.
 # Available only when -p/-n command line option specified.
-def chomp; end
+def chomp(*args); end
 
 ##
 # Evaluates the Ruby expression(s) in <em>string</em>. If
@@ -171,7 +171,7 @@ def chomp; end
 #    str = "hello"
 #    eval "str + ' Fred'"                      #=> "hello Fred"
 #    eval "str + ' Fred'", get_binding("bye")  #=> "bye Fred"
-def eval; end
+def eval(p1, p2=0, p3=0, p4=0); end
 
 ##
 # Returns the names of the current local variables.
@@ -181,7 +181,7 @@ def eval; end
 #       # ...
 #    end
 #    local_variables   #=> [:fred, :i]
-def local_variables; end
+def local_variables(); end
 
 ##
 # Returns <code>true</code> if <code>yield</code> would execute a
@@ -198,7 +198,7 @@ def local_variables; end
 #    try                  #=> "no block"
 #    try { "hello" }      #=> "hello"
 #    try do "hello" end   #=> "hello"
-def iterator?; end
+def iterator?(); end
 
 ##
 # Returns <code>true</code> if <code>yield</code> would execute a
@@ -215,7 +215,7 @@ def iterator?; end
 #    try                  #=> "no block"
 #    try { "hello" }      #=> "hello"
 #    try do "hello" end   #=> "hello"
-def block_given?; end
+def block_given?(); end
 
 ##
 # +catch+ executes its block. If a +throw+ is
@@ -247,7 +247,7 @@ def block_given?; end
 # _arg_ is given, +catch+ assigns a new unique object to
 # +throw+.  this is useful for nested +catch+.  _arg_ can
 # be an arbitrary object, not only Symbol.
-def catch; end
+def catch(p1=0); end
 
 ##
 # Transfers control to the end of the active +catch+ block
@@ -256,7 +256,7 @@ def catch; end
 # parameter supplies a return value for the +catch+ block,
 # which otherwise defaults to +nil+. For examples, see
 # <code>Kernel::catch</code>.
-def throw; end
+def throw(p1, p2=0); end
 
 ##
 # Repeatedly executes the block.
@@ -271,7 +271,7 @@ def throw; end
 #    end
 # 
 # StopIteration raised in the block breaks the loop.
-def loop; end
+def loop(); end
 
 ##
 # Returns the current execution stack---an array containing strings in
@@ -298,7 +298,7 @@ def loop; end
 #    c(3)   #=> ["prog:13:in `<main>'"]
 #    c(4)   #=> []
 #    c(5)   #=> nil
-def caller; end
+def caller(p1=0); end
 
 ##
 # Loads and executes the Ruby
@@ -309,7 +309,7 @@ def caller; end
 # under an anonymous module, protecting the calling program's global
 # namespace. In no circumstance will any local variables in the loaded
 # file be propagated to the loading environment.
-def load; end
+def load(p1, p2=0); end
 
 ##
 # Loads the given +name+, returning +true+ if successful and +false+ if the
@@ -337,13 +337,13 @@ def load; end
 # 
 #   require "my-library.rb"
 #   require "db-driver"
-def require; end
+def require(p1); end
 
 ##
 # Ruby tries to load the library named _string_ relative to the requiring
 # file's path.  If the file's path cannot be determined a LoadError is raised.
 # If a file is loaded +true+ is returned and false otherwise.
-def require_relative; end
+def require_relative(p1); end
 
 ##
 # Registers _filename_ to be loaded (using <code>Kernel::require</code>)
@@ -351,7 +351,7 @@ def require_relative; end
 # a symbol) is accessed.
 # 
 #    autoload(:MyModule, "/usr/local/lib/modules/my_module.rb")
-def autoload; end
+def autoload(p1, p2); end
 
 ##
 # Returns _filename_ to be loaded if _name_ is registered as
@@ -359,7 +359,7 @@ def autoload; end
 # 
 #    autoload(:B, "b")
 #    autoload?(:B)            #=> "b"
-def autoload?; end
+def autoload?(p1); end
 
 ##
 # Replaces the current process by running the given external _command_.
@@ -399,7 +399,7 @@ def autoload?; end
 # 
 #    exec "echo", "*"    # echoes an asterisk
 #    # never get here
-def exec; end
+def exec(*args); end
 
 ##
 # Creates a subprocess. If a block is specified, that block is run
@@ -418,7 +418,7 @@ def exec; end
 # fork doesn't copy other threads.
 # 
 # If fork is not usable, Process.respond_to?(:fork) returns false.
-def fork; end
+def fork(); end
 
 ##
 # Exits the process immediately. No exit handlers are
@@ -426,7 +426,7 @@ def fork; end
 # exit status.
 # 
 #    Process.exit!(true)
-def exit!; end
+def exit!(p1=0); end
 
 ##
 # Executes _command..._ in a subshell.
@@ -456,7 +456,7 @@ def exit!; end
 #    *
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def system; end
+def system(*args); end
 
 ##
 # spawn executes specified command and return its pid.
@@ -684,7 +684,7 @@ def system; end
 # file descriptor mapping.
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def spawn; end
+def spawn(*args); end
 
 ##
 # Suspends the current thread for _duration_ seconds (which may be any number,
@@ -698,7 +698,7 @@ def spawn; end
 #    Time.new    #=> 2008-03-08 19:56:20 +0900
 #    sleep 1.9   #=> 2
 #    Time.new    #=> 2008-03-08 19:56:22 +0900
-def sleep; end
+def sleep(*args); end
 
 ##
 # Initiates the termination of the Ruby script by raising the
@@ -734,13 +734,13 @@ def sleep; end
 # 
 #    at_exit function
 #    in finalizer
-def exit; end
+def exit(p1=0); end
 
 ##
 # Terminate execution immediately, effectively by calling
 # <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
 # to STDERR prior to terminating.
-def abort; end
+def abort(p1); end
 
 ##
 # With no arguments, raises the exception in <code>$!</code> or raises
@@ -756,7 +756,7 @@ def abort; end
 # 
 #    raise "Failed to create socket"
 #    raise ArgumentError, "No parameters", caller
-def raise; end
+def raise(*args); end
 
 ##
 # With no arguments, raises the exception in <code>$!</code> or raises
@@ -772,23 +772,23 @@ def raise; end
 # 
 #    raise "Failed to create socket"
 #    raise ArgumentError, "No parameters", caller
-def fail; end
+def fail(*args); end
 
 ##
 # Returns an array of the names of global variables.
 # 
 #    global_variables.grep /std/   #=> [:$stdin, :$stdout, :$stderr]
-def global_variables; end
+def global_variables(); end
 
 ##
 # Returns the name of the current method as a Symbol.
 # If called outside of a method, it returns <code>nil</code>.
-def __method__; end
+def __method__(); end
 
 ##
 # Returns the name of the current method as a Symbol.
 # If called outside of a method, it returns <code>nil</code>.
-def __callee__; end
+def __callee__(); end
 
 ##
 # Controls tracing of assignments to global variables. The parameter
@@ -807,14 +807,14 @@ def __callee__; end
 # 
 #    $_ is now 'hello'
 #    $_ is now ' there'
-def trace_var; end
+def trace_var(p1, p2=0); end
 
 ##
 # Removes tracing for the specified command on the given global
 # variable and returns +nil+. If no command is specified,
 # removes all tracing for that variable and returns an array
 # containing the commands actually removed.
-def untrace_var; end
+def untrace_var(p1, p2=0); end
 
 ##
 #  Calls the operating system function identified by _num_ and
@@ -843,7 +843,7 @@ def untrace_var; end
 # Note::
 #   +syscall+ is essentially unsafe and unportable. Feel free to shoot your foot.
 #   DL (Fiddle) library is preferred for safer and a bit more portable programming.
-def syscall; end
+def syscall(*args); end
 
 ##
 # Creates an <code>IO</code> object connected to the given stream,
@@ -949,14 +949,14 @@ def syscall; end
 # <em>produces:</em>
 # 
 #    Got: in Child
-def open; end
+def open(*args); end
 
 ##
 # Equivalent to:
 #    io.write(sprintf(string, obj, ...)
 # or
 #    $stdout.write(sprintf(string, obj, ...)
-def printf; end
+def printf(*args); end
 
 ##
 # Prints each object in turn to <code>$stdout</code>. If the output
@@ -976,7 +976,7 @@ def printf; end
 # 
 #    cat12399
 #    cat, 1, 2, 3, 99
-def print; end
+def print(*args); end
 
 ##
 #  Equivalent to:
@@ -985,13 +985,13 @@ def print; end
 # 
 # Refer to the documentation for IO#putc for important information regarding
 # multi-byte characters.
-def putc; end
+def putc(p1); end
 
 ##
 # Equivalent to
 # 
 #     $stdout.puts(obj, ...)
-def puts; end
+def puts(*args); end
 
 ##
 # Returns (and assigns to <code>$_</code>) the next line from the list
@@ -1019,12 +1019,12 @@ def puts; end
 # 
 # The style of programming using <code>$_</code> as an implicit
 # parameter is gradually losing favor in the Ruby community.
-def gets; end
+def gets(*args); end
 
 ##
 # Equivalent to <code>Kernel::gets</code>, except
 # +readline+ raises +EOFError+ at end of file.
-def readline; end
+def readline(*args); end
 
 ##
 # Calls select(2) system call.
@@ -1069,12 +1069,12 @@ def readline; end
 #     ping pong
 #     (snipped)
 #     ping
-def select; end
+def select(p1, p2=0, p3=0, p4=0); end
 
 ##
 # Returns an array containing the lines returned by calling
 # <code>Kernel.gets(<i>sep</i>)</code> until the end of file.
-def readlines; end
+def readlines(*args); end
 
 ##
 # Returns the standard output of running _cmd_ in a subshell.
@@ -1085,7 +1085,7 @@ def readlines; end
 #    `ls testdir`.split[1]    #=> "main.rb"
 #    `echo oops && exit 99`   #=> "oops\n"
 #    $?.exitstatus            #=> 99
-def `; end
+def `(p1); end
 
 ##
 # For each object, directly writes _obj_.+inspect+ followed by a
@@ -1098,7 +1098,7 @@ def `; end
 # <em>produces:</em>
 # 
 #    #<S name="dave", state="TX">
-def p; end
+def p(*args); end
 
 ##
 # Specifies the handling of signals. The first parameter is a signal
@@ -1126,7 +1126,7 @@ def p; end
 #     Terminating: 27461
 #     Child died
 #     Terminating: 27460
-def trap; end
+def trap(*args); end
 
 ##
 # Returns the string resulting from applying <i>format_string</i> to
@@ -1383,7 +1383,7 @@ def trap; end
 #     #=> 1 : 2.000000
 #   sprintf("%{foo}f", { :foo => 1 })
 #     # => "1f"
-def sprintf; end
+def sprintf(*args); end
 
 ##
 # Returns the string resulting from applying <i>format_string</i> to
@@ -1640,7 +1640,7 @@ def sprintf; end
 #     #=> 1 : 2.000000
 #   sprintf("%{foo}f", { :foo => 1 })
 #     # => "1f"
-def format; end
+def format(*args); end
 
 ##
 # Converts <i>arg</i> to a <code>Fixnum</code> or <code>Bignum</code>.
@@ -1659,7 +1659,7 @@ def format; end
 #    Integer(Time.new)   #=> 1204973019
 #    Integer("0930", 10) #=> 930
 #    Integer("111", 2)   #=> 7
-def Integer; end
+def Integer(p1, p2=0); end
 
 ##
 # Returns <i>arg</i> converted to a float. Numeric types are converted
@@ -1668,7 +1668,7 @@ def Integer; end
 # 
 #    Float(1)           #=> 1.0
 #    Float("123.456")   #=> 123.456
-def Float; end
+def Float(p1); end
 
 ##
 # Converts <i>arg</i> to a <code>String</code> by calling its
@@ -1677,14 +1677,14 @@ def Float; end
 #    String(self)        #=> "main"
 #    String(self.class)  #=> "Object"
 #    String(123456)      #=> "123456"
-def String; end
+def String(p1); end
 
 ##
 # Returns <i>arg</i> as an <code>Array</code>. First tries to call
 # <i>arg</i><code>.to_ary</code>, then <i>arg</i><code>.to_a</code>.
 # 
 #    Array(1..5)   #=> [1, 2, 3, 4, 5]
-def Array; end
+def Array(p1); end
 
 ##
 # Establishes _proc_ as the handler for tracing, or disables
@@ -1723,12 +1723,12 @@ def Array; end
 #       line prog.rb:3        test     Test
 #       line prog.rb:4        test     Test
 #     return prog.rb:4        test     Test
-def set_trace_func; end
+def set_trace_func(p1); end
 
 ##
 # Display the given message (followed by a newline) on STDERR unless
 # warnings are disabled (for example with the <code>-W0</code> flag).
-def warn; end
+def warn(p1); end
 
 ##
 # Generates a <code>Continuation</code> object, which it passes to
@@ -1741,11 +1741,11 @@ def warn; end
 # class <code>Continuation</code> for more details. Also see
 # <code>Kernel::throw</code> for an alternative mechanism for
 # unwinding a call stack.
-def callcc; end
+def callcc(); end
 
 ##
 # Returns x+i*y;
-def Complex; end
+def Complex(*args); end
 
 end
 
@@ -1875,7 +1875,7 @@ module Marshal
 # * an instance of MatchData, Data, Method, UnboundMethod, Proc, Thread,
 #   ThreadGroup, Continuation
 # * objects which defines singleton methods
-def self.dump; end
+def self.dump(p1, p2=0, p3=0); end
 
 ##
 # Returns the result of converting the serialized data in source into a
@@ -1883,7 +1883,7 @@ def self.dump; end
 # may be either an instance of IO or an object that responds to
 # to_str. If proc is specified, it will be passed each object as it
 # is deserialized.
-def self.load; end
+def self.load(p1, p2=0); end
 
 ##
 # Returns the result of converting the serialized data in source into a
@@ -1891,7 +1891,7 @@ def self.load; end
 # may be either an instance of IO or an object that responds to
 # to_str. If proc is specified, it will be passed each object as it
 # is deserialized.
-def self.restore; end
+def self.restore(p1, p2=0); end
 
 end
 
@@ -1907,26 +1907,26 @@ module FileTest
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?; end
+def directory?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
 # <code>false</code> otherwise.
-def exist?; end
+def exist?(p1); end
 
 ##
 # Return <code>true</code> if the named file exists.
-def exists?; end
+def exists?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the effective
 # user id of this process.
-def readable?; end
+def readable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the real
 # user id of this process.
-def readable_real?; end
+def readable_real?(p1); end
 
 ##
 # If <i>file_name</i> is readable by others, returns an integer
@@ -1937,17 +1937,17 @@ def readable_real?; end
 #    File.world_readable?("/etc/passwd")           #=> 420
 #    m = File.world_readable?("/etc/passwd")
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?; end
+def world_readable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the effective
 # user id of this process.
-def writable?; end
+def writable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the real
 # user id of this process.
-def writable_real?; end
+def writable_real?(p1); end
 
 ##
 # If <i>file_name</i> is writable by others, returns an integer
@@ -1958,80 +1958,80 @@ def writable_real?; end
 #    File.world_writable?("/tmp")                  #=> 511
 #    m = File.world_writable?("/tmp")
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?; end
+def world_writable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the effective
 # user id of this process.
-def executable?; end
+def executable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the real
 # user id of this process.
-def executable_real?; end
+def executable_real?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and is a
 # regular file.
-def file?; end
+def file?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and has
 # a zero size.
-def zero?; end
+def zero?(p1); end
 
 ##
 # Returns +nil+ if +file_name+ doesn't exist or has zero size, the size of the
 # file otherwise.
-def size?; end
+def size?(p1); end
 
 ##
 # Returns the size of <code>file_name</code>.
-def size; end
+def size(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective used id of the calling process is the owner of
 # the file.
-def owned?; end
+def owned?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective group id of the calling process is the owner of
 # the file. Returns <code>false</code> on Windows.
-def grpowned?; end
+def grpowned?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a pipe.
-def pipe?; end
+def pipe?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a symbolic link.
-def symlink?; end
+def symlink?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a socket.
-def socket?; end
+def socket?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a block device.
-def blockdev?; end
+def blockdev?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a character device.
-def chardev?; end
+def chardev?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the setuid bit set.
-def setuid?; end
+def setuid?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the setgid bit set.
-def setgid?; end
+def setgid?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the sticky bit set.
-def sticky?; end
+def sticky?(p1); end
 
 ##
 # Returns <code>true</code> if the named files are identical.
@@ -2045,7 +2045,7 @@ def sticky?; end
 #     p File.identical?("a", "c")      #=> true
 #     open("d", "w") {}
 #     p File.identical?("a", "d")      #=> false
-def identical?; end
+def identical?(p1, p2); end
 
 end
 
@@ -2062,7 +2062,7 @@ end
 module GC
 ##
 # Initiates garbage collection, unless manually disabled.
-def self.start; end
+def self.start(); end
 
 ##
 # Enables garbage collection, returning <code>true</code> if garbage
@@ -2071,7 +2071,7 @@ def self.start; end
 #    GC.disable   #=> false
 #    GC.enable    #=> true
 #    GC.enable    #=> false
-def self.enable; end
+def self.enable(); end
 
 ##
 # Disables garbage collection, returning <code>true</code> if garbage
@@ -2079,11 +2079,11 @@ def self.enable; end
 # 
 #    GC.disable   #=> false
 #    GC.disable   #=> true
-def self.disable; end
+def self.disable(); end
 
 ##
 # returns current status of GC stress mode.
-def self.stress; end
+def self.stress(); end
 
 ##
 # Updates the GC stress mode.
@@ -2092,13 +2092,13 @@ def self.stress; end
 # all memory and object allocations.
 # 
 # Enabling stress mode makes Ruby very slow, it is only for debugging.
-def self.stress=; end
+def self.stress=(p1); end
 
 ##
 # The number of times GC occurred.
 # 
 # It returns the number of times GC occurred since the process started.
-def self.count; end
+def self.count(); end
 
 ##
 # Returns a Hash containing information about the GC.
@@ -2119,23 +2119,23 @@ def self.count; end
 # the future.
 # 
 # This method is only expected to work on C Ruby.
-def self.stat; end
+def self.stat(p1=0); end
 
 ##
 # Initiates garbage collection, unless manually disabled.
-def garbage_collect; end
+def garbage_collect(); end
 
 ##
 # The allocated size by malloc().
 # 
 # It returns the allocated size by malloc().
-def self.malloc_allocated_size; end
+def self.malloc_allocated_size(); end
 
 ##
 # The number of allocated memory object by malloc().
 # 
 # It returns the number of allocated memory object by malloc().
-def self.malloc_allocations; end
+def self.malloc_allocations(); end
 
 end
 
@@ -2193,20 +2193,20 @@ module ObjectSpace
 #    1.7976931348623157e+308
 #    2.2250738585072e-308
 #    Total count: 7
-def self.each_object; end
+def self.each_object(p1=0); end
 
 ##
 # Initiates garbage collection, unless manually disabled.
-def self.garbage_collect; end
+def self.garbage_collect(); end
 
 ##
 # Adds <i>aProc</i> as a finalizer, to be called after <i>obj</i>
 # was destroyed.
-def self.define_finalizer; end
+def self.define_finalizer(p1, p2=0); end
 
 ##
 # Removes all finalizers for <i>obj</i>.
-def self.undefine_finalizer; end
+def self.undefine_finalizer(p1); end
 
 ##
 # Converts an object id to a reference to the object. May not be
@@ -2215,7 +2215,7 @@ def self.undefine_finalizer; end
 #    s = "I am a string"                    #=> "I am a string"
 #    r = ObjectSpace._id2ref(s.object_id)   #=> "I am a string"
 #    r == s                                 #=> true
-def self._id2ref; end
+def self._id2ref(p1); end
 
 ##
 # Counts objects for each type.
@@ -2231,7 +2231,7 @@ def self._id2ref; end
 # It may be changed in future.
 # 
 # This method is not expected to work except C Ruby.
-def self.count_objects; end
+def self.count_objects(p1=0); end
 
 end
 
@@ -2253,19 +2253,19 @@ end
 module Profiler
 ##
 # The current status of GC profile mode.
-def self.enabled?; end
+def self.enabled?(); end
 
 ##
 # Starts the GC profiler.
-def self.enable; end
+def self.enable(); end
 
 ##
 # Stops the GC profiler.
-def self.disable; end
+def self.disable(); end
 
 ##
 # Clears the GC profiler data.
-def self.clear; end
+def self.clear(); end
 
 ##
 # Returns a profile data report such as:
@@ -2273,15 +2273,15 @@ def self.clear; end
 #   GC 1 invokes.
 #   Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
 #       1               0.012               159240               212940                10647         0.00000000000001530000
-def self.result; end
+def self.result(); end
 
 ##
 # Writes the GC::Profiler#result to <tt>$stdout</tt> or the given IO object.
-def self.report; end
+def self.report(p1=0); end
 
 ##
 # The total time used for garbage collection in milliseconds
-def self.total_time; end
+def self.total_time(); end
 
 end
 
@@ -2300,14 +2300,14 @@ module Enumerable
 # 
 #    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
 #    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
-def to_a; end
+def to_a(*args); end
 
 ##
 # Returns an array containing the items in <i>enum</i>.
 # 
 #    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
 #    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
-def entries; end
+def entries(*args); end
 
 ##
 # Returns an array containing the items in <i>enum</i> sorted,
@@ -2320,7 +2320,7 @@ def entries; end
 # 
 #    %w(rhea kea flea).sort         #=> ["flea", "kea", "rhea"]
 #    (1..10).sort {|a,b| b <=> a}   #=> [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-def sort; end
+def sort(); end
 
 ##
 # Sorts <i>enum</i> using a set of keys generated by mapping the
@@ -2387,7 +2387,7 @@ def sort; end
 # 
 #    sorted = Dir["*"].sort_by {|f| test(?M, f)}
 #    sorted   #=> ["mon", "tues", "wed", "thurs"]
-def sort_by; end
+def sort_by(); end
 
 ##
 # Returns an array of every element in <i>enum</i> for which
@@ -2400,7 +2400,7 @@ def sort_by; end
 #    c.grep(/SEEK/)         #=> [:SEEK_SET, :SEEK_CUR, :SEEK_END]
 #    res = c.grep(/SEEK/) {|v| IO.const_get(v) }
 #    res                    #=> [0, 1, 2]
-def grep; end
+def grep(p1); end
 
 ##
 # Returns the number of items in <i>enum</i>, where #size is called
@@ -2413,7 +2413,7 @@ def grep; end
 #    ary.count             #=> 4
 #    ary.count(2)          #=> 2
 #    ary.count{|x|x%2==0}  #=> 3
-def count; end
+def count(p1); end
 
 ##
 # Passes each entry in <i>enum</i> to <em>block</em>. Returns the
@@ -2425,7 +2425,7 @@ def count; end
 # 
 #    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
-def find; end
+def find(p1=0); end
 
 ##
 # Passes each entry in <i>enum</i> to <em>block</em>. Returns the
@@ -2437,7 +2437,7 @@ def find; end
 # 
 #    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
-def detect; end
+def detect(p1=0); end
 
 ##
 # Compares each entry in <i>enum</i> with <em>value</em> or passes
@@ -2450,7 +2450,7 @@ def detect; end
 #    (1..10).find_index  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).find_index {|i| i % 5 == 0 and i % 7 == 0 }   #=> 34
 #    (1..100).find_index(50)                                #=> 49
-def find_index; end
+def find_index(p1); end
 
 ##
 # Returns an array containing all elements of <i>enum</i> for which
@@ -2460,7 +2460,7 @@ def find_index; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
-def find_all; end
+def find_all(); end
 
 ##
 # Returns an array containing all elements of <i>enum</i> for which
@@ -2470,7 +2470,7 @@ def find_all; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
-def select; end
+def select(); end
 
 ##
 # Returns an array for all elements of <i>enum</i> for which
@@ -2479,7 +2479,7 @@ def select; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).reject {|i|  i % 3 == 0 }   #=> [1, 2, 4, 5, 7, 8, 10]
-def reject; end
+def reject(); end
 
 ##
 # Returns a new array with the results of running <em>block</em> once
@@ -2489,7 +2489,7 @@ def reject; end
 # 
 #    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
 #    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
-def collect; end
+def collect(); end
 
 ##
 # Returns a new array with the results of running <em>block</em> once
@@ -2499,7 +2499,7 @@ def collect; end
 # 
 #    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
 #    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
-def map; end
+def map(); end
 
 ##
 # Returns a new array with the concatenated results of running
@@ -2508,7 +2508,7 @@ def map; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
-def flat_map; end
+def flat_map(); end
 
 ##
 # Returns a new array with the concatenated results of running
@@ -2517,7 +2517,7 @@ def flat_map; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
-def collect_concat; end
+def collect_concat(); end
 
 ##
 # Combines all elements of <i>enum</i> by applying a binary
@@ -2551,7 +2551,7 @@ def collect_concat; end
 #       memo.length > word.length ? memo : word
 #    end
 #    longest                                       #=> "sheep"
-def inject; end
+def inject(p1=0, p2=0); end
 
 ##
 # Combines all elements of <i>enum</i> by applying a binary
@@ -2585,7 +2585,7 @@ def inject; end
 #       memo.length > word.length ? memo : word
 #    end
 #    longest                                       #=> "sheep"
-def reduce; end
+def reduce(p1=0, p2=0); end
 
 ##
 # Returns two arrays, the first containing the elements of
@@ -2595,7 +2595,7 @@ def reduce; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..6).partition {|v| v.even? }  #=> [[2, 4, 6], [1, 3, 5]]
-def partition; end
+def partition(); end
 
 ##
 # Returns a hash, which keys are evaluated result from the
@@ -2605,7 +2605,7 @@ def partition; end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..6).group_by {|i| i%3}   #=> {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
-def group_by; end
+def group_by(); end
 
 ##
 # Returns the first element, or the first +n+ elements, of the enumerable.
@@ -2616,7 +2616,7 @@ def group_by; end
 #   %w[foo bar baz].first(2)  #=> ["foo", "bar"]
 #   %w[foo bar baz].first(10) #=> ["foo", "bar", "baz"]
 #   [].first                  #=> nil
-def first; end
+def first(p1=0); end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2629,7 +2629,7 @@ def first; end
 #    %w{ant bear cat}.all? {|word| word.length >= 3}   #=> true
 #    %w{ant bear cat}.all? {|word| word.length >= 4}   #=> false
 #    [ nil, true, 99 ].all?                            #=> false
-def all?; end
+def all?(); end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2643,7 +2643,7 @@ def all?; end
 #    %w{ant bear cat}.any? {|word| word.length >= 3}   #=> true
 #    %w{ant bear cat}.any? {|word| word.length >= 4}   #=> true
 #    [ nil, true, 99 ].any?                            #=> true
-def any?; end
+def any?(); end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2657,7 +2657,7 @@ def any?; end
 #    %w{ant bear cat}.one? {|word| word.length < 4}    #=> false
 #    [ nil, true, 99 ].one?                            #=> false
 #    [ nil, true, false ].one?                         #=> true
-def one?; end
+def one?(); end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2670,7 +2670,7 @@ def one?; end
 #    [].none?                                          #=> true
 #    [nil].none?                                       #=> true
 #    [nil,false].none?                                 #=> true
-def none?; end
+def none?(); end
 
 ##
 # Returns the object in <i>enum</i> with the minimum value. The
@@ -2680,7 +2680,7 @@ def none?; end
 #    a = %w(albatross dog horse)
 #    a.min                                  #=> "albatross"
 #    a.min {|a,b| a.length <=> b.length }   #=> "dog"
-def min; end
+def min(); end
 
 ##
 # Returns the object in _enum_ with the maximum value. The
@@ -2690,7 +2690,7 @@ def min; end
 #    a = %w(albatross dog horse)
 #    a.max                                  #=> "horse"
 #    a.max {|a,b| a.length <=> b.length }   #=> "albatross"
-def max; end
+def max(); end
 
 ##
 # Returns two elements array which contains the minimum and the
@@ -2701,7 +2701,7 @@ def max; end
 #    a = %w(albatross dog horse)
 #    a.minmax                                  #=> ["albatross", "horse"]
 #    a.minmax {|a,b| a.length <=> b.length }   #=> ["dog", "albatross"]
-def minmax; end
+def minmax(); end
 
 ##
 # Returns the object in <i>enum</i> that gives the minimum
@@ -2711,7 +2711,7 @@ def minmax; end
 # 
 #    a = %w(albatross dog horse)
 #    a.min_by {|x| x.length }   #=> "dog"
-def min_by; end
+def min_by(); end
 
 ##
 # Returns the object in <i>enum</i> that gives the maximum
@@ -2721,7 +2721,7 @@ def min_by; end
 # 
 #    a = %w(albatross dog horse)
 #    a.max_by {|x| x.length }   #=> "albatross"
-def max_by; end
+def max_by(); end
 
 ##
 # Returns two elements array array containing the objects in
@@ -2732,7 +2732,7 @@ def max_by; end
 # 
 #    a = %w(albatross dog horse)
 #    a.minmax_by {|x| x.length }   #=> ["dog", "albatross"]
-def minmax_by; end
+def minmax_by(); end
 
 ##
 # Returns <code>true</code> if any member of <i>enum</i> equals
@@ -2740,7 +2740,7 @@ def minmax_by; end
 # 
 #    IO.constants.include? :SEEK_SET          #=> true
 #    IO.constants.include? :SEEK_NO_FURTHER   #=> false
-def member?; end
+def member?(p1); end
 
 ##
 # Returns <code>true</code> if any member of <i>enum</i> equals
@@ -2748,7 +2748,7 @@ def member?; end
 # 
 #    IO.constants.include? :SEEK_SET          #=> true
 #    IO.constants.include? :SEEK_NO_FURTHER   #=> false
-def include?; end
+def include?(p1); end
 
 ##
 # Calls <em>block</em> with two arguments, the item and its index,
@@ -2762,7 +2762,7 @@ def include?; end
 #      hash[item] = index
 #    }
 #    hash   #=> {"cat"=>0, "dog"=>1, "wombat"=>2}
-def each_with_index; end
+def each_with_index(*args); end
 
 ##
 # Builds a temporary array and traverses that array in reverse order.
@@ -2776,7 +2776,7 @@ def each_with_index; end
 #     3
 #     2
 #     1
-def reverse_each; end
+def reverse_each(*args); end
 
 ##
 # Calls <i>block</i> once for each element in +self+, passing that
@@ -2800,7 +2800,7 @@ def reverse_each; end
 #    1
 #    [1, 2]
 #    nil
-def each_entry; end
+def each_entry(*args); end
 
 ##
 # Iterates the given block for each slice of <n> elements.  If no
@@ -2813,7 +2813,7 @@ def each_entry; end
 #     [4, 5, 6]
 #     [7, 8, 9]
 #     [10]
-def each_slice; end
+def each_slice(p1); end
 
 ##
 # Iterates the given block for each array of consecutive <n>
@@ -2830,7 +2830,7 @@ def each_slice; end
 #     [6, 7, 8]
 #     [7, 8, 9]
 #     [8, 9, 10]
-def each_cons; end
+def each_cons(p1); end
 
 ##
 # Iterates the given block for each element with an arbitrary
@@ -2841,7 +2841,7 @@ def each_cons; end
 # e.g.:
 #     evens = (1..10).each_with_object([]) {|i, a| a << i*2 }
 #     #=> [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-def each_with_object; end
+def each_with_object(p1); end
 
 ##
 # Takes one element from <i>enum</i> and merges corresponding
@@ -2859,14 +2859,14 @@ def each_with_object; end
 #    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 #    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
 #    a.zip([1,2],[8])       #=> [[4, 1, 8], [5, 2, nil], [6, nil, nil]]
-def zip; end
+def zip(*args); end
 
 ##
 # Returns first n elements from <i>enum</i>.
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take(3)             #=> [1, 2, 3]
-def take; end
+def take(p1); end
 
 ##
 # Passes elements to the block until the block returns +nil+ or +false+,
@@ -2876,7 +2876,7 @@ def take; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take_while {|i| i < 3 }   #=> [1, 2]
-def take_while; end
+def take_while(); end
 
 ##
 # Drops first n elements from <i>enum</i>, and returns rest elements
@@ -2884,7 +2884,7 @@ def take_while; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop(3)             #=> [4, 5, 0]
-def drop; end
+def drop(p1); end
 
 ##
 # Drops elements up to, but not including, the first element for
@@ -2895,7 +2895,7 @@ def drop; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
-def drop_while; end
+def drop_while(); end
 
 ##
 # Calls <i>block</i> for each element of <i>enum</i> repeatedly _n_
@@ -2911,7 +2911,7 @@ def drop_while; end
 #    a = ["a", "b", "c"]
 #    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
 #    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
-def cycle; end
+def cycle(p1=0); end
 
 ##
 # Creates an enumerator for each chunked elements.
@@ -3004,7 +3004,7 @@ def cycle; end
 # If non-nil value is given,
 # it is duplicated for each "each" method invocation of the enumerator.
 # The duplicated object is passed to 2nd argument of the block for "chunk" method.
-def chunk; end
+def chunk(p1=0); end
 
 ##
 #  Creates an enumerator for each chunked elements.
@@ -3137,7 +3137,7 @@ def chunk; end
 #        pp mail
 #      }
 #    }
-def slice_before; end
+def slice_before(p1=0); end
 
 end
 
@@ -3170,11 +3170,11 @@ module Process
 # however, these objects retain a bit-oriented interface. In the
 # descriptions that follow, when we talk about the integer value of
 # _stat_, we're referring to this 16 bit value.
-class Status < RDoc::NormalClass Object < BasicObject
+class Status < Object
 ##
 # Returns +true+ if the integer value of _stat_
 # equals <em>other</em>.
-def ==; end
+def ==(p1); end
 
 ##
 # Logical AND of the bits in _stat_ with <em>num</em>.
@@ -3183,7 +3183,7 @@ def ==; end
 #    Process.wait
 #    sprintf('%04x', $?.to_i)       #=> "3700"
 #    sprintf('%04x', $? & 0x1e00)   #=> "1600"
-def &; end
+def &(p1); end
 
 ##
 # Shift the bits in _stat_ right <em>num</em> places.
@@ -3192,7 +3192,7 @@ def &; end
 #    Process.wait       #=> 26563
 #    $?.to_i            #=> 25344
 #    $? >> 8            #=> 99
-def >>; end
+def >>(p1); end
 
 ##
 # Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
@@ -3201,21 +3201,21 @@ def >>; end
 #    fork { exit 0xab }         #=> 26566
 #    Process.wait               #=> 26566
 #    sprintf('%04x', $?.to_i)   #=> "ab00"
-def to_i; end
+def to_i(); end
 
 ##
 # Show pid and exit status as a string.
 # 
 #   system("false")
 #   p $?.to_s         #=> "pid 12766 exit 1"
-def to_s; end
+def to_s(); end
 
 ##
 # Override the inspection method.
 # 
 #   system("false")
 #   p $?.inspect #=> "#<Process::Status: pid 12861 exit 1>"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the process ID that this status object represents.
@@ -3223,35 +3223,35 @@ def inspect; end
 #    fork { exit }   #=> 26569
 #    Process.wait    #=> 26569
 #    $?.pid          #=> 26569
-def pid; end
+def pid(); end
 
 ##
 # Returns +true+ if this process is stopped. This is only
 # returned if the corresponding <code>wait</code> call had the
 # <code>WUNTRACED</code> flag set.
-def stopped?; end
+def stopped?(); end
 
 ##
 # Returns the number of the signal that caused _stat_ to stop
 # (or +nil+ if self is not stopped).
-def stopsig; end
+def stopsig(); end
 
 ##
 # Returns +true+ if _stat_ terminated because of
 # an uncaught signal.
-def signaled?; end
+def signaled?(); end
 
 ##
 # Returns the number of the signal that caused _stat_ to
 # terminate (or +nil+ if self was not terminated by an
 # uncaught signal).
-def termsig; end
+def termsig(); end
 
 ##
 # Returns +true+ if _stat_ exited normally (for
 # example using an <code>exit()</code> call or finishing the
 # program).
-def exited?; end
+def exited?(); end
 
 ##
 # Returns the least significant eight bits of the return code of
@@ -3267,17 +3267,17 @@ def exited?; end
 #    Process.wait       #=> 26573
 #    $?.exited?         #=> true
 #    $?.exitstatus      #=> 99
-def exitstatus; end
+def exitstatus(); end
 
 ##
 # Returns +true+ if _stat_ is successful, +false+ if not.
 # Returns +nil+ if <code>exited?</code> is not +true+.
-def success?; end
+def success?(); end
 
 ##
 # Returns +true+ if _stat_ generated a coredump
 # when it terminated. Not available on all platforms.
-def coredump?; end
+def coredump?(); end
 
 end
 
@@ -3319,7 +3319,7 @@ end
 # 
 #    exec "echo", "*"    # echoes an asterisk
 #    # never get here
-def self.exec; end
+def self.exec(*args); end
 
 ##
 # Creates a subprocess. If a block is specified, that block is run
@@ -3338,7 +3338,7 @@ def self.exec; end
 # fork doesn't copy other threads.
 # 
 # If fork is not usable, Process.respond_to?(:fork) returns false.
-def self.fork; end
+def self.fork(); end
 
 ##
 # spawn executes specified command and return its pid.
@@ -3566,7 +3566,7 @@ def self.fork; end
 # file descriptor mapping.
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def self.spawn; end
+def self.spawn(*args); end
 
 ##
 # Exits the process immediately. No exit handlers are
@@ -3574,7 +3574,7 @@ def self.spawn; end
 # exit status.
 # 
 #    Process.exit!(true)
-def self.exit!; end
+def self.exit!(p1=0); end
 
 ##
 # Initiates the termination of the Ruby script by raising the
@@ -3610,13 +3610,13 @@ def self.exit!; end
 # 
 #    at_exit function
 #    in finalizer
-def self.exit; end
+def self.exit(p1=0); end
 
 ##
 # Terminate execution immediately, effectively by calling
 # <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
 # to STDERR prior to terminating.
-def self.abort; end
+def self.abort(p1); end
 
 ##
 # Sends the given signal to the specified process id(s), or to the
@@ -3647,7 +3647,7 @@ def self.abort; end
 # <code>Errno::EPERM</code> when failed because of no privilege,
 # will be raised.  In these cases, signals may have been sent to
 # preceding processes.
-def self.kill; end
+def self.kill(*args); end
 
 ##
 # Waits for a child process to exit, returns its process id, and
@@ -3686,7 +3686,7 @@ def self.kill; end
 #    Time.now                         #=> 2008-03-08 19:56:16 +0900
 #    waitpid(pid, 0)                  #=> 27440
 #    Time.now                         #=> 2008-03-08 19:56:19 +0900
-def self.wait; end
+def self.wait(p1=0, p2=0); end
 
 ##
 # Waits for a child process to exit (see Process::waitpid for exact
@@ -3699,7 +3699,7 @@ def self.wait; end
 #    pid, status = Process.wait2
 #    pid                        #=> 27437
 #    status.exitstatus          #=> 99
-def self.wait2; end
+def self.wait2(*args); end
 
 ##
 # Waits for a child process to exit, returns its process id, and
@@ -3738,7 +3738,7 @@ def self.wait2; end
 #    Time.now                         #=> 2008-03-08 19:56:16 +0900
 #    waitpid(pid, 0)                  #=> 27440
 #    Time.now                         #=> 2008-03-08 19:56:19 +0900
-def self.waitpid; end
+def self.waitpid(p1=0, p2=0); end
 
 ##
 # Waits for a child process to exit (see Process::waitpid for exact
@@ -3751,7 +3751,7 @@ def self.waitpid; end
 #    pid, status = Process.wait2
 #    pid                        #=> 27437
 #    status.exitstatus          #=> 99
-def self.waitpid2; end
+def self.waitpid2(*args); end
 
 ##
 # Waits for all children, returning an array of
@@ -3768,7 +3768,7 @@ def self.waitpid2; end
 #    [[30982, #<Process::Status: pid 30982 exit 0>],
 #     [30979, #<Process::Status: pid 30979 exit 1>],
 #     [30976, #<Process::Status: pid 30976 exit 2>]]
-def self.waitall; end
+def self.waitall(); end
 
 ##
 # Some operating systems retain the status of terminated child
@@ -3812,14 +3812,14 @@ def self.waitall; end
 #    system("ps -ho pid,state -p #{p1}")
 # 
 # <em>(produces no output)</em>
-def self.detach; end
+def self.detach(p1); end
 
 ##
 # Returns the process id of this process. Not available on all
 # platforms.
 # 
 #    Process.pid   #=> 27415
-def self.pid; end
+def self.pid(); end
 
 ##
 # Returns the process id of the parent of this process. Returns
@@ -3832,7 +3832,7 @@ def self.pid; end
 # 
 #    I am 27417
 #    Dad is 27417
-def self.ppid; end
+def self.ppid(); end
 
 ##
 # Returns the process group ID for this process. Not available on
@@ -3840,24 +3840,24 @@ def self.ppid; end
 # 
 #    Process.getpgid(0)   #=> 25527
 #    Process.getpgrp      #=> 25527
-def self.getpgrp; end
+def self.getpgrp(); end
 
 ##
 # Equivalent to <code>setpgid(0,0)</code>. Not available on all
 # platforms.
-def self.setpgrp; end
+def self.setpgrp(); end
 
 ##
 # Returns the process group ID for the given process id. Not
 # available on all platforms.
 # 
 #    Process.getpgid(Process.ppid())   #=> 25527
-def self.getpgid; end
+def self.getpgid(p1); end
 
 ##
 # Sets the process group ID of _pid_ (0 indicates this
 # process) to <em>integer</em>. Not available on all platforms.
-def self.setpgid; end
+def self.setpgid(p1, p2); end
 
 ##
 # Establishes this process as a new session and process group
@@ -3865,7 +3865,7 @@ def self.setpgid; end
 # available on all platforms.
 # 
 #    Process.setsid   #=> 27422
-def self.setsid; end
+def self.setsid(); end
 
 ##
 # Gets the scheduling priority for specified process, process group,
@@ -3879,7 +3879,7 @@ def self.setsid; end
 # 
 #    Process.getpriority(Process::PRIO_USER, 0)      #=> 19
 #    Process.getpriority(Process::PRIO_PROCESS, 0)   #=> 19
-def self.getpriority; end
+def self.getpriority(p1, p2); end
 
 ##
 # See <code>Process#getpriority</code>.
@@ -3888,7 +3888,7 @@ def self.getpriority; end
 #    Process.setpriority(Process::PRIO_PROCESS, 0, 19)   #=> 0
 #    Process.getpriority(Process::PRIO_USER, 0)          #=> 19
 #    Process.getpriority(Process::PRIO_PROCESS, 0)       #=> 19
-def self.setpriority; end
+def self.setpriority(p1, p2, p3); end
 
 ##
 # Gets the resource limit of the process.
@@ -3905,7 +3905,7 @@ def self.setpriority; end
 # <code>Process::RLIM_SAVED_MAX</code> or
 # <code>Process::RLIM_SAVED_CUR</code>.
 # See Process.setrlimit and the system getrlimit(2) manual for details.
-def self.getrlimit; end
+def self.getrlimit(p1); end
 
 ##
 # Sets the resource limit of the process.
@@ -3951,51 +3951,51 @@ def self.getrlimit; end
 # the hard limit to try to make core dump possible.
 # 
 #   Process.setrlimit(:CORE, Process.getrlimit(:CORE)[1])
-def self.setrlimit; end
+def self.setrlimit(p1, p2, p3=0); end
 
 ##
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.uid; end
+def self.uid(); end
 
 ##
 # Sets the (integer) user ID for this process. Not available on all
 # platforms.
-def self.uid=; end
+def self.uid=(p1); end
 
 ##
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.gid; end
+def self.gid(); end
 
 ##
 # Sets the group ID for this process.
-def self.gid=; end
+def self.gid=(p1); end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.euid; end
+def self.euid(); end
 
 ##
 # Sets the effective user ID for this process. Not available on all
 # platforms.
-def self.euid=; end
+def self.euid=(p1); end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.egid; end
+def self.egid(); end
 
 ##
 # Sets the effective group ID for this process. Not available on all
 # platforms.
-def self.egid=; end
+def self.egid=(p1); end
 
 ##
 # Initializes the supplemental group access list by reading the
@@ -4008,14 +4008,14 @@ def self.egid=; end
 #    Process.groups   #=> [0, 1, 2, 3, 4, 6, 10, 11, 20, 26, 27]
 #    Process.initgroups( "mgranger", 30 )   #=> [30, 6, 10, 11]
 #    Process.groups   #=> [30, 6, 10, 11]
-def self.initgroups; end
+def self.initgroups(p1, p2); end
 
 ##
 # Get an <code>Array</code> of the gids of groups in the
 # supplemental group access list for this process.
 # 
 #    Process.groups   #=> [27, 6, 10, 11]
-def self.groups; end
+def self.groups(); end
 
 ##
 # Set the supplemental group access list to the given
@@ -4024,19 +4024,19 @@ def self.groups; end
 #    Process.groups   #=> [0, 1, 2, 3, 4, 6, 10, 11, 20, 26, 27]
 #    Process.groups = [27, 6, 10, 11]   #=> [27, 6, 10, 11]
 #    Process.groups   #=> [27, 6, 10, 11]
-def self.groups=; end
+def self.groups=(p1); end
 
 ##
 # Returns the maximum number of gids allowed in the supplemental
 # group access list.
 # 
 #    Process.maxgroups   #=> 32
-def self.maxgroups; end
+def self.maxgroups(); end
 
 ##
 # Sets the maximum number of gids allowed in the supplemental group
 # access list.
-def self.maxgroups=; end
+def self.maxgroups=(p1); end
 
 ##
 # Detach the process from controlling terminal and run in
@@ -4046,7 +4046,7 @@ def self.maxgroups=; end
 # noclose is true, daemon() will redirect standard input,
 # standard output and standard error to /dev/null.
 # Return zero on success, or raise one of Errno::*.
-def self.daemon; end
+def self.daemon(p1=0, p2=0); end
 
 ##
 # Returns a <code>Tms</code> structure (see <code>Struct::Tms</code>)
@@ -4055,7 +4055,7 @@ def self.daemon; end
 # 
 #    t = Process.times
 #    [ t.utime, t.stime, t.cutime, t.cstime ]   #=> [0.0, 0.02, 0.00, 0.00]
-def self.times; end
+def self.times(); end
 
 end
 
@@ -4068,13 +4068,13 @@ module UID
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.rid; end
+def self.rid(); end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.eid; end
+def self.eid(); end
 
 ##
 # Change the current process's real and effective user ID to that
@@ -4084,7 +4084,7 @@ def self.eid; end
 #    [Process.uid, Process.euid]          #=> [0, 0]
 #    Process::UID.change_privilege(31)    #=> 31
 #    [Process.uid, Process.euid]          #=> [31, 31]
-def self.change_privilege; end
+def self.change_privilege(p1); end
 
 ##
 # Set the effective user ID, and if possible, the saved user ID of
@@ -4094,7 +4094,7 @@ def self.change_privilege; end
 #    [Process.uid, Process.euid]          #=> [0, 0]
 #    Process::UID.grant_privilege(31)     #=> 31
 #    [Process.uid, Process.euid]          #=> [0, 31]
-def self.grant_privilege; end
+def self.grant_privilege(p1); end
 
 ##
 # Exchange real and effective user IDs and return the new effective
@@ -4103,17 +4103,17 @@ def self.grant_privilege; end
 #    [Process.uid, Process.euid]   #=> [0, 31]
 #    Process::UID.re_exchange      #=> 0
 #    [Process.uid, Process.euid]   #=> [31, 0]
-def self.re_exchange; end
+def self.re_exchange(); end
 
 ##
 # Returns +true+ if the real and effective user IDs of a
 # process may be exchanged on the current platform.
-def self.re_exchangeable?; end
+def self.re_exchangeable?(); end
 
 ##
 # Returns +true+ if the current platform has saved user
 # ID functionality.
-def self.sid_available?; end
+def self.sid_available?(); end
 
 ##
 # Switch the effective and real user IDs of the current process. If
@@ -4121,7 +4121,7 @@ def self.sid_available?; end
 # after the block is executed. Returns the new effective user ID if
 # called without a block, and the return value of the block if one
 # is given.
-def self.switch; end
+def self.switch(); end
 
 end
 
@@ -4134,14 +4134,14 @@ module GID
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.rid; end
+def self.rid(); end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.eid; end
+def self.eid(); end
 
 ##
 # Change the current process's real and effective group ID to that
@@ -4151,7 +4151,7 @@ def self.eid; end
 #    [Process.gid, Process.egid]          #=> [0, 0]
 #    Process::GID.change_privilege(33)    #=> 33
 #    [Process.gid, Process.egid]          #=> [33, 33]
-def self.change_privilege; end
+def self.change_privilege(p1); end
 
 ##
 # Set the effective group ID, and if possible, the saved group ID of
@@ -4161,7 +4161,7 @@ def self.change_privilege; end
 #    [Process.gid, Process.egid]          #=> [0, 0]
 #    Process::GID.grant_privilege(31)     #=> 33
 #    [Process.gid, Process.egid]          #=> [0, 33]
-def self.grant_privilege; end
+def self.grant_privilege(p1); end
 
 ##
 # Exchange real and effective group IDs and return the new effective
@@ -4170,17 +4170,17 @@ def self.grant_privilege; end
 #    [Process.gid, Process.egid]   #=> [0, 33]
 #    Process::GID.re_exchange      #=> 0
 #    [Process.gid, Process.egid]   #=> [33, 0]
-def self.re_exchange; end
+def self.re_exchange(); end
 
 ##
 # Returns +true+ if the real and effective group IDs of a
 # process may be exchanged on the current platform.
-def self.re_exchangeable?; end
+def self.re_exchangeable?(); end
 
 ##
 # Returns +true+ if the current platform has saved group
 # ID functionality.
-def self.sid_available?; end
+def self.sid_available?(); end
 
 ##
 # Switch the effective and real group IDs of the current process. If
@@ -4188,7 +4188,7 @@ def self.sid_available?; end
 # after the block is executed. Returns the new effective group ID if
 # called without a block, and the return value of the block if one
 # is given.
-def self.switch; end
+def self.switch(); end
 
 end
 
@@ -4203,84 +4203,84 @@ module Sys
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.getuid; end
+def self.getuid(); end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.geteuid; end
+def self.geteuid(); end
 
 ##
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.getgid; end
+def self.getgid(); end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.getegid; end
+def self.getegid(); end
 
 ##
 # Set the user ID of the current process to _integer_. Not
 # available on all platforms.
-def self.setuid; end
+def self.setuid(p1); end
 
 ##
 # Set the group ID of the current process to _integer_. Not
 # available on all platforms.
-def self.setgid; end
+def self.setgid(p1); end
 
 ##
 # Set the real user ID of the calling process to _integer_.
 # Not available on all platforms.
-def self.setruid; end
+def self.setruid(p1); end
 
 ##
 # Set the real group ID of the calling process to _integer_.
 # Not available on all platforms.
-def self.setrgid; end
+def self.setrgid(p1); end
 
 ##
 # Set the effective user ID of the calling process to
 # _integer_.  Not available on all platforms.
-def self.seteuid; end
+def self.seteuid(p1); end
 
 ##
 # Set the effective group ID of the calling process to
 # _integer_.  Not available on all platforms.
-def self.setegid; end
+def self.setegid(p1); end
 
 ##
 # Sets the (integer) real and/or effective user IDs of the current
 # process to _rid_ and _eid_, respectively. A value of
 # <code>-1</code> for either means to leave that ID unchanged. Not
 # available on all platforms.
-def self.setreuid; end
+def self.setreuid(p1, p2); end
 
 ##
 # Sets the (integer) real and/or effective group IDs of the current
 # process to <em>rid</em> and <em>eid</em>, respectively. A value of
 # <code>-1</code> for either means to leave that ID unchanged. Not
 # available on all platforms.
-def self.setregid; end
+def self.setregid(p1, p2); end
 
 ##
 # Sets the (integer) real, effective, and saved user IDs of the
 # current process to _rid_, _eid_, and _sid_ respectively. A
 # value of <code>-1</code> for any value means to
 # leave that ID unchanged. Not available on all platforms.
-def self.setresuid; end
+def self.setresuid(p1, p2, p3); end
 
 ##
 # Sets the (integer) real, effective, and saved user IDs of the
 # current process to <em>rid</em>, <em>eid</em>, and <em>sid</em>
 # respectively. A value of <code>-1</code> for any value means to
 # leave that ID unchanged. Not available on all platforms.
-def self.setresgid; end
+def self.setresgid(p1, p2, p3); end
 
 ##
 # Returns +true+ if the process was created as a result
@@ -4288,7 +4288,7 @@ def self.setresgid; end
 # setgid bits set (and extra privileges were given as a result) or
 # if it has changed any of its real, effective or saved user or
 # group IDs since it began execution.
-def self.issetugid; end
+def self.issetugid(); end
 
 end
 
@@ -4361,14 +4361,14 @@ module Signal
 #     Terminating: 27461
 #     Child died
 #     Terminating: 27460
-def self.trap; end
+def self.trap(*args); end
 
 ##
 # Returns a list of signal names mapped to the corresponding
 # underlying signal numbers.
 # 
 #   Signal.list   #=> {"EXIT"=>0, "HUP"=>1, "INT"=>2, "QUIT"=>3, "ILL"=>4, "TRAP"=>5, "IOT"=>6, "ABRT"=>6, "FPE"=>8, "KILL"=>9, "BUS"=>7, "SEGV"=>11, "SYS"=>31, "PIPE"=>13, "ALRM"=>14, "TERM"=>15, "URG"=>23, "STOP"=>19, "TSTP"=>20, "CONT"=>18, "CHLD"=>17, "CLD"=>17, "TTIN"=>21, "TTOU"=>22, "IO"=>29, "XCPU"=>24, "XFSZ"=>25, "VTALRM"=>26, "PROF"=>27, "WINCH"=>28, "USR1"=>10, "USR2"=>12, "PWR"=>30, "POLL"=>29}
-def self.list; end
+def self.list(); end
 
 end
 
@@ -4390,7 +4390,7 @@ module Math
 # <em>produces:</em>
 # 
 #    Math::DomainError: Numerical argument is out of domain - "acos"
-class DomainError < RDoc::NormalClass StandardError < Exception
+class DomainError < StandardError
 end
 
 ##
@@ -4407,59 +4407,59 @@ end
 #   Math.atan2(1.0, 0.0)   #=> 1.5707963267948966
 #   Math.atan2(1.0, -1.0)  #=> 2.356194490192345
 #   Math.atan2(0.0, -1.0)  #=> 3.141592653589793
-def self.atan2; end
+def self.atan2(p1, p2); end
 
 ##
 # Computes the cosine of <i>x</i> (expressed in radians). Returns
 # -1..1.
-def self.cos; end
+def self.cos(p1); end
 
 ##
 # Computes the sine of <i>x</i> (expressed in radians). Returns
 # -1..1.
-def self.sin; end
+def self.sin(p1); end
 
 ##
 # Returns the tangent of <i>x</i> (expressed in radians).
-def self.tan; end
+def self.tan(p1); end
 
 ##
 # Computes the arc cosine of <i>x</i>. Returns 0..PI.
-def self.acos; end
+def self.acos(p1); end
 
 ##
 # Computes the arc sine of <i>x</i>. Returns -{PI/2} .. {PI/2}.
-def self.asin; end
+def self.asin(p1); end
 
 ##
 # Computes the arc tangent of <i>x</i>. Returns -{PI/2} .. {PI/2}.
-def self.atan; end
+def self.atan(p1); end
 
 ##
 # Computes the hyperbolic cosine of <i>x</i> (expressed in radians).
-def self.cosh; end
+def self.cosh(p1); end
 
 ##
 # Computes the hyperbolic sine of <i>x</i> (expressed in
 # radians).
-def self.sinh; end
+def self.sinh(p1); end
 
 ##
 # Computes the hyperbolic tangent of <i>x</i> (expressed in
 # radians).
-def self.tanh; end
+def self.tanh(p1); end
 
 ##
 # Computes the inverse hyperbolic cosine of <i>x</i>.
-def self.acosh; end
+def self.acosh(p1); end
 
 ##
 # Computes the inverse hyperbolic sine of <i>x</i>.
-def self.asinh; end
+def self.asinh(p1); end
 
 ##
 # Computes the inverse hyperbolic tangent of <i>x</i>.
-def self.atanh; end
+def self.atanh(p1); end
 
 ##
 # Returns e**x.
@@ -4467,7 +4467,7 @@ def self.atanh; end
 #   Math.exp(0)       #=> 1.0
 #   Math.exp(1)       #=> 2.718281828459045
 #   Math.exp(1.5)     #=> 4.4816890703380645
-def self.exp; end
+def self.exp(p1); end
 
 ##
 # Returns the natural logarithm of <i>numeric</i>.
@@ -4478,7 +4478,7 @@ def self.exp; end
 #   Math.log(Math::E)    #=> 1.0
 #   Math.log(Math::E**3) #=> 3.0
 #   Math.log(12,3)       #=> 2.2618595071429146
-def self.log; end
+def self.log(p1, p2=0); end
 
 ##
 # Returns the base 2 logarithm of <i>numeric</i>.
@@ -4487,7 +4487,7 @@ def self.log; end
 #   Math.log2(2)      #=> 1.0
 #   Math.log2(32768)  #=> 15.0
 #   Math.log2(65536)  #=> 16.0
-def self.log2; end
+def self.log2(p1); end
 
 ##
 # Returns the base 10 logarithm of <i>numeric</i>.
@@ -4495,7 +4495,7 @@ def self.log2; end
 #   Math.log10(1)       #=> 0.0
 #   Math.log10(10)      #=> 1.0
 #   Math.log10(10**100) #=> 100.0
-def self.log10; end
+def self.log10(p1); end
 
 ##
 # Returns the non-negative square root of <i>numeric</i>.
@@ -4515,7 +4515,7 @@ def self.log10; end
 #   [8, 2.82842712474619, 8.0]
 #   [9, 3.0, 9.0]
 #   [10, 3.16227766016838, 10.0]
-def self.sqrt; end
+def self.sqrt(p1); end
 
 ##
 # Returns the cube root of <i>numeric</i>.
@@ -4543,7 +4543,7 @@ def self.sqrt; end
 #   [7, 1.91293118277239, 7.0]
 #   [8, 2.0, 8.0]
 #   [9, 2.0800838230519, 9.0]
-def self.cbrt; end
+def self.cbrt(p1); end
 
 ##
 # Returns a two-element array containing the normalized fraction (a
@@ -4552,29 +4552,29 @@ def self.cbrt; end
 # 
 #    fraction, exponent = Math.frexp(1234)   #=> [0.6025390625, 11]
 #    fraction * 2**exponent                  #=> 1234.0
-def self.frexp; end
+def self.frexp(p1); end
 
 ##
 # Returns the value of <i>flt</i>*(2**<i>int</i>).
 # 
 #    fraction, exponent = Math.frexp(1234)
 #    Math.ldexp(fraction, exponent)   #=> 1234.0
-def self.ldexp; end
+def self.ldexp(p1, p2); end
 
 ##
 # Returns sqrt(x**2 + y**2), the hypotenuse of a right-angled triangle
 # with sides <i>x</i> and <i>y</i>.
 # 
 #    Math.hypot(3, 4)   #=> 5.0
-def self.hypot; end
+def self.hypot(p1, p2); end
 
 ##
 # Calculates the error function of x.
-def self.erf; end
+def self.erf(p1); end
 
 ##
 # Calculates the complementary error function of x.
-def self.erfc; end
+def self.erfc(p1); end
 
 ##
 # Calculates the gamma function of x.
@@ -4610,7 +4610,7 @@ def self.erfc; end
 #  #   [24, 2.5852016738885062e+22, 25852016738884976640000]
 #  #   [25, 6.204484017332391e+23, 620448401733239439360000]
 #  #   [26, 1.5511210043330954e+25, 15511210043330985984000000]
-def self.gamma; end
+def self.gamma(p1); end
 
 ##
 # Calculates the logarithmic gamma of x and
@@ -4619,7 +4619,7 @@ def self.gamma; end
 # Math.lgamma(x) is same as
 #  [Math.log(Math.gamma(x).abs), Math.gamma(x) < 0 ? -1 : 1]
 # but avoid overflow by Math.gamma(x) for large x.
-def self.lgamma; end
+def self.lgamma(p1); end
 
 end
 
@@ -4694,27 +4694,27 @@ module Comparable
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 0. Also returns true if
 # _obj_ and _other_ are the same object.
-def ==; end
+def ==(p1); end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 1.
-def >; end
+def >(p1); end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 0 or 1.
-def >=; end
+def >=(p1); end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns -1.
-def <; end
+def <(p1); end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns -1 or 0.
-def <=; end
+def <=(p1); end
 
 ##
 # Returns <code>false</code> if <i>obj</i> <code><=></code>
@@ -4725,11 +4725,11 @@ def <=; end
 #    6.between?(1, 5)               #=> false
 #    'cat'.between?('ant', 'dog')   #=> true
 #    'gnu'.between?('ant', 'dog')   #=> false
-def between?; end
+def between?(p1, p2); end
 
 end
 
-class Random < RDoc::NormalClass Object < BasicObject
+class Random < Object
 ##
 # Creates new Mersenne Twister based pseudorandom number generator with
 # seed.  When the argument seed is omitted, the generator is initialized
@@ -4743,7 +4743,7 @@ class Random < RDoc::NormalClass Object < BasicObject
 #     [ prng.integer(10), prng.integer(1000) ]  #=> [4, 664]
 #     prng = Random.new(1234)
 #     [ prng.rand, prng.rand ]   #=> [0.191519450378892, 0.622108771039832]
-def self.new; end
+def self.new(p1=0); end
 
 ##
 # When the argument is an +Integer+ or a +Bignum+, it returns a
@@ -4764,20 +4764,20 @@ def self.new; end
 # +begin+/+end+ of the range have to have subtract and add methods.
 # 
 # Otherwise, it raises an ArgumentError.
-def rand; end
+def rand(*args); end
 
 ##
 # Returns a random binary string.  The argument size specified the length of
 # the result string.
-def bytes; end
+def bytes(p1); end
 
 ##
 # Returns the seed of the generator.
-def seed; end
+def seed(); end
 
 ##
 # Returns true if the generators' states equal.
-def ==; end
+def ==(p1); end
 
 ##
 # Seeds the pseudorandom number generator to the value of
@@ -4788,126 +4788,126 @@ def ==; end
 # <code>srand</code>, but without the sequence.) By setting the seed
 # to a known value, scripts can be made deterministic during testing.
 # The previous seed value is returned. Also see <code>Kernel::rand</code>.
-def self.srand; end
+def self.srand(p1=0); end
 
 ##
 # Alias of _Random::DEFAULT.rand_.
-def self.rand; end
+def self.rand(*args); end
 
 ##
 # Returns arbitrary value for seed.
-def self.new_seed; end
+def self.new_seed(); end
 
 end
 
 ##
 # ::VM   
-class RubyVM < RDoc::NormalClass Object < BasicObject
-class InstructionSequence < RDoc::NormalClass Object < BasicObject
-def inspect; end
+class RubyVM < Object
+class InstructionSequence < Object
+def inspect(); end
 
-def disasm; end
+def disasm(); end
 
-def disassemble; end
+def disassemble(); end
 
-def to_a; end
+def to_a(); end
 
-def eval; end
+def eval(); end
 
-def self.load; end
+def self.load(p1, p2=0); end
 
-def self.compile; end
+def self.compile(p1, p2=0, p3=0, p4=0, p5=0); end
 
-def self.new; end
+def self.new(p1, p2=0, p3=0, p4=0, p5=0); end
 
-def self.compile_file; end
+def self.compile_file(p1, p2=0); end
 
-def self.compile_option; end
+def self.compile_option(); end
 
-def self.compile_option=; end
+def self.compile_option=(p1); end
 
-def self.disasm; end
+def self.disasm(p1); end
 
-def self.disassemble; end
-
-end
-
-class Env < RDoc::NormalClass Object < BasicObject
-end
+def self.disassemble(p1); end
 
 end
 
-class InstructionSequence < RDoc::NormalClass Object < BasicObject
-def inspect; end
-
-def disasm; end
-
-def disassemble; end
-
-def to_a; end
-
-def eval; end
-
-def self.load; end
-
-def self.compile; end
-
-def self.new; end
-
-def self.compile_file; end
-
-def self.compile_option; end
-
-def self.compile_option=; end
-
-def self.disasm; end
-
-def self.disassemble; end
+class Env < Object
+end
 
 end
 
-class Ripper < RDoc::NormalClass Object < BasicObject
+class InstructionSequence < Object
+def inspect(); end
+
+def disasm(); end
+
+def disassemble(); end
+
+def to_a(); end
+
+def eval(); end
+
+def self.load(p1, p2=0); end
+
+def self.compile(p1, p2=0, p3=0, p4=0, p5=0); end
+
+def self.new(p1, p2=0, p3=0, p4=0, p5=0); end
+
+def self.compile_file(p1, p2=0); end
+
+def self.compile_option(); end
+
+def self.compile_option=(p1); end
+
+def self.disasm(p1); end
+
+def self.disassemble(p1); end
+
+end
+
+class Ripper < Object
 ##
 # Create a new Ripper object.
 # _src_ must be a String, an IO, or an Object which has #gets method.
 # 
 # This method does not starts parsing.
 # See also Ripper#parse and Ripper.parse.
-def self.new; end
+def self.new(p1, p2=0, p3=0); end
 
 ##
 # Start parsing and returns the value of the root action.
-def parse; end
+def parse(); end
 
 ##
 # Return column number of current parsing line.
 # This number starts from 0.
-def column; end
+def column(); end
 
 ##
 # Return current parsing filename.
-def filename; end
+def filename(); end
 
 ##
 # Return line number of current parsing line.
 # This number starts from 1.
-def lineno; end
+def lineno(); end
 
 ##
 # Return true if parsed source ended by +\_\_END\_\_+.
-def end_seen?; end
+def end_seen?(); end
 
 ##
 # Return encoding of the source.
-def encoding; end
+def encoding(); end
 
 ##
 # Get yydebug.
-def yydebug; end
+def yydebug(); end
 
 ##
 # Set yydebug.
-def yydebug=; end
+def yydebug=(p1); end
 
 end
 
@@ -4922,7 +4922,7 @@ end
 # In the descriptions of Object's methods, the parameter <i>symbol</i> refers
 # to a symbol, which is either a quoted string or a Symbol (such as
 # <code>:name</code>).
-class Object < RDoc::NormalClass BasicObject
+class Object < BasicObject
 include Kernel
 ##
 # Looks up the named method as a receiver in <i>obj</i>, returning a
@@ -4947,11 +4947,11 @@ include Kernel
 #    l = Demo.new('Fred')
 #    m = l.method("hello")
 #    m.call   #=> "Hello, @iv = Fred"
-def method; end
+def method(p1); end
 
 ##
 # Similar to _method_, searches public method only.
-def public_method; end
+def public_method(p1); end
 
 ##
 # Defines a singleton method in the receiver. The _method_
@@ -4973,7 +4973,7 @@ def public_method; end
 #    guy = "Bob"
 #    guy.define_singleton_method(:hello) { "#{self}: Hello there!" }
 #    guy.hello    #=>  "Bob: Hello there!"
-def define_singleton_method; end
+def define_singleton_method(*args); end
 
 ##
 # Returns an integer identifier for <i>obj</i>. The same number will
@@ -4982,7 +4982,7 @@ def define_singleton_method; end
 # <code>Object#object_id</code> is a different concept from the
 # <code>:name</code> notation, which returns the symbol id of
 # <code>name</code>. Replaces the deprecated <code>Object#id</code>.
-def object_id; end
+def object_id(); end
 
 ##
 # Returns +true+ if _obj_ responds to the given
@@ -4995,14 +4995,14 @@ def object_id; end
 # 
 # If the method is not defined, <code>respond_to_missing?</code>
 # method is called and the result is returned.
-def respond_to?; end
+def respond_to?(p1, p2=0); end
 
 ##
 # Hook method to return whether the _obj_ can respond to _id_ method
 # or not.
 # 
 # See #respond_to?.
-def respond_to_missing?; end
+def respond_to_missing?(p1, p2); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -5016,7 +5016,7 @@ def respond_to_missing?; end
 #    end
 #    k = Klass.new
 #    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
-def send; end
+def send(*args); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -5024,7 +5024,7 @@ def send; end
 # methods only.
 # 
 #    1.public_send(:puts, "hello")  # causes NoMethodError
-def public_send; end
+def public_send(*args); end
 
 ##
 # Creates a new Enumerator which will enumerate by on calling +method+ on
@@ -5048,7 +5048,7 @@ def public_send; end
 #   # protect an array from being modified by some_method
 #   a = [1, 2, 3]
 #   some_method(a.to_enum)
-def to_enum; end
+def to_enum(*args); end
 
 ##
 # Creates a new Enumerator which will enumerate by on calling +method+ on
@@ -5072,7 +5072,7 @@ def to_enum; end
 #   # protect an array from being modified by some_method
 #   a = [1, 2, 3]
 #   some_method(a.to_enum)
-def enum_for; end
+def enum_for(*args); end
 
 ##
 # Adds to _obj_ the instance methods from each module given as a
@@ -5094,7 +5094,7 @@ def enum_for; end
 #    k.hello         #=> "Hello from Klass.\n"
 #    k.extend(Mod)   #=> #<Klass:0x401b3bc8>
 #    k.hello         #=> "Hello from Mod.\n"
-def extend; end
+def extend(*args); end
 
 ##
 # Prints <i>obj</i> on the given port (default <code>$></code>).
@@ -5114,7 +5114,7 @@ def extend; end
 # <em>produces:</em>
 # 
 #    1cat456
-def display; end
+def display(p1=0); end
 
 ##
 # call_seq:
@@ -5122,24 +5122,24 @@ def display; end
 #   <anything_else>.nil?   -> false
 # 
 # Only the object <i>nil</i> responds <code>true</code> to <code>nil?</code>.
-def nil?; end
+def nil?(); end
 
 ##
 # Case Equality---For class <code>Object</code>, effectively the same
 # as calling  <code>#==</code>, but typically overridden by descendants
 # to provide meaningful semantics in <code>case</code> statements.
-def ===; end
+def ===(p1); end
 
 ##
 # Pattern Match---Overridden by descendants (notably
 # <code>Regexp</code> and <code>String</code>) to provide meaningful
 # pattern-match semantics.
-def =~; end
+def =~(p1); end
 
 ##
 # Returns true if two objects do not match (using the <i>=~</i>
 # method), otherwise false.
-def !~; end
+def !~(p1); end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -5163,7 +5163,7 @@ def !~; end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def eql?; end
+def eql?(p1); end
 
 ##
 # Generates a <code>Fixnum</code> hash value for this object.
@@ -5174,11 +5174,11 @@ def eql?; end
 # truncated before being used.
 # 
 #      "waffle".hash #=> -910576647
-def hash; end
+def hash(); end
 
 ##
 # Returns 0 if obj === other, otherwise nil.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns the class of <i>obj</i>. This method must always be
@@ -5187,7 +5187,7 @@ def <=>; end
 # 
 #    1.class      #=> Fixnum
 #    self.class   #=> Object
-def class; end
+def class(); end
 
 ##
 # Returns the singleton class of <i>obj</i>.  This method creates
@@ -5201,7 +5201,7 @@ def class; end
 #    Object.new.singleton_class  #=> #<Class:#<Object:0xb7ce1e24>>
 #    String.singleton_class      #=> #<Class:String>
 #    nil.singleton_class         #=> NilClass
-def singleton_class; end
+def singleton_class(); end
 
 ##
 # Produces a shallow copy of <i>obj</i>---the instance variables of
@@ -5222,7 +5222,7 @@ def singleton_class; end
 # This method may have class-specific behavior.  If so, that
 # behavior will be documented under the #+initialize_copy+ method of
 # the class.
-def clone; end
+def clone(); end
 
 ##
 # Produces a shallow copy of <i>obj</i>---the instance variables of
@@ -5237,33 +5237,33 @@ def clone; end
 # This method may have class-specific behavior.  If so, that
 # behavior will be documented under the #+initialize_copy+ method of
 # the class.
-def dup; end
+def dup(); end
 
 ##
 # Marks <i>obj</i> as tainted---if the <code>$SAFE</code> level is
 # set appropriately, many method calls which might alter the running
 # programs environment will refuse to accept tainted strings.
-def taint; end
+def taint(); end
 
 ##
 # Returns <code>true</code> if the object is tainted.
-def tainted?; end
+def tainted?(); end
 
 ##
 # Removes the taint from <i>obj</i>.
-def untaint; end
+def untaint(); end
 
 ##
 # Marks <i>obj</i> as untrusted.
-def untrust; end
+def untrust(); end
 
 ##
 # Returns <code>true</code> if the object is untrusted.
-def untrusted?; end
+def untrusted?(); end
 
 ##
 # Removes the untrusted mark from <i>obj</i>.
-def trust; end
+def trust(); end
 
 ##
 # Prevents further modifications to <i>obj</i>. A
@@ -5281,7 +5281,7 @@ def trust; end
 # 
 #    prog.rb:3:in `<<': can't modify frozen array (RuntimeError)
 #     from prog.rb:3
-def freeze; end
+def freeze(); end
 
 ##
 # Returns the freeze status of <i>obj</i>.
@@ -5289,14 +5289,14 @@ def freeze; end
 #    a = [ "a", "b", "c" ]
 #    a.freeze    #=> ["a", "b", "c"]
 #    a.frozen?   #=> true
-def frozen?; end
+def frozen?(); end
 
 ##
 # Returns a string representing <i>obj</i>. The default
 # <code>to_s</code> prints the object's class and an encoding of the
 # object id. As a special case, the top-level object that is the
 # initial execution context of Ruby programs returns ``main.''
-def to_s; end
+def to_s(); end
 
 ##
 # Returns a string containing a human-readable representation of
@@ -5307,7 +5307,7 @@ def to_s; end
 # 
 #    [ 1, 2, 3..4, 'five' ].inspect   #=> "[1, 2, 3..4, \"five\"]"
 #    Time.new.inspect                 #=> "2008-03-08 19:43:39 +0900"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns an array of the names of singleton methods for <i>obj</i>.
@@ -5337,7 +5337,7 @@ def inspect; end
 #    Single.singleton_methods    #=> [:four]
 #    a.singleton_methods(false)  #=> [:two, :one]
 #    a.singleton_methods         #=> [:two, :one, :three]
-def singleton_methods; end
+def singleton_methods(p1=0); end
 
 ##
 # Returns an array of instance variable names for the receiver. Note
@@ -5351,7 +5351,7 @@ def singleton_methods; end
 #      end
 #    end
 #    Fred.new.instance_variables   #=> [:@iv]
-def instance_variables; end
+def instance_variables(); end
 
 ##
 # Returns the value of the given instance variable, or nil if the
@@ -5368,7 +5368,7 @@ def instance_variables; end
 #    fred = Fred.new('cat', 99)
 #    fred.instance_variable_get(:@a)    #=> "cat"
 #    fred.instance_variable_get("@b")   #=> 99
-def instance_variable_get; end
+def instance_variable_get(p1); end
 
 ##
 # Sets the instance variable names by <i>symbol</i> to
@@ -5385,7 +5385,7 @@ def instance_variable_get; end
 #    fred.instance_variable_set(:@a, 'dog')   #=> "dog"
 #    fred.instance_variable_set(:@c, 'cat')   #=> "cat"
 #    fred.inspect                             #=> "#<Fred:0x401b3da8 @a=\"dog\", @b=99, @c=\"cat\">"
-def instance_variable_set; end
+def instance_variable_set(p1, p2); end
 
 ##
 # Returns <code>true</code> if the given instance variable is
@@ -5400,7 +5400,7 @@ def instance_variable_set; end
 #    fred.instance_variable_defined?(:@a)    #=> true
 #    fred.instance_variable_defined?("@b")   #=> true
 #    fred.instance_variable_defined?("@c")   #=> false
-def instance_variable_defined?; end
+def instance_variable_defined?(p1); end
 
 ##
 # Removes the named instance variable from <i>obj</i>, returning that
@@ -5419,7 +5419,7 @@ def instance_variable_defined?; end
 #    d.var      #=> 99
 #    d.remove   #=> 99
 #    d.var      #=> nil
-def remove_instance_variable; end
+def remove_instance_variable(p1); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an instance of the given
@@ -5433,7 +5433,7 @@ def remove_instance_variable; end
 #    b.instance_of? A   #=> false
 #    b.instance_of? B   #=> true
 #    b.instance_of? C   #=> false
-def instance_of?; end
+def instance_of?(p1); end
 
 ##
 # Returns <code>true</code> if <i>class</i> is the class of
@@ -5457,7 +5457,7 @@ def instance_of?; end
 #    b.kind_of? B       #=> true
 #    b.kind_of? C       #=> false
 #    b.kind_of? M       #=> true
-def kind_of?; end
+def kind_of?(p1); end
 
 ##
 # Returns <code>true</code> if <i>class</i> is the class of
@@ -5481,7 +5481,7 @@ def kind_of?; end
 #    b.kind_of? B       #=> true
 #    b.kind_of? C       #=> false
 #    b.kind_of? M       #=> true
-def is_a?; end
+def is_a?(p1); end
 
 ##
 # Yields <code>x</code> to the block, and then returns <code>x</code>.
@@ -5492,7 +5492,7 @@ def is_a?; end
 #       .to_a                .tap {|x| puts "array: #{x.inspect}"}
 #       .select {|x| x%2==0} .tap {|x| puts "evens: #{x.inspect}"}
 #       .map { |x| x*x }     .tap {|x| puts "squares: #{x.inspect}"}
-def tap; end
+def tap(); end
 
 end
 
@@ -5526,7 +5526,7 @@ end
 # <code>0644</code>, which means read/write for owner, read-only for
 # all others. The only change that can be made is to make the file
 # read-only, which is reported as <code>0444</code>.
-class File < RDoc::NormalClass IO < Object
+class File < IO
 ##
 # Objects of class <code>File::Stat</code> encapsulate common status
 # information for <code>File</code> objects. The information is
@@ -5537,12 +5537,12 @@ class File < RDoc::NormalClass IO < Object
 # <code>File#lstat</code>, and <code>File::lstat</code>. Many of these
 # methods return platform-specific values, and not all values are
 # meaningful on all systems. See also <code>Kernel#test</code>.
-class Stat < RDoc::NormalClass Object < BasicObject
+class Stat < Object
 include Comparable
 ##
 # Create a File::Stat object for the given file name (raising an
 # exception if the file doesn't exist).
-def self.new; end
+def self.new(p1); end
 
 ##
 # Compares <code>File::Stat</code> objects by comparing their
@@ -5552,14 +5552,14 @@ def self.new; end
 #    sleep 1
 #    f2 = File.new("f2", "w")
 #    f1.stat <=> f2.stat   #=> -1
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns an integer representing the device on which <i>stat</i>
 # resides.
 # 
 #    File.stat("testfile").dev   #=> 774
-def dev; end
+def dev(); end
 
 ##
 # Returns the major part of <code>File_Stat#dev</code> or
@@ -5567,7 +5567,7 @@ def dev; end
 # 
 #    File.stat("/dev/fd1").dev_major   #=> 2
 #    File.stat("/dev/tty").dev_major   #=> 5
-def dev_major; end
+def dev_major(); end
 
 ##
 # Returns the minor part of <code>File_Stat#dev</code> or
@@ -5575,13 +5575,13 @@ def dev_major; end
 # 
 #    File.stat("/dev/fd1").dev_minor   #=> 1
 #    File.stat("/dev/tty").dev_minor   #=> 0
-def dev_minor; end
+def dev_minor(); end
 
 ##
 # Returns the inode number for <i>stat</i>.
 # 
 #    File.stat("testfile").ino   #=> 1083669
-def ino; end
+def ino(); end
 
 ##
 # Returns an integer representing the permission bits of
@@ -5591,7 +5591,7 @@ def ino; end
 #    File.chmod(0644, "testfile")   #=> 1
 #    s = File.stat("testfile")
 #    sprintf("%o", s.mode)          #=> "100644"
-def mode; end
+def mode(); end
 
 ##
 # Returns the number of hard links to <i>stat</i>.
@@ -5599,19 +5599,19 @@ def mode; end
 #    File.stat("testfile").nlink             #=> 1
 #    File.link("testfile", "testfile.bak")   #=> 0
 #    File.stat("testfile").nlink             #=> 2
-def nlink; end
+def nlink(); end
 
 ##
 # Returns the numeric user id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").uid   #=> 501
-def uid; end
+def uid(); end
 
 ##
 # Returns the numeric group id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").gid   #=> 500
-def gid; end
+def gid(); end
 
 ##
 # Returns an integer representing the device type on which
@@ -5620,7 +5620,7 @@ def gid; end
 # 
 #    File.stat("/dev/fd1").rdev   #=> 513
 #    File.stat("/dev/tty").rdev   #=> 1280
-def rdev; end
+def rdev(); end
 
 ##
 # Returns the major part of <code>File_Stat#rdev</code> or
@@ -5628,7 +5628,7 @@ def rdev; end
 # 
 #    File.stat("/dev/fd1").rdev_major   #=> 2
 #    File.stat("/dev/tty").rdev_major   #=> 5
-def rdev_major; end
+def rdev_major(); end
 
 ##
 # Returns the minor part of <code>File_Stat#rdev</code> or
@@ -5636,20 +5636,20 @@ def rdev_major; end
 # 
 #    File.stat("/dev/fd1").rdev_minor   #=> 1
 #    File.stat("/dev/tty").rdev_minor   #=> 0
-def rdev_minor; end
+def rdev_minor(); end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size; end
+def size(); end
 
 ##
 # Returns the native file system's block size. Will return <code>nil</code>
 # on platforms that don't support this information.
 # 
 #    File.stat("testfile").blksize   #=> 4096
-def blksize; end
+def blksize(); end
 
 ##
 # Returns the number of native file system blocks allocated for this
@@ -5657,20 +5657,20 @@ def blksize; end
 # support this feature.
 # 
 #    File.stat("testfile").blocks   #=> 2
-def blocks; end
+def blocks(); end
 
 ##
 # Returns the last access time for this file as an object of class
 # <code>Time</code>.
 # 
 #    File.stat("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime; end
+def atime(); end
 
 ##
 # Returns the modification time of <i>stat</i>.
 # 
 #    File.stat("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime; end
+def mtime(); end
 
 ##
 # Returns the change time for <i>stat</i> (that is, the time
@@ -5680,7 +5680,7 @@ def mtime; end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.stat("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime; end
+def ctime(); end
 
 ##
 # Produce a nicely formatted description of <i>stat</i>.
@@ -5691,7 +5691,7 @@ def ctime; end
 #      #    blocks=8, atime=Wed Dec 10 10:16:12 CST 2003,
 #      #    mtime=Fri Sep 12 15:41:41 CDT 2003,
 #      #    ctime=Mon Oct 27 11:20:27 CST 2003>"
-def inspect; end
+def inspect(); end
 
 ##
 # Identifies the type of <i>stat</i>. The return string is one of:
@@ -5701,7 +5701,7 @@ def inspect; end
 # ``<code>socket</code>'', or ``<code>unknown</code>''.
 # 
 #    File.stat("/dev/tty").ftype   #=> "characterSpecial"
-def ftype; end
+def ftype(); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -5709,21 +5709,21 @@ def ftype; end
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?; end
+def directory?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").readable?   #=> true
-def readable?; end
+def readable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").readable_real?   #=> true
-def readable_real?; end
+def readable_real?(); end
 
 ##
 # If <i>stat</i> is readable by others, returns an integer
@@ -5733,21 +5733,21 @@ def readable_real?; end
 # 
 #    m = File.stat("/etc/passwd").world_readable?  #=> 420
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?; end
+def world_readable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").writable?   #=> true
-def writable?; end
+def writable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").writable_real?   #=> true
-def writable_real?; end
+def writable_real?(); end
 
 ##
 # If <i>stat</i> is writable by others, returns an integer
@@ -5757,7 +5757,7 @@ def writable_real?; end
 # 
 #    m = File.stat("/tmp").world_writable?         #=> 511
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?; end
+def world_writable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is executable or if the
@@ -5766,32 +5766,32 @@ def world_writable?; end
 # the process.
 # 
 #    File.stat("testfile").executable?   #=> false
-def executable?; end
+def executable?(); end
 
 ##
 # Same as <code>executable?</code>, but tests using the real owner of
 # the process.
-def executable_real?; end
+def executable_real?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a regular file (not
 # a device file, pipe, socket, etc.).
 # 
 #    File.stat("testfile").file?   #=> true
-def file?; end
+def file?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a zero-length file;
 # <code>false</code> otherwise.
 # 
 #    File.stat("testfile").zero?   #=> false
-def zero?; end
+def zero?(); end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size?; end
+def size?(); end
 
 ##
 # Returns <code>true</code> if the effective user id of the process is
@@ -5799,7 +5799,7 @@ def size?; end
 # 
 #    File.stat("testfile").owned?      #=> true
 #    File.stat("/etc/passwd").owned?   #=> false
-def owned?; end
+def owned?(); end
 
 ##
 # Returns true if the effective group id of the process is the same as
@@ -5807,12 +5807,12 @@ def owned?; end
 # 
 #    File.stat("testfile").grpowned?      #=> true
 #    File.stat("/etc/passwd").grpowned?   #=> false
-def grpowned?; end
+def grpowned?(); end
 
 ##
 # Returns <code>true</code> if the operating system supports pipes and
 # <i>stat</i> is a pipe; <code>false</code> otherwise.
-def pipe?; end
+def pipe?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a symbolic link,
@@ -5825,7 +5825,7 @@ def pipe?; end
 #    File.symlink("testfile", "alink")   #=> 0
 #    File.stat("alink").symlink?         #=> false
 #    File.lstat("alink").symlink?        #=> true
-def symlink?; end
+def symlink?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a socket,
@@ -5833,7 +5833,7 @@ def symlink?; end
 # support this feature.
 # 
 #    File.stat("testfile").socket?   #=> false
-def socket?; end
+def socket?(); end
 
 ##
 # Returns <code>true</code> if the file is a block device,
@@ -5842,7 +5842,7 @@ def socket?; end
 # 
 #    File.stat("testfile").blockdev?    #=> false
 #    File.stat("/dev/hda1").blockdev?   #=> true
-def blockdev?; end
+def blockdev?(); end
 
 ##
 # Returns <code>true</code> if the file is a character device,
@@ -5850,7 +5850,7 @@ def blockdev?; end
 # support this feature.
 # 
 #    File.stat("/dev/tty").chardev?   #=> true
-def chardev?; end
+def chardev?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-user-id
@@ -5858,7 +5858,7 @@ def chardev?; end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/bin/su").setuid?   #=> true
-def setuid?; end
+def setuid?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-group-id
@@ -5866,7 +5866,7 @@ def setuid?; end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/usr/sbin/lpc").setgid?   #=> true
-def setgid?; end
+def setgid?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has its sticky bit set,
@@ -5874,7 +5874,7 @@ def setgid?; end
 # support this feature.
 # 
 #    File.stat("testfile").sticky?   #=> false
-def sticky?; end
+def sticky?(); end
 
 end
 
@@ -5883,7 +5883,7 @@ end
 # <code>File::Stat</code>).
 # 
 #    File.stat("testfile").mtime   #=> Tue Apr 08 12:58:04 CDT 2003
-def self.stat; end
+def self.stat(p1); end
 
 ##
 # Same as <code>File::stat</code>, but does not follow the last symbolic
@@ -5893,7 +5893,7 @@ def self.stat; end
 #    File.stat("testfile").size              #=> 66
 #    File.lstat("link2test").size            #=> 8
 #    File.stat("link2test").size             #=> 66
-def self.lstat; end
+def self.lstat(p1); end
 
 ##
 # Identifies the type of the named file; the return string is one of
@@ -5905,19 +5905,19 @@ def self.lstat; end
 #    File.ftype("testfile")            #=> "file"
 #    File.ftype("/dev/tty")            #=> "characterSpecial"
 #    File.ftype("/tmp/.X11-unix/X0")   #=> "socket"
-def self.ftype; end
+def self.ftype(p1); end
 
 ##
 # Returns the last access time for the named file as a Time object).
 # 
 #    File.atime("testfile")   #=> Wed Apr 09 08:51:48 CDT 2003
-def self.atime; end
+def self.atime(p1); end
 
 ##
 # Returns the modification time for the named file as a Time object.
 # 
 #    File.mtime("testfile")   #=> Tue Apr 08 12:58:04 CDT 2003
-def self.mtime; end
+def self.mtime(p1); end
 
 ##
 # Returns the change time for the named file (the time at which
@@ -5927,13 +5927,13 @@ def self.mtime; end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.ctime("testfile")   #=> Wed Apr 09 08:53:13 CDT 2003
-def self.ctime; end
+def self.ctime(p1); end
 
 ##
 # Sets the access and modification times of each
 # named file to the first two arguments. Returns
 # the number of file names in the argument list.
-def self.utime; end
+def self.utime(p1, p2, *args); end
 
 ##
 # Changes permission bits on the named file(s) to the bit pattern
@@ -5943,7 +5943,7 @@ def self.utime; end
 # processed.
 # 
 #    File.chmod(0644, "testfile", "out")   #=> 2
-def self.chmod; end
+def self.chmod(p1, *args); end
 
 ##
 # Changes the owner and group of the named file(s) to the given
@@ -5954,20 +5954,20 @@ def self.chmod; end
 # Returns the number of files processed.
 # 
 #    File.chown(nil, 100, "testfile")
-def self.chown; end
+def self.chown(p1, p2, *args); end
 
 ##
 # Equivalent to <code>File::chmod</code>, but does not follow symbolic
 # links (so it will change the permissions associated with the link,
 # not the file referenced by the link). Often not available.
-def self.lchmod; end
+def self.lchmod(p1, *args); end
 
 ##
 # Equivalent to <code>File::chown</code>, but does not follow symbolic
 # links (so it will change the owner associated with the link, not the
 # file referenced by the link). Often not available. Returns number
 # of files in the argument list.
-def self.lchown; end
+def self.lchown(p1, p2, *args); end
 
 ##
 # Creates a new name for an existing file using a hard link. Will not
@@ -5976,7 +5976,7 @@ def self.lchown; end
 # 
 #    File.link("testfile", ".testfile")   #=> 0
 #    IO.readlines(".testfile")[0]         #=> "This is line one\n"
-def self.link; end
+def self.link(p1, p2); end
 
 ##
 # Creates a symbolic link called <i>new_name</i> for the existing file
@@ -5984,7 +5984,7 @@ def self.link; end
 # platforms that do not support symbolic links.
 # 
 #    File.symlink("testfile", "link2test")   #=> 0
-def self.symlink; end
+def self.symlink(p1, p2); end
 
 ##
 # Returns the name of the file referenced by the given link.
@@ -5992,26 +5992,26 @@ def self.symlink; end
 # 
 #    File.symlink("testfile", "link2test")   #=> 0
 #    File.readlink("link2test")              #=> "testfile"
-def self.readlink; end
+def self.readlink(p1); end
 
 ##
 # Deletes the named files, returning the number of names
 # passed as arguments. Raises an exception on any error.
 # See also <code>Dir::rmdir</code>.
-def self.unlink; end
+def self.unlink(*args); end
 
 ##
 # Deletes the named files, returning the number of names
 # passed as arguments. Raises an exception on any error.
 # See also <code>Dir::rmdir</code>.
-def self.delete; end
+def self.delete(*args); end
 
 ##
 # Renames the given file to the new name. Raises a
 # <code>SystemCallError</code> if the file cannot be renamed.
 # 
 #    File.rename("afile", "afile.bak")   #=> 0
-def self.rename; end
+def self.rename(p1, p2); end
 
 ##
 # Returns the current umask value for this process. If the optional
@@ -6022,7 +6022,7 @@ def self.rename; end
 # 
 #    File.umask(0006)   #=> 18
 #    File.umask         #=> 6
-def self.umask; end
+def self.umask(*args); end
 
 ##
 # Truncates the file <i>file_name</i> to be at most <i>integer</i>
@@ -6033,7 +6033,7 @@ def self.umask; end
 #    f.close                   #=> nil
 #    File.truncate("out", 5)   #=> 0
 #    File.size("out")          #=> 5
-def self.truncate; end
+def self.truncate(p1, p2); end
 
 ##
 # Converts a pathname to an absolute pathname. Relative paths are
@@ -6047,7 +6047,7 @@ def self.truncate; end
 # 
 #    File.expand_path("~oracle/bin")           #=> "/home/oracle/bin"
 #    File.expand_path("../../bin", "/tmp/x")   #=> "/bin"
-def self.expand_path; end
+def self.expand_path(p1, p2=0); end
 
 ##
 # Converts a pathname to an absolute pathname. Relative paths are
@@ -6057,7 +6057,7 @@ def self.expand_path; end
 # it is NOT expanded, it is treated as a normal directory name.
 # 
 #    File.absolute_path("~oracle/bin")       #=> "<relative_path>/~oracle/bin"
-def self.absolute_path; end
+def self.absolute_path(p1, p2=0); end
 
 ##
 # Returns the real (absolute) pathname of _pathname_ in the actual
@@ -6068,7 +6068,7 @@ def self.absolute_path; end
 # 
 # All components of the pathname must exist when this method is
 # called.
-def self.realpath; end
+def self.realpath(p1, p2=0); end
 
 ##
 # Returns the real (absolute) pathname of _pathname_ in the actual filesystem.
@@ -6078,7 +6078,7 @@ def self.realpath; end
 # for interpreting relative pathname instead of the current directory.
 # 
 # The last component of the real pathname can be nonexistent.
-def self.realdirpath; end
+def self.realdirpath(p1, p2=0); end
 
 ##
 # Returns the last component of the filename given in <i>file_name</i>,
@@ -6089,7 +6089,7 @@ def self.realdirpath; end
 # 
 #    File.basename("/home/gumby/work/ruby.rb")          #=> "ruby.rb"
 #    File.basename("/home/gumby/work/ruby.rb", ".rb")   #=> "ruby"
-def self.basename; end
+def self.basename(p1, p2=0); end
 
 ##
 # Returns all components of the filename given in <i>file_name</i>
@@ -6098,7 +6098,7 @@ def self.basename; end
 # local file system.
 # 
 #    File.dirname("/home/gumby/work/ruby.rb")   #=> "/home/gumby/work"
-def self.dirname; end
+def self.dirname(p1); end
 
 ##
 # Returns the extension (the portion of file name in <i>path</i>
@@ -6108,14 +6108,14 @@ def self.dirname; end
 #    File.extname("a/b/d/test.rb")   #=> ".rb"
 #    File.extname("test")            #=> ""
 #    File.extname(".profile")        #=> ""
-def self.extname; end
+def self.extname(p1); end
 
 ##
 # Returns the string representation of the path
 # 
 #    File.path("/dev/null")          #=> "/dev/null"
 #    File.path(Pathname.new("/tmp")) #=> "/tmp"
-def self.path; end
+def self.path(p1); end
 
 ##
 # Splits the given string into a directory and a file component and
@@ -6123,14 +6123,14 @@ def self.path; end
 # <code>File::dirname</code> and <code>File::basename</code>.
 # 
 #    File.split("/home/gumby/.profile")   #=> ["/home/gumby", ".profile"]
-def self.split; end
+def self.split(p1); end
 
 ##
 # Returns a new string formed by joining the strings using
 # <code>File::SEPARATOR</code>.
 # 
 #    File.join("usr", "mail", "gumby")   #=> "usr/mail/gumby"
-def self.join; end
+def self.join(*args); end
 
 ##
 # Same as <code>IO#stat</code>, but does not follow the last symbolic
@@ -6141,20 +6141,20 @@ def self.join; end
 #    f = File.new("link2test")
 #    f.lstat.size                            #=> 8
 #    f.stat.size                             #=> 66
-def lstat; end
+def lstat(); end
 
 ##
 # Returns the last access time (a <code>Time</code> object)
 #  for <i>file</i>, or epoch if <i>file</i> has not been accessed.
 # 
 #    File.new("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime; end
+def atime(); end
 
 ##
 # Returns the modification time for <i>file</i>.
 # 
 #    File.new("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime; end
+def mtime(); end
 
 ##
 # Returns the change time for <i>file</i> (that is, the time directory
@@ -6163,13 +6163,13 @@ def mtime; end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.new("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime; end
+def ctime(); end
 
 ##
 # Returns the size of <i>file</i> in bytes.
 # 
 #    File.new("testfile").size   #=> 66
-def size; end
+def size(); end
 
 ##
 # Changes permission bits on <i>file</i> to the bit pattern
@@ -6179,7 +6179,7 @@ def size; end
 # 
 #    f = File.new("out", "w");
 #    f.chmod(0644)   #=> 0
-def chmod; end
+def chmod(p1); end
 
 ##
 # Changes the owner and group of <i>file</i> to the given numeric
@@ -6190,7 +6190,7 @@ def chmod; end
 # symbolic links. See also <code>File#lchown</code>.
 # 
 #    File.new("testfile").chown(502, 1000)
-def chown; end
+def chown(p1, p2); end
 
 ##
 # Truncates <i>file</i> to at most <i>integer</i> bytes. The file
@@ -6201,7 +6201,7 @@ def chown; end
 #    f.truncate(5)              #=> 0
 #    f.close()                  #=> nil
 #    File.size("out")           #=> 5
-def truncate; end
+def truncate(p1); end
 
 ##
 # Locks or unlocks a file according to <i>locking_constant</i> (a
@@ -6241,7 +6241,7 @@ def truncate; end
 #      f.flock(File::LOCK_SH)
 #      p f.read
 #    }
-def flock; end
+def flock(p1); end
 
 ##
 # Returns the pathname used to create <i>file</i> as a string. Does
@@ -6249,7 +6249,7 @@ def flock; end
 # 
 #    File.new("testfile").path               #=> "testfile"
 #    File.new("/tmp/../tmp/xxx", "w").path   #=> "/tmp/../tmp/xxx"
-def path; end
+def path(); end
 
 ##
 # Returns the pathname used to create <i>file</i> as a string. Does
@@ -6257,7 +6257,7 @@ def path; end
 # 
 #    File.new("testfile").path               #=> "testfile"
 #    File.new("/tmp/../tmp/xxx", "w").path   #=> "/tmp/../tmp/xxx"
-def to_path; end
+def to_path(); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -6265,26 +6265,26 @@ def to_path; end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.directory?; end
+def self.directory?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
 # <code>false</code> otherwise.
-def self.exist?; end
+def self.exist?(p1); end
 
 ##
 # Return <code>true</code> if the named file exists.
-def self.exists?; end
+def self.exists?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the effective
 # user id of this process.
-def self.readable?; end
+def self.readable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the real
 # user id of this process.
-def self.readable_real?; end
+def self.readable_real?(p1); end
 
 ##
 # If <i>file_name</i> is readable by others, returns an integer
@@ -6295,17 +6295,17 @@ def self.readable_real?; end
 #    File.world_readable?("/etc/passwd")           #=> 420
 #    m = File.world_readable?("/etc/passwd")
 #    sprintf("%o", m)                              #=> "644"
-def self.world_readable?; end
+def self.world_readable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the effective
 # user id of this process.
-def self.writable?; end
+def self.writable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the real
 # user id of this process.
-def self.writable_real?; end
+def self.writable_real?(p1); end
 
 ##
 # If <i>file_name</i> is writable by others, returns an integer
@@ -6316,80 +6316,80 @@ def self.writable_real?; end
 #    File.world_writable?("/tmp")                  #=> 511
 #    m = File.world_writable?("/tmp")
 #    sprintf("%o", m)                              #=> "777"
-def self.world_writable?; end
+def self.world_writable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the effective
 # user id of this process.
-def self.executable?; end
+def self.executable?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the real
 # user id of this process.
-def self.executable_real?; end
+def self.executable_real?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and is a
 # regular file.
-def self.file?; end
+def self.file?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and has
 # a zero size.
-def self.zero?; end
+def self.zero?(p1); end
 
 ##
 # Returns +nil+ if +file_name+ doesn't exist or has zero size, the size of the
 # file otherwise.
-def self.size?; end
+def self.size?(p1); end
 
 ##
 # Returns the size of <code>file_name</code>.
-def self.size; end
+def self.size(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective used id of the calling process is the owner of
 # the file.
-def self.owned?; end
+def self.owned?(p1); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective group id of the calling process is the owner of
 # the file. Returns <code>false</code> on Windows.
-def self.grpowned?; end
+def self.grpowned?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a pipe.
-def self.pipe?; end
+def self.pipe?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a symbolic link.
-def self.symlink?; end
+def self.symlink?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a socket.
-def self.socket?; end
+def self.socket?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a block device.
-def self.blockdev?; end
+def self.blockdev?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a character device.
-def self.chardev?; end
+def self.chardev?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the setuid bit set.
-def self.setuid?; end
+def self.setuid?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the setgid bit set.
-def self.setgid?; end
+def self.setgid?(p1); end
 
 ##
 # Returns <code>true</code> if the named file has the sticky bit set.
-def self.sticky?; end
+def self.sticky?(p1); end
 
 ##
 # Returns <code>true</code> if the named files are identical.
@@ -6403,7 +6403,7 @@ def self.sticky?; end
 #     p File.identical?("a", "c")      #=> true
 #     open("d", "w") {}
 #     p File.identical?("a", "d")      #=> false
-def self.identical?; end
+def self.identical?(p1, p2); end
 
 ##
 # Returns true if <i>path</i> matches against <i>pattern</i> The
@@ -6481,7 +6481,7 @@ def self.identical?; end
 #    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
-def self.fnmatch; end
+def self.fnmatch(p1, p2, p3=0); end
 
 ##
 # Returns true if <i>path</i> matches against <i>pattern</i> The
@@ -6559,7 +6559,7 @@ def self.fnmatch; end
 #    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
-def self.fnmatch?; end
+def self.fnmatch?(p1, p2, p3=0); end
 
 ##
 # With no associated block, <code>File.open</code> is a synonym for
@@ -6569,7 +6569,7 @@ def self.fnmatch?; end
 # <code>File.open</code> returns the value of the block.
 # 
 # See IO.new for a list of values for the +opt+ parameter.
-def self.open; end
+def self.open(*args); end
 
 ##
 # Opens the file named by +filename+ according to +mode+ (default is "r")
@@ -6592,7 +6592,7 @@ def self.open; end
 #   f = File.new("testfile", "r")
 #   f = File.new("newfile",  "w+")
 #   f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
-def self.new; end
+def self.new(*args); end
 
 end
 
@@ -6606,12 +6606,12 @@ end
 # <code>File#lstat</code>, and <code>File::lstat</code>. Many of these
 # methods return platform-specific values, and not all values are
 # meaningful on all systems. See also <code>Kernel#test</code>.
-class Stat < RDoc::NormalClass Object < BasicObject
+class Stat < Object
 include Comparable
 ##
 # Create a File::Stat object for the given file name (raising an
 # exception if the file doesn't exist).
-def self.new; end
+def self.new(p1); end
 
 ##
 # Compares <code>File::Stat</code> objects by comparing their
@@ -6621,14 +6621,14 @@ def self.new; end
 #    sleep 1
 #    f2 = File.new("f2", "w")
 #    f1.stat <=> f2.stat   #=> -1
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns an integer representing the device on which <i>stat</i>
 # resides.
 # 
 #    File.stat("testfile").dev   #=> 774
-def dev; end
+def dev(); end
 
 ##
 # Returns the major part of <code>File_Stat#dev</code> or
@@ -6636,7 +6636,7 @@ def dev; end
 # 
 #    File.stat("/dev/fd1").dev_major   #=> 2
 #    File.stat("/dev/tty").dev_major   #=> 5
-def dev_major; end
+def dev_major(); end
 
 ##
 # Returns the minor part of <code>File_Stat#dev</code> or
@@ -6644,13 +6644,13 @@ def dev_major; end
 # 
 #    File.stat("/dev/fd1").dev_minor   #=> 1
 #    File.stat("/dev/tty").dev_minor   #=> 0
-def dev_minor; end
+def dev_minor(); end
 
 ##
 # Returns the inode number for <i>stat</i>.
 # 
 #    File.stat("testfile").ino   #=> 1083669
-def ino; end
+def ino(); end
 
 ##
 # Returns an integer representing the permission bits of
@@ -6660,7 +6660,7 @@ def ino; end
 #    File.chmod(0644, "testfile")   #=> 1
 #    s = File.stat("testfile")
 #    sprintf("%o", s.mode)          #=> "100644"
-def mode; end
+def mode(); end
 
 ##
 # Returns the number of hard links to <i>stat</i>.
@@ -6668,19 +6668,19 @@ def mode; end
 #    File.stat("testfile").nlink             #=> 1
 #    File.link("testfile", "testfile.bak")   #=> 0
 #    File.stat("testfile").nlink             #=> 2
-def nlink; end
+def nlink(); end
 
 ##
 # Returns the numeric user id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").uid   #=> 501
-def uid; end
+def uid(); end
 
 ##
 # Returns the numeric group id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").gid   #=> 500
-def gid; end
+def gid(); end
 
 ##
 # Returns an integer representing the device type on which
@@ -6689,7 +6689,7 @@ def gid; end
 # 
 #    File.stat("/dev/fd1").rdev   #=> 513
 #    File.stat("/dev/tty").rdev   #=> 1280
-def rdev; end
+def rdev(); end
 
 ##
 # Returns the major part of <code>File_Stat#rdev</code> or
@@ -6697,7 +6697,7 @@ def rdev; end
 # 
 #    File.stat("/dev/fd1").rdev_major   #=> 2
 #    File.stat("/dev/tty").rdev_major   #=> 5
-def rdev_major; end
+def rdev_major(); end
 
 ##
 # Returns the minor part of <code>File_Stat#rdev</code> or
@@ -6705,20 +6705,20 @@ def rdev_major; end
 # 
 #    File.stat("/dev/fd1").rdev_minor   #=> 1
 #    File.stat("/dev/tty").rdev_minor   #=> 0
-def rdev_minor; end
+def rdev_minor(); end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size; end
+def size(); end
 
 ##
 # Returns the native file system's block size. Will return <code>nil</code>
 # on platforms that don't support this information.
 # 
 #    File.stat("testfile").blksize   #=> 4096
-def blksize; end
+def blksize(); end
 
 ##
 # Returns the number of native file system blocks allocated for this
@@ -6726,20 +6726,20 @@ def blksize; end
 # support this feature.
 # 
 #    File.stat("testfile").blocks   #=> 2
-def blocks; end
+def blocks(); end
 
 ##
 # Returns the last access time for this file as an object of class
 # <code>Time</code>.
 # 
 #    File.stat("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime; end
+def atime(); end
 
 ##
 # Returns the modification time of <i>stat</i>.
 # 
 #    File.stat("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime; end
+def mtime(); end
 
 ##
 # Returns the change time for <i>stat</i> (that is, the time
@@ -6749,7 +6749,7 @@ def mtime; end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.stat("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime; end
+def ctime(); end
 
 ##
 # Produce a nicely formatted description of <i>stat</i>.
@@ -6760,7 +6760,7 @@ def ctime; end
 #      #    blocks=8, atime=Wed Dec 10 10:16:12 CST 2003,
 #      #    mtime=Fri Sep 12 15:41:41 CDT 2003,
 #      #    ctime=Mon Oct 27 11:20:27 CST 2003>"
-def inspect; end
+def inspect(); end
 
 ##
 # Identifies the type of <i>stat</i>. The return string is one of:
@@ -6770,7 +6770,7 @@ def inspect; end
 # ``<code>socket</code>'', or ``<code>unknown</code>''.
 # 
 #    File.stat("/dev/tty").ftype   #=> "characterSpecial"
-def ftype; end
+def ftype(); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -6778,21 +6778,21 @@ def ftype; end
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?; end
+def directory?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").readable?   #=> true
-def readable?; end
+def readable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").readable_real?   #=> true
-def readable_real?; end
+def readable_real?(); end
 
 ##
 # If <i>stat</i> is readable by others, returns an integer
@@ -6802,21 +6802,21 @@ def readable_real?; end
 # 
 #    m = File.stat("/etc/passwd").world_readable?  #=> 420
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?; end
+def world_readable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").writable?   #=> true
-def writable?; end
+def writable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").writable_real?   #=> true
-def writable_real?; end
+def writable_real?(); end
 
 ##
 # If <i>stat</i> is writable by others, returns an integer
@@ -6826,7 +6826,7 @@ def writable_real?; end
 # 
 #    m = File.stat("/tmp").world_writable?         #=> 511
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?; end
+def world_writable?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is executable or if the
@@ -6835,32 +6835,32 @@ def world_writable?; end
 # the process.
 # 
 #    File.stat("testfile").executable?   #=> false
-def executable?; end
+def executable?(); end
 
 ##
 # Same as <code>executable?</code>, but tests using the real owner of
 # the process.
-def executable_real?; end
+def executable_real?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a regular file (not
 # a device file, pipe, socket, etc.).
 # 
 #    File.stat("testfile").file?   #=> true
-def file?; end
+def file?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a zero-length file;
 # <code>false</code> otherwise.
 # 
 #    File.stat("testfile").zero?   #=> false
-def zero?; end
+def zero?(); end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size?; end
+def size?(); end
 
 ##
 # Returns <code>true</code> if the effective user id of the process is
@@ -6868,7 +6868,7 @@ def size?; end
 # 
 #    File.stat("testfile").owned?      #=> true
 #    File.stat("/etc/passwd").owned?   #=> false
-def owned?; end
+def owned?(); end
 
 ##
 # Returns true if the effective group id of the process is the same as
@@ -6876,12 +6876,12 @@ def owned?; end
 # 
 #    File.stat("testfile").grpowned?      #=> true
 #    File.stat("/etc/passwd").grpowned?   #=> false
-def grpowned?; end
+def grpowned?(); end
 
 ##
 # Returns <code>true</code> if the operating system supports pipes and
 # <i>stat</i> is a pipe; <code>false</code> otherwise.
-def pipe?; end
+def pipe?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a symbolic link,
@@ -6894,7 +6894,7 @@ def pipe?; end
 #    File.symlink("testfile", "alink")   #=> 0
 #    File.stat("alink").symlink?         #=> false
 #    File.lstat("alink").symlink?        #=> true
-def symlink?; end
+def symlink?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a socket,
@@ -6902,7 +6902,7 @@ def symlink?; end
 # support this feature.
 # 
 #    File.stat("testfile").socket?   #=> false
-def socket?; end
+def socket?(); end
 
 ##
 # Returns <code>true</code> if the file is a block device,
@@ -6911,7 +6911,7 @@ def socket?; end
 # 
 #    File.stat("testfile").blockdev?    #=> false
 #    File.stat("/dev/hda1").blockdev?   #=> true
-def blockdev?; end
+def blockdev?(); end
 
 ##
 # Returns <code>true</code> if the file is a character device,
@@ -6919,7 +6919,7 @@ def blockdev?; end
 # support this feature.
 # 
 #    File.stat("/dev/tty").chardev?   #=> true
-def chardev?; end
+def chardev?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-user-id
@@ -6927,7 +6927,7 @@ def chardev?; end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/bin/su").setuid?   #=> true
-def setuid?; end
+def setuid?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-group-id
@@ -6935,7 +6935,7 @@ def setuid?; end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/usr/sbin/lpc").setgid?   #=> true
-def setgid?; end
+def setgid?(); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has its sticky bit set,
@@ -6943,7 +6943,7 @@ def setgid?; end
 # support this feature.
 # 
 #    File.stat("testfile").sticky?   #=> false
-def sticky?; end
+def sticky?(); end
 
 end
 
@@ -7026,7 +7026,7 @@ end
 # command line (or STDIN if no files are mentioned). ARGF provides
 # the methods <code>#path</code> and <code>#filename</code> to access
 # the name of the file currently being read.
-class IO < RDoc::NormalClass Object < BasicObject
+class IO < Object
 include Enumerable
 include Constants
 ##
@@ -7038,7 +7038,7 @@ include Constants
 #    "%o" % s.mode   #=> "100644"
 #    s.blksize       #=> 4096
 #    s.atime         #=> Wed Apr 09 08:53:54 CDT 2003
-def stat; end
+def stat(); end
 
 ##
 # With no associated block, <code>IO.open</code> is a synonym for IO.new. If
@@ -7047,18 +7047,18 @@ def stat; end
 # terminates. In this instance, IO.open returns the value of the block.
 # 
 # See IO.new for a description of values for the +opt+ parameter.
-def self.open; end
+def self.open(*args); end
 
 ##
 # Opens the given path, returning the underlying file descriptor as a
 # <code>Fixnum</code>.
 # 
 #    IO.sysopen("testfile")   #=> 3
-def self.sysopen; end
+def self.sysopen(p1, p2=0, p3=0); end
 
 ##
 # Synonym for <code>IO.new</code>.
-def self.for_fd; end
+def self.for_fd(*args); end
 
 ##
 # Runs the specified command as a subprocess; the subprocess's
@@ -7137,7 +7137,7 @@ def self.for_fd; end
 #    21352 is here, f is nil
 #    #<Process::Status: pid 21352 exit 0>
 #    <foo>bar;zot;
-def self.popen; end
+def self.popen(p1, p2=0, p3=0{}); end
 
 ##
 # Executes the block for every line in the named I/O port, where lines
@@ -7156,7 +7156,7 @@ def self.popen; end
 # 
 # If the last argument is a hash, it's the keyword argument to open.
 # See <code>IO.read</code> for detail.
-def self.foreach; end
+def self.foreach(p1, p2=0, p3=0, p4=0, p5=0{}); end
 
 ##
 # Reads the entire file specified by <i>name</i> as individual
@@ -7168,7 +7168,7 @@ def self.foreach; end
 # 
 # If the last argument is a hash, it's the keyword argument to open.
 # See <code>IO.read</code> for detail.
-def self.readlines; end
+def self.readlines(p1, p2=0, p3=0, p4=0, p5=0{}); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, then returns
@@ -7196,7 +7196,7 @@ def self.readlines; end
 #    IO.read("testfile")           #=> "This is line one\nThis is line two\nThis is line three\nAnd so on...\n"
 #    IO.read("testfile", 20)       #=> "This is line one\nThi"
 #    IO.read("testfile", 20, 10)   #=> "ne one\nThis is line "
-def self.read; end
+def self.read(p1, p2=0, p3=0, p4=0, p5=0{}); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, then returns
@@ -7207,7 +7207,7 @@ def self.read; end
 #    IO.binread("testfile")           #=> "This is line one\nThis is line two\nThis is line three\nAnd so on...\n"
 #    IO.binread("testfile", 20)       #=> "This is line one\nThi"
 #    IO.binread("testfile", 20, 10)   #=> "ne one\nThis is line "
-def self.binread; end
+def self.binread(p1, p2=0, p3=0); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, writes
@@ -7242,7 +7242,7 @@ def self.binread; end
 #    # File could contain:  "This is line one\nThi0123456789two\nThis is line three\nAnd so on...\n"
 #    IO.write("testfile", "0123456789")      #=> 10
 #    # File would now read: "0123456789"
-def self.write; end
+def self.write(*args); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, writes
@@ -7256,7 +7256,7 @@ def self.write; end
 #    # File could contain:  "This is line one\nThi0123456789two\nThis is line three\nAnd so on...\n"
 #    IO.binwrite("testfile", "0123456789")      #=> 10
 #    # File would now read: "0123456789"
-def self.binwrite; end
+def self.binwrite(*args); end
 
 ##
 # Calls select(2) system call.
@@ -7301,7 +7301,7 @@ def self.binwrite; end
 #     ping pong
 #     (snipped)
 #     ping
-def self.select; end
+def self.select(p1, p2=0, p3=0, p4=0); end
 
 ##
 # Creates a pair of pipe endpoints (connected to each other) and
@@ -7353,7 +7353,7 @@ def self.select; end
 # 
 #    Sending message to parent
 #    Parent got: <Hi Dad>
-def self.pipe; end
+def self.pipe(p1=0, p2=0, p3=0{}); end
 
 ##
 # Try to convert <i>obj</i> into an IO, using to_io method.
@@ -7367,7 +7367,7 @@ def self.pipe; end
 #    f = open("/tmp/zz.gz")       #=> #<File:/tmp/zz.gz>
 #    z = Zlib::GzipReader.open(f) #=> #<Zlib::GzipReader:0x81d8744>
 #    IO.try_convert(z)            #=> #<File:/tmp/zz.gz>
-def self.try_convert; end
+def self.try_convert(p1); end
 
 ##
 # IO.copy_stream copies <i>src</i> to <i>dst</i>.
@@ -7390,7 +7390,7 @@ def self.try_convert; end
 # When <i>src_offset</i> is specified and
 # <i>src</i> is an IO,
 # IO.copy_stream doesn't move the current file offset.
-def self.copy_stream; end
+def self.copy_stream(p1, p2, p3=0, p4=0); end
 
 ##
 # Returns a new IO object (a stream) for the given IO object or integer file
@@ -7475,7 +7475,7 @@ def self.copy_stream; end
 # 
 # Both of above print "Hello, World!" in UTF-16LE to standard error output
 # with converting EOL generated by <code>puts</code> to CR.
-def self.new; end
+def self.new(p1, p2=0, p3=0{}); end
 
 ##
 # Reassociates <em>ios</em> with the I/O stream given in
@@ -7487,7 +7487,7 @@ def self.new; end
 #    f2.readlines[0]   #=> "This is line one\n"
 #    f2.reopen(f1)     #=> #<File:testfile>
 #    f2.readlines[0]   #=> "This is line one\n"
-def reopen; end
+def reopen(p1, p2=0); end
 
 ##
 # Writes the given object(s) to <em>ios</em>. The stream must be
@@ -7505,7 +7505,7 @@ def reopen; end
 # <em>produces:</em>
 # 
 #    This is 100 percent.
-def print; end
+def print(*args); end
 
 ##
 # If <i>obj</i> is <code>Numeric</code>, write the character whose code is
@@ -7520,7 +7520,7 @@ def print; end
 # <em>produces:</em>
 # 
 #    AA
-def putc; end
+def putc(p1); end
 
 ##
 # Writes the given objects to <em>ios</em> as with
@@ -7537,13 +7537,13 @@ def putc; end
 #    is
 #    a
 #    test
-def puts; end
+def puts(*args); end
 
 ##
 # Formats and writes to <em>ios</em>, converting parameters under
 # control of the format string. See <code>Kernel#sprintf</code>
 # for details.
-def printf; end
+def printf(*args); end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7561,7 +7561,7 @@ def printf; end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def each; end
+def each(*args); end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7579,7 +7579,7 @@ def each; end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def each_line; end
+def each_line(*args); end
 
 ##
 # Calls the given block once for each byte (0..255) in <em>ios</em>,
@@ -7592,7 +7592,7 @@ def each_line; end
 #    checksum = 0
 #    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
 #    checksum                           #=> 12
-def each_byte; end
+def each_byte(); end
 
 ##
 # Calls the given block once for each character in <em>ios</em>,
@@ -7603,7 +7603,7 @@ def each_byte; end
 # 
 #    f = File.new("testfile")
 #    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
-def each_char; end
+def each_char(); end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
@@ -7611,7 +7611,7 @@ def each_char; end
 # reading or an <code>IOError</code> will be raised.
 # 
 # If no block is given, an enumerator is returned instead.
-def each_codepoint; end
+def each_codepoint(); end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7629,7 +7629,7 @@ def each_codepoint; end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def lines; end
+def lines(*args); end
 
 ##
 # Calls the given block once for each byte (0..255) in <em>ios</em>,
@@ -7642,7 +7642,7 @@ def lines; end
 #    checksum = 0
 #    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
 #    checksum                           #=> 12
-def bytes; end
+def bytes(); end
 
 ##
 # Calls the given block once for each character in <em>ios</em>,
@@ -7653,7 +7653,7 @@ def bytes; end
 # 
 #    f = File.new("testfile")
 #    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
-def chars; end
+def chars(); end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
@@ -7661,7 +7661,7 @@ def chars; end
 # reading or an <code>IOError</code> will be raised.
 # 
 # If no block is given, an enumerator is returned instead.
-def codepoints; end
+def codepoints(); end
 
 ##
 # Writes the given string to <em>ios</em> using a low-level write.
@@ -7671,7 +7671,7 @@ def codepoints; end
 # 
 #    f = File.new("out", "w")
 #    f.syswrite("ABCDEF")   #=> 6
-def syswrite; end
+def syswrite(p1); end
 
 ##
 # Reads <i>maxlen</i> bytes from <em>ios</em> using a low-level
@@ -7684,7 +7684,7 @@ def syswrite; end
 # 
 #    f = File.new("testfile")
 #    f.sysread(16)   #=> "This is line one"
-def sysread; end
+def sysread(p1, p2=0); end
 
 ##
 # Returns an integer representing the numeric file descriptor for
@@ -7692,11 +7692,11 @@ def sysread; end
 # 
 #    $stdin.fileno    #=> 0
 #    $stdout.fileno   #=> 1
-def fileno; end
+def fileno(); end
 
 ##
 # Returns <em>ios</em>.
-def to_io; end
+def to_io(); end
 
 ##
 # Immediately writes all buffered data in <em>ios</em> to disk.
@@ -7707,7 +7707,7 @@ def to_io; end
 # 
 # <code>NotImplementedError</code> is raised
 # if the underlying operating system does not support <em>fsync(2)</em>.
-def fsync; end
+def fsync(); end
 
 ##
 # Immediately writes all buffered data in <em>ios</em> to disk.
@@ -7715,7 +7715,7 @@ def fsync; end
 # If the underlying operating system does not support <em>fdatasync(2)</em>,
 # <code>IO#fsync</code> is called instead (which might raise a
 # <code>NotImplementedError</code>).
-def fdatasync; end
+def fdatasync(); end
 
 ##
 # Returns the current ``sync mode'' of <em>ios</em>. When sync mode is
@@ -7725,7 +7725,7 @@ def fdatasync; end
 # 
 #    f = File.new("testfile")
 #    f.sync   #=> false
-def sync; end
+def sync(); end
 
 ##
 # Sets the ``sync mode'' to <code>true</code> or <code>false</code>.
@@ -7737,7 +7737,7 @@ def sync; end
 #    f.sync = true
 # 
 # <em>(produces no output)</em>
-def sync=; end
+def sync=(p1); end
 
 ##
 # Returns the current line number in <em>ios</em>.  The stream must be
@@ -7756,7 +7756,7 @@ def sync=; end
 #    f.lineno   #=> 1
 #    f.gets     #=> "This is line two\n"
 #    f.lineno   #=> 2
-def lineno; end
+def lineno(); end
 
 ##
 # Manually sets the current line number to the given value.
@@ -7770,7 +7770,7 @@ def lineno; end
 #    $.                         #=> 1         # lineno of last read
 #    f.gets                     #=> "This is line two\n"
 #    $.                         #=> 1001      # lineno of last read
-def lineno=; end
+def lineno=(p1); end
 
 ##
 # Reads all of the lines in <em>ios</em>, and returns them in
@@ -7783,7 +7783,7 @@ def lineno=; end
 # 
 #    f = File.new("testfile")
 #    f.readlines[0]   #=> "This is line one\n"
-def readlines; end
+def readlines(*args); end
 
 ##
 # Reads at most <i>maxlen</i> bytes from <em>ios</em> using
@@ -7828,7 +7828,7 @@ def readlines; end
 # 
 # Note that this method is identical to readpartial
 # except the non-blocking flag is set.
-def read_nonblock; end
+def read_nonblock(*args); end
 
 ##
 # Writes the given string to <em>ios</em> using
@@ -7877,7 +7877,7 @@ def read_nonblock; end
 # On some platforms such as Windows, write_nonblock is not supported
 # according to the kind of the IO object.
 # In such cases, write_nonblock raises <code>Errno::EBADF</code>.
-def write_nonblock; end
+def write_nonblock(p1); end
 
 ##
 # Reads at most <i>maxlen</i> bytes from the I/O stream.
@@ -7929,7 +7929,7 @@ def write_nonblock; end
 # 
 # The later means that readpartial is nonblocking-flag insensitive.
 # It blocks on the situation IO#sysread causes Errno::EWOULDBLOCK as if the fd is blocking mode.
-def readpartial; end
+def readpartial(*args); end
 
 ##
 # Reads <i>length</i> bytes from the I/O stream.
@@ -7987,7 +7987,7 @@ def readpartial; end
 # Note that this method behaves like fread() function in C.
 # If you need the behavior like read(2) system call,
 # consider readpartial, read_nonblock and sysread.
-def read; end
+def read(p1=0, p2=0); end
 
 ##
 # Writes the given string to <em>ios</em>. The stream must be opened
@@ -8002,7 +8002,7 @@ def read; end
 # 
 #    This is a test
 #    That was 15 bytes of data
-def write; end
+def write(p1); end
 
 ##
 # Reads the next ``line'' from the I/O stream; lines are separated by
@@ -8018,12 +8018,12 @@ def write; end
 # 
 #    File.new("testfile").gets   #=> "This is line one\n"
 #    $_                          #=> "This is line one\n"
-def gets; end
+def gets(*args); end
 
 ##
 # Reads a line as with <code>IO#gets</code>, but raises an
 # <code>EOFError</code> on end of file.
-def readline; end
+def readline(*args); end
 
 ##
 # Reads a one-character string from <em>ios</em>. Returns
@@ -8032,7 +8032,7 @@ def readline; end
 #    f = File.new("testfile")
 #    f.getc   #=> "h"
 #    f.getc   #=> "e"
-def getc; end
+def getc(); end
 
 ##
 # Gets the next 8-bit byte (0..255) from <em>ios</em>. Returns
@@ -8041,7 +8041,7 @@ def getc; end
 #    f = File.new("testfile")
 #    f.getbyte   #=> 84
 #    f.getbyte   #=> 104
-def getbyte; end
+def getbyte(); end
 
 ##
 # Reads a one-character string from <em>ios</em>. Raises an
@@ -8050,12 +8050,12 @@ def getbyte; end
 #    f = File.new("testfile")
 #    f.readchar   #=> "h"
 #    f.readchar   #=> "e"
-def readchar; end
+def readchar(); end
 
 ##
 # Reads a byte as with <code>IO#getbyte</code>, but raises an
 # <code>EOFError</code> on end of file.
-def readbyte; end
+def readbyte(); end
 
 ##
 # Pushes back bytes (passed as a parameter) onto <em>ios</em>,
@@ -8068,7 +8068,7 @@ def readbyte; end
 #    b = f.getbyte              #=> 0x38
 #    f.ungetbyte(b)             #=> nil
 #    f.getbyte                  #=> 0x38
-def ungetbyte; end
+def ungetbyte(p1); end
 
 ##
 # Pushes back one character (passed as a parameter) onto <em>ios</em>,
@@ -8081,7 +8081,7 @@ def ungetbyte; end
 #    c = f.getc                 #=> "8"
 #    f.ungetc(c)                #=> nil
 #    f.getc                     #=> "8"
-def ungetc; end
+def ungetc(p1); end
 
 ##
 # String Output---Writes <i>obj</i> to <em>ios</em>.
@@ -8093,7 +8093,7 @@ def ungetc; end
 # <em>produces:</em>
 # 
 #    Hello world!
-def <<; end
+def <<(p1); end
 
 ##
 # Flushes any buffered data within <em>ios</em> to the underlying
@@ -8106,7 +8106,7 @@ def <<; end
 # <em>produces:</em>
 # 
 #    no newline
-def flush; end
+def flush(); end
 
 ##
 # Returns the current offset (in bytes) of <em>ios</em>.
@@ -8115,7 +8115,7 @@ def flush; end
 #    f.pos    #=> 0
 #    f.gets   #=> "This is line one\n"
 #    f.pos    #=> 17
-def tell; end
+def tell(); end
 
 ##
 # Seeks to a given offset <i>anInteger</i> in the stream according to
@@ -8133,7 +8133,7 @@ def tell; end
 #    f = File.new("testfile")
 #    f.seek(-13, IO::SEEK_END)   #=> 0
 #    f.readline                  #=> "And so on...\n"
-def seek; end
+def seek(p1, p2=0); end
 
 ##
 # Positions <em>ios</em> to the beginning of input, resetting
@@ -8146,7 +8146,7 @@ def seek; end
 #    f.readline   #=> "This is line one\n"
 # 
 # Note that it cannot be used with streams such as pipes, ttys, and sockets.
-def rewind; end
+def rewind(); end
 
 ##
 # Returns the current offset (in bytes) of <em>ios</em>.
@@ -8155,7 +8155,7 @@ def rewind; end
 #    f.pos    #=> 0
 #    f.gets   #=> "This is line one\n"
 #    f.pos    #=> 17
-def pos; end
+def pos(); end
 
 ##
 # Seeks to the given position (in bytes) in <em>ios</em>.
@@ -8163,7 +8163,7 @@ def pos; end
 #    f = File.new("testfile")
 #    f.pos = 17
 #    f.gets   #=> "This is line two\n"
-def pos=; end
+def pos=(p1); end
 
 ##
 # Returns true if <em>ios</em> is at end of file that means
@@ -8193,7 +8193,7 @@ def pos=; end
 # So <code>IO#sysread</code> may not behave as you intend with
 # <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
 # first (which is not available for some streams).
-def eof; end
+def eof(); end
 
 ##
 # Returns true if <em>ios</em> is at end of file that means
@@ -8223,7 +8223,7 @@ def eof; end
 # So <code>IO#sysread</code> may not behave as you intend with
 # <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
 # first (which is not available for some streams).
-def eof?; end
+def eof?(); end
 
 ##
 # Returns <code>true</code> if <em>ios</em> will be closed on exec.
@@ -8234,7 +8234,7 @@ def eof?; end
 #    f.close_on_exec?                 #=> true
 #    f.close_on_exec = false
 #    f.close_on_exec?                 #=> false
-def close_on_exec?; end
+def close_on_exec?(); end
 
 ##
 # Sets a close-on-exec flag.
@@ -8243,7 +8243,7 @@ def close_on_exec?; end
 #    f.close_on_exec = true
 #    system("cat", "/proc/self/fd/#{f.fileno}") # cat: /proc/self/fd/3: No such file or directory
 #    f.closed?                #=> false
-def close_on_exec=; end
+def close_on_exec=(p1); end
 
 ##
 # Closes <em>ios</em> and flushes any pending writes to the operating
@@ -8254,7 +8254,7 @@ def close_on_exec=; end
 # 
 # If <em>ios</em> is opened by <code>IO.popen</code>,
 # <code>close</code> sets <code>$?</code>.
-def close; end
+def close(); end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is completely closed (for
@@ -8269,7 +8269,7 @@ def close; end
 #    f.closed?       #=> false
 #    f.close_read    #=> nil
 #    f.closed?       #=> true
-def closed?; end
+def closed?(); end
 
 ##
 # Closes the read end of a duplex I/O stream (i.e., one that contains
@@ -8284,7 +8284,7 @@ def closed?; end
 # 
 #    prog.rb:3:in `readlines': not opened for reading (IOError)
 #     from prog.rb:3
-def close_read; end
+def close_read(); end
 
 ##
 # Closes the write end of a duplex I/O stream (i.e., one that contains
@@ -8300,7 +8300,7 @@ def close_read; end
 #    prog.rb:3:in `write': not opened for writing (IOError)
 #     from prog.rb:3:in `print'
 #     from prog.rb:3
-def close_write; end
+def close_write(); end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is associated with a
@@ -8308,7 +8308,7 @@ def close_write; end
 # 
 #    File.new("testfile").isatty   #=> false
 #    File.new("/dev/tty").isatty   #=> true
-def isatty; end
+def isatty(); end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is associated with a
@@ -8316,7 +8316,7 @@ def isatty; end
 # 
 #    File.new("testfile").isatty   #=> false
 #    File.new("/dev/tty").isatty   #=> true
-def tty?; end
+def tty?(); end
 
 ##
 # Puts <em>ios</em> into binary mode.
@@ -8325,11 +8325,11 @@ def tty?; end
 # - newline conversion disabled
 # - encoding conversion disabled
 # - content is treated as ASCII-8BIT
-def binmode; end
+def binmode(); end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is binmode.
-def binmode?; end
+def binmode?(); end
 
 ##
 # Seeks to a given <i>offset</i> in the stream according to the value
@@ -8339,7 +8339,7 @@ def binmode?; end
 #    f = File.new("testfile")
 #    f.sysseek(-13, IO::SEEK_END)   #=> 53
 #    f.sysread(10)                  #=> "And so on."
-def sysseek; end
+def sysseek(p1, p2=0); end
 
 ##
 #  Announce an intention to access data from the current file in a
@@ -8378,7 +8378,7 @@ def sysseek; end
 #  * <code>RangeError</code> - One of the arguments given was too big/small.
 # 
 # This list is not exhaustive; other Errno:: exceptions are also possible.
-def advise; end
+def advise(p1, p2=0, p3=0); end
 
 ##
 # Provides a mechanism for issuing low-level commands to control or
@@ -8387,7 +8387,7 @@ def advise; end
 # string, it is interpreted as a binary sequence of bytes. On Unix
 # platforms, see <code>ioctl(2)</code> for details. Not implemented on
 # all platforms.
-def ioctl; end
+def ioctl(p1, p2=0); end
 
 ##
 # Provides a mechanism for issuing low-level commands to control or
@@ -8397,7 +8397,7 @@ def ioctl; end
 # of bytes (<code>Array#pack</code> might be a useful way to build this
 # string). On Unix platforms, see <code>fcntl(2)</code> for details.
 # Not implemented on all platforms.
-def fcntl; end
+def fcntl(p1, p2=0); end
 
 ##
 # Returns the process ID of a child process associated with
@@ -8414,21 +8414,21 @@ def fcntl; end
 # 
 #    In child, pid is 26209
 #    In parent, child pid is 26209
-def pid; end
+def pid(); end
 
 ##
 # Return a string describing this IO object.
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the Encoding object that represents the encoding of the file.
 # If io is write mode and no encoding is specified, returns <code>nil</code>.
-def external_encoding; end
+def external_encoding(); end
 
 ##
 # Returns the Encoding of the internal string if conversion is
 # specified.  Otherwise returns nil.
-def internal_encoding; end
+def internal_encoding(); end
 
 ##
 # If single argument is specified, read string from io is tagged
@@ -8440,12 +8440,12 @@ def internal_encoding; end
 # second one is the internal encoding.
 # If the external encoding and the internal encoding is specified,
 # optional hash argument specify the conversion option.
-def set_encoding; end
+def set_encoding(p1, p2=0, p3=0{}); end
 
 ##
 # Returns +true+ if the underlying file descriptor of _ios_ will be
 # closed automatically at its finalization, otherwise +false+.
-def autoclose?; end
+def autoclose?(); end
 
 ##
 # Sets auto-close flag.
@@ -8459,9 +8459,9 @@ def autoclose?; end
 #    IO.for_fd(f.fileno).autoclose = true
 #    # ...
 #    f.gets # won't cause IOError
-def autoclose=; end
+def autoclose=(p1); end
 
-def to_i; end
+def to_i(); end
 
 end
 
@@ -8480,7 +8480,7 @@ end
 #    times3.call(12)               #=> 36
 #    times5.call(5)                #=> 25
 #    times3.call(times5.call(4))   #=> 60
-class Proc < RDoc::NormalClass Object < BasicObject
+class Proc < Object
 ##
 # Creates a new <code>Proc</code> object, bound to the current
 # context. <code>Proc::new</code> may be called without a block only
@@ -8492,7 +8492,7 @@ class Proc < RDoc::NormalClass Object < BasicObject
 #    end
 #    proc = proc_from { "hello" }
 #    proc.call   #=> "hello"
-def self.new; end
+def self.new(*args); end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8521,7 +8521,7 @@ def self.new; end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def call; end
+def call(*args); end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8550,13 +8550,13 @@ def call; end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def []; end
+def [](*args); end
 
 ##
 # Invokes the block with +obj+ as the proc's parameter like Proc#call.  It
 # is to allow a proc object to be a target of +when+ clause in a case
 # statement.
-def ===; end
+def ===(*args); end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8585,13 +8585,13 @@ def ===; end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def yield; end
+def yield(*args); end
 
 ##
 # Part of the protocol for converting objects to <code>Proc</code>
 # objects. Instances of class <code>Proc</code> simply return
 # themselves.
-def to_proc; end
+def to_proc(); end
 
 ##
 # Returns the number of arguments that would not be ignored. If the block
@@ -8609,26 +8609,26 @@ def to_proc; end
 #    Proc.new {|*a|}.arity      #=> -1
 #    Proc.new {|a,*b|}.arity    #=> -2
 #    Proc.new {|a,*b, c|}.arity    #=> -3
-def arity; end
+def arity(); end
 
 ##
 # Returns <code>true</code> if <i>prc</i> is the same object as
 # <i>other_proc</i>, or if they are both procs with the same body.
-def ==; end
+def ==(p1); end
 
 ##
 # Returns <code>true</code> if <i>prc</i> is the same object as
 # <i>other_proc</i>, or if they are both procs with the same body.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns a hash value corresponding to proc body.
-def hash; end
+def hash(); end
 
 ##
 # Returns the unique identifier for this proc, along with
 # an indication of where the proc was defined.
-def to_s; end
+def to_s(); end
 
 ##
 # Returns +true+ for a Proc object for which argument handling is rigid.
@@ -8725,7 +8725,7 @@ def to_s; end
 #   C.new.f(1,2)       #=> ArgumentError
 # 
 # The wrapper <i>def2</i> defines a method which has no tricks.
-def lambda?; end
+def lambda?(); end
 
 ##
 # Returns the binding associated with <i>prc</i>. Note that
@@ -8738,7 +8738,7 @@ def lambda?; end
 # 
 #    b = fred(99)
 #    eval("param", b.binding)   #=> 99
-def binding; end
+def binding(); end
 
 ##
 # Returns a curried proc. If the optional <i>arity</i> argument is given,
@@ -8777,19 +8777,19 @@ def binding; end
 # 
 #    b = proc { :foo }
 #    p b.curry[]                  #=> :foo
-def curry; end
+def curry(p1=0); end
 
 ##
 # Returns the Ruby source filename and line number containing this proc
 # or +nil+ if this proc was not defined in Ruby (i.e. native)
-def source_location; end
+def source_location(); end
 
 ##
 # Returns the parameter information of this proc.
 # 
 #    prc = lambda{|x, y=42, *other|}
 #    prc.parameters  #=> [[:req, :x], [:opt, :y], [:rest, :other]]
-def parameters; end
+def parameters(); end
 
 end
 
@@ -8817,18 +8817,18 @@ end
 # <em>raises the exception:</em>
 # 
 #    LocalJumpError: unexpected return
-class LocalJumpError < RDoc::NormalClass StandardError < Exception
+class LocalJumpError < StandardError
 ##
 # call_seq:
 #   local_jump_error.exit_value  -> obj
 # 
 # Returns the exit value associated with this +LocalJumpError+.
-def exit_value; end
+def exit_value(); end
 
 ##
 # The reason this block was terminated:
 # :break, :redo, :retry, :next, :return, or :noreason.
-def reason; end
+def reason(); end
 
 end
 
@@ -8843,29 +8843,29 @@ end
 # <em>raises the exception:</em>
 # 
 #   SystemStackError: stack level too deep
-class SystemStackError < RDoc::NormalClass Exception < Object
+class SystemStackError < Exception
 end
 
 ##
 # Proc   
-class Method < RDoc::NormalClass Object < BasicObject
+class Method < Object
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def ==; end
+def ==(p1); end
 
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns a hash value corresponding to the method object.
-def hash; end
+def hash(); end
 
 ##
 # MISSING: documentation
-def clone; end
+def clone(); end
 
 ##
 # Invokes the <i>meth</i> with the specified arguments, returning the
@@ -8874,7 +8874,7 @@ def clone; end
 #    m = 12.method("+")
 #    m.call(3)    #=> 15
 #    m.call(20)   #=> 32
-def call; end
+def call(*args); end
 
 ##
 # Invokes the <i>meth</i> with the specified arguments, returning the
@@ -8883,7 +8883,7 @@ def call; end
 #    m = 12.method("+")
 #    m.call(3)    #=> 15
 #    m.call(20)   #=> 32
-def []; end
+def [](*args); end
 
 ##
 # Returns an indication of the number of arguments accepted by a
@@ -8913,50 +8913,50 @@ def []; end
 #    "cat".method(:replace).arity   #=> 1
 #    "cat".method(:squeeze).arity   #=> -1
 #    "cat".method(:count).arity     #=> -1
-def arity; end
+def arity(); end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns a <code>Proc</code> object corresponding to this method.
-def to_proc; end
+def to_proc(); end
 
 ##
 # Returns the bound receiver of the method object.
-def receiver; end
+def receiver(); end
 
 ##
 # Returns the name of the method.
-def name; end
+def name(); end
 
 ##
 # Returns the class or module that defines the method.
-def owner; end
+def owner(); end
 
 ##
 # Dissociates <i>meth</i> from its current receiver. The resulting
 # <code>UnboundMethod</code> can subsequently be bound to a new object
 # of the same class (see <code>UnboundMethod</code>).
-def unbind; end
+def unbind(); end
 
 ##
 # Returns the Ruby source filename and line number containing this method
 # or nil if this method was not defined in Ruby (i.e. native)
-def source_location; end
+def source_location(); end
 
 ##
 # Returns the parameter information of this method.
-def parameters; end
+def parameters(); end
 
 end
 
@@ -9010,24 +9010,24 @@ end
 #    t = Test.new
 #    t.test            #=> :modified
 #    um.bind(t).call   #=> :original
-class UnboundMethod < RDoc::NormalClass Object < BasicObject
+class UnboundMethod < Object
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def ==; end
+def ==(p1); end
 
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns a hash value corresponding to the method object.
-def hash; end
+def hash(); end
 
 ##
 # MISSING: documentation
-def clone; end
+def clone(); end
 
 ##
 # Returns an indication of the number of arguments accepted by a
@@ -9057,27 +9057,27 @@ def clone; end
 #    "cat".method(:replace).arity   #=> 1
 #    "cat".method(:squeeze).arity   #=> -1
 #    "cat".method(:count).arity     #=> -1
-def arity; end
+def arity(); end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the name of the method.
-def name; end
+def name(); end
 
 ##
 # Returns the class or module that defines the method.
-def owner; end
+def owner(); end
 
 ##
 # Bind <i>umeth</i> to <i>obj</i>. If <code>Klass</code> was the class
@@ -9108,16 +9108,16 @@ def owner; end
 #    In test, class = B
 #    prog.rb:16:in `bind': bind argument must be an instance of B (TypeError)
 #     from prog.rb:16
-def bind; end
+def bind(p1); end
 
 ##
 # Returns the Ruby source filename and line number containing this method
 # or nil if this method was not defined in Ruby (i.e. native)
-def source_location; end
+def source_location(); end
 
 ##
 # Returns the parameter information of this method.
-def parameters; end
+def parameters(); end
 
 end
 
@@ -9153,7 +9153,7 @@ end
 #    eval("@secret")       #=> nil
 # 
 # Binding objects have no class-specific methods.
-class Binding < RDoc::NormalClass Object < BasicObject
+class Binding < Object
 ##
 # Evaluates the Ruby expression(s) in <em>string</em>, in the
 # <em>binding</em>'s context.  If the optional <em>filename</em> and
@@ -9165,7 +9165,7 @@ class Binding < RDoc::NormalClass Object < BasicObject
 #    end
 #    b = get_binding("hello")
 #    b.eval("param")   #=> "hello"
-def eval; end
+def eval(p1, p2=0, p3=0); end
 
 end
 
@@ -9191,7 +9191,7 @@ end
 #    Mod.class              #=> Module
 #    Mod.constants          #=> [:CONST, :PI, :E]
 #    Mod.instance_methods   #=> [:meth]
-class Module < RDoc::NormalClass Object < BasicObject
+class Module < Object
 ##
 # Returns an +UnboundMethod+ representing the given
 # instance method in _mod_.
@@ -9218,11 +9218,11 @@ class Module < RDoc::NormalClass Object < BasicObject
 # <em>produces:</em>
 # 
 #    Hello there, Dave!
-def instance_method; end
+def instance_method(p1); end
 
 ##
 # Similar to _instance_method_, searches public method only.
-def public_instance_method; end
+def public_instance_method(p1); end
 
 ##
 # Defines an instance method in the receiver. The _method_
@@ -9255,12 +9255,12 @@ def public_instance_method; end
 #    In Fred
 #    Charge it!
 #    #<B:0x401b39e8>
-def define_method; end
+def define_method(*args); end
 
 ##
 # Removes the method identified by _symbol_ from the current
 # class. For an example, see <code>Module.undef_method</code>.
-def remove_method; end
+def remove_method(*args); end
 
 ##
 # Prevents the current class from responding to calls to the named
@@ -9297,7 +9297,7 @@ def remove_method; end
 #    In child
 #    In parent
 #    prog.rb:23: undefined method `hello' for #<Child:0x401b3bb4> (NoMethodError)
-def undef_method; end
+def undef_method(*args); end
 
 ##
 # Makes <i>new_name</i> a new copy of the method <i>old_name</i>. This can
@@ -9316,19 +9316,19 @@ def undef_method; end
 # <em>produces:</em>
 # 
 #    Exiting with code 99
-def alias_method; end
+def alias_method(p1, p2); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
 # defined methods to public. With arguments, sets the named methods to
 # have public visibility.
-def public; end
+def public(*args); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
 # defined methods to protected. With arguments, sets the named methods
 # to have protected visibility.
-def protected; end
+def protected(*args); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
@@ -9343,7 +9343,7 @@ def protected; end
 #      private :a
 #    end
 #    Mod.private_instance_methods   #=> [:a, :c]
-def private; end
+def private(*args); end
 
 ##
 # Creates module functions for the named methods. These functions may
@@ -9376,7 +9376,7 @@ def private; end
 #    end
 #    Mod.one     #=> "This is one"
 #    c.call_one  #=> "This is the new one"
-def module_function; end
+def module_function(*args); end
 
 ##
 # Returns +true+ if the named method is defined by
@@ -9399,7 +9399,7 @@ def module_function; end
 #    C.method_defined? "method2"   #=> true
 #    C.method_defined? "method3"   #=> true
 #    C.method_defined? "method4"   #=> false
-def method_defined?; end
+def method_defined?(p1); end
 
 ##
 # Returns +true+ if the named public method is defined by
@@ -9422,7 +9422,7 @@ def method_defined?; end
 #    C.public_method_defined? "method1"   #=> true
 #    C.public_method_defined? "method2"   #=> false
 #    C.method_defined? "method2"          #=> true
-def public_method_defined?; end
+def public_method_defined?(p1); end
 
 ##
 # Returns +true+ if the named private method is defined by
@@ -9445,7 +9445,7 @@ def public_method_defined?; end
 #    C.private_method_defined? "method1"   #=> false
 #    C.private_method_defined? "method2"   #=> true
 #    C.method_defined? "method2"           #=> false
-def private_method_defined?; end
+def private_method_defined?(p1); end
 
 ##
 # Returns +true+ if the named protected method is defined
@@ -9468,11 +9468,11 @@ def private_method_defined?; end
 #    C.protected_method_defined? "method1"   #=> false
 #    C.protected_method_defined? "method2"   #=> true
 #    C.method_defined? "method2"             #=> true
-def protected_method_defined?; end
+def protected_method_defined?(p1); end
 
 ##
 # Makes a list of existing class methods public.
-def public_class_method; end
+def public_class_method(*args); end
 
 ##
 # Makes existing class methods private. Often used to hide the default
@@ -9485,7 +9485,7 @@ def public_class_method; end
 #        @me
 #      end
 #    end
-def private_class_method; end
+def private_class_method(*args); end
 
 ##
 # Evaluates the given block in the context of the class/module.
@@ -9501,7 +9501,7 @@ def private_class_method; end
 # <em>produces:</em>
 # 
 #    Hello there!
-def module_exec; end
+def module_exec(*args); end
 
 ##
 # Evaluates the given block in the context of the class/module.
@@ -9517,7 +9517,7 @@ def module_exec; end
 # <em>produces:</em>
 # 
 #    Hello there!
-def class_exec; end
+def class_exec(*args); end
 
 ##
 # Evaluates the string or block in the context of _mod_. This can
@@ -9537,7 +9537,7 @@ def class_exec; end
 #    Hello there!
 #    dummy:123:in `module_eval': undefined local variable
 #        or method `code' for Thing:Class
-def module_eval; end
+def module_eval(*args); end
 
 ##
 # Evaluates the string or block in the context of _mod_. This can
@@ -9557,7 +9557,7 @@ def module_eval; end
 #    Hello there!
 #    dummy:123:in `module_eval': undefined local variable
 #        or method `code' for Thing:Class
-def class_eval; end
+def class_eval(*args); end
 
 ##
 # Registers _filename_ to be loaded (using <code>Kernel::require</code>)
@@ -9568,7 +9568,7 @@ def class_eval; end
 #    end
 #    A.autoload(:B, "b")
 #    A::B.doit            # autoloads "b"
-def autoload; end
+def autoload(p1, p2); end
 
 ##
 # Returns _filename_ to be loaded if _name_ is registered as
@@ -9578,7 +9578,7 @@ def autoload; end
 #    end
 #    A.autoload(:B, "b")
 #    A.autoload?(:B)            #=> "b"
-def autoload?; end
+def autoload?(p1); end
 
 ##
 # When this module is included in another, Ruby calls
@@ -9587,7 +9587,7 @@ def autoload?; end
 # to add the constants, methods, and module variables of this module
 # to _mod_ if this module has not already been added to
 # _mod_ or one of its ancestors. See also <code>Module#include</code>.
-def append_features; end
+def append_features(p1); end
 
 ##
 # Extends the specified object by adding this module's constants and
@@ -9611,11 +9611,11 @@ def append_features; end
 # 
 #    Picky added to Array
 #    Can't add Picky to a String
-def extend_object; end
+def extend_object(p1); end
 
 ##
 # Invokes <code>Module.append_features</code> on each parameter in reverse order.
-def include; end
+def include(*args); end
 
 ##
 # Returns the list of +Modules+ nested at the point of call.
@@ -9627,7 +9627,7 @@ def include; end
 #    end
 #    $a           #=> [M1::M2, M1]
 #    $a[0].name   #=> "M1::M2"
-def self.nesting; end
+def self.nesting(); end
 
 ##
 # In the first form, returns an array of the names of all
@@ -9645,7 +9645,7 @@ def self.nesting; end
 #    end
 # 
 # The second form calls the instance method +constants+.
-def self.constants; end
+def self.constants(*args); end
 
 ##
 # Callback invoked whenever the receiver is included in another
@@ -9661,11 +9661,11 @@ def self.constants; end
 #        module Enumerable
 #          include A
 #        end
-def included; end
+def included(p1); end
 
 ##
 # Not documented
-def extended; end
+def extended(p1); end
 
 ##
 # Invoked as a callback whenever an instance method is added to the
@@ -9682,7 +9682,7 @@ def extended; end
 # produces:
 # 
 #   Adding :some_instance_method
-def method_added; end
+def method_added(p1); end
 
 ##
 # Invoked as a callback whenever an instance method is removed from the
@@ -9703,24 +9703,24 @@ def method_added; end
 # produces:
 # 
 #   Removing :some_instance_method
-def method_removed; end
+def method_removed(p1); end
 
 ##
 # Not documented
-def method_undefined; end
+def method_undefined(p1); end
 
 ##
 # Prevents further modifications to <i>mod</i>.
 # 
 # This method returns self.
-def freeze; end
+def freeze(); end
 
 ##
 # Case Equality---Returns <code>true</code> if <i>anObject</i> is an
 # instance of <i>mod</i> or one of <i>mod</i>'s descendants. Of
 # limited use for modules, but can be used in <code>case</code>
 # statements to classify objects by class.
-def ===; end
+def ===(p1); end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -9744,7 +9744,7 @@ def ===; end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Comparison---Returns -1 if <i>mod</i> includes <i>other_mod</i>, 0 if
@@ -9752,14 +9752,14 @@ def ==; end
 # included by <i>other_mod</i>. Returns <code>nil</code> if <i>mod</i>
 # has no relationship with <i>other_mod</i> or if <i>other_mod</i> is
 # not a module.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns true if <i>mod</i> is a subclass of <i>other</i>. Returns
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "A<B").
-def <; end
+def <(p1); end
 
 ##
 # Returns true if <i>mod</i> is a subclass of <i>other</i> or
@@ -9767,14 +9767,14 @@ def <; end
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "A<B").
-def <=; end
+def <=(p1); end
 
 ##
 # Returns true if <i>mod</i> is an ancestor of <i>other</i>. Returns
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "B>A").
-def >; end
+def >(p1); end
 
 ##
 # Returns true if <i>mod</i> is an ancestor of <i>other</i>, or the
@@ -9782,13 +9782,13 @@ def >; end
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "B>A").
-def >=; end
+def >=(p1); end
 
 ##
 # Return a string representing this module or class. For basic
 # classes and modules, this is the name. For singletons, we
 # show information on the thing we're attached to as well.
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the list of modules included in <i>mod</i>.
@@ -9802,7 +9802,7 @@ def to_s; end
 # 
 #    Mixin.included_modules   #=> []
 #    Outer.included_modules   #=> [Mixin]
-def included_modules; end
+def included_modules(); end
 
 ##
 # Returns <code>true</code> if <i>module</i> is included in
@@ -9818,11 +9818,11 @@ def included_modules; end
 #    B.include?(A)   #=> true
 #    C.include?(A)   #=> true
 #    A.include?(A)   #=> false
-def include?; end
+def include?(p1); end
 
 ##
 # Returns the name of the module <i>mod</i>.  Returns nil for anonymous modules.
-def name; end
+def name(); end
 
 ##
 # Returns a list of modules included in <i>mod</i> (including
@@ -9835,20 +9835,20 @@ def name; end
 # 
 #    Mod.ancestors    #=> [Mod, Comparable, Math]
 #    Math.ancestors   #=> [Math]
-def ancestors; end
+def ancestors(); end
 
-def attr; end
+def attr(*args); end
 
 ##
 # Creates instance variables and corresponding methods that return the
 # value of each instance variable. Equivalent to calling
 # ``<code>attr</code><i>:name</i>'' on each name in turn.
-def attr_reader; end
+def attr_reader(*args); end
 
 ##
 # Creates an accessor method to allow assignment to the attribute
 # <i>aSymbol</i><code>.id2name</code>.
-def attr_writer; end
+def attr_writer(*args); end
 
 ##
 # Defines a named attribute for this module, where the name is
@@ -9860,7 +9860,7 @@ def attr_writer; end
 #      attr_accessor(:one, :two)
 #    end
 #    Mod.instance_methods.sort   #=> [:one, :one=, :two, :two=]
-def attr_accessor; end
+def attr_accessor(*args); end
 
 ##
 # Creates a new anonymous module. If a block is given, it is passed
@@ -9882,7 +9882,7 @@ def attr_accessor; end
 # 
 # Assign the module to a constant (name starting uppercase) if you
 # want to treat it like a regular module.
-def self.new; end
+def self.new(); end
 
 ##
 # Returns an array containing the names of the public and protected instance
@@ -9906,19 +9906,19 @@ def self.new; end
 #    B.instance_methods(false)         #=> [:method2]
 #    C.instance_methods(false)         #=> [:method3]
 #    C.instance_methods(true).length   #=> 43
-def instance_methods; end
+def instance_methods(*args); end
 
 ##
 # Returns a list of the public instance methods defined in <i>mod</i>.
 # If the optional parameter is not <code>false</code>, the methods of
 # any ancestors are included.
-def public_instance_methods; end
+def public_instance_methods(*args); end
 
 ##
 # Returns a list of the protected instance methods defined in
 # <i>mod</i>. If the optional parameter is not <code>false</code>, the
 # methods of any ancestors are included.
-def protected_instance_methods; end
+def protected_instance_methods(*args); end
 
 ##
 # Returns a list of the private instance methods defined in
@@ -9932,7 +9932,7 @@ def protected_instance_methods; end
 #    end
 #    Mod.instance_methods           #=> [:method2]
 #    Mod.private_instance_methods   #=> [:method1]
-def private_instance_methods; end
+def private_instance_methods(*args); end
 
 ##
 # Returns an array of the names of the constants accessible in
@@ -9944,7 +9944,7 @@ def private_instance_methods; end
 #   IO.constants(false).include?(:SYNC) #=> false
 # 
 # Also see <code>Module::const_defined?</code>.
-def constants; end
+def constants(p1=0); end
 
 ##
 # Checks for a constant with the given name in <i>mod</i>
@@ -9955,7 +9955,7 @@ def constants; end
 # otherwise a +NameError+ is raised.
 # 
 #    Math.const_get(:PI)   #=> 3.14159265358979
-def const_get; end
+def const_get(p1, p2=0); end
 
 ##
 # Sets the named constant to the given object, returning that object.
@@ -9964,7 +9964,7 @@ def const_get; end
 # 
 #    Math.const_set("HIGH_SCHOOL_PI", 22.0/7.0)   #=> 3.14285714285714
 #    Math::HIGH_SCHOOL_PI - Math::PI              #=> 0.00126448926734968
-def const_set; end
+def const_set(p1, p2); end
 
 ##
 # Checks for a constant with the given name in <i>mod</i>
@@ -9976,7 +9976,7 @@ def const_set; end
 #    Math.const_defined? "PI"   #=> true
 #    IO.const_defined? :SYNC   #=> true
 #    IO.const_defined? :SYNC, false   #=> false
-def const_defined?; end
+def const_defined?(p1, p2=0); end
 
 ##
 # Removes the definition of the given constant, returning that
@@ -9984,7 +9984,7 @@ def const_defined?; end
 # removed, they just can't be refered with the names but still
 # exist.  It could cause very severe confusion.
 # Feel Free to Shoot Your Own Foot.
-def remove_const; end
+def remove_const(p1); end
 
 ##
 # Invoked when a reference is made to an undefined constant in
@@ -10016,7 +10016,7 @@ def remove_const; end
 #     return klass if klass
 #     raise "Class not found: #{name}"
 #   end
-def const_missing; end
+def const_missing(p1); end
 
 ##
 # Returns an array of the names of class variables in <i>mod</i>.
@@ -10029,7 +10029,7 @@ def const_missing; end
 #    end
 #    One.class_variables   #=> [:@@var1]
 #    Two.class_variables   #=> [:@@var2]
-def class_variables; end
+def class_variables(); end
 
 ##
 # Removes the definition of the <i>sym</i>, returning that
@@ -10046,7 +10046,7 @@ def class_variables; end
 # 
 #    99
 #    nil
-def remove_class_variable; end
+def remove_class_variable(p1); end
 
 ##
 # Returns the value of the given class variable (or throws a
@@ -10057,7 +10057,7 @@ def remove_class_variable; end
 #      @@foo = 99
 #    end
 #    Fred.class_variable_get(:@@foo)     #=> 99
-def class_variable_get; end
+def class_variable_get(p1); end
 
 ##
 # Sets the class variable names by <i>symbol</i> to
@@ -10071,7 +10071,7 @@ def class_variable_get; end
 #    end
 #    Fred.class_variable_set(:@@foo, 101)     #=> 101
 #    Fred.new.foo                             #=> 101
-def class_variable_set; end
+def class_variable_set(p1, p2); end
 
 ##
 # Returns <code>true</code> if the given class variable is defined
@@ -10082,7 +10082,7 @@ def class_variable_set; end
 #    end
 #    Fred.class_variable_defined?(:@@foo)    #=> true
 #    Fred.class_variable_defined?(:@@bar)    #=> false
-def class_variable_defined?; end
+def class_variable_defined?(p1); end
 
 end
 
@@ -10125,7 +10125,7 @@ end
 # 
 #    Rational(-8) ** Rational(1, 3)
 #                       #=> (1.0000000000000002+1.7320508075688772i)
-class Rational < RDoc::NormalClass Numeric < Object
+class Rational < Numeric
 ##
 # Returns the numerator.
 # 
@@ -10135,7 +10135,7 @@ class Rational < RDoc::NormalClass Numeric < Object
 #    Rational(7, 1).numerator     #=> 7
 #    Rational(9, -4).numerator    #=> -9
 #    Rational(-2, -10).numerator  #=> 1
-def numerator; end
+def numerator(); end
 
 ##
 # Returns the denominator (always positive).
@@ -10147,7 +10147,7 @@ def numerator; end
 #    Rational(9, -4).denominator         #=> 4
 #    Rational(-2, -10).denominator       #=> 5
 #    rat.numerator.gcd(rat.denominator)  #=> 1
-def denominator; end
+def denominator(); end
 
 ##
 # Performs addition.
@@ -10159,7 +10159,7 @@ def denominator; end
 #    Rational(-2, 9) + Rational(-9, 2)  #=> (-85/18)
 #    Rational(9, 8)  + 4                #=> (41/8)
 #    Rational(20, 9) + 9.8              #=> 12.022222222222222
-def +; end
+def +(p1); end
 
 ##
 # Performs subtraction.
@@ -10171,7 +10171,7 @@ def +; end
 #    Rational(-2, 9) - Rational(-9, 2)  #=> (77/18)
 #    Rational(9, 8)  - 4                #=> (23/8)
 #    Rational(20, 9) - 9.8              #=> -7.577777777777778
-def -; end
+def -(p1); end
 
 ##
 # Performs multiplication.
@@ -10183,7 +10183,7 @@ def -; end
 #    Rational(-2, 9) * Rational(-9, 2)  #=> (1/1)
 #    Rational(9, 8)  * 4                #=> (9/2)
 #    Rational(20, 9) * 9.8              #=> 21.77777777777778
-def *; end
+def *(p1); end
 
 ##
 # Performs division.
@@ -10195,7 +10195,7 @@ def *; end
 #    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
 #    Rational(9, 8)  / 4                #=> (9/32)
 #    Rational(20, 9) / 9.8              #=> 0.22675736961451246
-def /; end
+def /(p1); end
 
 ##
 # Performs division.
@@ -10207,7 +10207,7 @@ def /; end
 #    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
 #    Rational(9, 8)  / 4                #=> (9/32)
 #    Rational(20, 9) / 9.8              #=> 0.22675736961451246
-def quo; end
+def quo(p1); end
 
 ##
 # Performs division and returns the value as a float.
@@ -10217,7 +10217,7 @@ def quo; end
 #    Rational(2, 3).fdiv(1)       #=> 0.6666666666666666
 #    Rational(2, 3).fdiv(0.5)     #=> 1.3333333333333333
 #    Rational(2).fdiv(3)          #=> 0.6666666666666666
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Performs exponentiation.
@@ -10230,7 +10230,7 @@ def fdiv; end
 #    Rational(-4)   ** Rational(1,2)  #=> (1.2246063538223773e-16+2.0i)
 #    Rational(1, 2) ** 0              #=> (1/1)
 #    Rational(1, 2) ** 0.0            #=> 1.0
-def **; end
+def **(p1); end
 
 ##
 # Performs comparison and returns -1, 0, or +1.
@@ -10242,7 +10242,7 @@ def **; end
 #    Rational(2,3)   <=> Rational(1,3)   #=> 1
 #    Rational(1,3)   <=> 1               #=> -1
 #    Rational(1,3)   <=> 0.3             #=> 1
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns true if rat equals object numerically.
@@ -10254,7 +10254,7 @@ def <=>; end
 #    Rational(0)     == 0.0              #=> true
 #    Rational('1/3') == 0.33             #=> false
 #    Rational('1/2') == '1/2'            #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Returns the truncated value (toward negative infinity).
@@ -10271,7 +10271,7 @@ def ==; end
 # 
 #    '%f' % Rational('-123.456').floor(+1)  #=> "-123.500000"
 #    '%f' % Rational('-123.456').floor(-1)  #=> "-130.000000"
-def floor; end
+def floor(*args); end
 
 ##
 # Returns the truncated value (toward positive infinity).
@@ -10288,7 +10288,7 @@ def floor; end
 # 
 #    '%f' % Rational('-123.456').ceil(+1)  #=> "-123.400000"
 #    '%f' % Rational('-123.456').ceil(-1)  #=> "-120.000000"
-def ceil; end
+def ceil(*args); end
 
 ##
 # Returns the truncated value (toward zero).
@@ -10305,7 +10305,7 @@ def ceil; end
 # 
 #    '%f' % Rational('-123.456').truncate(+1)  #=>  "-123.400000"
 #    '%f' % Rational('-123.456').truncate(-1)  #=>  "-120.000000"
-def truncate; end
+def truncate(*args); end
 
 ##
 # Returns the truncated value (toward the nearest integer;
@@ -10323,7 +10323,7 @@ def truncate; end
 # 
 #    '%f' % Rational('-123.456').round(+1)  #=> "-123.500000"
 #    '%f' % Rational('-123.456').round(-1)  #=> "-120.000000"
-def round; end
+def round(*args); end
 
 ##
 # Returns the truncated value as an integer.
@@ -10338,7 +10338,7 @@ def round; end
 #    Rational(300.6).to_i  #=> 300
 #    Rational(98,71).to_i  #=> 1
 #    Rational(-30,2).to_i  #=> -15
-def to_i; end
+def to_i(); end
 
 ##
 # Return the value as a float.
@@ -10349,7 +10349,7 @@ def to_i; end
 #    Rational(9, 4).to_f   #=> 2.25
 #    Rational(-3, 4).to_f  #=> -0.75
 #    Rational(20, 3).to_f  #=> 6.666666666666667
-def to_f; end
+def to_f(); end
 
 ##
 # Returns self.
@@ -10358,7 +10358,7 @@ def to_f; end
 # 
 #    Rational(2).to_r      #=> (2/1)
 #    Rational(-8, 6).to_r  #=> (-4/3)
-def to_r; end
+def to_r(); end
 
 ##
 # Returns a simpler approximation of the value if an optional
@@ -10371,7 +10371,7 @@ def to_r; end
 #    r.rationalize                    #=> (5033165/16777216)
 #    r.rationalize(Rational('0.01'))  #=> (3/10)
 #    r.rationalize(Rational('0.1'))   #=> (1/3)
-def rationalize; end
+def rationalize(p1=0); end
 
 ##
 # Returns the value as a string.
@@ -10381,7 +10381,7 @@ def rationalize; end
 #    Rational(2).to_s      #=> "2/1"
 #    Rational(-8, 6).to_s  #=> "-4/3"
 #    Rational('0.5').to_s  #=> "1/2"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the value as a string for inspection.
@@ -10391,14 +10391,14 @@ def to_s; end
 #    Rational(2).inspect      #=> "(2/1)"
 #    Rational(-8, 6).inspect  #=> "(-4/3)"
 #    Rational('0.5').inspect  #=> "(1/2)"
-def inspect; end
+def inspect(); end
 
 end
 
 ##
 # <code>Integer</code> is the basis for the two concrete classes that
 # hold whole numbers, <code>Bignum</code> and <code>Fixnum</code>.
-class Integer < RDoc::NormalClass Numeric < Object
+class Integer < Numeric
 ##
 # Returns the greatest common divisor (always positive).  0.gcd(x)
 # and x.gcd(0) return abs(x).
@@ -10408,7 +10408,7 @@ class Integer < RDoc::NormalClass Numeric < Object
 #    2.gcd(2)                    #=> 2
 #    3.gcd(-7)                   #=> 1
 #    ((1<<31)-1).gcd((1<<61)-1)  #=> 1
-def gcd; end
+def gcd(p1); end
 
 ##
 # Returns the least common multiple (always positive).  0.lcm(x) and
@@ -10419,7 +10419,7 @@ def gcd; end
 #    2.lcm(2)                    #=> 2
 #    3.lcm(-7)                   #=> 21
 #    ((1<<31)-1).lcm((1<<61)-1)  #=> 4951760154835678088235319297
-def lcm; end
+def lcm(p1); end
 
 ##
 # Returns an array; [int.gcd(int2), int.lcm(int2)].
@@ -10429,15 +10429,15 @@ def lcm; end
 #    2.gcdlcm(2)                    #=> [2, 2]
 #    3.gcdlcm(-7)                   #=> [1, 21]
 #    ((1<<31)-1).gcdlcm((1<<61)-1)  #=> [1, 4951760154835678088235319297]
-def gcdlcm; end
+def gcdlcm(p1); end
 
 ##
 # Returns self.
-def numerator; end
+def numerator(); end
 
 ##
 # Returns 1.
-def denominator; end
+def denominator(); end
 
 ##
 # Returns the value as a rational.
@@ -10446,24 +10446,24 @@ def denominator; end
 # 
 #    1.to_r        #=> (1/1)
 #    (1<<64).to_r  #=> (18446744073709551616/1)
-def to_r; end
+def to_r(); end
 
 ##
 # Returns the value as a rational.  An optional argument eps is
 # always ignored.
-def rationalize; end
+def rationalize(p1=0); end
 
 ##
 # Always returns <code>true</code>.
-def integer?; end
+def integer?(); end
 
 ##
 # Returns <code>true</code> if <i>int</i> is an odd number.
-def odd?; end
+def odd?(); end
 
 ##
 # Returns <code>true</code> if <i>int</i> is an even number.
-def even?; end
+def even?(); end
 
 ##
 # Iterates <em>block</em>, passing in integer values from <i>int</i>
@@ -10476,7 +10476,7 @@ def even?; end
 # <em>produces:</em>
 # 
 #    5 6 7 8 9 10
-def upto; end
+def upto(p1); end
 
 ##
 # Iterates <em>block</em>, passing decreasing values from <i>int</i>
@@ -10490,7 +10490,7 @@ def upto; end
 # <em>produces:</em>
 # 
 #    5.. 4.. 3.. 2.. 1..   Liftoff!
-def downto; end
+def downto(p1); end
 
 ##
 # Iterates block <i>int</i> times, passing in values from zero to
@@ -10505,28 +10505,28 @@ def downto; end
 # <em>produces:</em>
 # 
 #    0 1 2 3 4
-def times; end
+def times(); end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def succ; end
+def succ(); end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def next; end
+def next(); end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> - 1.
 # 
 #    1.pred      #=> 0
 #    (-1).pred   #=> -2
-def pred; end
+def pred(); end
 
 ##
 # Returns a string containing the character represented by the
@@ -10535,7 +10535,7 @@ def pred; end
 #    65.chr    #=> "A"
 #    230.chr   #=> "\346"
 #    255.chr(Encoding::UTF_8)   #=> "\303\277"
-def chr; end
+def chr(*args); end
 
 ##
 # Returns the int itself.
@@ -10545,32 +10545,32 @@ def chr; end
 # This method is intended for compatibility to
 # character constant in Ruby 1.9.
 # For example, ?a.ord returns 97 both in 1.8 and 1.9.
-def ord; end
+def ord(); end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def to_i; end
+def to_i(); end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def to_int; end
+def to_int(); end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def floor; end
+def floor(); end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def ceil; end
+def ceil(); end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def truncate; end
+def truncate(); end
 
 ##
 # Rounds <i>flt</i> to a given precision in decimal digits (default 0 digits).
@@ -10580,7 +10580,7 @@ def truncate; end
 #    1.round        #=> 1
 #    1.round(2)     #=> 1.0
 #    15.round(-1)   #=> 20
-def round; end
+def round(p1); end
 
 end
 
@@ -10596,20 +10596,20 @@ end
 # <em>raises the exception:</em>
 # 
 #    FloatDomainError: Infinity
-class Numeric < RDoc::NormalClass Object < BasicObject
+class Numeric < Object
 include Comparable
 ##
 # Returns the numerator.
-def numerator; end
+def numerator(); end
 
 ##
 # Returns the denominator (always positive).
-def denominator; end
+def denominator(); end
 
 ##
 # Trap attempts to add methods to <code>Numeric</code> objects. Always
 # raises a <code>TypeError</code>
-def singleton_method_added; end
+def singleton_method_added(p1); end
 
 ##
 # If <i>aNumeric</i> is the same type as <i>num</i>, returns an array
@@ -10622,25 +10622,25 @@ def singleton_method_added; end
 #    1.coerce(2.5)   #=> [2.5, 1.0]
 #    1.2.coerce(3)   #=> [3.0, 1.2]
 #    1.coerce(2)     #=> [2, 1]
-def coerce; end
+def coerce(p1); end
 
 ##
 # Returns the corresponding imaginary number.
 # Not available for complex numbers.
-def i; end
+def i(); end
 
 ##
 # Unary Plus---Returns the receiver's value.
-def +@; end
+def +@(); end
 
 ##
 # Unary Minus---Returns the receiver's value, negated.
-def -@; end
+def -@(); end
 
 ##
 # Returns zero if <i>num</i> equals <i>other</i>, <code>nil</code>
 # otherwise.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns <code>true</code> if <i>num</i> and <i>numeric</i> are the
@@ -10649,15 +10649,15 @@ def <=>; end
 #    1 == 1.0          #=> true
 #    1.eql?(1.0)       #=> false
 #    (1.0).eql?(1.0)   #=> true
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns most exact division (rational for integers, float for floats).
-def quo; end
+def quo(p1); end
 
 ##
 # Returns float division.
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Uses <code>/</code> to perform division, then converts the result to
@@ -10668,7 +10668,7 @@ def fdiv; end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[0]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def div; end
+def div(p1); end
 
 ##
 # Returns an array containing the quotient and modulus obtained by
@@ -10705,7 +10705,7 @@ def div; end
 #    11.divmod(3.5)       #=> [3, 0.5]
 #    (-11).divmod(3.5)    #=> [-4, 3.0]
 #    (11.5).divmod(3.5)   #=> [3, 1.0]
-def divmod; end
+def divmod(p1); end
 
 ##
 #    x.modulo(y) means x-y*(x/y).floor
@@ -10714,7 +10714,7 @@ def divmod; end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[1]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def %; end
+def %(p1); end
 
 ##
 #    x.modulo(y) means x-y*(x/y).floor
@@ -10723,13 +10723,13 @@ def %; end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[1]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def modulo; end
+def modulo(p1); end
 
 ##
 #    x.remainder(y) means x-y*(x/y).truncate
 # 
 # See <code>Numeric#divmod</code>.
-def remainder; end
+def remainder(p1); end
 
 ##
 # Returns the absolute value of <i>num</i>.
@@ -10737,7 +10737,7 @@ def remainder; end
 #    12.abs         #=> 12
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def abs; end
+def abs(); end
 
 ##
 # Returns the absolute value of <i>num</i>.
@@ -10745,26 +10745,26 @@ def abs; end
 #    12.abs         #=> 12
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def magnitude; end
+def magnitude(); end
 
 ##
 # Invokes the child class's <code>to_i</code> method to convert
 # <i>num</i> to an integer.
-def to_int; end
+def to_int(); end
 
 ##
 # Returns <code>true</code> if <i>num</i> is a <code>Real</code>
 # (i.e. non <code>Complex</code>).
-def real?; end
+def real?(); end
 
 ##
 # Returns <code>true</code> if <i>num</i> is an <code>Integer</code>
 # (including <code>Fixnum</code> and <code>Bignum</code>).
-def integer?; end
+def integer?(); end
 
 ##
 # Returns <code>true</code> if <i>num</i> has a zero value.
-def zero?; end
+def zero?(); end
 
 ##
 # Returns +self+ if <i>num</i> is not zero, <code>nil</code>
@@ -10773,7 +10773,7 @@ def zero?; end
 #    a = %w( z Bb bB bb BB a aA Aa AA A )
 #    b = a.sort {|a,b| (a.downcase <=> b.downcase).nonzero? || a <=> b }
 #    b   #=> ["A", "a", "AA", "Aa", "aA", "BB", "Bb", "bB", "bb", "z"]
-def nonzero?; end
+def nonzero?(); end
 
 ##
 # Returns the largest integer less than or equal to <i>num</i>.
@@ -10782,7 +10782,7 @@ def nonzero?; end
 # 
 #    1.floor      #=> 1
 #    (-1).floor   #=> -1
-def floor; end
+def floor(); end
 
 ##
 # Returns the smallest <code>Integer</code> greater than or equal to
@@ -10794,20 +10794,20 @@ def floor; end
 #    1.2.ceil      #=> 2
 #    (-1.2).ceil   #=> -1
 #    (-1.0).ceil   #=> -1
-def ceil; end
+def ceil(); end
 
 ##
 # Rounds <i>num</i> to a given precision in decimal digits (default 0 digits).
 # Precision may be negative.  Returns a floating point number when <i>ndigits</i>
 # is more than zero.  <code>Numeric</code> implements this by converting itself
 # to a <code>Float</code> and invoking <code>Float#round</code>.
-def round; end
+def round(*args); end
 
 ##
 # Returns <i>num</i> truncated to an integer. <code>Numeric</code>
 # implements this by converting its value to a float and invoking
 # <code>Float#truncate</code>.
-def truncate; end
+def truncate(); end
 
 ##
 # Invokes <em>block</em> with the sequence of numbers starting at
@@ -10833,59 +10833,59 @@ def truncate; end
 # 
 #    1 3 5 7 9
 #    2.71828182845905 2.91828182845905 3.11828182845905
-def step; end
+def step(*args); end
 
 ##
 # Returns the value as a complex.
-def to_c; end
+def to_c(); end
 
 ##
 # Returns self.
-def real; end
+def real(); end
 
 ##
 # Returns zero.
-def imaginary; end
+def imaginary(); end
 
 ##
 # Returns zero.
-def imag; end
+def imag(); end
 
 ##
 # Returns square of self.
-def abs2; end
+def abs2(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def arg; end
+def arg(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def angle; end
+def angle(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def phase; end
+def phase(); end
 
 ##
 # Returns an array; [num, 0].
-def rectangular; end
+def rectangular(); end
 
 ##
 # Returns an array; [num, 0].
-def rect; end
+def rect(); end
 
 ##
 # Returns an array; [num.abs, num.arg].
-def polar; end
+def polar(); end
 
 ##
 # Returns self.
-def conjugate; end
+def conjugate(); end
 
 ##
 # Returns self.
-def conj; end
+def conj(); end
 
 end
 
@@ -10900,7 +10900,7 @@ end
 # - http://docs.sun.com/source/806-3568/ncg_goldberg.html
 # - http://wiki.github.com/rdp/ruby_tutorials_core/ruby-talk-faq#floats_imprecise
 # - http://en.wikipedia.org/wiki/Floating_point#Accuracy_problems
-class Float < RDoc::NormalClass Numeric < Object
+class Float < Numeric
 ##
 # Returns the numerator.  The result is machine dependent.
 # 
@@ -10909,14 +10909,14 @@ class Float < RDoc::NormalClass Numeric < Object
 #    n = 0.3.numerator    #=> 5404319552844595
 #    d = 0.3.denominator  #=> 18014398509481984
 #    n.fdiv(d)            #=> 0.3
-def numerator; end
+def numerator(); end
 
 ##
 # Returns the denominator (always positive).  The result is machine
 # dependent.
 # 
 # See numerator.
-def denominator; end
+def denominator(); end
 
 ##
 # Returns the value as a rational.
@@ -10930,7 +10930,7 @@ def denominator; end
 #    2.5.to_r    #=> (5/2)
 #    -0.75.to_r  #=> (-3/4)
 #    0.0.to_r    #=> (0/1)
-def to_r; end
+def to_r(); end
 
 ##
 # Returns a simpler approximation of the value (flt-|eps| <= result
@@ -10942,14 +10942,14 @@ def to_r; end
 #    0.3.rationalize          #=> (3/10)
 #    1.333.rationalize        #=> (1333/1000)
 #    1.333.rationalize(0.01)  #=> (4/3)
-def rationalize; end
+def rationalize(p1=0); end
 
 ##
 # Returns a string containing a representation of self. As well as a
 # fixed or exponential form of the number, the call may return
 # ``<code>NaN</code>'', ``<code>Infinity</code>'', and
 # ``<code>-Infinity</code>''.
-def to_s; end
+def to_s(); end
 
 ##
 # Returns an array with both <i>aNumeric</i> and <i>flt</i> represented
@@ -10958,63 +10958,63 @@ def to_s; end
 # 
 #    1.2.coerce(3)       #=> [3.0, 1.2]
 #    2.5.coerce(1.1)     #=> [1.1, 2.5]
-def coerce; end
+def coerce(p1); end
 
 ##
 # Returns float, negated.
-def -@; end
+def -@(); end
 
 ##
 # Returns a new float which is the sum of <code>float</code>
 # and <code>other</code>.
-def +; end
+def +(p1); end
 
 ##
 # Returns a new float which is the difference of <code>float</code>
 # and <code>other</code>.
-def -; end
+def -(p1); end
 
 ##
 # Returns a new float which is the product of <code>float</code>
 # and <code>other</code>.
-def *; end
+def *(p1); end
 
 ##
 # Returns a new float which is the result of dividing
 # <code>float</code> by <code>other</code>.
-def /; end
+def /(p1); end
 
 ##
 # Returns float / numeric.
-def quo; end
+def quo(p1); end
 
 ##
 # Returns float / numeric.
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Return the modulo after division of <code>flt</code> by <code>other</code>.
 # 
 #    6543.21.modulo(137)      #=> 104.21
 #    6543.21.modulo(137.24)   #=> 92.9299999999996
-def %; end
+def %(p1); end
 
 ##
 # Return the modulo after division of <code>flt</code> by <code>other</code>.
 # 
 #    6543.21.modulo(137)      #=> 104.21
 #    6543.21.modulo(137.24)   #=> 92.9299999999996
-def modulo; end
+def modulo(p1); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod; end
+def divmod(p1); end
 
 ##
 # Raises <code>float</code> the <code>other</code> power.
 # 
 #    2.0**3      #=> 8.0
-def **; end
+def **(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -11022,7 +11022,7 @@ def **; end
 # requires <i>obj</i> to be a <code>Float</code>.
 # 
 #    1.0 == 1   #=> true
-def ==; end
+def ==(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -11030,31 +11030,31 @@ def ==; end
 # requires <i>obj</i> to be a <code>Float</code>.
 # 
 #    1.0 == 1   #=> true
-def ===; end
+def ===(p1); end
 
 ##
 # Returns -1, 0, +1 or nil depending on whether <i>flt</i> is less
 # than, equal to, or greater than <i>real</i>. This is the basis for
 # the tests in <code>Comparable</code>.
-def <=>; end
+def <=>(p1); end
 
 ##
 # <code>true</code> if <code>flt</code> is greater than <code>real</code>.
-def >; end
+def >(p1); end
 
 ##
 # <code>true</code> if <code>flt</code> is greater than
 # or equal to <code>real</code>.
-def >=; end
+def >=(p1); end
 
 ##
 # <code>true</code> if <code>flt</code> is less than <code>real</code>.
-def <; end
+def <(p1); end
 
 ##
 # <code>true</code> if <code>flt</code> is less than
 # or equal to <code>real</code>.
-def <=; end
+def <=(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a
@@ -11062,41 +11062,41 @@ def <=; end
 # with <code>Float#==</code>, which performs type conversions.
 # 
 #    1.0.eql?(1)   #=> false
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns a hash code for this float.
-def hash; end
+def hash(); end
 
 ##
 # As <code>flt</code> is already a float, returns +self+.
-def to_f; end
+def to_f(); end
 
 ##
 # Returns the absolute value of <i>flt</i>.
 # 
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def abs; end
+def abs(); end
 
 ##
 # Returns the absolute value of <i>flt</i>.
 # 
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def magnitude; end
+def magnitude(); end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is 0.0.
-def zero?; end
+def zero?(); end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def to_i; end
+def to_i(); end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def to_int; end
+def to_int(); end
 
 ##
 # Returns the largest integer less than or equal to <i>flt</i>.
@@ -11105,7 +11105,7 @@ def to_int; end
 #    2.0.floor      #=> 2
 #    (-1.2).floor   #=> -2
 #    (-2.0).floor   #=> -2
-def floor; end
+def floor(); end
 
 ##
 # Returns the smallest <code>Integer</code> greater than or equal to
@@ -11115,7 +11115,7 @@ def floor; end
 #    2.0.ceil      #=> 2
 #    (-1.2).ceil   #=> -1
 #    (-2.0).ceil   #=> -2
-def ceil; end
+def ceil(); end
 
 ##
 # Rounds <i>flt</i> to a given precision in decimal digits (default 0 digits).
@@ -11141,11 +11141,11 @@ def ceil; end
 #    34567.89.round(1)  #=> 34567.9
 #    34567.89.round(2)  #=> 34567.89
 #    34567.89.round(3)  #=> 34567.89
-def round; end
+def round(p1=0); end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def truncate; end
+def truncate(); end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is an invalid IEEE floating
@@ -11155,7 +11155,7 @@ def truncate; end
 #    a.nan?        #=> false
 #    a = 0.0/0.0   #=> NaN
 #    a.nan?        #=> true
-def nan?; end
+def nan?(); end
 
 ##
 # Returns <code>nil</code>, -1, or +1 depending on whether <i>flt</i>
@@ -11164,93 +11164,93 @@ def nan?; end
 #    (0.0).infinite?        #=> nil
 #    (-1.0/0.0).infinite?   #=> -1
 #    (+1.0/0.0).infinite?   #=> 1
-def infinite?; end
+def infinite?(); end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is a valid IEEE floating
 # point number (it is not infinite, and <code>nan?</code> is
 # <code>false</code>).
-def finite?; end
+def finite?(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def arg; end
+def arg(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def angle; end
+def angle(); end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def phase; end
+def phase(); end
 
 end
 
 ##
 # The class of the singleton object <code>nil</code>.
-class NilClass < RDoc::NormalClass Object < BasicObject
+class NilClass < Object
 ##
 # Returns zero as a rational.
-def to_r; end
+def to_r(); end
 
 ##
 # Returns zero as a rational.  An optional argument eps is always
 # ignored.
-def rationalize; end
+def rationalize(p1=0); end
 
 ##
 # Always returns zero.
 # 
 #    nil.to_i   #=> 0
-def to_i; end
+def to_i(); end
 
 ##
 # Always returns zero.
 # 
 #    nil.to_f   #=> 0.0
-def to_f; end
+def to_f(); end
 
 ##
 # Always returns the empty string.
-def to_s; end
+def to_s(); end
 
 ##
 # Always returns an empty array.
 # 
 #    nil.to_a   #=> []
-def to_a; end
+def to_a(); end
 
 ##
 # Always returns the string "nil".
-def inspect; end
+def inspect(); end
 
 ##
 # And---Returns <code>false</code>. <i>obj</i> is always
 # evaluated as it is the argument to a method call---there is no
 # short-circuit evaluation in this case.
-def &; end
+def &(p1); end
 
 ##
 # Or---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
-def |; end
+def |(p1); end
 
 ##
 # Exclusive Or---If <i>obj</i> is <code>nil</code> or
 # <code>false</code>, returns <code>false</code>; otherwise, returns
 # <code>true</code>.
-def ^; end
+def ^(p1); end
 
 ##
 # call_seq:
 #   nil.nil?               -> true
 # 
 # Only the object <i>nil</i> responds <code>true</code> to <code>nil?</code>.
-def nil?; end
+def nil?(); end
 
 ##
 # Returns zero as a complex.
-def to_c; end
+def to_c(); end
 
 end
 
@@ -11264,7 +11264,7 @@ end
 # methods with names ending in ``!'' modify their receiver, while those
 # without a ``!'' return a new <code>String</code>.  However, there are
 # exceptions, such as <code>String#[]=</code>.
-class String < RDoc::NormalClass Object < BasicObject
+class String < Object
 include Comparable
 ##
 # Returns a rational which denotes the string form.  The parser
@@ -11285,7 +11285,7 @@ include Comparable
 #    '21 june 09'.to_r  #=> (21/1)
 #    '21/06/09'.to_r    #=> (7/2)
 #    'bwv 1079'.to_r    #=> (0/1)
-def to_r; end
+def to_r(); end
 
 ##
 # Try to convert <i>obj</i> into a String, using to_str method.
@@ -11294,11 +11294,11 @@ def to_r; end
 # 
 #    String.try_convert("str")     #=> "str"
 #    String.try_convert(/re/)      #=> nil
-def self.try_convert; end
+def self.try_convert(p1); end
 
 ##
 # Returns a new string object containing a copy of <i>str</i>.
-def self.new; end
+def self.new(p1=0); end
 
 ##
 # Replaces the contents and taintedness of <i>str</i> with the corresponding
@@ -11306,7 +11306,7 @@ def self.new; end
 # 
 #    s = "hello"         #=> "hello"
 #    s.replace "world"   #=> "world"
-def initialize_copy; end
+def initialize_copy(p1); end
 
 ##
 # Comparison---Returns -1 if <i>other_str</i> is greater than, 0 if
@@ -11326,27 +11326,27 @@ def initialize_copy; end
 #    "abcdef" <=> "abcdef"    #=> 0
 #    "abcdef" <=> "abcdefg"   #=> -1
 #    "abcdef" <=> "ABCDEF"    #=> 1
-def <=>; end
+def <=>(p1); end
 
 ##
 # Equality---If <i>obj</i> is not a <code>String</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>str</i>
 # <code><=></code> <i>obj</i> returns zero.
-def ==; end
+def ==(p1); end
 
 ##
 # Equality---If <i>obj</i> is not a <code>String</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>str</i>
 # <code><=></code> <i>obj</i> returns zero.
-def ===; end
+def ===(p1); end
 
 ##
 # Two strings are equal if they have the same length and content.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Return a hash based on the string's length and content.
-def hash; end
+def hash(); end
 
 ##
 # Case-insensitive version of <code>String#<=></code>.
@@ -11355,21 +11355,21 @@ def hash; end
 #    "aBcDeF".casecmp("abcdef")    #=> 0
 #    "abcdef".casecmp("abcdefg")   #=> -1
 #    "abcdef".casecmp("ABCDEF")    #=> 0
-def casecmp; end
+def casecmp(p1); end
 
 ##
 # Concatenation---Returns a new <code>String</code> containing
 # <i>other_str</i> concatenated to <i>str</i>.
 # 
 #    "Hello from " + self.to_s   #=> "Hello from main"
-def +; end
+def +(p1); end
 
 ##
 # Copy---Returns a new <code>String</code> containing <i>integer</i> copies of
 # the receiver.
 # 
 #    "Ho! " * 3   #=> "Ho! Ho! Ho! "
-def *; end
+def *(p1); end
 
 ##
 # Format---Uses <i>str</i> as a format specification, and returns the result
@@ -11381,7 +11381,7 @@ def *; end
 #    "%05d" % 123                              #=> "00123"
 #    "%-5s: %08x" % [ "ID", self.object_id ]   #=> "ID   : 200e14d6"
 #    "foo = %{foo}" % { :foo => 'bar' }        #=> "foo = bar"
-def %; end
+def %(p1); end
 
 ##
 # Element Reference---If passed a single <code>Fixnum</code>, returns a
@@ -11415,7 +11415,7 @@ def %; end
 #    a[/[aeiou](.)\1/, 2]   #=> nil
 #    a["lo"]                #=> "lo"
 #    a["bye"]               #=> nil
-def []; end
+def [](*args); end
 
 ##
 # Element Assignment---Replaces some or all of the content of <i>str</i>. The
@@ -11431,7 +11431,7 @@ def []; end
 # out of range; the <code>Range</code> form will raise a
 # <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
 # forms will silently ignore the assignment.
-def []=; end
+def []=(*args); end
 
 ##
 # Inserts <i>other_str</i> before the character at the given
@@ -11445,26 +11445,26 @@ def []=; end
 #    "abcd".insert(4, 'X')    #=> "abcdX"
 #    "abcd".insert(-3, 'X')   #=> "abXcd"
 #    "abcd".insert(-1, 'X')   #=> "abcdX"
-def insert; end
+def insert(p1, p2); end
 
 ##
 # Returns the character length of <i>str</i>.
-def length; end
+def length(); end
 
 ##
 # Returns the character length of <i>str</i>.
-def size; end
+def size(); end
 
 ##
 # Returns the length of <i>str</i> in bytes.
-def bytesize; end
+def bytesize(); end
 
 ##
 # Returns <code>true</code> if <i>str</i> has a length of zero.
 # 
 #    "hello".empty?   #=> false
 #    "".empty?        #=> true
-def empty?; end
+def empty?(); end
 
 ##
 # Match---If <i>obj</i> is a <code>Regexp</code>, use it as a pattern to match
@@ -11475,7 +11475,7 @@ def empty?; end
 # 
 #    "cat o' 9 tails" =~ /\d/   #=> 7
 #    "cat o' 9 tails" =~ 9      #=> nil
-def =~; end
+def =~(p1); end
 
 ##
 # Converts <i>pattern</i> to a <code>Regexp</code> (if it isn't already one),
@@ -11500,7 +11500,7 @@ def =~; end
 #    end
 # 
 # The return value is a value from block execution in this case.
-def match; end
+def match(*args); end
 
 ##
 # Returns the successor to <i>str</i>. The successor is calculated by
@@ -11521,12 +11521,12 @@ def match; end
 #    "1999zzz".succ     #=> "2000aaa"
 #    "ZZZ9999".succ     #=> "AAAA0000"
 #    "***".succ         #=> "**+"
-def succ; end
+def succ(); end
 
 ##
 # Equivalent to <code>String#succ</code>, but modifies the receiver in
 # place.
-def succ!; end
+def succ!(); end
 
 ##
 # Returns the successor to <i>str</i>. The successor is calculated by
@@ -11547,12 +11547,12 @@ def succ!; end
 #    "1999zzz".succ     #=> "2000aaa"
 #    "ZZZ9999".succ     #=> "AAAA0000"
 #    "***".succ         #=> "**+"
-def next; end
+def next(); end
 
 ##
 # Equivalent to <code>String#succ</code>, but modifies the receiver in
 # place.
-def next!; end
+def next!(); end
 
 ##
 # Iterates through successive values, starting at <i>str</i> and
@@ -11580,7 +11580,7 @@ def next!; end
 #    "9".upto("11").to_a   #=> ["9", "10", "11"]
 #    "25".upto("5").to_a   #=> []
 #    "07".upto("11").to_a  #=> ["07", "08", "09", "10", "11"]
-def upto; end
+def upto(p1, p2=0); end
 
 ##
 # Returns the index of the first occurrence of the given <i>substring</i> or
@@ -11593,7 +11593,7 @@ def upto; end
 #    "hello".index('a')             #=> nil
 #    "hello".index(?e)              #=> 1
 #    "hello".index(/[aeiou]/, -3)   #=> 4
-def index; end
+def index(p1, p2=0); end
 
 ##
 # Returns the index of the last occurrence of the given <i>substring</i> or
@@ -11607,7 +11607,7 @@ def index; end
 #    "hello".rindex('a')             #=> nil
 #    "hello".rindex(?e)              #=> 1
 #    "hello".rindex(/[aeiou]/, -2)   #=> 1
-def rindex; end
+def rindex(p1, p2=0); end
 
 ##
 # Replaces the contents and taintedness of <i>str</i> with the corresponding
@@ -11615,29 +11615,29 @@ def rindex; end
 # 
 #    s = "hello"         #=> "hello"
 #    s.replace "world"   #=> "world"
-def replace; end
+def replace(p1); end
 
 ##
 # Makes string empty.
 # 
 #    a = "abcde"
 #    a.clear    #=> ""
-def clear; end
+def clear(); end
 
 ##
 # Returns a one-character string at the beginning of the string.
 # 
 #    a = "abcde"
 #    a.chr    #=> "a"
-def chr; end
+def chr(); end
 
 ##
 # returns the <i>index</i>th byte as an integer.
-def getbyte; end
+def getbyte(p1); end
 
 ##
 # modifies the <i>index</i>th byte as <i>int</i>.
-def setbyte; end
+def setbyte(p1, p2); end
 
 ##
 # Byte Reference---If passed a single <code>Fixnum</code>, returns a
@@ -11655,7 +11655,7 @@ def setbyte; end
 #    "hello".byteslice(1, 2)  #=> "el"
 #    "\x80\u3042".byteslice(1, 3) #=> "\u3042"
 #    "\x03\u3042\xff".byteslice(1..3) #=> "\u3942"
-def byteslice; end
+def byteslice(*args); end
 
 ##
 # Returns the result of interpreting leading characters in <i>str</i> as an
@@ -11673,7 +11673,7 @@ def byteslice; end
 #    "1100101".to_i(8)        #=> 294977
 #    "1100101".to_i(10)       #=> 1100101
 #    "1100101".to_i(16)       #=> 17826049
-def to_i; end
+def to_i(p1=0); end
 
 ##
 # Returns the result of interpreting leading characters in <i>str</i> as a
@@ -11684,15 +11684,15 @@ def to_i; end
 #    "123.45e1".to_f        #=> 1234.5
 #    "45.67 degrees".to_f   #=> 45.67
 #    "thx1138".to_f         #=> 0.0
-def to_f; end
+def to_f(); end
 
 ##
 # Returns the receiver.
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the receiver.
-def to_str; end
+def to_str(); end
 
 ##
 # Returns a printable version of _str_, surrounded by quote marks,
@@ -11701,12 +11701,12 @@ def to_str; end
 #    str = "hello"
 #    str[3] = "\b"
 #    str.inspect       #=> "\"hel\\bo\""
-def inspect; end
+def inspect(); end
 
 ##
 # Produces a version of <i>str</i> with all nonprinting characters replaced by
 # <code>\nnn</code> notation and all special characters escaped.
-def dump; end
+def dump(); end
 
 ##
 # Returns a copy of <i>str</i> with all lowercase letters replaced with their
@@ -11715,7 +11715,7 @@ def dump; end
 # Note: case replacement is effective only in ASCII region.
 # 
 #    "hEllO".upcase   #=> "HELLO"
-def upcase; end
+def upcase(); end
 
 ##
 # Returns a copy of <i>str</i> with all uppercase letters replaced with their
@@ -11724,7 +11724,7 @@ def upcase; end
 # Note: case replacement is effective only in ASCII region.
 # 
 #    "hEllO".downcase   #=> "hello"
-def downcase; end
+def downcase(); end
 
 ##
 # Returns a copy of <i>str</i> with the first character converted to uppercase
@@ -11734,7 +11734,7 @@ def downcase; end
 #    "hello".capitalize    #=> "Hello"
 #    "HELLO".capitalize    #=> "Hello"
 #    "123ABC".capitalize   #=> "123abc"
-def capitalize; end
+def capitalize(); end
 
 ##
 # Returns a copy of <i>str</i> with uppercase alphabetic characters converted
@@ -11743,19 +11743,19 @@ def capitalize; end
 # 
 #    "Hello".swapcase          #=> "hELLO"
 #    "cYbEr_PuNk11".swapcase   #=> "CyBeR_pUnK11"
-def swapcase; end
+def swapcase(); end
 
 ##
 # Upcases the contents of <i>str</i>, returning <code>nil</code> if no changes
 # were made.
 # Note: case replacement is effective only in ASCII region.
-def upcase!; end
+def upcase!(); end
 
 ##
 # Downcases the contents of <i>str</i>, returning <code>nil</code> if no
 # changes were made.
 # Note: case replacement is effective only in ASCII region.
-def downcase!; end
+def downcase!(); end
 
 ##
 # Modifies <i>str</i> by converting the first character to uppercase and the
@@ -11766,13 +11766,13 @@ def downcase!; end
 #    a.capitalize!   #=> "Hello"
 #    a               #=> "Hello"
 #    a.capitalize!   #=> nil
-def capitalize!; end
+def capitalize!(); end
 
 ##
 # Equivalent to <code>String#swapcase</code>, but modifies the receiver in
 # place, returning <i>str</i>, or <code>nil</code> if no changes were made.
 # Note: case conversion is effective only in ASCII region.
-def swapcase!; end
+def swapcase!(); end
 
 ##
 # Treats leading characters from <i>str</i> as a string of hexadecimal digits
@@ -11783,7 +11783,7 @@ def swapcase!; end
 #    "-1234".hex    #=> -4660
 #    "0".hex        #=> 0
 #    "wombat".hex   #=> 0
-def hex; end
+def hex(); end
 
 ##
 # Treats leading characters of <i>str</i> as a string of octal digits (with an
@@ -11794,7 +11794,7 @@ def hex; end
 #    "-377".oct      #=> -255
 #    "bad".oct       #=> 0
 #    "0377bad".oct   #=> 255
-def oct; end
+def oct(); end
 
 ##
 # Divides <i>str</i> into substrings based on a delimiter, returning an array
@@ -11833,7 +11833,7 @@ def oct; end
 #    "1,2,,3,4,,".split(',')         #=> ["1", "2", "", "3", "4"]
 #    "1,2,,3,4,,".split(',', 4)      #=> ["1", "2", "", "3,4,,"]
 #    "1,2,,3,4,,".split(',', -4)     #=> ["1", "2", "", "3", "4", "", ""]
-def split; end
+def split(p1=0, p2=0); end
 
 ##
 # Splits <i>str</i> using the supplied parameter as the record separator
@@ -11863,7 +11863,7 @@ def split; end
 #    Example three
 #    "hello\n\n\n"
 #    "world"
-def lines; end
+def lines(p1=0); end
 
 ##
 # Passes each byte in <i>str</i> to the given block, or returns
@@ -11874,7 +11874,7 @@ def lines; end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111
-def bytes; end
+def bytes(); end
 
 ##
 # Passes each character in <i>str</i> to the given block, or returns
@@ -11885,7 +11885,7 @@ def bytes; end
 # <em>produces:</em>
 # 
 #    h e l l o
-def chars; end
+def chars(); end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
@@ -11899,17 +11899,17 @@ def chars; end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111 1593
-def codepoints; end
+def codepoints(); end
 
 ##
 # Returns a new string with the characters from <i>str</i> in reverse order.
 # 
 #    "stressed".reverse   #=> "desserts"
-def reverse; end
+def reverse(); end
 
 ##
 # Reverses <i>str</i> in place.
-def reverse!; end
+def reverse!(); end
 
 ##
 # Append---Concatenates the given object to <i>str</i>. If the object is a
@@ -11919,7 +11919,7 @@ def reverse!; end
 #    a = "hello "
 #    a << "world"   #=> "hello world"
 #    a.concat(33)   #=> "hello world!"
-def concat; end
+def concat(p1); end
 
 ##
 # Append---Concatenates the given object to <i>str</i>. If the object is a
@@ -11929,7 +11929,7 @@ def concat; end
 #    a = "hello "
 #    a << "world"   #=> "hello world"
 #    a.concat(33)   #=> "hello world!"
-def <<; end
+def <<(p1); end
 
 ##
 # Prepend---Prepend the given string to <i>str</i>.
@@ -11937,14 +11937,14 @@ def <<; end
 # a = "world"
 # a.prepend("hello ") #=> "hello world"
 # a                   #=> "hello world"
-def prepend; end
+def prepend(p1); end
 
 ##
 # Applies a one-way cryptographic hash to <i>str</i> by invoking the standard
 # library function <code>crypt</code>. The argument is the salt string, which
 # should be two characters long, each character drawn from
 # <code>[a-zA-Z0-9./]</code>.
-def crypt; end
+def crypt(p1); end
 
 ##
 # Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
@@ -11960,7 +11960,7 @@ def crypt; end
 # <code>:xxx</code> notation.
 # 
 #    'cat and dog'.to_sym   #=> :"cat and dog"
-def intern; end
+def intern(); end
 
 ##
 # Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
@@ -11976,13 +11976,13 @@ def intern; end
 # <code>:xxx</code> notation.
 # 
 #    'cat and dog'.to_sym   #=> :"cat and dog"
-def to_sym; end
+def to_sym(); end
 
 ##
 # Return the <code>Integer</code> ordinal of a one-character string.
 # 
 #    "a".ord         #=> 97
-def ord; end
+def ord(); end
 
 ##
 # Returns <code>true</code> if <i>str</i> contains the given string or
@@ -11991,7 +11991,7 @@ def ord; end
 #    "hello".include? "lo"   #=> true
 #    "hello".include? "ol"   #=> false
 #    "hello".include? ?h     #=> true
-def include?; end
+def include?(p1); end
 
 ##
 # Returns true if <i>str</i> starts with one of the prefixes given.
@@ -12001,11 +12001,11 @@ def include?; end
 #   # returns true if one of the prefixes matches.
 #   p "hello".start_with?("heaven", "hell")     #=> true
 #   p "hello".start_with?("heaven", "paradise") #=> false
-def start_with?; end
+def start_with?(*args); end
 
 ##
 # Returns true if <i>str</i> ends with one of the suffixes given.
-def end_with?; end
+def end_with?(*args); end
 
 ##
 # Both forms iterate through <i>str</i>, matching the pattern (which may be a
@@ -12032,7 +12032,7 @@ def end_with?; end
 # 
 #    <<cruel>> <<world>>
 #    rceu lowlr
-def scan; end
+def scan(p1); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12042,7 +12042,7 @@ def scan; end
 #    "hello".ljust(4)            #=> "hello"
 #    "hello".ljust(20)           #=> "hello               "
 #    "hello".ljust(20, '1234')   #=> "hello123412341234123"
-def ljust; end
+def ljust(*args); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12052,7 +12052,7 @@ def ljust; end
 #    "hello".rjust(4)            #=> "hello"
 #    "hello".rjust(20)           #=> "               hello"
 #    "hello".rjust(20, '1234')   #=> "123412341234123hello"
-def rjust; end
+def rjust(*args); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12062,7 +12062,7 @@ def rjust; end
 #    "hello".center(4)         #=> "hello"
 #    "hello".center(20)        #=> "       hello        "
 #    "hello".center(20, '123') #=> "1231231hello12312312"
-def center; end
+def center(*args); end
 
 ##
 # Returns a copy of <i>str</i> with the <em>first</em> occurrence of
@@ -12097,7 +12097,7 @@ def center; end
 #    "hello".sub(/(?<foo>[aeiou])/, '*\k<foo>*')  #=> "h*e*llo"
 #    'Is SHELL your preferred shell?'.sub(/[[:upper:]]{2,}/, ENV)
 #     #=> "Is /bin/bash your preferred shell?"
-def sub; end
+def sub(*args); end
 
 ##
 # Returns a copy of <i>str</i> with the <em>all</em> occurrences of
@@ -12134,7 +12134,7 @@ def sub; end
 #    "hello".gsub(/./) {|s| s.ord.to_s + ' '}      #=> "104 101 108 108 111 "
 #    "hello".gsub(/(?<foo>[aeiou])/, '{\k<foo>}')  #=> "h{e}ll{o}"
 #    'hello'.gsub(/[eo]/, 'e' => 3, 'o' => '*')    #=> "h3ll*"
-def gsub; end
+def gsub(*args); end
 
 ##
 # Returns a new <code>String</code> with the last character removed.  If the
@@ -12148,7 +12148,7 @@ def gsub; end
 #    "string\n".chop     #=> "string"
 #    "string".chop       #=> "strin"
 #    "x".chop.chop       #=> ""
-def chop; end
+def chop(); end
 
 ##
 # Returns a new <code>String</code> with the given record separator removed
@@ -12164,14 +12164,14 @@ def chop; end
 #    "hello\r".chomp          #=> "hello"
 #    "hello \n there".chomp   #=> "hello \n there"
 #    "hello".chomp("llo")     #=> "he"
-def chomp; end
+def chomp(*args); end
 
 ##
 # Returns a copy of <i>str</i> with leading and trailing whitespace removed.
 # 
 #    "    hello    ".strip   #=> "hello"
 #    "\tgoodbye\r\n".strip   #=> "goodbye"
-def strip; end
+def strip(); end
 
 ##
 # Returns a copy of <i>str</i> with leading whitespace removed. See also
@@ -12179,7 +12179,7 @@ def strip; end
 # 
 #    "  hello  ".lstrip   #=> "hello  "
 #    "hello".lstrip       #=> "hello"
-def lstrip; end
+def lstrip(); end
 
 ##
 # Returns a copy of <i>str</i> with trailing whitespace removed. See also
@@ -12187,35 +12187,35 @@ def lstrip; end
 # 
 #    "  hello  ".rstrip   #=> "  hello"
 #    "hello".rstrip       #=> "hello"
-def rstrip; end
+def rstrip(); end
 
 ##
 # Performs the substitutions of <code>String#sub</code> in place,
 # returning <i>str</i>, or <code>nil</code> if no substitutions were
 # performed.
-def sub!; end
+def sub!(*args); end
 
 ##
 # Performs the substitutions of <code>String#gsub</code> in place, returning
 # <i>str</i>, or <code>nil</code> if no substitutions were performed.
 # If no block and no <i>replacement</i> is given, an enumerator is returned instead.
-def gsub!; end
+def gsub!(*args); end
 
 ##
 # Processes <i>str</i> as for <code>String#chop</code>, returning <i>str</i>,
 # or <code>nil</code> if <i>str</i> is the empty string.  See also
 # <code>String#chomp!</code>.
-def chop!; end
+def chop!(); end
 
 ##
 # Modifies <i>str</i> in place as described for <code>String#chomp</code>,
 # returning <i>str</i>, or <code>nil</code> if no modifications were made.
-def chomp!; end
+def chomp!(p1=0); end
 
 ##
 # Removes leading and trailing whitespace from <i>str</i>. Returns
 # <code>nil</code> if <i>str</i> was not altered.
-def strip!; end
+def strip!(); end
 
 ##
 # Removes leading whitespace from <i>str</i>, returning <code>nil</code> if no
@@ -12224,7 +12224,7 @@ def strip!; end
 # 
 #    "  hello  ".lstrip   #=> "hello  "
 #    "hello".lstrip!      #=> nil
-def lstrip!; end
+def lstrip!(); end
 
 ##
 # Removes trailing whitespace from <i>str</i>, returning <code>nil</code> if
@@ -12233,7 +12233,7 @@ def lstrip!; end
 # 
 #    "  hello  ".rstrip   #=> "  hello"
 #    "hello".rstrip!      #=> nil
-def rstrip!; end
+def rstrip!(); end
 
 ##
 # Returns a copy of <i>str</i> with the characters in <i>from_str</i>
@@ -12250,7 +12250,7 @@ def rstrip!; end
 # 
 #    "hello".tr('a-y', 'b-z')    #=> "ifmmp"
 #    "hello".tr('^aeiou', '*')   #=> "*e**o"
-def tr; end
+def tr(p1, p2); end
 
 ##
 # Processes a copy of <i>str</i> as described under <code>String#tr</code>,
@@ -12260,7 +12260,7 @@ def tr; end
 #    "hello".tr_s('l', 'r')     #=> "hero"
 #    "hello".tr_s('el', '*')    #=> "h*o"
 #    "hello".tr_s('el', 'hx')   #=> "hhxo"
-def tr_s; end
+def tr_s(p1, p2); end
 
 ##
 # Returns a copy of <i>str</i> with all characters in the intersection of its
@@ -12271,7 +12271,7 @@ def tr_s; end
 #    "hello".delete "lo"            #=> "he"
 #    "hello".delete "aeiou", "^e"   #=> "hell"
 #    "hello".delete "ej-m"          #=> "ho"
-def delete; end
+def delete(*args); end
 
 ##
 # Builds a set of characters from the <i>other_str</i> parameter(s) using the
@@ -12283,7 +12283,7 @@ def delete; end
 #    "yellow moon".squeeze                  #=> "yelow mon"
 #    "  now   is  the".squeeze(" ")         #=> " now is the"
 #    "putters shoot balls".squeeze("m-z")   #=> "puters shot balls"
-def squeeze; end
+def squeeze(*args); end
 
 ##
 # Each <i>other_str</i> parameter defines a set of characters to count.  The
@@ -12296,28 +12296,28 @@ def squeeze; end
 #    a.count "lo", "o"       #=> 2
 #    a.count "hello", "^l"   #=> 4
 #    a.count "ej-m"          #=> 4
-def count; end
+def count(*args); end
 
 ##
 # Translates <i>str</i> in place, using the same rules as
 # <code>String#tr</code>. Returns <i>str</i>, or <code>nil</code> if no
 # changes were made.
-def tr!; end
+def tr!(p1, p2); end
 
 ##
 # Performs <code>String#tr_s</code> processing on <i>str</i> in place,
 # returning <i>str</i>, or <code>nil</code> if no changes were made.
-def tr_s!; end
+def tr_s!(p1, p2); end
 
 ##
 # Performs a <code>delete</code> operation in place, returning <i>str</i>, or
 # <code>nil</code> if <i>str</i> was not modified.
-def delete!; end
+def delete!(*args); end
 
 ##
 # Squeezes <i>str</i> in place, returning either <i>str</i>, or
 # <code>nil</code> if no changes were made.
-def squeeze!; end
+def squeeze!(*args); end
 
 ##
 # Splits <i>str</i> using the supplied parameter as the record separator
@@ -12347,7 +12347,7 @@ def squeeze!; end
 #    Example three
 #    "hello\n\n\n"
 #    "world"
-def each_line; end
+def each_line(p1=0); end
 
 ##
 # Passes each byte in <i>str</i> to the given block, or returns
@@ -12358,7 +12358,7 @@ def each_line; end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111
-def each_byte; end
+def each_byte(); end
 
 ##
 # Passes each character in <i>str</i> to the given block, or returns
@@ -12369,7 +12369,7 @@ def each_byte; end
 # <em>produces:</em>
 # 
 #    h e l l o
-def each_char; end
+def each_char(); end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
@@ -12383,7 +12383,7 @@ def each_char; end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111 1593
-def each_codepoint; end
+def each_codepoint(); end
 
 ##
 # Returns a basic <em>n</em>-bit checksum of the characters in <i>str</i>,
@@ -12391,7 +12391,7 @@ def each_codepoint; end
 # to 16. The result is simply the sum of the binary value of each character in
 # <i>str</i> modulo <code>2**n - 1</code>. This is not a particularly good
 # checksum.
-def sum; end
+def sum(p1=0); end
 
 ##
 # Element Reference---If passed a single <code>Fixnum</code>, returns a
@@ -12425,7 +12425,7 @@ def sum; end
 #    a[/[aeiou](.)\1/, 2]   #=> nil
 #    a["lo"]                #=> "lo"
 #    a["bye"]               #=> nil
-def slice; end
+def slice(*args); end
 
 ##
 # Deletes the specified portion from <i>str</i>, and returns the portion
@@ -12437,7 +12437,7 @@ def slice; end
 #    string.slice!(/s.*t/)   #=> "sa st"
 #    string.slice!("r")      #=> "r"
 #    string                  #=> "thing"
-def slice!; end
+def slice!(*args); end
 
 ##
 # Searches <i>sep</i> or pattern (<i>regexp</i>) in the string
@@ -12448,7 +12448,7 @@ def slice!; end
 #    "hello".partition("l")         #=> ["he", "l", "lo"]
 #    "hello".partition("x")         #=> ["hello", "", ""]
 #    "hello".partition(/.l/)        #=> ["h", "el", "lo"]
-def partition; end
+def partition(p1); end
 
 ##
 # Searches <i>sep</i> or pattern (<i>regexp</i>) in the string from the end
@@ -12459,15 +12459,15 @@ def partition; end
 #    "hello".rpartition("l")         #=> ["hel", "l", "o"]
 #    "hello".rpartition("x")         #=> ["", "", "hello"]
 #    "hello".rpartition(/.l/)        #=> ["he", "ll", "o"]
-def rpartition; end
+def rpartition(p1); end
 
 ##
 # Returns the Encoding object that represents the encoding of obj.
-def encoding; end
+def encoding(); end
 
 ##
 # Changes the encoding to +encoding+ and returns self.
-def force_encoding; end
+def force_encoding(p1); end
 
 ##
 # Returns true for a string which encoded correctly.
@@ -12475,14 +12475,14 @@ def force_encoding; end
 #   "\xc2\xa1".force_encoding("UTF-8").valid_encoding?  #=> true
 #   "\xc2".force_encoding("UTF-8").valid_encoding?      #=> false
 #   "\x80".force_encoding("UTF-8").valid_encoding?      #=> false
-def valid_encoding?; end
+def valid_encoding?(); end
 
 ##
 # Returns true for a string which has only ASCII characters.
 # 
 #   "abc".force_encoding("UTF-8").ascii_only?          #=> true
 #   "abc\u{6666}".force_encoding("UTF-8").ascii_only?  #=> false
-def ascii_only?; end
+def ascii_only?(); end
 
 ##
 # Decodes <i>str</i> (which may contain binary data) according to the
@@ -12587,7 +12587,7 @@ def ascii_only?; end
 #     @         | ---     | skip to the offset given by the length argument
 #     X         | ---     | skip backward one byte
 #     x         | ---     | skip forward one byte
-def unpack; end
+def unpack(p1); end
 
 ##
 # The first form returns a copy of +str+ transcoded
@@ -12638,7 +12638,7 @@ def unpack; end
 #   Replaces LF ("\n") with CRLF ("\r\n") if value is true.
 # :universal_newline ::
 #   Replaces CRLF ("\r\n") and CR ("\r") with LF ("\n") if value is true.
-def encode; end
+def encode(*args); end
 
 ##
 # The first form transcodes the contents of <i>str</i> from
@@ -12648,7 +12648,7 @@ def encode; end
 # The options Hash gives details for conversion. See String#encode
 # for details.
 # Returns the string even if no changes were made.
-def encode!; end
+def encode!(*args); end
 
 ##
 # Returns a complex which denotes the string form.  The parser
@@ -12669,7 +12669,7 @@ def encode!; end
 #    '-0.0-0.0i'.to_c   #=> (-0.0-0.0i)
 #    '1/2+3/4i'.to_c    #=> ((1/2)+(3/4)*i)
 #    'ruby'.to_c        #=> (0+0i)
-def to_c; end
+def to_c(); end
 
 end
 
@@ -12731,7 +12731,7 @@ class BasicObject
 # <code>Object#object_id</code> is a different concept from the
 # <code>:name</code> notation, which returns the symbol id of
 # <code>name</code>. Replaces the deprecated <code>Object#id</code>.
-def __id__; end
+def __id__(); end
 
 ##
 # Evaluates a string containing Ruby source code, or the given block,
@@ -12750,7 +12750,7 @@ def __id__; end
 #    end
 #    k = KlassWithSecret.new
 #    k.instance_eval { @secret }   #=> 99
-def instance_eval; end
+def instance_eval(*args); end
 
 ##
 # Executes the given block within the context of the receiver
@@ -12765,7 +12765,7 @@ def instance_eval; end
 #    end
 #    k = KlassWithSecret.new
 #    k.instance_exec(5) {|x| @secret+x }   #=> 104
-def instance_exec; end
+def instance_exec(*args); end
 
 ##
 # Invoked by Ruby when <i>obj</i> is sent a message it cannot handle.
@@ -12795,7 +12795,7 @@ def instance_exec; end
 #    r.iv      #=> 4
 #    r.xxiii   #=> 23
 #    r.mm      #=> 2000
-def method_missing; end
+def method_missing(*args); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -12809,11 +12809,11 @@ def method_missing; end
 #    end
 #    k = Klass.new
 #    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
-def __send__; end
+def __send__(*args); end
 
 ##
 # Not documented
-def self.new; end
+def self.new(); end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -12837,7 +12837,7 @@ def self.new; end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -12861,15 +12861,15 @@ def ==; end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def equal?; end
+def equal?(p1); end
 
 ##
 # Boolean negate.
-def !; end
+def !(); end
 
 ##
 # Returns true if two objects are not-equal, otherwise false.
-def !=; end
+def !=(p1); end
 
 ##
 # Invoked as a callback whenever a singleton method is added to the
@@ -12889,7 +12889,7 @@ def !=; end
 #    Adding singleton_method_added
 #    Adding one
 #    Adding three
-def singleton_method_added; end
+def singleton_method_added(p1); end
 
 ##
 # Invoked as a callback whenever a singleton method is removed from
@@ -12912,7 +12912,7 @@ def singleton_method_added; end
 # 
 #    Removing three
 #    Removing one
-def singleton_method_removed; end
+def singleton_method_removed(p1); end
 
 ##
 # Invoked as a callback whenever a singleton method is undefined in
@@ -12931,7 +12931,7 @@ def singleton_method_removed; end
 # <em>produces:</em>
 # 
 #    Undefining one
-def singleton_method_undefined; end
+def singleton_method_undefined(p1); end
 
 end
 
@@ -12949,7 +12949,7 @@ end
 # In the descriptions that follow, the parameter <i>symbol</i> refers
 # to a symbol, which is either a quoted string or a
 # <code>Symbol</code> (such as <code>:name</code>).
-class Struct < RDoc::NormalClass Object < BasicObject
+class Struct < Object
 include Enumerable
 ##
 # Creates a new class, named by <i>aString</i>, containing accessor
@@ -12978,7 +12978,7 @@ include Enumerable
 #    # Create a structure named by its constant
 #    Customer = Struct.new(:name, :address)     #=> Customer
 #    Customer.new("Dave", "123 Main")           #=> #<struct Customer name="Dave", address="123 Main">
-def self.new; end
+def self.new(p1, *args); end
 
 ##
 # Equality---Returns <code>true</code> if <i>other_struct</i> is
@@ -12992,7 +12992,7 @@ def self.new; end
 #    jane  = Customer.new("Jane Doe", "456 Elm, Anytown NC", 12345)
 #    joe == joejr   #=> true
 #    joe == jane    #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # code-seq:
@@ -13000,15 +13000,15 @@ def ==; end
 # 
 # Two structures are equal if they are the same object, or if all their
 # fields are equal (using <code>eql?</code>).
-def eql?; end
+def eql?(p1); end
 
 ##
 # Return a hash value based on this struct's contents.
-def hash; end
+def hash(); end
 
 ##
 # Describe the contents of this struct in a string.
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the values for this instance as an array.
@@ -13016,7 +13016,7 @@ def inspect; end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.to_a[1]   #=> "123 Maple, Anytown NC"
-def to_a; end
+def to_a(); end
 
 ##
 # Returns the values for this instance as an array.
@@ -13024,7 +13024,7 @@ def to_a; end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.to_a[1]   #=> "123 Maple, Anytown NC"
-def values; end
+def values(); end
 
 ##
 # Returns the number of instance variables.
@@ -13032,7 +13032,7 @@ def values; end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.length   #=> 3
-def size; end
+def size(); end
 
 ##
 # Returns the number of instance variables.
@@ -13040,7 +13040,7 @@ def size; end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.length   #=> 3
-def length; end
+def length(); end
 
 ##
 # Calls <i>block</i> once for each instance variable, passing the
@@ -13057,7 +13057,7 @@ def length; end
 #    Joe Smith
 #    123 Maple, Anytown NC
 #    12345
-def each; end
+def each(); end
 
 ##
 # Calls <i>block</i> once for each instance variable, passing the name
@@ -13074,7 +13074,7 @@ def each; end
 #    name => Joe Smith
 #    address => 123 Maple, Anytown NC
 #    zip => 12345
-def each_pair; end
+def each_pair(); end
 
 ##
 # Attribute Reference---Returns the value of the instance variable
@@ -13089,7 +13089,7 @@ def each_pair; end
 #    joe["name"]   #=> "Joe Smith"
 #    joe[:name]    #=> "Joe Smith"
 #    joe[0]        #=> "Joe Smith"
-def []; end
+def [](p1); end
 
 ##
 # Attribute Assignment---Assigns to the instance variable named by
@@ -13106,7 +13106,7 @@ def []; end
 # 
 #    joe.name   #=> "Luke"
 #    joe.zip    #=> "90210"
-def []=; end
+def []=(p1, p2); end
 
 ##
 # Invokes the block passing in successive elements from
@@ -13117,7 +13117,7 @@ def []=; end
 #    Lots = Struct.new(:a, :b, :c, :d, :e, :f)
 #    l = Lots.new(11, 22, 33, 44, 55, 66)
 #    l.select {|v| (v % 2).zero? }   #=> [22, 44, 66]
-def select; end
+def select(*args); end
 
 ##
 # Returns an array containing the elements in
@@ -13130,7 +13130,7 @@ def select; end
 #    a.values_at(1, 3, 5, 7)
 #    a.values_at(-1, -3, -5, -7)
 #    a.values_at(1..3, 2...5)
-def values_at; end
+def values_at(*args); end
 
 ##
 # Returns an array of strings representing the names of the instance
@@ -13139,9 +13139,9 @@ def values_at; end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.members   #=> [:name, :address, :zip]
-def members; end
+def members(); end
 
-def to_s; end
+def to_s(); end
 
 end
 
@@ -13173,7 +13173,7 @@ end
 #    $f1.object_id   #=> 2514190
 #    $f2.object_id   #=> 2514190
 #    $f3.object_id   #=> 2514190
-class Symbol < RDoc::NormalClass Object < BasicObject
+class Symbol < Object
 include Comparable
 ##
 # Returns an array of all the symbols currently in Ruby's symbol
@@ -13186,117 +13186,117 @@ include Comparable
 #                                    :default_proc, :compact, :extend,
 #                                    :Tms, :getwd, :$=, :ThreadGroup,
 #                                    :wait2, :$>]
-def self.all_symbols; end
+def self.all_symbols(); end
 
 ##
 # Equality---If <i>sym</i> and <i>obj</i> are exactly the same
 # symbol, returns <code>true</code>.
-def ==; end
+def ==(p1); end
 
 ##
 # Equality---If <i>sym</i> and <i>obj</i> are exactly the same
 # symbol, returns <code>true</code>.
-def ===; end
+def ===(p1); end
 
 ##
 # Returns the representation of <i>sym</i> as a symbol literal.
 # 
 #    :fred.inspect   #=> ":fred"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the name or string corresponding to <i>sym</i>.
 # 
 #    :fred.id2name   #=> "fred"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the name or string corresponding to <i>sym</i>.
 # 
 #    :fred.id2name   #=> "fred"
-def id2name; end
+def id2name(); end
 
 ##
 # In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
 # to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
 # in this case.
-def intern; end
+def intern(); end
 
 ##
 # In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
 # to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
 # in this case.
-def to_sym; end
+def to_sym(); end
 
 ##
 # Returns a _Proc_ object which respond to the given method by _sym_.
 # 
 #   (1..3).collect(&:to_s)  #=> ["1", "2", "3"]
-def to_proc; end
+def to_proc(); end
 
 ##
 # Same as <code>sym.to_s.succ.intern</code>.
-def succ; end
+def succ(); end
 
 ##
 # Same as <code>sym.to_s.succ.intern</code>.
-def next; end
+def next(); end
 
 ##
 # Compares _sym_ with _other_ in string form.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Case-insensitive version of <code>Symbol#<=></code>.
-def casecmp; end
+def casecmp(p1); end
 
 ##
 # Returns <code>sym.to_s =~ obj</code>.
-def =~; end
+def =~(p1); end
 
 ##
 # Returns <code>sym.to_s[]</code>.
-def []; end
+def [](*args); end
 
 ##
 # Returns <code>sym.to_s[]</code>.
-def slice; end
+def slice(*args); end
 
 ##
 # Same as <code>sym.to_s.length</code>.
-def length; end
+def length(); end
 
 ##
 # Same as <code>sym.to_s.length</code>.
-def size; end
+def size(); end
 
 ##
 # Returns that _sym_ is :"" or not.
-def empty?; end
+def empty?(); end
 
 ##
 # Returns <code>sym.to_s =~ obj</code>.
-def match; end
+def match(p1); end
 
 ##
 # Same as <code>sym.to_s.upcase.intern</code>.
-def upcase; end
+def upcase(); end
 
 ##
 # Same as <code>sym.to_s.downcase.intern</code>.
-def downcase; end
+def downcase(); end
 
 ##
 # Same as <code>sym.to_s.capitalize.intern</code>.
-def capitalize; end
+def capitalize(); end
 
 ##
 # Same as <code>sym.to_s.swapcase.intern</code>.
-def swapcase; end
+def swapcase(); end
 
 ##
 # Returns the Encoding object that represents the encoding of _sym_.
-def encoding; end
+def encoding(); end
 
 end
 
@@ -13351,7 +13351,7 @@ end
 #                |       +---+         |        +----+
 #                |                     |
 #   obj--->OtherClass---------->(OtherClass)-----------...
-class Class < RDoc::NormalClass Module < Object
+class Class < Module
 ##
 # Callback invoked whenever a subclass of the current class is created.
 # 
@@ -13373,7 +13373,7 @@ class Class < RDoc::NormalClass Module < Object
 # 
 #    New subclass: Bar
 #    New subclass: Baz
-def inherited; end
+def inherited(p1); end
 
 ##
 # Allocates space for a new object of <i>class</i>'s class and does not
@@ -13391,7 +13391,7 @@ def inherited; end
 #     end
 # 
 #     klass.allocate.initialized? #=> false
-def allocate; end
+def allocate(); end
 
 ##
 # Calls <code>allocate</code> to create a new object of
@@ -13399,7 +13399,7 @@ def allocate; end
 # <code>initialize</code> method, passing it <i>args</i>.
 # This is the method that ends up getting called whenever
 # an object is constructed using .new.
-def new; end
+def new(*args); end
 
 ##
 # Creates a new anonymous (unnamed) class with the given superclass
@@ -13425,7 +13425,7 @@ def new; end
 # 
 # Assign the class to a constant (name starting uppercase) if you
 # want to treat it like a regular class.
-def self.new; end
+def self.new(p1=0); end
 
 ##
 # Returns the superclass of <i>class</i>, or <code>nil</code>.
@@ -13440,7 +13440,7 @@ def self.new; end
 # returns nil when the given class hasn't a parent class:
 # 
 #    BasicObject.superclass   #=> nil
-def superclass; end
+def superclass(); end
 
 end
 
@@ -13453,7 +13453,7 @@ end
 # Hashes have a <em>default value</em> that is returned when accessing
 # keys that do not exist in the hash. By default, that value is
 # <code>nil</code>.
-class Hash < RDoc::NormalClass Object < BasicObject
+class Hash < Object
 include Enumerable
 ##
 # Creates a new hash populated with the given objects. Equivalent to
@@ -13465,7 +13465,7 @@ include Enumerable
 #    Hash["a", 100, "b", 200]             #=> {"a"=>100, "b"=>200}
 #    Hash[ [ ["a", 100], ["b", 200] ] ]   #=> {"a"=>100, "b"=>200}
 #    Hash["a" => 100, "b" => 200]         #=> {"a"=>100, "b"=>200}
-def self.[]; end
+def self.[](*args); end
 
 ##
 # Try to convert <i>obj</i> into a hash, using to_hash method.
@@ -13474,7 +13474,7 @@ def self.[]; end
 # 
 #    Hash.try_convert({1=>2})   # => {1=>2}
 #    Hash.try_convert("1=>2")   # => nil
-def self.try_convert; end
+def self.try_convert(p1); end
 
 ##
 # Returns a new, empty hash. If this hash is subsequently accessed by
@@ -13503,7 +13503,7 @@ def self.try_convert; end
 #    h["c"].upcase!   #=> "GO FISH: C"
 #    h["d"]           #=> "Go Fish: d"
 #    h.keys           #=> ["c", "d"]
-def self.new; end
+def self.new(p1=0); end
 
 ##
 # Replaces the contents of <i>hsh</i> with the contents of
@@ -13511,7 +13511,7 @@ def self.new; end
 # 
 #    h = { "a" => 100, "b" => 200 }
 #    h.replace({ "c" => 300, "d" => 400 })   #=> {"c"=>300, "d"=>400}
-def initialize_copy; end
+def initialize_copy(p1); end
 
 ##
 # Rebuilds the hash based on the current hash values for each key. If
@@ -13528,11 +13528,11 @@ def initialize_copy; end
 #    h[a]       #=> nil
 #    h.rehash   #=> {["z", "b"]=>100, ["c", "d"]=>300}
 #    h[a]       #=> 100
-def rehash; end
+def rehash(); end
 
 ##
 # Returns +self+.
-def to_hash; end
+def to_hash(); end
 
 ##
 # Converts <i>hsh</i> to a nested array of <code>[</code> <i>key,
@@ -13540,14 +13540,14 @@ def to_hash; end
 # 
 #    h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300  }
 #    h.to_a   #=> [["c", 300], ["a", 100], ["d", 400]]
-def to_a; end
+def to_a(); end
 
 ##
 # Return the contents of this hash as a string.
 # 
 #     h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300  }
 #     h.to_s   #=> "{\"c\"=>300, \"a\"=>100, \"d\"=>400}"
-def inspect; end
+def inspect(); end
 
 ##
 # Equality---Two hashes are equal if they each contain the same number
@@ -13562,7 +13562,7 @@ def inspect; end
 #    h1 == h2   #=> false
 #    h2 == h3   #=> true
 #    h3 == h4   #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Element Reference---Retrieves the <i>value</i> object corresponding
@@ -13572,17 +13572,17 @@ def ==; end
 #    h = { "a" => 100, "b" => 200 }
 #    h["a"]   #=> 100
 #    h["c"]   #=> nil
-def []; end
+def [](p1); end
 
 ##
 # Compute a hash-code for this hash. Two hashes with the same content
 # will have the same hash code (and will compare using <code>eql?</code>).
-def hash; end
+def hash(); end
 
 ##
 # Returns <code>true</code> if <i>hash</i> and <i>other</i> are
 # both hashes with the same content.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Returns a value from the hash for the given key. If the key can't be
@@ -13606,7 +13606,7 @@ def eql?; end
 # 
 #    prog.rb:2:in `fetch': key not found (KeyError)
 #     from prog.rb:2
-def fetch; end
+def fetch(p1, p2=0); end
 
 ##
 # Element Assignment---Associates the value given by
@@ -13619,7 +13619,7 @@ def fetch; end
 #    h["a"] = 9
 #    h["c"] = 4
 #    h   #=> {"a"=>9, "b"=>200, "c"=>4}
-def []=; end
+def []=(p1, p2); end
 
 ##
 # Element Assignment---Associates the value given by
@@ -13632,7 +13632,7 @@ def []=; end
 #    h["a"] = 9
 #    h["c"] = 4
 #    h   #=> {"a"=>9, "b"=>200, "c"=>4}
-def store; end
+def store(p1, p2); end
 
 ##
 # Returns the default value, the value that would be returned by
@@ -13650,7 +13650,7 @@ def store; end
 #    h = Hash.new {|h,k| h[k] = k.to_i*10}   #=> {}
 #    h.default                               #=> nil
 #    h.default(2)                            #=> 20
-def default; end
+def default(p1=0); end
 
 ##
 # Sets the default value, the value returned for a key that does not
@@ -13667,7 +13667,7 @@ def default; end
 #    end
 #    h[2]       #=> #<Proc:0x401b3948@-:6>
 #    h["cat"]   #=> #<Proc:0x401b3948@-:6>
-def default=; end
+def default=(p1); end
 
 ##
 # If <code>Hash::new</code> was invoked with a block, return that
@@ -13678,7 +13678,7 @@ def default=; end
 #    a = []                             #=> []
 #    p.call(a, 2)
 #    a                                  #=> [nil, nil, 4]
-def default_proc; end
+def default_proc(); end
 
 ##
 # Sets the default proc to be executed on each key lookup.
@@ -13688,7 +13688,7 @@ def default_proc; end
 #    end
 #    h[2]       #=> 4
 #    h["cat"]   #=> "catcat"
-def default_proc=; end
+def default_proc=(p1); end
 
 ##
 # Returns the key of an occurrence of a given value. If the value is
@@ -13698,7 +13698,7 @@ def default_proc=; end
 #    h.key(200)   #=> "b"
 #    h.key(300)   #=> "c"
 #    h.key(999)   #=> nil
-def key; end
+def key(p1); end
 
 ##
 # Returns the number of key-value pairs in the hash.
@@ -13707,7 +13707,7 @@ def key; end
 #    h.length        #=> 4
 #    h.delete("a")   #=> 200
 #    h.length        #=> 3
-def size; end
+def size(); end
 
 ##
 # Returns the number of key-value pairs in the hash.
@@ -13716,13 +13716,13 @@ def size; end
 #    h.length        #=> 4
 #    h.delete("a")   #=> 200
 #    h.length        #=> 3
-def length; end
+def length(); end
 
 ##
 # Returns <code>true</code> if <i>hsh</i> contains no key-value pairs.
 # 
 #    {}.empty?   #=> true
-def empty?; end
+def empty?(); end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the
@@ -13737,7 +13737,7 @@ def empty?; end
 # 
 #    100
 #    200
-def each_value; end
+def each_value(); end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key
@@ -13752,7 +13752,7 @@ def each_value; end
 # 
 #    a
 #    b
-def each_key; end
+def each_key(); end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
@@ -13767,7 +13767,7 @@ def each_key; end
 # 
 #    a is 100
 #    b is 200
-def each_pair; end
+def each_pair(); end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
@@ -13782,7 +13782,7 @@ def each_pair; end
 # 
 #    a is 100
 #    b is 200
-def each; end
+def each(); end
 
 ##
 # Returns a new array populated with the keys from this hash. See also
@@ -13790,7 +13790,7 @@ def each; end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300, "d" => 400 }
 #    h.keys   #=> ["a", "b", "c", "d"]
-def keys; end
+def keys(); end
 
 ##
 # Returns a new array populated with the values from <i>hsh</i>. See
@@ -13798,7 +13798,7 @@ def keys; end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.values   #=> [100, 200, 300]
-def values; end
+def values(); end
 
 ##
 # Return an array containing the values associated with the given keys.
@@ -13806,7 +13806,7 @@ def values; end
 # 
 #   h = { "cat" => "feline", "dog" => "canine", "cow" => "bovine" }
 #   h.values_at("cow", "cat")  #=> ["bovine", "feline"]
-def values_at; end
+def values_at(*args); end
 
 ##
 # Removes a key-value pair from <i>hsh</i> and returns it as the
@@ -13816,7 +13816,7 @@ def values_at; end
 #    h = { 1 => "a", 2 => "b", 3 => "c" }
 #    h.shift   #=> [1, "a"]
 #    h         #=> {2=>"b", 3=>"c"}
-def shift; end
+def shift(); end
 
 ##
 # Deletes and returns a key-value pair from <i>hsh</i> whose key is
@@ -13829,7 +13829,7 @@ def shift; end
 #    h.delete("a")                              #=> 100
 #    h.delete("z")                              #=> nil
 #    h.delete("z") { |el| "#{el} not found" }   #=> "z not found"
-def delete; end
+def delete(p1); end
 
 ##
 # Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
@@ -13839,14 +13839,14 @@ def delete; end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.delete_if {|key, value| key >= "b" }   #=> {"a"=>100}
-def delete_if; end
+def delete_if(); end
 
 ##
 # Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
 # evaluates to false.
 # 
 # If no block is given, an enumerator is returned instead.
-def keep_if; end
+def keep_if(); end
 
 ##
 # Returns a new hash consisting of entries for which the block returns true.
@@ -13856,30 +13856,30 @@ def keep_if; end
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.select {|k,v| k > "a"}  #=> {"b" => 200, "c" => 300}
 #    h.select {|k,v| v < 200}  #=> {"a" => 100}
-def select; end
+def select(); end
 
 ##
 # Equivalent to <code>Hash#keep_if</code>, but returns
 # <code>nil</code> if no changes were made.
-def select!; end
+def select!(); end
 
 ##
 # Same as <code>Hash#delete_if</code>, but works on (and returns) a
 # copy of the <i>hsh</i>. Equivalent to
 # <code><i>hsh</i>.dup.delete_if</code>.
-def reject; end
+def reject(); end
 
 ##
 # Equivalent to <code>Hash#delete_if</code>, but returns
 # <code>nil</code> if no changes were made.
-def reject!; end
+def reject!(); end
 
 ##
 # Removes all key-value pairs from <i>hsh</i>.
 # 
 #    h = { "a" => 100, "b" => 200 }   #=> {"a"=>100, "b"=>200}
 #    h.clear                          #=> {}
-def clear; end
+def clear(); end
 
 ##
 # Returns a new hash created by using <i>hsh</i>'s values as keys, and
@@ -13887,7 +13887,7 @@ def clear; end
 # 
 #    h = { "n" => 100, "m" => 100, "y" => 300, "d" => 200, "a" => 0 }
 #    h.invert   #=> {0=>"a", 100=>"m", 200=>"d", 300=>"y"}
-def invert; end
+def invert(); end
 
 ##
 # Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
@@ -13904,7 +13904,7 @@ def invert; end
 #    h2 = { "b" => 254, "c" => 300 }
 #    h1.merge!(h2) { |key, v1, v2| v1 }
 #                    #=> {"a"=>100, "b"=>200, "c"=>300}
-def update; end
+def update(p1); end
 
 ##
 # Replaces the contents of <i>hsh</i> with the contents of
@@ -13912,7 +13912,7 @@ def update; end
 # 
 #    h = { "a" => 100, "b" => 200 }
 #    h.replace({ "c" => 300, "d" => 400 })   #=> {"c"=>300, "d"=>400}
-def replace; end
+def replace(p1); end
 
 ##
 # Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
@@ -13929,7 +13929,7 @@ def replace; end
 #    h2 = { "b" => 254, "c" => 300 }
 #    h1.merge!(h2) { |key, v1, v2| v1 }
 #                    #=> {"a"=>100, "b"=>200, "c"=>300}
-def merge!; end
+def merge!(p1); end
 
 ##
 # Returns a new hash containing the contents of <i>other_hash</i> and
@@ -13944,7 +13944,7 @@ def merge!; end
 #    h1.merge(h2){|key, oldval, newval| newval - oldval}
 #                   #=> {"a"=>100, "b"=>54,  "c"=>300}
 #    h1             #=> {"a"=>100, "b"=>200}
-def merge; end
+def merge(p1); end
 
 ##
 # Searches through the hash comparing _obj_ with the key using <code>==</code>.
@@ -13955,7 +13955,7 @@ def merge; end
 #         "letters" => ["a", "b", "c" ]}
 #    h.assoc("letters")  #=> ["letters", ["a", "b", "c"]]
 #    h.assoc("foo")      #=> nil
-def assoc; end
+def assoc(p1); end
 
 ##
 # Searches through the hash comparing _obj_ with the value using <code>==</code>.
@@ -13965,7 +13965,7 @@ def assoc; end
 #    a = {1=> "one", 2 => "two", 3 => "three", "ii" => "two"}
 #    a.rassoc("two")    #=> [2, "two"]
 #    a.rassoc("four")   #=> nil
-def rassoc; end
+def rassoc(p1); end
 
 ##
 # Returns a new array that is a one-dimensional flattening of this
@@ -13977,7 +13977,7 @@ def rassoc; end
 #    a =  {1=> "one", 2 => [2,"two"], 3 => "three"}
 #    a.flatten    # => [1, "one", 2, [2, "two"], 3, "three"]
 #    a.flatten(2) # => [1, "one", 2, 2, "two", 3, "three"]
-def flatten; end
+def flatten(*args); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -13985,7 +13985,7 @@ def flatten; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def include?; end
+def include?(p1); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -13993,7 +13993,7 @@ def include?; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def member?; end
+def member?(p1); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -14001,7 +14001,7 @@ def member?; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def has_key?; end
+def has_key?(p1); end
 
 ##
 # Returns <code>true</code> if the given value is present for some key
@@ -14010,7 +14010,7 @@ def has_key?; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_value?(100)   #=> true
 #    h.has_value?(999)   #=> false
-def has_value?; end
+def has_value?(p1); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -14018,7 +14018,7 @@ def has_value?; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def key?; end
+def key?(p1); end
 
 ##
 # Returns <code>true</code> if the given value is present for some key
@@ -14027,7 +14027,7 @@ def key?; end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_value?(100)   #=> true
 #    h.has_value?(999)   #=> false
-def value?; end
+def value?(p1); end
 
 ##
 # Makes <i>hsh</i> compare its keys by their identity, i.e. it
@@ -14039,24 +14039,24 @@ def value?; end
 #    h1.compare_by_identity? #=> true
 #    h1["a"]        #=> nil  # different objects.
 #    h1[:c]         #=> "c"  # same symbols are all same.
-def compare_by_identity; end
+def compare_by_identity(); end
 
 ##
 # Returns <code>true</code> if <i>hsh</i> will compare its keys by
 # their identity.  Also see <code>Hash#compare_by_identity</code>.
-def compare_by_identity?; end
+def compare_by_identity?(); end
 
-def to_s; end
+def to_s(); end
 
 end
 
 ##
 # ENV is a hash-like accessor for environment variables.
-class ENV < RDoc::NormalClass Object < BasicObject
+class ENV < Object
 ##
 # Retrieves the +value+ for environment variable +name+ as a String.  Returns
 # +nil+ if the named variable does not exist.
-def self.[]; end
+def self.[](p1); end
 
 ##
 # Retrieves the environment variable +name+.
@@ -14065,197 +14065,197 @@ def self.[]; end
 # provided an IndexError is raised.  If a block is given it is called with
 # the missing name to provide a value.  If a default value is given it will
 # be returned when no block is given.
-def self.fetch; end
+def self.fetch(p1, p2=0); end
 
 ##
 # Sets the environment variable +name+ to +value+.  If the value given is
 # +nil+ the environment variable is deleted.
-def self.[]=; end
+def self.[]=(p1, p2); end
 
 ##
 # Sets the environment variable +name+ to +value+.  If the value given is
 # +nil+ the environment variable is deleted.
-def self.store; end
+def self.store(p1, p2); end
 
 ##
 # Yields each environment variable +name+ and +value+.
 # 
 # If no block is given an Enumerator is returned.
-def self.each; end
+def self.each(); end
 
 ##
 # Yields each environment variable +name+ and +value+.
 # 
 # If no block is given an Enumerator is returned.
-def self.each_pair; end
+def self.each_pair(); end
 
 ##
 # Yields each environment variable name.
 # 
 # An Enumerator is returned if no block is given.
-def self.each_key; end
+def self.each_key(); end
 
 ##
 # Yields each environment variable +value+.
 # 
 # An Enumerator is returned if no block was given.
-def self.each_value; end
+def self.each_value(); end
 
 ##
 # Deletes the environment variable with +name+ and returns the value of the
 # variable.  If a block is given it will be called when the named environment
 # does not exist.
-def self.delete; end
+def self.delete(p1); end
 
 ##
 # Deletes every environment variable for which the block evaluates to +true+.
 # 
 # If no block is given an enumerator is returned instead.
-def self.delete_if; end
+def self.delete_if(); end
 
 ##
 # Deletes every environment variable where the block evaluates to +false+.
 # 
 # Returns an enumerator if no block was given.
-def self.keep_if; end
+def self.keep_if(); end
 
 ##
 # Removes every environment variable.
-def self.clear; end
+def self.clear(); end
 
 ##
 # Same as ENV#delete_if, but works on (and returns) a copy of the
 # environment.
-def self.reject; end
+def self.reject(); end
 
 ##
 # Equivalent to ENV#delete_if but returns +nil+ if no changes were made.
 # 
 # Returns an Enumerator if no block was given.
-def self.reject!; end
+def self.reject!(); end
 
 ##
 # Returns a copy of the environment for entries where the block returns true.
 # 
 # Returns an Enumerator if no block was given.
-def self.select; end
+def self.select(); end
 
 ##
 # Equivalent to ENV#keep_if but returns +nil+ if no changes were made.
-def self.select!; end
+def self.select!(); end
 
 ##
 # Removes an environment variable name-value pair from ENV and returns it as
 # an Array.  Returns +nil+ if when the environment is empty.
-def self.shift; end
+def self.shift(); end
 
 ##
 # Returns a new hash created by using environment variable names as values
 # and values as names.
-def self.invert; end
+def self.invert(); end
 
 ##
 # Replaces the contents of the environment variables with the contents of
 # +hash+.
-def self.replace; end
+def self.replace(p1); end
 
 ##
 # Adds the contents of +hash+ to the environment variables.  If no block is
 # specified entries with duplicate keys are overwritten, otherwise the value
 # of each duplicate name is determined by calling the block with the key, its
 # value from the environment and its value from the hash.
-def self.update; end
+def self.update(p1); end
 
 ##
 # Returns the contents of the environment as a String.
-def self.inspect; end
+def self.inspect(); end
 
 ##
 # Re-hashing the environment variables does nothing.  It is provided for
 # compatibility with Hash.
-def self.rehash; end
+def self.rehash(); end
 
 ##
 # Converts the environment variables into an array of names and value arrays.
 # 
 #   ENV.to_a # => [["TERM" => "xterm-color"], ["SHELL" => "/bin/bash"], ...]
-def self.to_a; end
+def self.to_a(); end
 
 ##
 # Returns "ENV"
-def self.to_s; end
+def self.to_s(); end
 
 ##
 # Returns the name of the environment variable with +value+.  If the value is
 # not found +nil+ is returned.
-def self.key; end
+def self.key(p1); end
 
 ##
 # Deprecated method that is equivalent to ENV.key
-def self.index; end
+def self.index(p1); end
 
 ##
 # Returns the number of environment variables.
-def self.size; end
+def self.size(); end
 
 ##
 # Returns the number of environment variables.
-def self.length; end
+def self.length(); end
 
 ##
 # Returns true when there are no environment variables
-def self.empty?; end
+def self.empty?(); end
 
 ##
 # Returns every environment variable name in an Array
-def self.keys; end
+def self.keys(); end
 
 ##
 # Returns every environment variable value as an Array
-def self.values; end
+def self.values(); end
 
 ##
 # Returns an array containing the environment variable values associated with
 # the given names.  See also ENV.select.
-def self.values_at; end
+def self.values_at(*args); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.include?; end
+def self.include?(p1); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.member?; end
+def self.member?(p1); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.has_key?; end
+def self.has_key?(p1); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +value+.
-def self.has_value?; end
+def self.has_value?(p1); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.key?; end
+def self.key?(p1); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +value+.
-def self.value?; end
+def self.value?(p1); end
 
 ##
 # Creates a hash with a copy of the environment variables.
-def self.to_hash; end
+def self.to_hash(); end
 
 ##
 # Returns an Array of the name and value of the environment variable with
 # +name+ or +nil+ if the name cannot be found.
-def self.assoc; end
+def self.assoc(p1); end
 
 ##
 # Returns an Array of the name and value of the environment variable with
 # +value+ or +nil+ if the value cannot be found.
-def self.rassoc; end
+def self.rassoc(p1); end
 
 end
 
@@ -14284,11 +14284,11 @@ end
 # however, these objects retain a bit-oriented interface. In the
 # descriptions that follow, when we talk about the integer value of
 # _stat_, we're referring to this 16 bit value.
-class Status < RDoc::NormalClass Object < BasicObject
+class Status < Object
 ##
 # Returns +true+ if the integer value of _stat_
 # equals <em>other</em>.
-def ==; end
+def ==(p1); end
 
 ##
 # Logical AND of the bits in _stat_ with <em>num</em>.
@@ -14297,7 +14297,7 @@ def ==; end
 #    Process.wait
 #    sprintf('%04x', $?.to_i)       #=> "3700"
 #    sprintf('%04x', $? & 0x1e00)   #=> "1600"
-def &; end
+def &(p1); end
 
 ##
 # Shift the bits in _stat_ right <em>num</em> places.
@@ -14306,7 +14306,7 @@ def &; end
 #    Process.wait       #=> 26563
 #    $?.to_i            #=> 25344
 #    $? >> 8            #=> 99
-def >>; end
+def >>(p1); end
 
 ##
 # Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
@@ -14315,21 +14315,21 @@ def >>; end
 #    fork { exit 0xab }         #=> 26566
 #    Process.wait               #=> 26566
 #    sprintf('%04x', $?.to_i)   #=> "ab00"
-def to_i; end
+def to_i(); end
 
 ##
 # Show pid and exit status as a string.
 # 
 #   system("false")
 #   p $?.to_s         #=> "pid 12766 exit 1"
-def to_s; end
+def to_s(); end
 
 ##
 # Override the inspection method.
 # 
 #   system("false")
 #   p $?.inspect #=> "#<Process::Status: pid 12861 exit 1>"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the process ID that this status object represents.
@@ -14337,35 +14337,35 @@ def inspect; end
 #    fork { exit }   #=> 26569
 #    Process.wait    #=> 26569
 #    $?.pid          #=> 26569
-def pid; end
+def pid(); end
 
 ##
 # Returns +true+ if this process is stopped. This is only
 # returned if the corresponding <code>wait</code> call had the
 # <code>WUNTRACED</code> flag set.
-def stopped?; end
+def stopped?(); end
 
 ##
 # Returns the number of the signal that caused _stat_ to stop
 # (or +nil+ if self is not stopped).
-def stopsig; end
+def stopsig(); end
 
 ##
 # Returns +true+ if _stat_ terminated because of
 # an uncaught signal.
-def signaled?; end
+def signaled?(); end
 
 ##
 # Returns the number of the signal that caused _stat_ to
 # terminate (or +nil+ if self was not terminated by an
 # uncaught signal).
-def termsig; end
+def termsig(); end
 
 ##
 # Returns +true+ if _stat_ exited normally (for
 # example using an <code>exit()</code> call or finishing the
 # program).
-def exited?; end
+def exited?(); end
 
 ##
 # Returns the least significant eight bits of the return code of
@@ -14381,17 +14381,17 @@ def exited?; end
 #    Process.wait       #=> 26573
 #    $?.exited?         #=> true
 #    $?.exitstatus      #=> 99
-def exitstatus; end
+def exitstatus(); end
 
 ##
 # Returns +true+ if _stat_ is successful, +false+ if not.
 # Returns +nil+ if <code>exited?</code> is not +true+.
-def success?; end
+def success?(); end
 
 ##
 # Returns +true+ if _stat_ generated a coredump
 # when it terminated. Not available on all platforms.
-def coredump?; end
+def coredump?(); end
 
 end
 
@@ -14401,7 +14401,7 @@ end
 # assumed to be relative to the end of the array---that is, an index of -1
 # indicates the last element of the array, -2 is the next to last
 # element in the array, and so on.
-class Array < RDoc::NormalClass Object < BasicObject
+class Array < Object
 include Enumerable
 ##
 # Packs the contents of <i>arr</i> into a binary sequence according to
@@ -14502,7 +14502,7 @@ include Enumerable
 #     @         | ---     | moves to absolute position
 #     X         | ---     | back up a byte
 #     x         | ---     | null byte
-def pack; end
+def pack(p1); end
 
 ##
 # Returns a new array populated with the given objects.
@@ -14510,7 +14510,7 @@ def pack; end
 #   Array.[]( 1, 'a', /^A/ )
 #   Array[ 1, 'a', /^A/ ]
 #   [ 1, 'a', /^A/ ]
-def self.[]; end
+def self.[](*args); end
 
 ##
 # Try to convert <i>obj</i> into an array, using +to_ary+ method.
@@ -14526,7 +14526,7 @@ def self.[]; end
 #    elsif tmp = String.try_convert(arg)
 #      # the argument is a string
 #    end
-def self.try_convert; end
+def self.try_convert(p1); end
 
 ##
 # Returns a new array. In the first form, the new array is
@@ -14559,7 +14559,7 @@ def self.try_convert; end
 #    squares
 # 
 #    copy = Array.new(squares)
-def self.new; end
+def self.new(p1=0, p2=0); end
 
 ##
 # Replaces the contents of +self+ with the contents of
@@ -14568,25 +14568,25 @@ def self.new; end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.replace([ "x", "y", "z" ])   #=> ["x", "y", "z"]
 #    a                              #=> ["x", "y", "z"]
-def initialize_copy; end
+def initialize_copy(p1); end
 
 ##
 # Creates a string representation of +self+.
-def inspect; end
+def inspect(); end
 
 ##
 # Returns +self+. If called on a subclass of Array, converts
 # the receiver to an Array object.
-def to_a; end
+def to_a(); end
 
 ##
 # Returns +self+.
-def to_ary; end
+def to_ary(); end
 
 ##
 # Return <code>true</code> if this array is frozen (or temporarily frozen
 # while being sorted).
-def frozen?; end
+def frozen?(); end
 
 ##
 # Equality---Two arrays are equal if they contain the same number
@@ -14596,17 +14596,17 @@ def frozen?; end
 #    [ "a", "c" ]    == [ "a", "c", 7 ]     #=> false
 #    [ "a", "c", 7 ] == [ "a", "c", 7 ]     #=> true
 #    [ "a", "c", 7 ] == [ "a", "d", "f" ]   #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Returns <code>true</code> if +self+ and _other_ are the same object,
 # or are both arrays with the same content.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Compute a hash-code for this array. Two arrays with the same content
 # will have the same hash code (and will compare using <code>eql?</code>).
-def hash; end
+def hash(); end
 
 ##
 # Element Reference---Returns the element at _index_,
@@ -14629,7 +14629,7 @@ def hash; end
 #    a[5]                   #=> nil
 #    a[5, 1]                #=> []
 #    a[5..10]               #=> []
-def []; end
+def [](p1, p2=0); end
 
 ##
 # Element Assignment---Sets the element at _index_,
@@ -14652,7 +14652,7 @@ def []; end
 #    a[-1]   = "Z"               #=> ["A", "Z"]
 #    a[1..-1] = nil              #=> ["A", nil]
 #    a[1..-1] = []               #=> ["A"]
-def []=; end
+def []=(*args); end
 
 ##
 # Returns the element at _index_. A
@@ -14662,7 +14662,7 @@ def []=; end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.at(0)     #=> "a"
 #    a.at(-1)    #=> "e"
-def at; end
+def at(p1); end
 
 ##
 # Tries to return the element at position <i>index</i>. If the index
@@ -14677,7 +14677,7 @@ def at; end
 #    a.fetch(-1)              #=> 44
 #    a.fetch(4, 'cat')        #=> "cat"
 #    a.fetch(4) { |i| i*i }   #=> 16
-def fetch; end
+def fetch(p1, p2=0); end
 
 ##
 # Returns the first element, or the first +n+ elements, of the array.
@@ -14687,7 +14687,7 @@ def fetch; end
 #    a = [ "q", "r", "s", "t" ]
 #    a.first     #=> "q"
 #    a.first(2)  #=> ["q", "r"]
-def first; end
+def first(*args); end
 
 ##
 # Returns the last element(s) of +self+. If the array is empty,
@@ -14696,13 +14696,13 @@ def first; end
 #    a = [ "w", "x", "y", "z" ]
 #    a.last     #=> "z"
 #    a.last(2)  #=> ["y", "z"]
-def last; end
+def last(*args); end
 
 ##
 # Appends the elements of <i>other_ary</i> to +self+.
 # 
 #    [ "a", "b" ].concat( ["c", "d"] ) #=> [ "a", "b", "c", "d" ]
-def concat; end
+def concat(p1); end
 
 ##
 # Append---Pushes the given object on to the end of this array. This
@@ -14711,7 +14711,7 @@ def concat; end
 # 
 #    [ 1, 2 ] << "c" << "d" << [ 3, 4 ]
 #            #=>  [ 1, 2, "c", "d", [ 3, 4 ] ]
-def <<; end
+def <<(p1); end
 
 ##
 # Append---Pushes the given object(s) on to the end of this array. This
@@ -14721,7 +14721,7 @@ def <<; end
 #    a = [ "a", "b", "c" ]
 #    a.push("d", "e", "f")
 #            #=> ["a", "b", "c", "d", "e", "f"]
-def push; end
+def push(*args); end
 
 ##
 # Removes the last element from +self+ and returns it, or
@@ -14734,7 +14734,7 @@ def push; end
 #    a.pop     #=> "d"
 #    a.pop(2)  #=> ["b", "c"]
 #    a         #=> ["a"]
-def pop; end
+def pop(*args); end
 
 ##
 # Returns the first element of +self+ and removes it (shifting all
@@ -14751,7 +14751,7 @@ def pop; end
 #    args = [ "-m", "-q", "filename" ]
 #    args.shift(2)  #=> ["-m", "-q"]
 #    args           #=> ["filename"]
-def shift; end
+def shift(*args); end
 
 ##
 # Prepends objects to the front of +self+,
@@ -14760,7 +14760,7 @@ def shift; end
 #    a = [ "b", "c", "d" ]
 #    a.unshift("a")   #=> ["a", "b", "c", "d"]
 #    a.unshift(1, 2)  #=> [ 1, 2, "a", "b", "c", "d"]
-def unshift; end
+def unshift(*args); end
 
 ##
 # Inserts the given values before the element with the given index
@@ -14769,7 +14769,7 @@ def unshift; end
 #    a = %w{ a b c d }
 #    a.insert(2, 99)         #=> ["a", "b", 99, "c", "d"]
 #    a.insert(-2, 1, 2, 3)   #=> ["a", "b", 99, "c", 1, 2, 3, "d"]
-def insert; end
+def insert(*args); end
 
 ##
 # Calls <i>block</i> once for each element in +self+, passing that
@@ -14783,7 +14783,7 @@ def insert; end
 # produces:
 # 
 #    a -- b -- c --
-def each; end
+def each(); end
 
 ##
 # Same as <code>Array#each</code>, but passes the index of the element
@@ -14797,7 +14797,7 @@ def each; end
 # produces:
 # 
 #    0 -- 1 -- 2 --
-def each_index; end
+def each_index(); end
 
 ##
 # Same as <code>Array#each</code>, but traverses +self+ in reverse
@@ -14809,19 +14809,19 @@ def each_index; end
 # produces:
 # 
 #    c b a
-def reverse_each; end
+def reverse_each(); end
 
 ##
 # Returns the number of elements in +self+. May be zero.
 # 
 #    [ 1, 2, 3, 4, 5 ].length   #=> 5
-def length; end
+def length(); end
 
 ##
 # Returns <code>true</code> if +self+ contains no elements.
 # 
 #    [].empty?   #=> true
-def empty?; end
+def empty?(); end
 
 ##
 # Returns the index of the first object in +self+ such that the object is
@@ -14838,7 +14838,7 @@ def empty?; end
 #    a.index{|x|x=="b"}  #=> 1
 # 
 # This is an alias of <code>#find_index</code>.
-def find_index; end
+def find_index(p1); end
 
 ##
 # Returns the index of the first object in +self+ such that the object is
@@ -14855,7 +14855,7 @@ def find_index; end
 #    a.index{|x|x=="b"}  #=> 1
 # 
 # This is an alias of <code>#find_index</code>.
-def index; end
+def index(p1); end
 
 ##
 # Returns the index of the last object in +self+
@@ -14871,7 +14871,7 @@ def index; end
 #    a.rindex("b")        #=> 3
 #    a.rindex("z")        #=> nil
 #    a.rindex{|x|x=="b"}  #=> 3
-def rindex; end
+def rindex(p1); end
 
 ##
 # Returns a string created by converting each element of the array to
@@ -14879,14 +14879,14 @@ def rindex; end
 # 
 #    [ "a", "b", "c" ].join        #=> "abc"
 #    [ "a", "b", "c" ].join("-")   #=> "a-b-c"
-def join; end
+def join(p1=0); end
 
 ##
 # Returns a new array containing +self+'s elements in reverse order.
 # 
 #    [ "a", "b", "c" ].reverse   #=> ["c", "b", "a"]
 #    [ 1 ].reverse               #=> [1]
-def reverse; end
+def reverse(); end
 
 ##
 # Reverses +self+ in place.
@@ -14894,7 +14894,7 @@ def reverse; end
 #    a = [ "a", "b", "c" ]
 #    a.reverse!       #=> ["c", "b", "a"]
 #    a                #=> ["c", "b", "a"]
-def reverse!; end
+def reverse!(); end
 
 ##
 # Returns new array by rotating +self+ so that the element at
@@ -14906,7 +14906,7 @@ def reverse!; end
 #    a                #=> ["a", "b", "c", "d"]
 #    a.rotate(2)      #=> ["c", "d", "a", "b"]
 #    a.rotate(-3)     #=> ["b", "c", "d", "a"]
-def rotate; end
+def rotate(p1=0); end
 
 ##
 # Rotates +self+ in place so that the element at +cnt+ comes first,
@@ -14918,7 +14918,7 @@ def rotate; end
 #    a                #=> ["b", "c", "d", "a"]
 #    a.rotate!(2)     #=> ["d", "a", "b", "c"]
 #    a.rotate!(-3)    #=> ["a", "b", "c", "d"]
-def rotate!; end
+def rotate!(p1=0); end
 
 ##
 # Returns a new array created by sorting +self+. Comparisons for
@@ -14930,7 +14930,7 @@ def rotate!; end
 #    a = [ "d", "a", "e", "c", "b" ]
 #    a.sort                    #=> ["a", "b", "c", "d", "e"]
 #    a.sort {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
-def sort; end
+def sort(); end
 
 ##
 # Sorts +self+. Comparisons for
@@ -14942,14 +14942,14 @@ def sort; end
 #    a = [ "d", "a", "e", "c", "b" ]
 #    a.sort!                    #=> ["a", "b", "c", "d", "e"]
 #    a.sort! {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
-def sort!; end
+def sort!(); end
 
 ##
 # Sorts +self+ in place using a set of keys generated by mapping the
 # values in +self+ through the given block.
 # 
 # If no block is given, an enumerator is returned instead.
-def sort_by!; end
+def sort_by!(); end
 
 ##
 # Invokes <i>block</i> once for each element of +self+. Creates a
@@ -14961,7 +14961,7 @@ def sort_by!; end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
 #    a                          #=> ["a", "b", "c", "d"]
-def collect; end
+def collect(); end
 
 ##
 # Invokes the block once for each element of +self+, replacing the
@@ -14973,7 +14973,7 @@ def collect; end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect! {|x| x + "!" }
 #    a             #=>  [ "a!", "b!", "c!", "d!" ]
-def collect!; end
+def collect!(); end
 
 ##
 # Invokes <i>block</i> once for each element of +self+. Creates a
@@ -14985,7 +14985,7 @@ def collect!; end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
 #    a                          #=> ["a", "b", "c", "d"]
-def map; end
+def map(); end
 
 ##
 # Invokes the block once for each element of +self+, replacing the
@@ -14997,7 +14997,7 @@ def map; end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect! {|x| x + "!" }
 #    a             #=>  [ "a!", "b!", "c!", "d!" ]
-def map!; end
+def map!(); end
 
 ##
 # Invokes the block passing in successive elements from +self+,
@@ -15008,7 +15008,7 @@ def map!; end
 # 
 #    a = %w{ a b c d e f }
 #    a.select {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
-def select; end
+def select(); end
 
 ##
 # Invokes the block passing in successive elements from
@@ -15018,7 +15018,7 @@ def select; end
 # See also <code>Array#keep_if</code>
 # 
 # If no block is given, an enumerator is returned instead.
-def select!; end
+def select!(); end
 
 ##
 # Deletes every element of +self+ for which <i>block</i> evaluates
@@ -15029,7 +15029,7 @@ def select!; end
 # 
 #    a = %w{ a b c d e f }
 #    a.keep_if {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
-def keep_if; end
+def keep_if(); end
 
 ##
 # Returns an array containing the elements in
@@ -15042,7 +15042,7 @@ def keep_if; end
 #    a.values_at(1, 3, 5, 7)
 #    a.values_at(-1, -3, -5, -7)
 #    a.values_at(1..3, 2...5)
-def values_at; end
+def values_at(*args); end
 
 ##
 # Deletes items from +self+ that are equal to <i>obj</i>.
@@ -15057,7 +15057,7 @@ def values_at; end
 #    a                               #=> ["a", "c"]
 #    a.delete("z")                   #=> nil
 #    a.delete("z") { "not found" }   #=> "not found"
-def delete; end
+def delete(p1); end
 
 ##
 # Deletes the element at the specified index, returning that element,
@@ -15068,7 +15068,7 @@ def delete; end
 #    a.delete_at(2)    #=> "cat"
 #    a                 #=> ["ant", "bat", "dog"]
 #    a.delete_at(99)   #=> nil
-def delete_at; end
+def delete_at(p1); end
 
 ##
 # Deletes every element of +self+ for which <i>block</i> evaluates
@@ -15081,7 +15081,7 @@ def delete_at; end
 # 
 #    a = [ "a", "b", "c" ]
 #    a.delete_if {|x| x >= "b" }   #=> ["a"]
-def delete_if; end
+def delete_if(); end
 
 ##
 # Returns a new array containing the items in +self+
@@ -15089,7 +15089,7 @@ def delete_if; end
 # See also <code>Array#delete_if</code>
 # 
 # If no block is given, an enumerator is returned instead.
-def reject; end
+def reject(); end
 
 ##
 # Equivalent to <code>Array#delete_if</code>, deleting elements from
@@ -15100,7 +15100,7 @@ def reject; end
 # See also <code>Enumerable#reject</code> and <code>Array#delete_if</code>.
 # 
 # If no block is given, an enumerator is returned instead.
-def reject!; end
+def reject!(); end
 
 ##
 # Converts any arguments to arrays, then merges elements of
@@ -15117,7 +15117,7 @@ def reject!; end
 #    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 #    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
 #    a.zip([1,2],[8])       #=> [[4,1,8], [5,2,nil], [6,nil,nil]]
-def zip; end
+def zip(*args); end
 
 ##
 # Assumes that +self+ is an array of arrays and transposes the
@@ -15125,7 +15125,7 @@ def zip; end
 # 
 #    a = [[1,2], [3,4], [5,6]]
 #    a.transpose   #=> [[1, 3, 5], [2, 4, 6]]
-def transpose; end
+def transpose(); end
 
 ##
 # Replaces the contents of +self+ with the contents of
@@ -15134,14 +15134,14 @@ def transpose; end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.replace([ "x", "y", "z" ])   #=> ["x", "y", "z"]
 #    a                              #=> ["x", "y", "z"]
-def replace; end
+def replace(p1); end
 
 ##
 # Removes all elements from +self+.
 # 
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.clear    #=> [ ]
-def clear; end
+def clear(); end
 
 ##
 # The first three forms set the selected elements of +self+ (which
@@ -15158,7 +15158,7 @@ def clear; end
 #    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
 #    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
 #    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
-def fill; end
+def fill(p1=0, p2=0); end
 
 ##
 # Returns <code>true</code> if the given object is present in
@@ -15168,7 +15168,7 @@ def fill; end
 #    a = [ "a", "b", "c" ]
 #    a.include?("b")   #=> true
 #    a.include?("z")   #=> false
-def include?; end
+def include?(p1); end
 
 ##
 # Comparison---Returns an integer (-1, 0,
@@ -15184,7 +15184,7 @@ def include?; end
 # 
 #    [ "a", "a", "c" ]    <=> [ "a", "b", "c" ]   #=> -1
 #    [ 1, 2, 3, 4, 5, 6 ] <=> [ 1, 2 ]            #=> +1
-def <=>; end
+def <=>(p1); end
 
 ##
 # Element Reference---Returns the element at _index_,
@@ -15207,7 +15207,7 @@ def <=>; end
 #    a[5]                   #=> nil
 #    a[5, 1]                #=> []
 #    a[5..10]               #=> []
-def slice; end
+def slice(p1, p2=0); end
 
 ##
 # Deletes the element(s) given by an index (optionally with a length)
@@ -15221,7 +15221,7 @@ def slice; end
 #    a               #=> ["a"]
 #    a.slice!(100)   #=> nil
 #    a               #=> ["a"]
-def slice!; end
+def slice!(p1, p2=0); end
 
 ##
 # Searches through an array whose elements are also arrays
@@ -15238,7 +15238,7 @@ def slice!; end
 #    a  = [ s1, s2, s3 ]
 #    a.assoc("letters")  #=> [ "letters", "a", "b", "c" ]
 #    a.assoc("foo")      #=> nil
-def assoc; end
+def assoc(p1); end
 
 ##
 # Searches through the array whose elements are also arrays. Compares
@@ -15249,14 +15249,14 @@ def assoc; end
 #    a = [ [ 1, "one"], [2, "two"], [3, "three"], ["ii", "two"] ]
 #    a.rassoc("two")    #=> [2, "two"]
 #    a.rassoc("four")   #=> nil
-def rassoc; end
+def rassoc(p1); end
 
 ##
 # Concatenation---Returns a new array built by concatenating the
 # two arrays together to produce a third array.
 # 
 #    [ 1, 2, 3 ] + [ 4, 5 ]    #=> [ 1, 2, 3, 4, 5 ]
-def +; end
+def +(p1); end
 
 ##
 # Repetition---With a String argument, equivalent to
@@ -15265,7 +15265,7 @@ def +; end
 # 
 #    [ 1, 2, 3 ] * 3    #=> [ 1, 2, 3, 1, 2, 3, 1, 2, 3 ]
 #    [ 1, 2, 3 ] * ","  #=> "1,2,3"
-def *; end
+def *(p1); end
 
 ##
 # Array Difference---Returns a new array that is a copy of
@@ -15274,14 +15274,14 @@ def *; end
 # library class Set.)
 # 
 #    [ 1, 1, 2, 2, 3, 3, 4, 5 ] - [ 1, 2, 4 ]  #=>  [ 3, 3, 5 ]
-def -; end
+def -(p1); end
 
 ##
 # Set Intersection---Returns a new array
 # containing elements common to the two arrays, with no duplicates.
 # 
 #    [ 1, 1, 3, 5 ] & [ 1, 2, 3 ]   #=> [ 1, 3 ]
-def &; end
+def &(p1); end
 
 ##
 # Set Union---Returns a new array by joining this array with
@@ -15289,7 +15289,7 @@ def &; end
 # 
 #    [ "a", "b", "c" ] | [ "c", "d", "a" ]
 #           #=> [ "a", "b", "c", "d" ]
-def |; end
+def |(p1); end
 
 ##
 # Returns a new array by removing duplicate values in +self+.
@@ -15298,7 +15298,7 @@ def |; end
 #    a.uniq   #=> ["a", "b", "c"]
 #    c = [ "a:def", "a:xyz", "b:abc", "b:xyz", "c:jkl" ]
 #    c.uniq {|s| s[/^\w+/]}  #=> [ "a:def", "b:abc", "c:jkl" ]
-def uniq; end
+def uniq(); end
 
 ##
 # Removes duplicate elements from +self+.
@@ -15311,14 +15311,14 @@ def uniq; end
 #    b.uniq!   #=> nil
 #    c = [ "a:def", "a:xyz", "b:abc", "b:xyz", "c:jkl" ]
 #    c.uniq! {|s| s[/^\w+/]}  #=> [ "a:def", "b:abc", "c:jkl" ]
-def uniq!; end
+def uniq!(); end
 
 ##
 # Returns a copy of +self+ with all +nil+ elements removed.
 # 
 #    [ "a", nil, "b", nil, "c", nil ].compact
 #                      #=> [ "a", "b", "c" ]
-def compact; end
+def compact(); end
 
 ##
 # Removes +nil+ elements from the array.
@@ -15327,7 +15327,7 @@ def compact; end
 # 
 #    [ "a", nil, "b", nil, "c" ].compact! #=> [ "a", "b", "c" ]
 #    [ "a", "b", "c" ].compact!           #=> nil
-def compact!; end
+def compact!(); end
 
 ##
 # Returns a new array that is a one-dimensional flattening of this
@@ -15341,7 +15341,7 @@ def compact!; end
 #    a.flatten                 #=> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 #    a = [ 1, 2, [3, [4, 5] ] ]
 #    a.flatten(1)              #=> [1, 2, 3, [4, 5]]
-def flatten; end
+def flatten(p1=0); end
 
 ##
 # Flattens +self+ in place.
@@ -15355,7 +15355,7 @@ def flatten; end
 #    a            #=> [1, 2, 3, 4, 5]
 #    a = [ 1, 2, [3, [4, 5] ] ]
 #    a.flatten!(1) #=> [1, 2, 3, [4, 5]]
-def flatten!; end
+def flatten!(p1=0); end
 
 ##
 # Returns the number of elements.  If an argument is given, counts
@@ -15366,12 +15366,12 @@ def flatten!; end
 #    ary.count             #=> 4
 #    ary.count(2)          #=> 2
 #    ary.count{|x|x%2==0}  #=> 3
-def count; end
+def count(p1); end
 
 ##
 # Shuffles elements in +self+ in place.
 # If +rng+ is given, it will be used as the random number generator.
-def shuffle!; end
+def shuffle!(*args); end
 
 ##
 # Returns a new array with elements of this array shuffled.
@@ -15382,7 +15382,7 @@ def shuffle!; end
 # If +rng+ is given, it will be used as the random number generator.
 # 
 #    a.shuffle(random: Random.new(1))  #=> [1, 3, 2]
-def shuffle; end
+def shuffle(*args); end
 
 ##
 # Choose a random element or +n+ random elements from the array. The elements
@@ -15392,7 +15392,7 @@ def shuffle; end
 # <code>nil</code> and the second form returns an empty array.
 # 
 # If +rng+ is given, it will be used as the random number generator.
-def sample; end
+def sample(p1); end
 
 ##
 # Calls <i>block</i> for each element repeatedly _n_ times or
@@ -15405,7 +15405,7 @@ def sample; end
 #    a = ["a", "b", "c"]
 #    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
 #    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
-def cycle; end
+def cycle(p1=0); end
 
 ##
 # When invoked with a block, yield all permutations of length <i>n</i>
@@ -15425,7 +15425,7 @@ def cycle; end
 #     a.permutation(3).to_a  #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
 #     a.permutation(0).to_a  #=> [[]] # one permutation of length 0
 #     a.permutation(4).to_a  #=> []   # no permutations of length 4
-def permutation; end
+def permutation(p1=0); end
 
 ##
 # When invoked with a block, yields all combinations of length <i>n</i>
@@ -15444,7 +15444,7 @@ def permutation; end
 #     a.combination(4).to_a  #=> [[1,2,3,4]]
 #     a.combination(0).to_a  #=> [[]] # one combination of length 0
 #     a.combination(5).to_a  #=> []   # no combinations of length 5
-def combination; end
+def combination(p1); end
 
 ##
 # When invoked with a block, yield all repeated permutations of length
@@ -15462,7 +15462,7 @@ def combination; end
 #     a.repeated_permutation(3).to_a  #=> [[1,1,1],[1,1,2],[1,2,1],[1,2,2],
 #                                     #    [2,1,1],[2,1,2],[2,2,1],[2,2,2]]
 #     a.repeated_permutation(0).to_a  #=> [[]] # one permutation of length 0
-def repeated_permutation; end
+def repeated_permutation(p1); end
 
 ##
 # When invoked with a block, yields all repeated combinations of
@@ -15484,7 +15484,7 @@ def repeated_permutation; end
 #                                     #    [1,1,3,3],[1,2,2,2],[1,2,2,3],[1,2,3,3],[1,3,3,3],
 #                                     #    [2,2,2,2],[2,2,2,3],[2,2,3,3],[2,3,3,3],[3,3,3,3]]
 #     a.repeated_combination(0).to_a  #=> [[]] # one combination of length 0
-def repeated_combination; end
+def repeated_combination(p1); end
 
 ##
 # Returns an array of all combinations of elements from all arrays.
@@ -15499,14 +15499,14 @@ def repeated_combination; end
 #                               #     [2,3,5],[2,3,6],[2,4,5],[2,4,6]]
 #    [1,2].product()            #=> [[1],[2]]
 #    [1,2].product([])          #=> []
-def product; end
+def product(*args); end
 
 ##
 # Returns first n elements from <i>ary</i>.
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take(3)             #=> [1, 2, 3]
-def take; end
+def take(p1); end
 
 ##
 # Passes elements to the block until the block returns +nil+ or +false+,
@@ -15516,7 +15516,7 @@ def take; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take_while {|i| i < 3 }   #=> [1, 2]
-def take_while; end
+def take_while(); end
 
 ##
 # Drops first n elements from +ary+ and returns the rest of
@@ -15524,7 +15524,7 @@ def take_while; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop(3)             #=> [4, 5, 0]
-def drop; end
+def drop(p1); end
 
 ##
 # Drops elements up to, but not including, the first element for
@@ -15535,11 +15535,11 @@ def drop; end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
-def drop_while; end
+def drop_while(); end
 
-def to_s; end
+def to_s(); end
 
-def size; end
+def size(); end
 
 end
 
@@ -15620,13 +15620,13 @@ end
 #   # implementing an internal iterator.
 #   puts ext_each(o.to_enum) {|*x| puts x; [:b, *x] }
 #   # => [], [:b], [1], [:b, 1], [1, 2], [:b, 1, 2], 3
-class Enumerator < RDoc::NormalClass Object < BasicObject
+class Enumerator < Object
 include Enumerable
-class Generator < RDoc::NormalClass Object < BasicObject
+class Generator < Object
 include Enumerable
 end
 
-class Yielder < RDoc::NormalClass Object < BasicObject
+class Yielder < Object
 end
 
 ##
@@ -15657,18 +15657,18 @@ end
 #       #-> ObjectSpace.enum_for(:each_object)
 # 
 #   e.select { |obj| obj.is_a?(Class) }  #=> array of all classes
-def self.new; end
+def self.new(*args); end
 
 ##
 # Iterates over the block according to how this Enumerable was constructed.
 # If no block is given, returns self.
-def each; end
+def each(); end
 
 ##
 # Same as Enumerator#with_index(0), i.e. there is no starting offset.
 # 
 # If no block is given, a new Enumerator is returned that includes the index.
-def each_with_index; end
+def each_with_index(); end
 
 ##
 # Iterates the given block for each element with an arbitrary object, +obj+,
@@ -15692,7 +15692,7 @@ def each_with_index; end
 #   # => foo:0
 #   # => foo:1
 #   # => foo:2
-def each_with_object; end
+def each_with_object(p1); end
 
 ##
 # Iterates the given block for each element with an index, which
@@ -15700,7 +15700,7 @@ def each_with_object; end
 # that includes the index, starting from +offset+
 # 
 # +offset+:: the starting index to use
-def with_index; end
+def with_index(p1=0); end
 
 ##
 # Iterates the given block for each element with an arbitrary object, +obj+,
@@ -15724,7 +15724,7 @@ def with_index; end
 #   # => foo:0
 #   # => foo:1
 #   # => foo:2
-def with_object; end
+def with_object(p1); end
 
 ##
 # Returns the next object as an array in the enumerator, and move the
@@ -15767,7 +15767,7 @@ def with_object; end
 # Note that +next_values+ does not affect other non-external enumeration
 # methods unless underlying iteration method itself has side-effect, e.g.
 # IO#each_line.
-def next_values; end
+def next_values(); end
 
 ##
 # Returns the next object as an array, similar to Enumerator#next_values, but
@@ -15791,7 +15791,7 @@ def next_values; end
 #   p e.peek_values    #=> [1, 2]
 #   e.next
 #   p e.peek_values    # raises StopIteration
-def peek_values; end
+def peek_values(); end
 
 ##
 # Returns the next object in the enumerator, and move the internal position
@@ -15809,7 +15809,7 @@ def peek_values; end
 # Note that enumeration sequence by +next+ does not affect other non-external
 # enumeration methods, unless the underlying iteration methods itself has
 # side-effect, e.g. IO#each_line.
-def next; end
+def next(); end
 
 ##
 # Returns the next object in the enumerator, but doesn't move the internal
@@ -15827,7 +15827,7 @@ def next; end
 #   p e.next   #=> 2
 #   p e.next   #=> 3
 #   p e.next   #raises StopIteration
-def peek; end
+def peek(); end
 
 ##
 # Sets the value to be returned by the next yield inside +e+.
@@ -15852,17 +15852,17 @@ def peek; end
 #   e.next              # (4)
 #   e.next              # (7)
 #                       # (10)
-def feed; end
+def feed(p1); end
 
 ##
 # Rewinds the enumeration sequence by one step.
 # 
 # If the enclosed object responds to a "rewind" method, it is called.
-def rewind; end
+def rewind(); end
 
 ##
 # Creates a printable version of <i>e</i>.
-def inspect; end
+def inspect(); end
 
 end
 
@@ -15881,7 +15881,7 @@ end
 # 
 #   Hello
 #   Done!
-class StopIteration < RDoc::NormalClass IndexError < StandardError
+class StopIteration < IndexError
 ##
 # Returns the return value of the iterator.
 # 
@@ -15904,15 +15904,15 @@ class StopIteration < RDoc::NormalClass IndexError < StandardError
 #   rescue StopIteration => ex
 #     puts ex.result              #=> 100
 #   end
-def result; end
+def result(); end
 
 end
 
-class Generator < RDoc::NormalClass Object < BasicObject
+class Generator < Object
 include Enumerable
 end
 
-class Yielder < RDoc::NormalClass Object < BasicObject
+class Yielder < Object
 end
 
 ##
@@ -15925,7 +15925,7 @@ end
 # (<code>config.h</code> and <code>main.rb</code>), the parent
 # directory (<code>..</code>), and the directory itself
 # (<code>.</code>).
-class Dir < RDoc::NormalClass Object < BasicObject
+class Dir < Object
 include Enumerable
 ##
 # With no block, <code>open</code> is a synonym for
@@ -15933,7 +15933,7 @@ include Enumerable
 # <i>aDir</i> as a parameter. The directory is closed at the end of
 # the block, and <code>Dir::open</code> returns the value of the
 # block.
-def self.open; end
+def self.open(*args); end
 
 ##
 # Calls the block once for each entry in the named directory, passing
@@ -15949,7 +15949,7 @@ def self.open; end
 #    Got ..
 #    Got config.h
 #    Got main.rb
-def self.foreach; end
+def self.foreach(*args); end
 
 ##
 # Returns an array containing all of the filenames in the given
@@ -15957,29 +15957,29 @@ def self.foreach; end
 # directory doesn't exist.
 # 
 #    Dir.entries("testdir")   #=> [".", "..", "config.h", "main.rb"]
-def self.entries; end
+def self.entries(*args); end
 
 ##
 # Returns a new directory object for the named directory.
-def self.new; end
+def self.new(p1, p2=0{}); end
 
 ##
 # Returns the path parameter passed to <em>dir</em>'s constructor.
 # 
 #    d = Dir.new("..")
 #    d.path   #=> ".."
-def path; end
+def path(); end
 
 ##
 # Returns the path parameter passed to <em>dir</em>'s constructor.
 # 
 #    d = Dir.new("..")
 #    d.path   #=> ".."
-def to_path; end
+def to_path(); end
 
 ##
 # Return a string describing this Dir object.
-def inspect; end
+def inspect(); end
 
 ##
 # Reads the next entry from <em>dir</em> and returns it as a string.
@@ -15989,7 +15989,7 @@ def inspect; end
 #    d.read   #=> "."
 #    d.read   #=> ".."
 #    d.read   #=> "config.h"
-def read; end
+def read(); end
 
 ##
 # Calls the block once for each entry in this directory, passing the
@@ -16006,7 +16006,7 @@ def read; end
 #    Got ..
 #    Got config.h
 #    Got main.rb
-def each; end
+def each(); end
 
 ##
 # Repositions <em>dir</em> to the first entry.
@@ -16015,7 +16015,7 @@ def each; end
 #    d.read     #=> "."
 #    d.rewind   #=> #<Dir:0x401b3fb0>
 #    d.read     #=> "."
-def rewind; end
+def rewind(); end
 
 ##
 # Returns the current position in <em>dir</em>. See also
@@ -16025,7 +16025,7 @@ def rewind; end
 #    d.tell   #=> 0
 #    d.read   #=> "."
 #    d.tell   #=> 12
-def tell; end
+def tell(); end
 
 ##
 # Seeks to a particular location in <em>dir</em>. <i>integer</i>
@@ -16037,7 +16037,7 @@ def tell; end
 #    d.read                   #=> ".."
 #    d.seek(i)                #=> #<Dir:0x401b3c40>
 #    d.read                   #=> ".."
-def seek; end
+def seek(p1); end
 
 ##
 # Returns the current position in <em>dir</em>. See also
@@ -16047,7 +16047,7 @@ def seek; end
 #    d.tell   #=> 0
 #    d.read   #=> "."
 #    d.tell   #=> 12
-def pos; end
+def pos(); end
 
 ##
 # Synonym for <code>Dir#seek</code>, but returns the position
@@ -16059,7 +16059,7 @@ def pos; end
 #    d.read                   #=> ".."
 #    d.pos = i                #=> 12
 #    d.read                   #=> ".."
-def pos=; end
+def pos=(p1); end
 
 ##
 # Closes the directory stream. Any further attempts to access
@@ -16067,7 +16067,7 @@ def pos=; end
 # 
 #    d = Dir.new("testdir")
 #    d.close   #=> nil
-def close; end
+def close(); end
 
 ##
 # Changes the current working directory of the process to the given
@@ -16103,7 +16103,7 @@ def close; end
 #    /usr
 #    /tmp
 #    /var/spool/mail
-def self.chdir; end
+def self.chdir(p1=0); end
 
 ##
 # Returns the path to the current working directory of this process as
@@ -16111,7 +16111,7 @@ def self.chdir; end
 # 
 #    Dir.chdir("/tmp")   #=> 0
 #    Dir.getwd           #=> "/tmp"
-def self.getwd; end
+def self.getwd(); end
 
 ##
 # Returns the path to the current working directory of this process as
@@ -16119,14 +16119,14 @@ def self.getwd; end
 # 
 #    Dir.chdir("/tmp")   #=> 0
 #    Dir.getwd           #=> "/tmp"
-def self.pwd; end
+def self.pwd(); end
 
 ##
 # Changes this process's idea of the file system root. Only a
 # privileged process may make this call. Not available on all
 # platforms. On Unix systems, see <code>chroot(2)</code> for more
 # information.
-def self.chroot; end
+def self.chroot(p1); end
 
 ##
 # Makes a new directory named by <i>string</i>, with permissions
@@ -16138,27 +16138,27 @@ def self.chroot; end
 # <code>File</code>.
 # 
 #   Dir.mkdir(File.join(Dir.home, ".foo"), 0700) #=> 0
-def self.mkdir; end
+def self.mkdir(p1, p2=0); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.rmdir; end
+def self.rmdir(p1); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.delete; end
+def self.delete(p1); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.unlink; end
+def self.unlink(p1); end
 
 ##
 # Returns the home directory of the current user or the named user
 # if given.
-def self.home; end
+def self.home(p1=0); end
 
 ##
 # Returns the filenames found by expanding <i>pattern</i> which is
@@ -16222,13 +16222,13 @@ def self.home; end
 # 
 #    librbfiles = File.join("**", "lib", "*.rb")
 #    Dir.glob(librbfiles)                #=> ["lib/song.rb"]
-def self.glob; end
+def self.glob(p1, p2=0); end
 
 ##
 # Equivalent to calling
 # <code>Dir.glob(</code><i>array,</i><code>0)</code> and
 # <code>Dir.glob([</code><i>string,...</i><code>],0)</code>.
-def self.[]; end
+def self.[](*args); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -16236,7 +16236,7 @@ def self.[]; end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.exist?; end
+def self.exist?(p1); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -16244,22 +16244,22 @@ def self.exist?; end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.exists?; end
+def self.exists?(p1); end
 
 end
 
-class Encoding < RDoc::NormalClass Object < BasicObject
+class Encoding < Object
 ##
 # Raised by Encoding and String methods when a transcoding operation
 # fails.
 class UndefinedConversionError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name; end
+def source_encoding_name(); end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name; end
+def destination_encoding_name(); end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -16276,11 +16276,11 @@ def destination_encoding_name; end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # Returns the one-character string which cause Encoding::UndefinedConversionError.
@@ -16292,7 +16292,7 @@ def destination_encoding; end
 #    puts $!.error_char.dump   #=> "\xC2\xA0"
 #    p $!.error_char.encoding  #=> #<Encoding:UTF-8>
 #  end
-def error_char; end
+def error_char(); end
 
 end
 
@@ -16303,11 +16303,11 @@ end
 class InvalidByteSequenceError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name; end
+def source_encoding_name(); end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name; end
+def destination_encoding_name(); end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -16324,11 +16324,11 @@ def destination_encoding_name; end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # Returns the discarded bytes when Encoding::InvalidByteSequenceError occurs.
@@ -16341,11 +16341,11 @@ def destination_encoding; end
 #    puts $!.error_bytes.dump          #=> "\xA1"
 #    puts $!.readagain_bytes.dump      #=> "\xFF"
 #  end
-def error_bytes; end
+def error_bytes(); end
 
 ##
 # Returns the bytes to be read again when Encoding::InvalidByteSequenceError occurs.
-def readagain_bytes; end
+def readagain_bytes(); end
 
 ##
 # Returns true if the invalid byte sequence error is caused by
@@ -16367,7 +16367,7 @@ def readagain_bytes; end
 #    p $!      #=> #<Encoding::InvalidByteSequenceError: incomplete "\xA1" on EUC-JP>
 #    p $!.incomplete_input?    #=> true
 #  end
-def incomplete_input?; end
+def incomplete_input?(); end
 
 end
 
@@ -16377,7 +16377,7 @@ end
 class ConverterNotFoundError < rb_eEncodingError
 end
 
-class Converter < RDoc::NormalClass Data < Object
+class Converter < Data
 ##
 # Returns the corresponding ASCII compatible encoding.
 # 
@@ -16390,7 +16390,7 @@ class Converter < RDoc::NormalClass Data < Object
 #   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
 #   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
 #   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
-def self.asciicompat_encoding; end
+def self.asciicompat_encoding(p1); end
 
 ##
 # Returns a conversion path.
@@ -16412,7 +16412,7 @@ def self.asciicompat_encoding; end
 #  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
 #  #    "universal_newline",
 #  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
-def self.search_convpath; end
+def self.search_convpath(*args); end
 
 ##
 # possible options elements:
@@ -16514,14 +16514,14 @@ def self.search_convpath; end
 #   p ec.convpath #=> ["universal_newline",
 #                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
 #                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
-def self.new; end
+def self.new(*args); end
 
 ##
 # Returns a printable version of <i>ec</i>
 # 
 #   ec = Encoding::Converter.new("iso-8859-1", "utf-8")
 #   puts ec.inspect    #=> #<Encoding::Converter: ISO-8859-1 to UTF-8>
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the conversion path of ec.
@@ -16541,15 +16541,15 @@ def inspect; end
 # In the above example, [#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>] means
 # a converter from ISO-8859-1 to UTF-8.
 # "crlf_newline" means newline converter from LF to CRLF.
-def convpath; end
+def convpath(); end
 
 ##
 # Returns the source encoding as an Encoding object.
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an Encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # possible opt elements:
@@ -16634,7 +16634,7 @@ def destination_encoding; end
 #   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
 #   ret = ec.primitive_convert(src, dst="", nil, 1)
 #   p [ret, src, dst] #=> [:finished, "", "i"]
-def primitive_convert; end
+def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
 
 ##
 # Convert source_string and return destination_string.
@@ -16665,7 +16665,7 @@ def primitive_convert; end
 # from these exceptions.
 # When you want to handle these conversion errors,
 # use Encoding::Converter#primitive_convert.
-def convert; end
+def convert(p1); end
 
 ##
 # Finishes the converter.
@@ -16674,7 +16674,7 @@ def convert; end
 #   ec = Encoding::Converter.new("utf-8", "iso-2022-jp")
 #   p ec.convert("\u3042")     #=> "\e$B$\""
 #   p ec.finish                #=> "\e(B"
-def finish; end
+def finish(); end
 
 ##
 # primitive_errinfo returns important information regarding the last error
@@ -16746,7 +16746,7 @@ def finish; end
 #   #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "@\x00"]
 #   p src
 #   #=> ""
-def primitive_errinfo; end
+def primitive_errinfo(); end
 
 ##
 # Inserts string into the encoding converter.
@@ -16775,7 +16775,7 @@ def primitive_errinfo; end
 #  ec.insert_output "?"                # state change required to output "?".
 #  p ec.primitive_convert(src, dst)    #=> :finished
 #  puts "[#{dst.dump}, #{src.dump}]"   #=> ["\e$B$O$!$H\e(B?\e$B!#\e(B".force_encoding("ISO-2022-JP"), ""]
-def insert_output; end
+def insert_output(p1); end
 
 ##
 # call-seq
@@ -16799,7 +16799,7 @@ def insert_output; end
 #   p ec.primitive_errinfo     #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "a\x00"]
 #   p ec.putback               #=> "a\x00"
 #   p ec.putback               #=> ""          # no more bytes to put back
-def putback; end
+def putback(p1=0); end
 
 ##
 # Returns an exception object for the last conversion.
@@ -16816,7 +16816,7 @@ def putback; end
 #  p ec.last_error      #=> #<Encoding::InvalidByteSequenceError: "\xF1" followed by "a" on UTF-8>
 #  p ec.primitive_convert(src, dst, nil, 1)             #=> :destination_buffer_full
 #  p ec.last_error      #=> nil
-def last_error; end
+def last_error(); end
 
 ##
 # Returns the replacement string.
@@ -16826,7 +16826,7 @@ def last_error; end
 # 
 #  ec = Encoding::Converter.new("euc-jp", "utf-8")
 #  p ec.replacement    #=> "\uFFFD"
-def replacement; end
+def replacement(); end
 
 ##
 # Sets the replacement string.
@@ -16834,42 +16834,42 @@ def replacement; end
 #  ec = Encoding::Converter.new("utf-8", "us-ascii", :undef => :replace)
 #  ec.replacement = "<undef>"
 #  p ec.convert("a \u3042 b")      #=> "a <undef> b"
-def replacement=; end
+def replacement=(p1); end
 
-def ==; end
+def ==(p1); end
 
 end
 
 ##
 # Raised by Encoding and String methods when the source encoding is
 # incompatible with the target encoding.
-class CompatibilityError < RDoc::NormalClass EncodingError < StandardError
+class CompatibilityError < EncodingError
 end
 
 ##
 # Returns the name of the encoding.
 # 
 #   Encoding::UTF_8.name      #=> "UTF-8"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns a string which represents the encoding for programmers.
 # 
 #   Encoding::UTF_8.inspect       #=> "#<Encoding:UTF-8>"
 #   Encoding::ISO_2022_JP.inspect #=> "#<Encoding:ISO-2022-JP (dummy)>"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the name of the encoding.
 # 
 #   Encoding::UTF_8.name      #=> "UTF-8"
-def name; end
+def name(); end
 
 ##
 # Returns the list of name and aliases of the encoding.
 # 
 #   Encoding::WINDOWS_31J.names  #=> ["Windows-31J", "CP932", "csWindows31J"]
-def names; end
+def names(); end
 
 ##
 # Returns true for dummy encodings.
@@ -16879,20 +16879,20 @@ def names; end
 # 
 #   Encoding::ISO_2022_JP.dummy?       #=> true
 #   Encoding::UTF_8.dummy?             #=> false
-def dummy?; end
+def dummy?(); end
 
 ##
 # Returns whether ASCII-compatible or not.
 # 
 #   Encoding::UTF_8.ascii_compatible?     #=> true
 #   Encoding::UTF_16BE.ascii_compatible?  #=> false
-def ascii_compatible?; end
+def ascii_compatible?(); end
 
 ##
 # Returns a replicated encoding of _enc_ whose name is _name_.
 # The new encoding should have the same byte structure of _enc_.
 # If _name_ is used by another encoding, raise ArgumentError.
-def replicate; end
+def replicate(p1); end
 
 ##
 # Returns the list of loaded encodings.
@@ -16907,7 +16907,7 @@ def replicate; end
 #   Encoding.list
 #   #=> [#<Encoding:ASCII-8BIT>, #<Encoding:UTF-8>,
 #         #<Encoding:US-ASCII>, #<Encoding:ISO-2022-JP (dummy)>]
-def self.list; end
+def self.list(); end
 
 ##
 # Returns the list of available encoding names.
@@ -16917,7 +16917,7 @@ def self.list; end
 #         "ISO-8859-1", "Shift_JIS", "EUC-JP",
 #         "Windows-31J",
 #         "BINARY", "CP932", "eucJP"]
-def self.name_list; end
+def self.name_list(); end
 
 ##
 # Returns the hash of available encoding alias and original encoding name.
@@ -16925,7 +16925,7 @@ def self.name_list; end
 #   Encoding.aliases
 #   #=> {"BINARY"=>"ASCII-8BIT", "ASCII"=>"US-ASCII", "ANSI_X3.4-1986"=>"US-ASCII",
 #         "SJIS"=>"Shift_JIS", "eucJP"=>"EUC-JP", "CP932"=>"Windows-31J"}
-def self.aliases; end
+def self.aliases(); end
 
 ##
 # Search the encoding with specified <i>name</i>.
@@ -16946,7 +16946,7 @@ def self.aliases; end
 # Only <code>Encoding.find("internal")</code> however returns nil
 # when no encoding named "internal", in other words, when Ruby has no
 # default internal encoding.
-def self.find; end
+def self.find(p1); end
 
 ##
 # Checks the compatibility of two objects.
@@ -16967,7 +16967,7 @@ def self.find; end
 # have an encoding and:
 # * Either encoding is US-ASCII compatible
 # * One of the encodings is a 7-bit encoding
-def self.compatible?; end
+def self.compatible?(p1, p2); end
 
 ##
 # Returns default external encoding.
@@ -16991,7 +16991,7 @@ def self.compatible?; end
 # encoding when written.
 # 
 # The default external encoding is initialized by the locale or -E option.
-def self.default_external; end
+def self.default_external(); end
 
 ##
 # Sets default external encoding.  You should not set
@@ -17002,7 +17002,7 @@ def self.default_external; end
 # 
 # See Encoding::default_external for information on how the default external
 # encoding is used.
-def self.default_external=; end
+def self.default_external=(p1); end
 
 ##
 # Returns default internal encoding.  Strings will be transcoded to the
@@ -17031,7 +17031,7 @@ def self.default_external=; end
 # 
 # Encoding::default_internal is initialized by the source file's
 # internal_encoding or -E option.
-def self.default_internal; end
+def self.default_internal(); end
 
 ##
 # Sets default internal encoding or removes default internal encoding when
@@ -17042,7 +17042,7 @@ def self.default_internal; end
 # 
 # See Encoding::default_internal for information on how the default internal
 # encoding is used.
-def self.default_internal=; end
+def self.default_internal=(p1); end
 
 ##
 # Returns the locale charmap name.
@@ -17064,7 +17064,7 @@ def self.default_internal=; end
 # So Encoding.find(Encoding.locale_charmap) may cause an error.
 # If you need some encoding object even for unknown locale,
 # Encoding.find("locale") can be used.
-def self.locale_charmap; end
+def self.locale_charmap(); end
 
 end
 
@@ -17076,7 +17076,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    RegexpError: target of repeat operator is not specified: /?/
-class RegexpError < RDoc::NormalClass StandardError < Exception
+class RegexpError < StandardError
 end
 
 ##
@@ -17664,10 +17664,10 @@ end
 # 
 #     Regexp.new('\A' 'a?' * 29 + 'a' * 29).match('a' * 29)
 #         #=> #<MatchData "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa">
-class Regexp < RDoc::NormalClass Object < BasicObject
+class Regexp < Object
 ##
 # Synonym for <code>Regexp.new</code>
-def self.compile; end
+def self.compile(*args); end
 
 ##
 # Escapes any characters that would have special meaning in a regular
@@ -17676,7 +17676,7 @@ def self.compile; end
 # <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
 # 
 #    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
-def self.quote; end
+def self.quote(p1); end
 
 ##
 # Escapes any characters that would have special meaning in a regular
@@ -17685,7 +17685,7 @@ def self.quote; end
 # <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
 # 
 #    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
-def self.escape; end
+def self.escape(p1); end
 
 ##
 # Return a <code>Regexp</code> object that is the union of the given
@@ -17700,7 +17700,7 @@ def self.escape; end
 #    Regexp.union("skiing", "sledding")   #=> /skiing|sledding/
 #    Regexp.union(["skiing", "sledding"]) #=> /skiing|sledding/
 #    Regexp.union(/dogs/, /cats/i)        #=> /(?-mix:dogs)|(?i-mx:cats)/
-def self.union; end
+def self.union(*args); end
 
 ##
 # The first form returns the <code>MatchData</code> object generated by the
@@ -17722,7 +17722,7 @@ def self.union; end
 #    Regexp.last_match       #=> #<MatchData "var = val" lhs:"var" rhs:"val">
 #    Regexp.last_match(:lhs) #=> "var"
 #    Regexp.last_match(:rhs) #=> "val"
-def self.last_match; end
+def self.last_match(p1=0); end
 
 ##
 # Try to convert <i>obj</i> into a Regexp, using to_regexp method.
@@ -17736,7 +17736,7 @@ def self.last_match; end
 #    Regexp.try_convert(o)            #=> nil
 #    def o.to_regexp() /foo/ end
 #    Regexp.try_convert(o)            #=> /foo/
-def self.try_convert; end
+def self.try_convert(p1); end
 
 ##
 # Constructs a new regular expression from <i>pattern</i>, which can be either
@@ -17753,11 +17753,11 @@ def self.try_convert; end
 #    r2 = Regexp.new('cat', true)               #=> /cat/i
 #    r3 = Regexp.new('dog', Regexp::EXTENDED)   #=> /dog/x
 #    r4 = Regexp.new(r2)                        #=> /cat/i
-def self.new; end
+def self.new(*args); end
 
 ##
 # Produce a hash based on the text and options of this regular expression.
-def hash; end
+def hash(); end
 
 ##
 # Equality---Two regexps are equal if their patterns are identical, they have
@@ -17768,7 +17768,7 @@ def hash; end
 #    /abc/  == /abc/i   #=> false
 #    /abc/  == /abc/n   #=> false
 #    /abc/u == /abc/n   #=> false
-def eql?; end
+def eql?(p1); end
 
 ##
 # Equality---Two regexps are equal if their patterns are identical, they have
@@ -17779,7 +17779,7 @@ def eql?; end
 #    /abc/  == /abc/i   #=> false
 #    /abc/  == /abc/n   #=> false
 #    /abc/u == /abc/n   #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Match---Matches <i>rxp</i> against <i>str</i>.
@@ -17823,7 +17823,7 @@ def ==; end
 # 
 #   "  x = y  " =~ /(?<lhs>\w+)\s*=\s*(?<rhs>\w+)/
 #   p lhs, rhs # undefined local variable
-def =~; end
+def =~(p1); end
 
 ##
 # Case Equality---Synonym for <code>Regexp#=~</code> used in case statements.
@@ -17838,7 +17838,7 @@ def =~; end
 # <em>produces:</em>
 # 
 #    Upper case
-def ===; end
+def ===(p1); end
 
 ##
 # Match---Matches <i>rxp</i> against the contents of <code>$_</code>.
@@ -17846,7 +17846,7 @@ def ===; end
 # 
 #    $_ = "input data"
 #    ~ /at/   #=> 7
-def ~; end
+def ~(); end
 
 ##
 # Returns a <code>MatchData</code> object describing the match, or
@@ -17870,7 +17870,7 @@ def ~; end
 #    end
 # 
 # The return value is a value from block execution in this case.
-def match; end
+def match(p1, p2=0); end
 
 ##
 # Returns a string containing the regular expression and its options (using the
@@ -17887,7 +17887,7 @@ def match; end
 #     r1 == r2                #=> false
 #     r1.source               #=> "ab+c"
 #     r2.source               #=> "(?ix-m:ab+c)"
-def to_s; end
+def to_s(); end
 
 ##
 # Produce a nicely formatted string-version of _rxp_. Perhaps surprisingly,
@@ -17895,7 +17895,7 @@ def to_s; end
 # the string than <code>#to_s</code>.
 # 
 #      /ab+c/ix.inspect        #=> "/ab+c/ix"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the original string of the pattern.
@@ -17905,7 +17905,7 @@ def inspect; end
 # Note that escape sequences are retained as is.
 # 
 #    /\x20\+/.source  #=> "\\x20\\+"
-def source; end
+def source(); end
 
 ##
 # Returns the value of the case-insensitive flag.
@@ -17913,7 +17913,7 @@ def source; end
 #     /a/.casefold?           #=> false
 #     /a/i.casefold?          #=> true
 #     /(?i:a)/.casefold?      #=> false
-def casefold?; end
+def casefold?(); end
 
 ##
 # Returns the set of bits corresponding to the options used when creating this
@@ -17933,11 +17933,11 @@ def casefold?; end
 # 
 #    r = /cat/ix
 #    Regexp.new(r.source, r.options)     #=> /cat/ix
-def options; end
+def options(); end
 
 ##
 # Returns the Encoding object that represents the encoding of obj.
-def encoding; end
+def encoding(); end
 
 ##
 # Returns false if rxp is applicable to
@@ -17963,7 +17963,7 @@ def encoding; end
 #     r =~ "\u{6666} a"                               #=> 0
 #     r =~ "\xa1\xa2".force_encoding("euc-jp")        #=> ArgumentError
 #     r =~ "abc".force_encoding("euc-jp")             #=> nil
-def fixed_encoding?; end
+def fixed_encoding?(); end
 
 ##
 # Returns a list of names of captures as an array of strings.
@@ -17976,7 +17976,7 @@ def fixed_encoding?; end
 # 
 #     /(.)(.)/.names
 #     #=> []
-def names; end
+def names(); end
 
 ##
 # Returns a hash representing information about named captures of <i>rxp</i>.
@@ -17995,7 +17995,7 @@ def names; end
 # 
 #    /(.)(.)/.named_captures
 #    #=> {}
-def named_captures; end
+def named_captures(); end
 
 end
 
@@ -18006,13 +18006,13 @@ end
 # match, results normally accessed through the special variables
 # <code>$&</code>, <code>$'</code>, <code>$`</code>, <code>$1</code>,
 # <code>$2</code>, and so on.
-class MatchData < RDoc::NormalClass Object < BasicObject
+class MatchData < Object
 ##
 # Returns the regexp.
 # 
 #     m = /a.*b/.match("abc")
 #     m.regexp #=> /a.*b/
-def regexp; end
+def regexp(); end
 
 ##
 # Returns a list of names of captures as an array of strings.
@@ -18023,7 +18023,7 @@ def regexp; end
 # 
 #     m = /(?<x>.)(?<y>.)?/.match("a") #=> #<MatchData "a" x:"a" y:nil>
 #     m.names                          #=> ["x", "y"]
-def names; end
+def names(); end
 
 ##
 # Returns the number of elements in the match array.
@@ -18031,7 +18031,7 @@ def names; end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.length   #=> 5
 #    m.size     #=> 5
-def size; end
+def size(); end
 
 ##
 # Returns the number of elements in the match array.
@@ -18039,7 +18039,7 @@ def size; end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.length   #=> 5
 #    m.size     #=> 5
-def length; end
+def length(); end
 
 ##
 # Returns a two-element array containing the beginning and ending offsets of
@@ -18053,7 +18053,7 @@ def length; end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.offset(:foo) #=> [0, 1]
 #    p m.offset(:bar) #=> [2, 3]
-def offset; end
+def offset(p1); end
 
 ##
 # Returns the offset of the start of the <em>n</em>th element of the match
@@ -18067,7 +18067,7 @@ def offset; end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.begin(:foo)  #=> 0
 #    p m.begin(:bar)  #=> 2
-def begin; end
+def begin(p1); end
 
 ##
 # Returns the offset of the character immediately following the end of the
@@ -18081,7 +18081,7 @@ def begin; end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.end(:foo)    #=> 1
 #    p m.end(:bar)    #=> 3
-def end; end
+def end(p1); end
 
 ##
 # Returns the array of matches.
@@ -18100,7 +18100,7 @@ def end; end
 #    f1    #=> "H"
 #    f2    #=> "X"
 #    f3    #=> "113"
-def to_a; end
+def to_a(); end
 
 ##
 # Match Reference---<code>MatchData</code> acts as an array, and may be
@@ -18120,7 +18120,7 @@ def to_a; end
 #    m          #=> #<MatchData "aaab" foo:"aaa">
 #    m["foo"]   #=> "aaa"
 #    m[:foo]    #=> "aaa"
-def []; end
+def [](p1, p2=0); end
 
 ##
 # Returns the array of captures; equivalent to <code>mtch.to_a[1..-1]</code>.
@@ -18130,7 +18130,7 @@ def []; end
 #    f2    #=> "X"
 #    f3    #=> "113"
 #    f4    #=> "8"
-def captures; end
+def captures(); end
 
 ##
 # Uses each <i>index</i> to access the matching values, returning an array of
@@ -18139,7 +18139,7 @@ def captures; end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138: The Movie")
 #    m.to_a               #=> ["HX1138", "H", "X", "113", "8"]
 #    m.values_at(0, 2, -2)   #=> ["HX1138", "X", "113"]
-def values_at; end
+def values_at(*args); end
 
 ##
 # Returns the portion of the original string before the current match.
@@ -18147,7 +18147,7 @@ def values_at; end
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.pre_match   #=> "T"
-def pre_match; end
+def pre_match(); end
 
 ##
 # Returns the portion of the original string after the current match.
@@ -18155,14 +18155,14 @@ def pre_match; end
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138: The Movie")
 #    m.post_match   #=> ": The Movie"
-def post_match; end
+def post_match(); end
 
 ##
 # Returns the entire matched string.
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.to_s   #=> "HX1138"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns a printable version of <i>mtch</i>.
@@ -18178,56 +18178,56 @@ def to_s; end
 # 
 #     puts /(?<foo>.)(?<bar>.)(?<baz>.)/.match("hoge").inspect
 #     #=> #<MatchData "hog" foo:"h" bar:"o" baz:"g">
-def inspect; end
+def inspect(); end
 
 ##
 # Returns a frozen copy of the string passed in to <code>match</code>.
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.string   #=> "THX1138."
-def string; end
+def string(); end
 
 ##
 # Produce a hash based on the target string, regexp and matched
 # positions of this matchdata.
-def hash; end
+def hash(); end
 
 ##
 # Equality---Two matchdata are equal if their target strings,
 # patterns, and matched positions are identical.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Equality---Two matchdata are equal if their target strings,
 # patterns, and matched positions are identical.
-def ==; end
+def ==(p1); end
 
 end
 
 ##
 # ::VM   
-class Thread < RDoc::NormalClass Object < BasicObject
+class Thread < Object
 ##
 # Basically the same as <code>Thread::new</code>. However, if class
 # <code>Thread</code> is subclassed, then calling <code>start</code> in that
 # subclass will not invoke the subclass's <code>initialize</code> method.
-def self.start; end
+def self.start(*args); end
 
 ##
 # Basically the same as <code>Thread::new</code>. However, if class
 # <code>Thread</code> is subclassed, then calling <code>start</code> in that
 # subclass will not invoke the subclass's <code>initialize</code> method.
-def self.fork; end
+def self.fork(*args); end
 
 ##
 # Returns the main thread.
-def self.main; end
+def self.main(); end
 
 ##
 # Returns the currently executing thread.
 # 
 #    Thread.current   #=> #<Thread:0x401bdf4c run>
-def self.current; end
+def self.current(); end
 
 ##
 # Stops execution of the current thread, putting it into a ``sleep'' state,
@@ -18242,7 +18242,7 @@ def self.current; end
 # <em>produces:</em>
 # 
 #    abc
-def self.stop; end
+def self.stop(); end
 
 ##
 # Causes the given <em>thread</em> to exit (see <code>Thread::exit</code>).
@@ -18253,19 +18253,19 @@ def self.stop; end
 #    Thread.kill(a)   #=> #<Thread:0x401b3d30 dead>
 #    count            #=> 93947
 #    a.alive?         #=> false
-def self.kill; end
+def self.kill(p1); end
 
 ##
 # Terminates the currently running thread and schedules another thread to be
 # run. If this thread is already marked to be killed, <code>exit</code>
 # returns the <code>Thread</code>. If this is the main thread, or the last
 # thread, exit the process.
-def self.exit; end
+def self.exit(); end
 
 ##
 # Give the thread scheduler a hint to pass execution to another thread.
 # A running thread may or may not switch, it depends on OS and processor.
-def self.pass; end
+def self.pass(); end
 
 ##
 # Returns an array of <code>Thread</code> objects for all threads that are
@@ -18282,7 +18282,7 @@ def self.pass; end
 #    #<Thread:0x401b3f38 run>
 #    #<Thread:0x401b3fb0 sleep>
 #    #<Thread:0x401bdf4c run>
-def self.list; end
+def self.list(); end
 
 ##
 # Returns the status of the global ``abort on exception'' condition.  The
@@ -18291,7 +18291,7 @@ def self.list; end
 # command line option <code>-d</code> was specified) all threads will abort
 # (the process will <code>exit(0)</code>) if an exception is raised in any
 # thread. See also <code>Thread::abort_on_exception=</code>.
-def self.abort_on_exception; end
+def self.abort_on_exception(); end
 
 ##
 # When set to <code>true</code>, all threads will abort if an exception is
@@ -18312,17 +18312,17 @@ def self.abort_on_exception; end
 #     from prog.rb:2:in `initialize'
 #     from prog.rb:2:in `new'
 #     from prog.rb:2
-def self.abort_on_exception=; end
+def self.abort_on_exception=(p1); end
 
 ##
 # Returns the thread debug level.  Available only if compiled with
 # THREAD_DEBUG=-1.
-def self.DEBUG; end
+def self.DEBUG(); end
 
 ##
 # Sets the thread debug level.  Available only if compiled with
 # THREAD_DEBUG=-1.
-def self.DEBUG=; end
+def self.DEBUG=(p1); end
 
 ##
 # Raises an exception (see <code>Kernel::raise</code>) from <i>thr</i>. The
@@ -18338,7 +18338,7 @@ def self.DEBUG=; end
 #     from prog.rb:2:in `initialize'
 #     from prog.rb:2:in `new'
 #     from prog.rb:2
-def raise; end
+def raise(*args); end
 
 ##
 # The calling thread will suspend execution and run <i>thr</i>. Does not
@@ -18373,7 +18373,7 @@ def raise; end
 #    Waitingtick...
 # 
 #    tick...
-def join; end
+def join(p1=0); end
 
 ##
 # Waits for <i>thr</i> to complete (via <code>Thread#join</code>) and returns
@@ -18381,28 +18381,28 @@ def join; end
 # 
 #    a = Thread.new { 2 + 2 }
 #    a.value   #=> 4
-def value; end
+def value(); end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def kill; end
+def kill(); end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def terminate; end
+def terminate(); end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def exit; end
+def exit(); end
 
 ##
 # Wakes up <i>thr</i>, making it eligible for scheduling.
@@ -18418,7 +18418,7 @@ def exit; end
 #    a
 #    Got here
 #    c
-def run; end
+def run(); end
 
 ##
 # Marks <i>thr</i> as eligible for scheduling (it may still remain blocked on
@@ -18432,7 +18432,7 @@ def run; end
 # <em>produces:</em>
 # 
 #    hey!
-def wakeup; end
+def wakeup(); end
 
 ##
 # Attribute Reference---Returns the value of a thread-local variable, using
@@ -18453,12 +18453,12 @@ def wakeup; end
 #    #<Thread:0x00000002a54220 dead>: A
 #    #<Thread:0x00000002a541a8 dead>: B
 #    #<Thread:0x00000002a54130 dead>: C
-def []; end
+def [](p1); end
 
 ##
 # Attribute Assignment---Sets or creates the value of a thread-local variable,
 # using either a symbol or a string. See also <code>Thread#[]</code>.
-def []=; end
+def []=(p1, p2); end
 
 ##
 # Returns <code>true</code> if the given string (or symbol) exists as a
@@ -18468,7 +18468,7 @@ def []=; end
 #    me[:oliver] = "a"
 #    me.key?(:oliver)    #=> true
 #    me.key?(:stanley)   #=> false
-def key?; end
+def key?(p1); end
 
 ##
 # Returns an an array of the names of the thread-local variables (as Symbols).
@@ -18479,7 +18479,7 @@ def key?; end
 #    end
 #    thr.join   #=> #<Thread:0x401b3f10 dead>
 #    thr.keys   #=> [:dog, :cat]
-def keys; end
+def keys(); end
 
 ##
 # Returns the priority of <i>thr</i>. Default is inherited from the
@@ -18491,7 +18491,7 @@ def keys; end
 # platform.
 # 
 #    Thread.current.priority   #=> 0
-def priority; end
+def priority(); end
 
 ##
 # Sets the priority of <i>thr</i> to <i>integer</i>. Higher-priority threads
@@ -18514,7 +18514,7 @@ def priority; end
 #    sleep 1   #=> 1
 #    count1    #=> 622504
 #    count2    #=> 5832
-def priority=; end
+def priority=(p1); end
 
 ##
 # Returns the status of <i>thr</i>: ``<code>sleep</code>'' if <i>thr</i> is
@@ -18533,7 +18533,7 @@ def priority=; end
 #    c.status                #=> false
 #    d.status                #=> "aborting"
 #    Thread.current.status   #=> "run"
-def status; end
+def status(); end
 
 ##
 # Returns <code>true</code> if <i>thr</i> is running or sleeping.
@@ -18542,7 +18542,7 @@ def status; end
 #    thr.join                #=> #<Thread:0x401b3fb0 dead>
 #    Thread.current.alive?   #=> true
 #    thr.alive?              #=> false
-def alive?; end
+def alive?(); end
 
 ##
 # Returns <code>true</code> if <i>thr</i> is dead or sleeping.
@@ -18551,19 +18551,19 @@ def alive?; end
 #    b = Thread.current
 #    a.stop?   #=> true
 #    b.stop?   #=> false
-def stop?; end
+def stop?(); end
 
 ##
 # Returns the status of the thread-local ``abort on exception'' condition for
 # <i>thr</i>. The default is <code>false</code>. See also
 # <code>Thread::abort_on_exception=</code>.
-def abort_on_exception; end
+def abort_on_exception(); end
 
 ##
 # When set to <code>true</code>, causes all threads (including the main
 # program) to abort if an exception is raised in <i>thr</i>. The process will
 # effectively <code>exit(0)</code>.
-def abort_on_exception=; end
+def abort_on_exception=(p1); end
 
 ##
 # Returns the safe level in effect for <i>thr</i>. Setting thread-local safe
@@ -18572,37 +18572,37 @@ def abort_on_exception=; end
 #    thr = Thread.new { $SAFE = 3; sleep }
 #    Thread.current.safe_level   #=> 0
 #    thr.safe_level              #=> 3
-def safe_level; end
+def safe_level(); end
 
 ##
 # Returns the <code>ThreadGroup</code> which contains <i>thr</i>, or nil if
 # the thread is not a member of any group.
 # 
 #    Thread.main.group   #=> #<ThreadGroup:0x4029d914>
-def group; end
+def group(); end
 
 ##
 # Returns the current back trace of the _thr_.
-def backtrace; end
+def backtrace(); end
 
 ##
 # Dump the name, id, and status of _thr_ to a string.
-def inspect; end
+def inspect(); end
 
 ##
 # Establishes _proc_ on _thr_ as the handler for tracing, or
 # disables tracing if the parameter is +nil+.
 # See +set_trace_func+.
-def set_trace_func; end
+def set_trace_func(p1); end
 
 ##
 # Adds _proc_ as a handler for tracing.
 # See <code>Thread#set_trace_func</code> and +set_trace_func+.
-def add_trace_func; end
+def add_trace_func(p1); end
 
 end
 
-class Env < RDoc::NormalClass Object < BasicObject
+class Env < Object
 end
 
 ##
@@ -18619,7 +18619,7 @@ end
 # 
 #    File.open("does/not/exist")
 #      #=> Errno::ENOENT: No such file or directory - does/not/exist
-class IOError < RDoc::NormalClass StandardError < Exception
+class IOError < StandardError
 end
 
 ##
@@ -18635,7 +18635,7 @@ end
 #    file.read
 #    file.gets     #=> nil
 #    file.readline #=> EOFError: end of file reached
-class EOFError < RDoc::NormalClass IOError < StandardError
+class EOFError < IOError
 end
 
 ##
@@ -18675,11 +18675,11 @@ end
 # 
 #     $ echo "glark" | ruby -e 'p ARGF.read'
 #     "glark\n"
-class ARGF < RDoc::NormalClass Object < BasicObject
+class ARGF < Object
 include Enumerable
 ##
 # Returns "ARGF".
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the +ARGV+ array, which contains the arguments passed to your
@@ -18690,21 +18690,21 @@ def to_s; end
 #     $ ruby argf.rb -v glark.txt
 # 
 #     ARGF.argv   #=> ["-v", "glark.txt"]
-def argv; end
+def argv(); end
 
 ##
 # Returns an integer representing the numeric file descriptor for
 # the current file. Raises an +ArgumentError+ if there isn't a current file.
 # 
 #    ARGF.fileno    #=> 3
-def fileno; end
+def fileno(); end
 
 ##
 # Returns an integer representing the numeric file descriptor for
 # the current file. Raises an +ArgumentError+ if there isn't a current file.
 # 
 #    ARGF.fileno    #=> 3
-def to_i; end
+def to_i(); end
 
 ##
 # Returns an +IO+ object representing the current file. This will be a
@@ -18714,12 +18714,12 @@ def to_i; end
 # 
 #    ARGF.to_io    #=> #<File:glark.txt>
 #    ARGF.to_io    #=> #<IO:<STDIN>>
-def to_io; end
+def to_io(); end
 
 ##
 # Returns IO instance tied to _ARGF_ for writing if inplace mode is
 # enabled.
-def to_write_io; end
+def to_write_io(); end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18743,7 +18743,7 @@ def to_write_io; end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def each; end
+def each(*args); end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18767,7 +18767,7 @@ def each; end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def each_line; end
+def each_line(*args); end
 
 ##
 #  Iterates over each byte of each file in +ARGV+.
@@ -18784,7 +18784,7 @@ def each_line; end
 # For example:
 # 
 #     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
-def each_byte; end
+def each_byte(); end
 
 ##
 # Iterates over each character of each file in +ARGF+.
@@ -18797,7 +18797,7 @@ def each_byte; end
 # appears.
 # 
 # If no block is given, an enumerator is returned instead.
-def each_char; end
+def each_char(); end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18821,7 +18821,7 @@ def each_char; end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def lines; end
+def lines(*args); end
 
 ##
 #  Iterates over each byte of each file in +ARGV+.
@@ -18838,7 +18838,7 @@ def lines; end
 # For example:
 # 
 #     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
-def bytes; end
+def bytes(); end
 
 ##
 # Iterates over each character of each file in +ARGF+.
@@ -18851,7 +18851,7 @@ def bytes; end
 # appears.
 # 
 # If no block is given, an enumerator is returned instead.
-def chars; end
+def chars(); end
 
 ##
 #  Reads _length_ bytes from ARGF. The files named on the command line
@@ -18885,7 +18885,7 @@ def chars; end
 # 
 #  Note that this method behaves like fread() function in C.  If you need the
 #  behavior like read(2) system call, consider +ARGF.readpartial+.
-def read; end
+def read(p1=0, p2=0); end
 
 ##
 # Reads at most _maxlen_ bytes from the ARGF stream. It blocks only if
@@ -18909,11 +18909,11 @@ def read; end
 # the byte buffer is not empty, it returns the data in the buffer. Otherwise, if
 # the stream has some content, it returns the data in the stream. If the
 # stream reaches EOF an +EOFError+ is raised.
-def readpartial; end
+def readpartial(*args); end
 
 ##
 # Reads at most _maxlen_ bytes from the ARGF stream in non-blocking mode.
-def read_nonblock; end
+def read_nonblock(*args); end
 
 ##
 # Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
@@ -18921,7 +18921,7 @@ def read_nonblock; end
 # 
 #    lines = ARGF.readlines
 #    lines[0]                #=> "This is line one\n"
-def readlines; end
+def readlines(*args); end
 
 ##
 # Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
@@ -18929,7 +18929,7 @@ def readlines; end
 # 
 #    lines = ARGF.readlines
 #    lines[0]                #=> "This is line one\n"
-def to_a; end
+def to_a(*args); end
 
 ##
 # Returns the next line from the current file in +ARGF+.
@@ -18939,7 +18939,7 @@ def to_a; end
 # 
 # The optional  _limit_ argument specifies how many characters of each line
 # to return. By default all characters are returned.
-def gets; end
+def gets(*args); end
 
 ##
 # Returns the next line from the current file in +ARGF+.
@@ -18951,7 +18951,7 @@ def gets; end
 # to return. By default all characters are returned.
 # 
 # An +EOFError+ is raised at the end of the file.
-def readline; end
+def readline(*args); end
 
 ##
 # Reads the next character from +ARGF+ and returns it as a +String+. Returns
@@ -18972,7 +18972,7 @@ def readline; end
 #    ARGF.getc  #=> "\n"
 #    ARGF.getc  #=> nil
 #    ARGF.getc  #=> nil
-def getc; end
+def getc(); end
 
 ##
 # Gets the next 8-bit byte (0..255) from +ARGF+. Returns +nil+ if called at
@@ -18988,7 +18988,7 @@ def getc; end
 #    ARGF.getbyte #=> 111
 #    ARGF.getbyte #=> 10
 #    ARGF.getbyte #=> nil
-def getbyte; end
+def getbyte(); end
 
 ##
 # Reads the next character from +ARGF+ and returns it as a +String+. Raises
@@ -19004,7 +19004,7 @@ def getbyte; end
 #    ARGF.readchar  #=> "o"
 #    ARGF.readchar  #=> "\n"
 #    ARGF.readchar  #=> end of file reached (EOFError)
-def readchar; end
+def readchar(); end
 
 ##
 # Reads the next 8-bit byte from ARGF and returns it as a +Fixnum+. Raises
@@ -19020,7 +19020,7 @@ def readchar; end
 #    ARGF.readbyte  #=> 111
 #    ARGF.readbyte  #=> 10
 #    ARGF.readbyte  #=> end of file reached (EOFError)
-def readbyte; end
+def readbyte(); end
 
 ##
 # Returns the current offset (in bytes) of the current file in +ARGF+.
@@ -19028,12 +19028,12 @@ def readbyte; end
 #    ARGF.pos    #=> 0
 #    ARGF.gets   #=> "This is line one\n"
 #    ARGF.pos    #=> 17
-def tell; end
+def tell(); end
 
 ##
 # Seeks to offset _amount_ (an +Integer+) in the +ARGF+ stream according to
 # the value of _whence_. See +IO#seek+ for further details.
-def seek; end
+def seek(*args); end
 
 ##
 # Positions the current file to the beginning of input, resetting
@@ -19043,7 +19043,7 @@ def seek; end
 #    ARGF.rewind     #=> 0
 #    ARGF.lineno     #=> 0
 #    ARGF.readline   #=> "This is line one\n"
-def rewind; end
+def rewind(); end
 
 ##
 # Returns the current offset (in bytes) of the current file in +ARGF+.
@@ -19051,7 +19051,7 @@ def rewind; end
 #    ARGF.pos    #=> 0
 #    ARGF.gets   #=> "This is line one\n"
 #    ARGF.pos    #=> 17
-def pos; end
+def pos(); end
 
 ##
 # Seeks to the position given by _position_ (in bytes) in +ARGF+.
@@ -19060,7 +19060,7 @@ def pos; end
 # 
 #     ARGF.pos = 17
 #     ARGF.gets   #=> "This is line two\n"
-def pos=; end
+def pos=(p1); end
 
 ##
 # Returns true if the current file in +ARGF+ is at end of file, i.e. it has
@@ -19074,7 +19074,7 @@ def pos=; end
 #    ARGF.eof?                 #=> false
 #    ARGF.readchar             #=> "\n"
 #    ARGF.eof?                 #=> true
-def eof; end
+def eof(); end
 
 ##
 # Returns true if the current file in +ARGF+ is at end of file, i.e. it has
@@ -19088,7 +19088,7 @@ def eof; end
 #    ARGF.eof?                 #=> false
 #    ARGF.readchar             #=> "\n"
 #    ARGF.eof?                 #=> true
-def eof?; end
+def eof?(); end
 
 ##
 # Puts +ARGF+ into binary mode. Once a stream is in binary mode, it cannot
@@ -19097,7 +19097,7 @@ def eof?; end
 # *  Newline conversion is disabled.
 # *  Encoding conversion is disabled.
 # *  Content is treated as ASCII-8BIT.
-def binmode; end
+def binmode(); end
 
 ##
 #  Returns true if +ARGF+ is being read in binary mode; false otherwise. (To
@@ -19108,11 +19108,11 @@ def binmode; end
 #     ARGF.binmode?  #=> false
 #     ARGF.binmode
 #     ARGF.binmode?  #=> true
-def binmode?; end
+def binmode?(); end
 
 ##
 # Writes _string_ if inplace mode.
-def write; end
+def write(p1); end
 
 ##
 # Writes the given object(s) to <em>ios</em>. The stream must be
@@ -19130,7 +19130,7 @@ def write; end
 # <em>produces:</em>
 # 
 #    This is 100 percent.
-def print; end
+def print(*args); end
 
 ##
 # If <i>obj</i> is <code>Numeric</code>, write the character whose code is
@@ -19145,7 +19145,7 @@ def print; end
 # <em>produces:</em>
 # 
 #    AA
-def putc; end
+def putc(p1); end
 
 ##
 # Writes the given objects to <em>ios</em> as with
@@ -19162,13 +19162,13 @@ def putc; end
 #    is
 #    a
 #    test
-def puts; end
+def puts(*args); end
 
 ##
 # Formats and writes to <em>ios</em>, converting parameters under
 # control of the format string. See <code>Kernel#sprintf</code>
 # for details.
-def printf; end
+def printf(*args); end
 
 ##
 # Returns the current filename. "-" is returned when the current file is
@@ -19187,7 +19187,7 @@ def printf; end
 #    ARGF.filename  #=> "bar"
 #    ARGF.skip
 #    ARGF.filename  #=> "glark"
-def filename; end
+def filename(); end
 
 ##
 # Returns the current filename. "-" is returned when the current file is
@@ -19206,7 +19206,7 @@ def filename; end
 #    ARGF.filename  #=> "bar"
 #    ARGF.skip
 #    ARGF.filename  #=> "glark"
-def path; end
+def path(); end
 
 ##
 # Returns the current file as an +IO+ or +File+ object. #<IO:<STDIN>> is
@@ -19222,7 +19222,7 @@ def path; end
 #    ARGF.file      #=> #<File:foo>
 #    ARGF.read(5)   #=> "foo\nb"
 #    ARGF.file      #=> #<File:bar>
-def file; end
+def file(); end
 
 ##
 #  Sets the current file to the next file in ARGV. If there aren't any more
@@ -19234,7 +19234,7 @@ def file; end
 #     ARGF.filename  #=> "foo"
 #     ARGF.skip
 #     ARGF.filename  #=> "bar"
-def skip; end
+def skip(); end
 
 ##
 #  Closes the current file and skips to the next in the stream. Trying to
@@ -19250,12 +19250,12 @@ def skip; end
 #     ARGF.filename  #=> "bar"
 #     ARGF.close
 #     ARGF.close     #=> closed stream (IOError)
-def close; end
+def close(); end
 
 ##
 # Returns _true_ if the current file has been closed; _false_ otherwise. Use
 # +ARGF.close+ to actually close the current file.
-def closed?; end
+def closed?(); end
 
 ##
 # Returns the current line number of ARGF as a whole. This value
@@ -19266,7 +19266,7 @@ def closed?; end
 #     ARGF.lineno   #=> 0
 #     ARGF.readline #=> "This is line 1\n"
 #     ARGF.lineno   #=> 1
-def lineno; end
+def lineno(); end
 
 ##
 # Sets the line number of +ARGF+ as a whole to the given +Integer+.
@@ -19282,13 +19282,13 @@ def lineno; end
 #     ARGF.lineno      #=> 1
 #     ARGF.lineno = 0  #=> nil
 #     ARGF.lineno      #=> 0
-def lineno=; end
+def lineno=(p1); end
 
 ##
 # Returns the file extension appended to the names of modified files under
 # inplace-edit mode. This value can be set using +ARGF.inplace_mode=+ or
 # passing the +-i+ switch to the Ruby binary.
-def inplace_mode; end
+def inplace_mode(); end
 
 ##
 #  Sets the filename extension for inplace editing mode to the given String.
@@ -19306,7 +19306,7 @@ def inplace_mode; end
 # 
 # Each line of _file.txt_ has the first occurrence of "foo" replaced with
 # "bar", then the new line is written out to _file.txt.bak_.
-def inplace_mode=; end
+def inplace_mode=(p1); end
 
 ##
 #  Returns the external encoding for files read from +ARGF+ as an +Encoding+
@@ -19319,7 +19319,7 @@ def inplace_mode=; end
 # For example:
 # 
 #     ARGF.external_encoding  #=>  #<Encoding:UTF-8>
-def external_encoding; end
+def external_encoding(); end
 
 ##
 # Returns the internal encoding for strings read from +ARGF+ as an
@@ -19330,7 +19330,7 @@ def external_encoding; end
 # value is returned. Failing that, if a default external encoding was
 # specified on the command-line, that value is used. If the encoding is
 # unknown, nil is returned.
-def internal_encoding; end
+def internal_encoding(); end
 
 ##
 # If single argument is specified, strings read from ARGF are tagged with
@@ -19355,7 +19355,7 @@ def internal_encoding; end
 #     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
 #     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
 #                                        # to UTF-8.
-def set_encoding; end
+def set_encoding(*args); end
 
 end
 
@@ -19374,12 +19374,12 @@ end
 # All times may have fraction. Be aware of
 # this fact when comparing times with each other---times that are
 # apparently equal when displayed may be different when compared.
-class Time < RDoc::NormalClass Object < BasicObject
+class Time < Object
 include Comparable
 ##
 # Synonym for <code>Time.new</code>. Returns a +Time+ object
 # initialized to the current system time.
-def self.now; end
+def self.now(); end
 
 ##
 # Creates a new time object with the value given by <i>time</i>,
@@ -19395,7 +19395,7 @@ def self.now; end
 #    Time.at(-284061600)   #=> 1960-12-31 00:00:00 -0600
 #    Time.at(946684800.2).usec #=> 200000
 #    Time.at(946684800, 123456.789).nsec #=> 123456789
-def self.at; end
+def self.at(p1, p2=0); end
 
 ##
 # Creates a time based on given values, interpreted as UTC (GMT). The
@@ -19410,7 +19410,7 @@ def self.at; end
 # 
 #    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
 #    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
-def self.utc; end
+def self.utc(*args); end
 
 ##
 # Creates a time based on given values, interpreted as UTC (GMT). The
@@ -19425,21 +19425,21 @@ def self.utc; end
 # 
 #    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
 #    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
-def self.gm; end
+def self.gm(*args); end
 
 ##
 # Same as <code>Time::gm</code>, but interprets the values in the
 # local time zone.
 # 
 #    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
-def self.local; end
+def self.local(*args); end
 
 ##
 # Same as <code>Time::gm</code>, but interprets the values in the
 # local time zone.
 # 
 #    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
-def self.mktime; end
+def self.mktime(*args); end
 
 ##
 # Returns the value of <i>time</i> as an integer number of seconds
@@ -19448,7 +19448,7 @@ def self.mktime; end
 #    t = Time.now
 #    "%10.5f" % t.to_f   #=> "1270968656.89607"
 #    t.to_i              #=> 1270968656
-def to_i; end
+def to_i(); end
 
 ##
 # Returns the value of <i>time</i> as a floating point number of
@@ -19460,7 +19460,7 @@ def to_i; end
 # 
 # Note that IEEE 754 double is not accurate enough to represent
 # number of nanoseconds from the Epoch.
-def to_f; end
+def to_f(); end
 
 ##
 # Returns the value of <i>time</i> as a rational number of seconds
@@ -19472,7 +19472,7 @@ def to_f; end
 # This methods is intended to be used to get an accurate value
 # representing nanoseconds from the Epoch.  You can use this
 # to convert time to another Epoch.
-def to_r; end
+def to_r(); end
 
 ##
 # Comparison---Compares <i>time</i> with <i>other_time</i>.
@@ -19489,17 +19489,17 @@ def to_r; end
 #    t <=> t2           #=> -1
 #    t2 <=> t           #=> 1
 #    t <=> t            #=> 0
-def <=>; end
+def <=>(p1); end
 
 ##
 # Return <code>true</code> if <i>time</i> and <i>other_time</i> are
 # both <code>Time</code> objects with the same seconds and fractional
 # seconds.
-def eql?; end
+def eql?(p1); end
 
 ##
 # Return a hash code for this time object.
-def hash; end
+def hash(); end
 
 ##
 # Returns a <code>Time</code> object.
@@ -19537,7 +19537,7 @@ def hash; end
 #    p((t4-t3)/3600.0)                          #=> 2.466666666666667
 #    p((t6-t5)/3600.0)                          #=> 1.95
 #    p((t8-t7)/3600.0)                          #=> 13.416666666666666
-def self.new; end
+def self.new(*args); end
 
 ##
 # Converts <i>time</i> to local time (using the local time zone in
@@ -19553,7 +19553,7 @@ def self.new; end
 # 
 #    t.localtime("+09:00")                   #=> 2000-01-02 05:15:01 +0900
 #    t.utc?                                  #=> false
-def localtime; end
+def localtime(p1=0); end
 
 ##
 # Converts <i>time</i> to UTC (GMT), modifying the receiver.
@@ -19567,7 +19567,7 @@ def localtime; end
 #    t.utc?         #=> false
 #    t.utc          #=> 2007-11-19 14:18:51 UTC
 #    t.utc?         #=> true
-def gmtime; end
+def gmtime(); end
 
 ##
 # Converts <i>time</i> to UTC (GMT), modifying the receiver.
@@ -19581,7 +19581,7 @@ def gmtime; end
 #    t.utc?         #=> false
 #    t.utc          #=> 2007-11-19 14:18:51 UTC
 #    t.utc?         #=> true
-def utc; end
+def utc(); end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19599,7 +19599,7 @@ def utc; end
 #    j = t.getlocal("+09:00")        #=> 2000-01-02 05:15:01 +0900
 #    j.utc?                          #=> false
 #    t == j                          #=> true
-def getlocal; end
+def getlocal(p1=0); end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19610,7 +19610,7 @@ def getlocal; end
 #    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
 #    y.gmt?                             #=> true
 #    t == y                             #=> true
-def getgm; end
+def getgm(); end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19621,19 +19621,19 @@ def getgm; end
 #    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
 #    y.gmt?                             #=> true
 #    t == y                             #=> true
-def getutc; end
+def getutc(); end
 
 ##
 # Returns a canonical string representation of <i>time</i>.
 # 
 #    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
-def ctime; end
+def ctime(); end
 
 ##
 # Returns a canonical string representation of <i>time</i>.
 # 
 #    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
-def asctime; end
+def asctime(); end
 
 ##
 # Returns a string representing <i>time</i>. Equivalent to calling
@@ -19645,7 +19645,7 @@ def asctime; end
 # 
 #    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
 #    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
-def to_s; end
+def to_s(); end
 
 ##
 # Returns a string representing <i>time</i>. Equivalent to calling
@@ -19657,7 +19657,7 @@ def to_s; end
 # 
 #    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
 #    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
-def inspect; end
+def inspect(); end
 
 ##
 # Returns a ten-element <i>array</i> of values for <i>time</i>:
@@ -19669,7 +19669,7 @@ def inspect; end
 # 
 #    t = Time.now     #=> 2007-11-19 08:36:01 -0600
 #    now = t.to_a     #=> [1, 36, 8, 19, 11, 2007, 1, 323, false, "CST"]
-def to_a; end
+def to_a(); end
 
 ##
 # Addition---Adds some number of seconds (possibly fractional) to
@@ -19677,7 +19677,7 @@ def to_a; end
 # 
 #    t = Time.now         #=> 2007-11-19 08:22:21 -0600
 #    t + (60 * 60 * 24)   #=> 2007-11-20 08:22:21 -0600
-def +; end
+def +(p1); end
 
 ##
 # Difference---Returns a new time that represents the difference
@@ -19688,7 +19688,7 @@ def +; end
 #    t2 = t + 2592000   #=> 2007-12-19 08:23:10 -0600
 #    t2 - t             #=> 2592000.0
 #    t2 - 2592000       #=> 2007-11-19 08:23:10 -0600
-def -; end
+def -(p1); end
 
 ##
 # Return a new time object, one second later than <code>time</code>.
@@ -19696,7 +19696,7 @@ def -; end
 # 
 #     t = Time.now       #=> 2007-11-19 08:23:57 -0600
 #     t.succ             #=> 2007-11-19 08:23:58 -0600
-def succ; end
+def succ(); end
 
 ##
 # Rounds sub seconds to a given precision in decimal digits (0 digits by default).
@@ -19730,7 +19730,7 @@ def succ; end
 # 
 #     t = Time.utc(1999,12,31, 23,59,59)
 #     p (t + 0.123456789).round(4).iso8601(6)  #=> "1999-12-31T23:59:59.123500Z"
-def round; end
+def round(p1=0); end
 
 ##
 # Returns the second of the minute (0..60)<em>[Yes, seconds really can
@@ -19740,21 +19740,21 @@ def round; end
 # 
 #    t = Time.now   #=> 2007-11-19 08:25:02 -0600
 #    t.sec          #=> 2
-def sec; end
+def sec(); end
 
 ##
 # Returns the minute of the hour (0..59) for <i>time</i>.
 # 
 #    t = Time.now   #=> 2007-11-19 08:25:51 -0600
 #    t.min          #=> 25
-def min; end
+def min(); end
 
 ##
 # Returns the hour of the day (0..23) for <i>time</i>.
 # 
 #    t = Time.now   #=> 2007-11-19 08:26:20 -0600
 #    t.hour         #=> 8
-def hour; end
+def hour(); end
 
 ##
 # Returns the day of the month (1..n) for <i>time</i>.
@@ -19762,7 +19762,7 @@ def hour; end
 #    t = Time.now   #=> 2007-11-19 08:27:03 -0600
 #    t.day          #=> 19
 #    t.mday         #=> 19
-def mday; end
+def mday(); end
 
 ##
 # Returns the day of the month (1..n) for <i>time</i>.
@@ -19770,7 +19770,7 @@ def mday; end
 #    t = Time.now   #=> 2007-11-19 08:27:03 -0600
 #    t.day          #=> 19
 #    t.mday         #=> 19
-def day; end
+def day(); end
 
 ##
 # Returns the month of the year (1..12) for <i>time</i>.
@@ -19778,7 +19778,7 @@ def day; end
 #    t = Time.now   #=> 2007-11-19 08:27:30 -0600
 #    t.mon          #=> 11
 #    t.month        #=> 11
-def mon; end
+def mon(); end
 
 ##
 # Returns the month of the year (1..12) for <i>time</i>.
@@ -19786,14 +19786,14 @@ def mon; end
 #    t = Time.now   #=> 2007-11-19 08:27:30 -0600
 #    t.mon          #=> 11
 #    t.month        #=> 11
-def month; end
+def month(); end
 
 ##
 # Returns the year for <i>time</i> (including the century).
 # 
 #    t = Time.now   #=> 2007-11-19 08:27:51 -0600
 #    t.year         #=> 2007
-def year; end
+def year(); end
 
 ##
 # Returns an integer representing the day of the week, 0..6, with
@@ -19808,14 +19808,14 @@ def year; end
 #    t.thursday?    #=> false
 #    t.friday?      #=> false
 #    t.saturday?    #=> false
-def wday; end
+def wday(); end
 
 ##
 # Returns an integer representing the day of the year, 1..366.
 # 
 #    t = Time.now   #=> 2007-11-19 08:32:31 -0600
 #    t.yday         #=> 323
-def yday; end
+def yday(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> occurs during Daylight
@@ -19836,7 +19836,7 @@ def yday; end
 #    Time.local(2000, 7, 1).zone    #=> "JST"
 #    Time.local(2000, 7, 1).isdst   #=> false
 #    Time.local(2000, 7, 1).dst?    #=> false
-def isdst; end
+def isdst(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> occurs during Daylight
@@ -19857,7 +19857,7 @@ def isdst; end
 #    Time.local(2000, 7, 1).zone    #=> "JST"
 #    Time.local(2000, 7, 1).isdst   #=> false
 #    Time.local(2000, 7, 1).dst?    #=> false
-def dst?; end
+def dst?(); end
 
 ##
 # Returns the name of the time zone used for <i>time</i>. As of Ruby
@@ -19867,7 +19867,7 @@ def dst?; end
 #    t.zone   #=> "UTC"
 #    t = Time.local(2000, "jan", 1, 20, 15, 1)
 #    t.zone   #=> "CST"
-def zone; end
+def zone(); end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19877,7 +19877,7 @@ def zone; end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def gmtoff; end
+def gmtoff(); end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19887,7 +19887,7 @@ def gmtoff; end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def gmt_offset; end
+def gmt_offset(); end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19897,7 +19897,7 @@ def gmt_offset; end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def utc_offset; end
+def utc_offset(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents a time in UTC
@@ -19912,7 +19912,7 @@ def utc_offset; end
 #    t.gmt?                              #=> false
 #    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
 #    t.gmt?                              #=> true
-def utc?; end
+def utc?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents a time in UTC
@@ -19927,56 +19927,56 @@ def utc?; end
 #    t.gmt?                              #=> false
 #    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
 #    t.gmt?                              #=> true
-def gmt?; end
+def gmt?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Sunday.
 # 
 #    t = Time.local(1990, 4, 1)       #=> 1990-04-01 00:00:00 -0600
 #    t.sunday?                        #=> true
-def sunday?; end
+def sunday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Monday.
 # 
 #    t = Time.local(2003, 8, 4)       #=> 2003-08-04 00:00:00 -0500
 #    p t.monday?                      #=> true
-def monday?; end
+def monday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Tuesday.
 # 
 #    t = Time.local(1991, 2, 19)      #=> 1991-02-19 00:00:00 -0600
 #    p t.tuesday?                     #=> true
-def tuesday?; end
+def tuesday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Wednesday.
 # 
 #    t = Time.local(1993, 2, 24)      #=> 1993-02-24 00:00:00 -0600
 #    p t.wednesday?                   #=> true
-def wednesday?; end
+def wednesday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Thursday.
 # 
 #    t = Time.local(1995, 12, 21)     #=> 1995-12-21 00:00:00 -0600
 #    p t.thursday?                    #=> true
-def thursday?; end
+def thursday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Friday.
 # 
 #    t = Time.local(1987, 12, 18)     #=> 1987-12-18 00:00:00 -0600
 #    t.friday?                        #=> true
-def friday?; end
+def friday?(); end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Saturday.
 # 
 #    t = Time.local(2006, 6, 10)      #=> 2006-06-10 00:00:00 -0500
 #    t.saturday?                      #=> true
-def saturday?; end
+def saturday?(); end
 
 ##
 # Returns the value of <i>time</i> as an integer number of seconds
@@ -19985,7 +19985,7 @@ def saturday?; end
 #    t = Time.now
 #    "%10.5f" % t.to_f   #=> "1270968656.89607"
 #    t.to_i              #=> 1270968656
-def tv_sec; end
+def tv_sec(); end
 
 ##
 # Returns just the number of microseconds for <i>time</i>.
@@ -19993,7 +19993,7 @@ def tv_sec; end
 #    t = Time.now        #=> 2007-11-19 08:03:26 -0600
 #    "%10.6f" % t.to_f   #=> "1195481006.775195"
 #    t.usec              #=> 775195
-def tv_usec; end
+def tv_usec(); end
 
 ##
 # Returns just the number of microseconds for <i>time</i>.
@@ -20001,7 +20001,7 @@ def tv_usec; end
 #    t = Time.now        #=> 2007-11-19 08:03:26 -0600
 #    "%10.6f" % t.to_f   #=> "1195481006.775195"
 #    t.usec              #=> 775195
-def usec; end
+def usec(); end
 
 ##
 # Returns just the number of nanoseconds for <i>time</i>.
@@ -20014,7 +20014,7 @@ def usec; end
 # IEEE 754 double is not accurate enough to represent
 # nanoseconds from the Epoch.
 # The accurate value is returned by nsec.
-def tv_nsec; end
+def tv_nsec(); end
 
 ##
 # Returns just the number of nanoseconds for <i>time</i>.
@@ -20027,7 +20027,7 @@ def tv_nsec; end
 # IEEE 754 double is not accurate enough to represent
 # nanoseconds from the Epoch.
 # The accurate value is returned by nsec.
-def nsec; end
+def nsec(); end
 
 ##
 # Returns just the fraction for <i>time</i>.
@@ -20042,7 +20042,7 @@ def nsec; end
 # IEEE 754 double is not accurate enough to represent
 # the rational.
 # The accurate value is returned by subsec.
-def subsec; end
+def subsec(); end
 
 ##
 # Formats <i>time</i> according to the directives in the given format
@@ -20210,23 +20210,23 @@ def subsec; end
 #   %Y-%jT%RZ        => 2007-323T08:37Z           Ordinal date and UTC of day (extended)
 #   %GW%V%uT%H%M%z   => 2007W471T0837-0600        Week date and local time and difference from UTC (basic)
 #   %G-W%V-%uT%R%:z  => 2007-W47-1T08:37-06:00    Week date and local time and difference from UTC (extended)
-def strftime; end
+def strftime(p1); end
 
 ##
 # Dump _time_ for marshaling.
-def _dump; end
+def _dump(p1=0); end
 
 ##
 # Unmarshal a dumped +Time+ object.
-def self._load; end
+def self._load(p1); end
 
 ##
 # undocumented
-def marshal_dump; end
+def marshal_dump(); end
 
 ##
 # undocumented
-def marshal_load; end
+def marshal_load(p1); end
 
 end
 
@@ -20242,15 +20242,15 @@ end
 # <em>produces:</em>
 # 
 #    received Exception SIGHUP
-class SignalException < RDoc::NormalClass Exception < Object
+class SignalException < Exception
 ##
 # Construct a new SignalException object.  +sig_name+ should be a known
 # signal name.
-def self.new; end
+def self.new(*args); end
 
 ##
 # Returns a signal number.
-def signo; end
+def signo(); end
 
 end
 
@@ -20273,16 +20273,16 @@ end
 # <em>then waits until it is interrupted with Control-C and then prints:</em>
 # 
 #    Note: You will typically use Signal.trap instead.
-class Interrupt < RDoc::NormalClass SignalException < Exception
+class Interrupt < SignalException
 end
 
-class Range < RDoc::NormalClass Object < BasicObject
+class Range < Object
 include Enumerable
 ##
 # Constructs a range using the given <i>start</i> and <i>end</i>. If the third
 # parameter is omitted or is <code>false</code>, the <i>range</i> will include
 # the end object; otherwise, it will be excluded.
-def self.new; end
+def self.new(p1, p2, p3=0); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a Range, has equivalent
@@ -20292,7 +20292,7 @@ def self.new; end
 #   (0..2) == (0..2)            #=> true
 #   (0..2) == Range.new(0,2)    #=> true
 #   (0..2) == (0...2)           #=> false
-def ==; end
+def ==(p1); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20309,7 +20309,7 @@ def ==; end
 # <em>produces:</em>
 # 
 #    high
-def ===; end
+def ===(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a Range, has equivalent
@@ -20319,13 +20319,13 @@ def ===; end
 #   (0..2).eql?(0..2)            #=> true
 #   (0..2).eql?(Range.new(0,2))  #=> true
 #   (0..2).eql?(0...2)           #=> false
-def eql?; end
+def eql?(p1); end
 
 ##
 # Generate a hash value such that two ranges with the same start and
 # end points, and the same value for the "exclude end" flag, generate
 # the same hash value.
-def hash; end
+def hash(); end
 
 ##
 # Iterates over the elements <i>rng</i>, passing each in turn to the
@@ -20342,7 +20342,7 @@ def hash; end
 # <em>produces:</em>
 # 
 #    10 11 12 13 14 15
-def each; end
+def each(); end
 
 ##
 # Iterates over <i>rng</i>, passing each <i>n</i>th element to the block. If
@@ -20368,52 +20368,52 @@ def each; end
 #     4 xxxx
 #     7 xxxxxxx
 #    10 xxxxxxxxxx
-def step; end
+def step(p1=0); end
 
 ##
 # Returns the first object in <i>rng</i>.
-def begin; end
+def begin(); end
 
 ##
 # Returns the object that defines the end of <i>rng</i>.
 # 
 #    (1..10).end    #=> 10
 #    (1...10).end   #=> 10
-def end; end
+def end(); end
 
 ##
 # Returns the first object in <i>rng</i>, or the first +n+ elements.
-def first; end
+def first(p1); end
 
 ##
 # Returns the last object in <i>rng</i>, or the last +n+ elements.
-def last; end
+def last(*args); end
 
 ##
 # Returns the minimum value in <i>rng</i>. The second uses
 # the block to compare values.  Returns nil if the first
 # value in range is larger than the last value.
-def min; end
+def min(); end
 
 ##
 # Returns the maximum value in <i>rng</i>. The second uses
 # the block to compare values.  Returns nil if the first
 # value in range is larger than the last value.
-def max; end
+def max(); end
 
 ##
 # Convert this range object to a printable form.
-def to_s; end
+def to_s(); end
 
 ##
 # Convert this range object to a printable form (using
 # <code>inspect</code> to convert the start and end
 # objects).
-def inspect; end
+def inspect(); end
 
 ##
 # Returns <code>true</code> if <i>rng</i> excludes its end value.
-def exclude_end?; end
+def exclude_end?(); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20422,7 +20422,7 @@ def exclude_end?; end
 # 
 #    ("a".."z").include?("g")  # -> true
 #    ("a".."z").include?("A")  # -> false
-def member?; end
+def member?(p1); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20431,7 +20431,7 @@ def member?; end
 # 
 #    ("a".."z").include?("g")  # -> true
 #    ("a".."z").include?("A")  # -> false
-def include?; end
+def include?(p1); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is between beg and end,
@@ -20440,7 +20440,7 @@ def include?; end
 # 
 #    ("a".."z").cover?("c")    #=> true
 #    ("a".."z").cover?("5")    #=> false
-def cover?; end
+def cover?(p1); end
 
 end
 
@@ -20458,7 +20458,7 @@ end
 #    42 /  0.0 #=> Float::INFINITY
 #    42 / -0.0 #=> -Float::INFINITY
 #    0  /  0.0 #=> NaN
-class ZeroDivisionError < RDoc::NormalClass StandardError < Exception
+class ZeroDivisionError < StandardError
 end
 
 ##
@@ -20471,7 +20471,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    FloatDomainError: Infinity
-class FloatDomainError < RDoc::NormalClass RangeError < StandardError
+class FloatDomainError < RangeError
 end
 
 ##
@@ -20487,7 +20487,7 @@ end
 # <code>Fixnum</code> object instance for any given integer value, so,
 # for example, you cannot add a singleton method to a
 # <code>Fixnum</code>.
-class Fixnum < RDoc::NormalClass Integer < Numeric
+class Fixnum < Integer
 ##
 # Returns a string containing the representation of <i>fix</i> radix
 # <i>base</i> (between 2 and 36).
@@ -20498,53 +20498,53 @@ class Fixnum < RDoc::NormalClass Integer < Numeric
 #    12345.to_s(10)   #=> "12345"
 #    12345.to_s(16)   #=> "3039"
 #    12345.to_s(36)   #=> "9ix"
-def to_s; end
+def to_s(p1=0); end
 
 ##
 # Negates <code>fix</code> (which might return a Bignum).
-def -@; end
+def -@(); end
 
 ##
 # Performs addition: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def +; end
+def +(p1); end
 
 ##
 # Performs subtraction: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def -; end
+def -(p1); end
 
 ##
 # Performs multiplication: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def *; end
+def *(p1); end
 
 ##
 # Performs division: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def /; end
+def /(p1); end
 
 ##
 # Performs integer division: returns integer value.
-def div; end
+def div(p1); end
 
 ##
 # Returns <code>fix</code> modulo <code>other</code>.
 # See <code>numeric.divmod</code> for more information.
-def %; end
+def %(p1); end
 
 ##
 # Returns <code>fix</code> modulo <code>other</code>.
 # See <code>numeric.divmod</code> for more information.
-def modulo; end
+def modulo(p1); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod; end
+def divmod(p1); end
 
 ##
 # Returns the floating point result of dividing <i>fix</i> by
@@ -20552,7 +20552,7 @@ def divmod; end
 # 
 #    654321.fdiv(13731)      #=> 47.6528293642124
 #    654321.fdiv(13731.24)   #=> 47.6519964693647
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Raises <code>fix</code> to the <code>numeric</code> power, which may
@@ -20561,21 +20561,21 @@ def fdiv; end
 #   2 ** 3      #=> 8
 #   2 ** -1     #=> 0.5
 #   2 ** 0.5    #=> 1.4142135623731
-def **; end
+def **(p1); end
 
 ##
 # Returns the absolute value of <i>fix</i>.
 # 
 #    -12345.abs   #=> 12345
 #    12345.abs    #=> 12345
-def abs; end
+def abs(); end
 
 ##
 # Returns the absolute value of <i>fix</i>.
 # 
 #    -12345.abs   #=> 12345
 #    12345.abs    #=> 12345
-def magnitude; end
+def magnitude(); end
 
 ##
 # Return <code>true</code> if <code>fix</code> equals <code>other</code>
@@ -20583,7 +20583,7 @@ def magnitude; end
 # 
 #   1 == 2      #=> false
 #   1 == 1.0    #=> true
-def ==; end
+def ==(p1); end
 
 ##
 # Return <code>true</code> if <code>fix</code> equals <code>other</code>
@@ -20591,50 +20591,50 @@ def ==; end
 # 
 #   1 == 2      #=> false
 #   1 == 1.0    #=> true
-def ===; end
+def ===(p1); end
 
 ##
 # Comparison---Returns -1, 0, +1 or nil depending on whether
 # <i>fix</i> is less than, equal to, or greater than
 # <i>numeric</i>. This is the basis for the tests in
 # <code>Comparable</code>.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # greater than that of <code>real</code>.
-def >; end
+def >(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # greater than or equal to that of <code>real</code>.
-def >=; end
+def >=(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # less than that of <code>real</code>.
-def <; end
+def <(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # less than or equal to that of <code>real</code>.
-def <=; end
+def <=(p1); end
 
 ##
 # One's complement: returns a number where each bit is flipped.
-def ~; end
+def ~(); end
 
 ##
 # Bitwise AND.
-def &; end
+def &(p1); end
 
 ##
 # Bitwise OR.
-def |; end
+def |(p1); end
 
 ##
 # Bitwise EXCLUSIVE OR.
-def ^; end
+def ^(p1); end
 
 ##
 # Bit Reference---Returns the <em>n</em>th bit in the binary
@@ -20647,19 +20647,19 @@ def ^; end
 # <em>produces:</em>
 # 
 #    0000000000000000011001100101010
-def []; end
+def [](p1); end
 
 ##
 # Shifts _fix_ left _count_ positions (right if _count_ is negative).
-def <<; end
+def <<(p1); end
 
 ##
 # Shifts _fix_ right _count_ positions (left if _count_ is negative).
-def >>; end
+def >>(p1); end
 
 ##
 # Converts <i>fix</i> to a <code>Float</code>.
-def to_f; end
+def to_f(); end
 
 ##
 # Returns the number of <em>bytes</em> in the machine representation
@@ -20668,30 +20668,30 @@ def to_f; end
 #    1.size            #=> 4
 #    -1.size           #=> 4
 #    2147483647.size   #=> 4
-def size; end
+def size(); end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is zero.
-def zero?; end
+def zero?(); end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is an odd number.
-def odd?; end
+def odd?(); end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is an even number.
-def even?; end
+def even?(); end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def succ; end
+def succ(); end
 
 end
 
-class Data < RDoc::NormalClass Object < BasicObject
+class Data < Object
 end
 
 ##
@@ -20699,15 +20699,15 @@ end
 # <code>TrueClass</code> and represents a logically true value in
 # boolean expressions. The class provides operators allowing
 # <code>true</code> to be used in logical expressions.
-class TrueClass < RDoc::NormalClass Object < BasicObject
+class TrueClass < Object
 ##
 # The string representation of <code>true</code> is "true".
-def to_s; end
+def to_s(); end
 
 ##
 # And---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>, <code>true</code> otherwise.
-def &; end
+def &(p1); end
 
 ##
 # Or---Returns <code>true</code>. As <i>anObject</i> is an argument to
@@ -20720,13 +20720,13 @@ def &; end
 # <em>produces:</em>
 # 
 #    or
-def |; end
+def |(p1); end
 
 ##
 # Exclusive Or---Returns <code>true</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>, <code>false</code>
 # otherwise.
-def ^; end
+def ^(p1); end
 
 end
 
@@ -20735,27 +20735,27 @@ end
 # <code>FalseClass</code> and represents a logically false value in
 # boolean expressions. The class provides operators allowing
 # <code>false</code> to participate correctly in logical expressions.
-class FalseClass < RDoc::NormalClass Object < BasicObject
+class FalseClass < Object
 ##
 # 'nuf said...
-def to_s; end
+def to_s(); end
 
 ##
 # And---Returns <code>false</code>. <i>obj</i> is always
 # evaluated as it is the argument to a method call---there is no
 # short-circuit evaluation in this case.
-def &; end
+def &(p1); end
 
 ##
 # Or---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
-def |; end
+def |(p1); end
 
 ##
 # Exclusive Or---If <i>obj</i> is <code>nil</code> or
 # <code>false</code>, returns <code>false</code>; otherwise, returns
 # <code>true</code>.
-def ^; end
+def ^(p1); end
 
 end
 
@@ -20765,11 +20765,11 @@ end
 class UndefinedConversionError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name; end
+def source_encoding_name(); end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name; end
+def destination_encoding_name(); end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -20786,11 +20786,11 @@ def destination_encoding_name; end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # Returns the one-character string which cause Encoding::UndefinedConversionError.
@@ -20802,7 +20802,7 @@ def destination_encoding; end
 #    puts $!.error_char.dump   #=> "\xC2\xA0"
 #    p $!.error_char.encoding  #=> #<Encoding:UTF-8>
 #  end
-def error_char; end
+def error_char(); end
 
 end
 
@@ -20813,11 +20813,11 @@ end
 class InvalidByteSequenceError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name; end
+def source_encoding_name(); end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name; end
+def destination_encoding_name(); end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -20834,11 +20834,11 @@ def destination_encoding_name; end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # Returns the discarded bytes when Encoding::InvalidByteSequenceError occurs.
@@ -20851,11 +20851,11 @@ def destination_encoding; end
 #    puts $!.error_bytes.dump          #=> "\xA1"
 #    puts $!.readagain_bytes.dump      #=> "\xFF"
 #  end
-def error_bytes; end
+def error_bytes(); end
 
 ##
 # Returns the bytes to be read again when Encoding::InvalidByteSequenceError occurs.
-def readagain_bytes; end
+def readagain_bytes(); end
 
 ##
 # Returns true if the invalid byte sequence error is caused by
@@ -20877,7 +20877,7 @@ def readagain_bytes; end
 #    p $!      #=> #<Encoding::InvalidByteSequenceError: incomplete "\xA1" on EUC-JP>
 #    p $!.incomplete_input?    #=> true
 #  end
-def incomplete_input?; end
+def incomplete_input?(); end
 
 end
 
@@ -20887,7 +20887,7 @@ end
 class ConverterNotFoundError < rb_eEncodingError
 end
 
-class Converter < RDoc::NormalClass Data < Object
+class Converter < Data
 ##
 # Returns the corresponding ASCII compatible encoding.
 # 
@@ -20900,7 +20900,7 @@ class Converter < RDoc::NormalClass Data < Object
 #   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
 #   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
 #   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
-def self.asciicompat_encoding; end
+def self.asciicompat_encoding(p1); end
 
 ##
 # Returns a conversion path.
@@ -20922,7 +20922,7 @@ def self.asciicompat_encoding; end
 #  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
 #  #    "universal_newline",
 #  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
-def self.search_convpath; end
+def self.search_convpath(*args); end
 
 ##
 # possible options elements:
@@ -21024,14 +21024,14 @@ def self.search_convpath; end
 #   p ec.convpath #=> ["universal_newline",
 #                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
 #                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
-def self.new; end
+def self.new(*args); end
 
 ##
 # Returns a printable version of <i>ec</i>
 # 
 #   ec = Encoding::Converter.new("iso-8859-1", "utf-8")
 #   puts ec.inspect    #=> #<Encoding::Converter: ISO-8859-1 to UTF-8>
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the conversion path of ec.
@@ -21051,15 +21051,15 @@ def inspect; end
 # In the above example, [#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>] means
 # a converter from ISO-8859-1 to UTF-8.
 # "crlf_newline" means newline converter from LF to CRLF.
-def convpath; end
+def convpath(); end
 
 ##
 # Returns the source encoding as an Encoding object.
-def source_encoding; end
+def source_encoding(); end
 
 ##
 # Returns the destination encoding as an Encoding object.
-def destination_encoding; end
+def destination_encoding(); end
 
 ##
 # possible opt elements:
@@ -21144,7 +21144,7 @@ def destination_encoding; end
 #   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
 #   ret = ec.primitive_convert(src, dst="", nil, 1)
 #   p [ret, src, dst] #=> [:finished, "", "i"]
-def primitive_convert; end
+def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
 
 ##
 # Convert source_string and return destination_string.
@@ -21175,7 +21175,7 @@ def primitive_convert; end
 # from these exceptions.
 # When you want to handle these conversion errors,
 # use Encoding::Converter#primitive_convert.
-def convert; end
+def convert(p1); end
 
 ##
 # Finishes the converter.
@@ -21184,7 +21184,7 @@ def convert; end
 #   ec = Encoding::Converter.new("utf-8", "iso-2022-jp")
 #   p ec.convert("\u3042")     #=> "\e$B$\""
 #   p ec.finish                #=> "\e(B"
-def finish; end
+def finish(); end
 
 ##
 # primitive_errinfo returns important information regarding the last error
@@ -21256,7 +21256,7 @@ def finish; end
 #   #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "@\x00"]
 #   p src
 #   #=> ""
-def primitive_errinfo; end
+def primitive_errinfo(); end
 
 ##
 # Inserts string into the encoding converter.
@@ -21285,7 +21285,7 @@ def primitive_errinfo; end
 #  ec.insert_output "?"                # state change required to output "?".
 #  p ec.primitive_convert(src, dst)    #=> :finished
 #  puts "[#{dst.dump}, #{src.dump}]"   #=> ["\e$B$O$!$H\e(B?\e$B!#\e(B".force_encoding("ISO-2022-JP"), ""]
-def insert_output; end
+def insert_output(p1); end
 
 ##
 # call-seq
@@ -21309,7 +21309,7 @@ def insert_output; end
 #   p ec.primitive_errinfo     #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "a\x00"]
 #   p ec.putback               #=> "a\x00"
 #   p ec.putback               #=> ""          # no more bytes to put back
-def putback; end
+def putback(p1=0); end
 
 ##
 # Returns an exception object for the last conversion.
@@ -21326,7 +21326,7 @@ def putback; end
 #  p ec.last_error      #=> #<Encoding::InvalidByteSequenceError: "\xF1" followed by "a" on UTF-8>
 #  p ec.primitive_convert(src, dst, nil, 1)             #=> :destination_buffer_full
 #  p ec.last_error      #=> nil
-def last_error; end
+def last_error(); end
 
 ##
 # Returns the replacement string.
@@ -21336,7 +21336,7 @@ def last_error; end
 # 
 #  ec = Encoding::Converter.new("euc-jp", "utf-8")
 #  p ec.replacement    #=> "\uFFFD"
-def replacement; end
+def replacement(); end
 
 ##
 # Sets the replacement string.
@@ -21344,9 +21344,9 @@ def replacement; end
 #  ec = Encoding::Converter.new("utf-8", "us-ascii", :undef => :replace)
 #  ec.replacement = "<undef>"
 #  p ec.convert("a \u3042 b")      #=> "a <undef> b"
-def replacement=; end
+def replacement=(p1); end
 
-def ==; end
+def ==(p1); end
 
 end
 
@@ -21362,7 +21362,7 @@ end
 # <em>produces:</em>
 # 
 #    Math::DomainError: Numerical argument is out of domain - "acos"
-class DomainError < RDoc::NormalClass StandardError < Exception
+class DomainError < StandardError
 end
 
 ##
@@ -21380,7 +21380,7 @@ end
 # While Fixnum values are immediate, Bignum
 # objects are not---assignment and parameter passing work with
 # references to objects, not the objects themselves.
-class Bignum < RDoc::NormalClass Integer < Numeric
+class Bignum < Integer
 ##
 # Returns a string containing the representation of <i>big</i> radix
 # <i>base</i> (2 through 36).
@@ -21390,58 +21390,58 @@ class Bignum < RDoc::NormalClass Integer < Numeric
 #    12345654321.to_s(8)      #=> "133766736061"
 #    12345654321.to_s(16)     #=> "2dfdbbc31"
 #    78546939656932.to_s(36)  #=> "rubyrules"
-def to_s; end
+def to_s(p1=0); end
 
 ##
 # MISSING: documentation
-def coerce; end
+def coerce(p1); end
 
 ##
 # Unary minus (returns an integer whose value is 0-big)
-def -@; end
+def -@(); end
 
 ##
 # Adds big and other, returning the result.
-def +; end
+def +(p1); end
 
 ##
 # Subtracts other from big, returning the result.
-def -; end
+def -(p1); end
 
 ##
 # Multiplies big and other, returning the result.
-def *; end
+def *(p1); end
 
 ##
 # Performs division: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def /; end
+def /(p1); end
 
 ##
 # Returns big modulo other. See Numeric.divmod for more
 # information.
-def %; end
+def %(p1); end
 
 ##
 # Performs integer division: returns integer value.
-def div; end
+def div(p1); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod; end
+def divmod(p1); end
 
 ##
 # Returns big modulo other. See Numeric.divmod for more
 # information.
-def modulo; end
+def modulo(p1); end
 
 ##
 # Returns the remainder after dividing <i>big</i> by <i>numeric</i>.
 # 
 #    -1234567890987654321.remainder(13731)      #=> -6966
 #    -1234567890987654321.remainder(13731.24)   #=> -9906.22531493148
-def remainder; end
+def remainder(p1); end
 
 ##
 # Returns the floating point result of dividing <i>big</i> by
@@ -21449,7 +21449,7 @@ def remainder; end
 # 
 #    -1234567890987654321.fdiv(13731)      #=> -89910996357705.5
 #    -1234567890987654321.fdiv(13731.24)   #=> -89909424858035.7
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Raises _big_ to the _exponent_ power (which may be an integer, float,
@@ -21459,19 +21459,19 @@ def fdiv; end
 #   123456789 ** 2      #=> 15241578750190521
 #   123456789 ** 1.2    #=> 5126464716.09932
 #   123456789 ** -2     #=> 6.5610001194102e-17
-def **; end
+def **(p1); end
 
 ##
 # Performs bitwise +and+ between _big_ and _numeric_.
-def &; end
+def &(p1); end
 
 ##
 # Performs bitwise +or+ between _big_ and _numeric_.
-def |; end
+def |(p1); end
 
 ##
 # Performs bitwise +exclusive or+ between _big_ and _numeric_.
-def ^; end
+def ^(p1); end
 
 ##
 # Inverts the bits in big. As Bignums are conceptually infinite
@@ -21480,15 +21480,15 @@ def ^; end
 # as two periods to the left of the digits.
 # 
 #   sprintf("%X", ~0x1122334455)    #=> "..FEEDDCCBBAA"
-def ~; end
+def ~(); end
 
 ##
 # Shifts big left _numeric_ positions (right if _numeric_ is negative).
-def <<; end
+def <<(p1); end
 
 ##
 # Shifts big right _numeric_ positions (left if _numeric_ is negative).
-def >>; end
+def >>(p1); end
 
 ##
 # Bit Reference---Returns the <em>n</em>th bit in the (assumed) binary
@@ -21503,13 +21503,13 @@ def >>; end
 # <em>produces:</em>
 # 
 #    000101110110100000111000011110010100111100010111001
-def []; end
+def [](p1); end
 
 ##
 # Comparison---Returns -1, 0, or +1 depending on whether <i>big</i> is
 # less than, equal to, or greater than <i>numeric</i>. This is the
 # basis for the tests in <code>Comparable</code>.
-def <=>; end
+def <=>(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -21517,27 +21517,27 @@ def <=>; end
 # requires <i>obj</i> to be a <code>Bignum</code>.
 # 
 #    68719476736 == 68719476736.0   #=> true
-def ==; end
+def ==(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # greater than that of <code>real</code>.
-def >; end
+def >(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # greater than or equal to that of <code>real</code>.
-def >=; end
+def >=(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # less than that of <code>real</code>.
-def <; end
+def <(p1); end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # less than or equal to that of <code>real</code>.
-def <=; end
+def <=(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -21545,7 +21545,7 @@ def <=; end
 # requires <i>obj</i> to be a <code>Bignum</code>.
 # 
 #    68719476736 == 68719476736.0   #=> true
-def ===; end
+def ===(p1); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a
@@ -21553,28 +21553,28 @@ def ===; end
 # with <code>Bignum#==</code>, which performs type conversions.
 # 
 #    68719476736.eql?(68719476736.0)   #=> false
-def eql?; end
+def eql?(p1); end
 
 ##
 # Compute a hash based on the value of _big_.
-def hash; end
+def hash(); end
 
 ##
 # Converts <i>big</i> to a <code>Float</code>. If <i>big</i> doesn't
 # fit in a <code>Float</code>, the result is infinity.
-def to_f; end
+def to_f(); end
 
 ##
 # Returns the absolute value of <i>big</i>.
 # 
 #    -1234567890987654321.abs   #=> 1234567890987654321
-def abs; end
+def abs(); end
 
 ##
 # Returns the absolute value of <i>big</i>.
 # 
 #    -1234567890987654321.abs   #=> 1234567890987654321
-def magnitude; end
+def magnitude(); end
 
 ##
 # Returns the number of bytes in the machine representation of
@@ -21583,15 +21583,15 @@ def magnitude; end
 #    (256**10 - 1).size   #=> 12
 #    (256**20 - 1).size   #=> 20
 #    (256**40 - 1).size   #=> 40
-def size; end
+def size(); end
 
 ##
 # Returns <code>true</code> if <i>big</i> is an odd number.
-def odd?; end
+def odd?(); end
 
 ##
 # Returns <code>true</code> if <i>big</i> is an even number.
-def even?; end
+def even?(); end
 
 end
 
@@ -21603,13 +21603,13 @@ end
 # 
 # Newly created threads belong to the same group as the thread from which they
 # were created.
-class ThreadGroup < RDoc::NormalClass Object < BasicObject
+class ThreadGroup < Object
 ##
 # Returns an array of all existing <code>Thread</code> objects that belong to
 # this group.
 # 
 #    ThreadGroup::Default.list   #=> [#<Thread:0x401bdf4c run>]
-def list; end
+def list(); end
 
 ##
 # Prevents threads from being added to or removed from the receiving
@@ -21624,12 +21624,12 @@ def list; end
 # <em>produces:</em>
 # 
 #    ThreadError: can't move from the enclosed thread group
-def enclose; end
+def enclose(); end
 
 ##
 # Returns <code>true</code> if <em>thgrp</em> is enclosed. See also
 # ThreadGroup#enclose.
-def enclosed?; end
+def enclosed?(); end
 
 ##
 # Adds the given <em>thread</em> to this group, removing it from any other
@@ -21652,7 +21652,7 @@ def enclosed?; end
 #    t2 is #<Thread:0x401b3c18>
 #    Initial group now #<Thread:0x401b3c18>#<Thread:0x401bdf4c>
 #    tg group now #<Thread:0x401b3c90>
-def add; end
+def add(p1); end
 
 end
 
@@ -21676,35 +21676,35 @@ end
 #       # access shared resource
 #     }
 #   }
-class Mutex < RDoc::NormalClass Object < BasicObject
+class Mutex < Object
 ##
 # Creates a new Mutex
-def self.new; end
+def self.new(); end
 
 ##
 # Returns +true+ if this lock is currently held by some thread.
-def locked?; end
+def locked?(); end
 
 ##
 # Attempts to obtain the lock and returns immediately. Returns +true+ if the
 # lock was granted.
-def try_lock; end
+def try_lock(); end
 
 ##
 # Attempts to grab the lock and waits if it isn't available.
 # Raises +ThreadError+ if +mutex+ was locked by the current thread.
-def lock; end
+def lock(); end
 
 ##
 # Releases the lock.
 # Raises +ThreadError+ if +mutex+ wasn't locked by the current thread.
-def unlock; end
+def unlock(); end
 
 ##
 # Releases the lock and sleeps +timeout+ seconds if it is given and
 # non-nil or forever.  Raises +ThreadError+ if +mutex+ wasn't locked by
 # the current thread.
-def sleep; end
+def sleep(p1=0); end
 
 end
 
@@ -21718,7 +21718,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    ThreadError: stopping only thread
-class ThreadError < RDoc::NormalClass StandardError < Exception
+class ThreadError < StandardError
 end
 
 ##
@@ -21730,47 +21730,47 @@ end
 # optional traceback information. Programs may subclass
 # <code>Exception</code>, or more typically <code>StandardError</code>
 # to provide custom classes and add additional information.
-class Exception < RDoc::NormalClass Object < BasicObject
+class Exception < Object
 ##
 # With no argument, or if the argument is the same as the receiver,
 # return the receiver. Otherwise, create a new
 # exception object of the same class as the receiver, but with a
 # message equal to <code>string.to_str</code>.
-def self.exception; end
+def self.exception(*args); end
 
 ##
 # With no argument, or if the argument is the same as the receiver,
 # return the receiver. Otherwise, create a new
 # exception object of the same class as the receiver, but with a
 # message equal to <code>string.to_str</code>.
-def exception; end
+def exception(*args); end
 
 ##
 # Construct a new Exception object, optionally passing in
 # a message.
-def self.new; end
+def self.new(p1=0); end
 
 ##
 # Equality---If <i>obj</i> is not an <code>Exception</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>exc</i> and
 # <i>obj</i> share same class, messages, and backtrace.
-def ==; end
+def ==(p1); end
 
 ##
 # Returns exception's message (or the name of the exception if
 # no message is set).
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the result of invoking <code>exception.to_s</code>.
 # Normally this returns the exception's message or name. By
 # supplying a to_str method, exceptions are agreeing to
 # be used where Strings are expected.
-def message; end
+def message(); end
 
 ##
 # Return this exception's class name an message
-def inspect; end
+def inspect(); end
 
 ##
 # Returns any backtrace associated with the exception. The backtrace
@@ -21796,37 +21796,37 @@ def inspect; end
 #    prog.rb:2:in `a'
 #    prog.rb:6:in `b'
 #    prog.rb:10
-def backtrace; end
+def backtrace(); end
 
 ##
 # Sets the backtrace information associated with <i>exc</i>. The
 # argument must be an array of <code>String</code> objects in the
 # format described in <code>Exception#backtrace</code>.
-def set_backtrace; end
+def set_backtrace(p1); end
 
 end
 
 ##
 # Raised by +exit+ to initiate the termination of the script.
-class SystemExit < RDoc::NormalClass Exception < Object
+class SystemExit < Exception
 ##
 # Create a new +SystemExit+ exception with the given status.
-def self.new; end
+def self.new(*args); end
 
 ##
 # Return the status value associated with this system exit.
-def status; end
+def status(); end
 
 ##
 # Returns +true+ if exiting successful, +false+ if not.
-def success?; end
+def success?(); end
 
 end
 
 ##
 # fatal is an Exception that is raised when ruby has encountered a fatal
 # error and must exit.  You are not able to rescue fatal.
-class fatal < RDoc::NormalClass Exception < Object
+class fatal < Exception
 end
 
 ##
@@ -21846,7 +21846,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    LoadError: no such file to load -- does/not/exist
-class StandardError < RDoc::NormalClass Exception < Object
+class StandardError < Exception
 end
 
 ##
@@ -21857,7 +21857,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    TypeError: can't convert String into Integer
-class TypeError < RDoc::NormalClass StandardError < Exception
+class TypeError < StandardError
 end
 
 ##
@@ -21879,7 +21879,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    ArgumentError: negative array size
-class ArgumentError < RDoc::NormalClass StandardError < Exception
+class ArgumentError < StandardError
 end
 
 ##
@@ -21889,7 +21889,7 @@ end
 #    a.fetch(0)   #=> :foo
 #    a[4]         #=> nil
 #    a.fetch(4)   #=> IndexError: index 4 outside of array bounds: -2...2
-class IndexError < RDoc::NormalClass StandardError < Exception
+class IndexError < StandardError
 end
 
 ##
@@ -21899,7 +21899,7 @@ end
 #    h = {"foo" => :bar}
 #    h.fetch("foo") #=> :bar
 #    h.fetch("baz") #=> KeyError: key not found: "baz"
-class KeyError < RDoc::NormalClass IndexError < StandardError
+class KeyError < IndexError
 end
 
 ##
@@ -21910,7 +21910,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    RangeError: bignum too big to convert into `long'
-class RangeError < RDoc::NormalClass StandardError < Exception
+class RangeError < StandardError
 end
 
 ##
@@ -21920,7 +21920,7 @@ end
 # +ScriptErrors+ are not +StandardError+ and will not be
 # rescued unless it is specified explicitly (or its ancestor
 # +Exception+).
-class ScriptError < RDoc::NormalClass Exception < Object
+class ScriptError < Exception
 end
 
 ##
@@ -21931,7 +21931,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    SyntaxError: (eval):1: syntax error, unexpected '=', expecting $end
-class SyntaxError < RDoc::NormalClass ScriptError < Exception
+class SyntaxError < ScriptError
 end
 
 ##
@@ -21943,7 +21943,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    LoadError: no such file to load -- this/file/does/not/exist
-class LoadError < RDoc::NormalClass ScriptError < Exception
+class LoadError < ScriptError
 end
 
 ##
@@ -21954,7 +21954,7 @@ end
 # 
 # Note that if +fork+ raises a +NotImplementedError+, then
 # <code>respond_to?(:fork)</code> returns +false+.
-class NotImplementedError < RDoc::NormalClass ScriptError < Exception
+class NotImplementedError < ScriptError
 end
 
 ##
@@ -21973,23 +21973,23 @@ end
 # <em>raises the exception:</em>
 # 
 #    NameError: wrong constant name answer
-class NameError < RDoc::NormalClass StandardError < Exception
-class message < RDoc::NormalClass Data < Object
+class NameError < StandardError
+class message < Data
 end
 
 ##
 # Construct a new NameError exception. If given the <i>name</i>
 # parameter may subsequently be examined using the <code>NameError.name</code>
 # method.
-def self.new; end
+def self.new(*args); end
 
 ##
 # Return the name associated with this NameError exception.
-def name; end
+def name(); end
 
 ##
 # Produce a nicely-formatted string representing the +NameError+.
-def to_s; end
+def to_s(); end
 
 end
 
@@ -22002,18 +22002,18 @@ end
 # <em>raises the exception:</em>
 # 
 #    NoMethodError: undefined method `to_ary' for "hello":String
-class NoMethodError < RDoc::NormalClass NameError < StandardError
+class NoMethodError < NameError
 ##
 # Construct a NoMethodError exception for a method of the given name
 # called with the given arguments. The name may be accessed using
 # the <code>#name</code> method on the resulting object, and the
 # arguments using the <code>#args</code> method.
-def self.new; end
+def self.new(*args); end
 
 ##
 # Return the arguments passed in as the third parameter to
 # the constructor.
-def args; end
+def args(); end
 
 end
 
@@ -22034,7 +22034,7 @@ end
 # <em>raises the exception:</em>
 # 
 #    RuntimeError: ouch
-class RuntimeError < RDoc::NormalClass StandardError < Exception
+class RuntimeError < StandardError
 end
 
 ##
@@ -22051,17 +22051,17 @@ end
 # <em>raises the exception:</em>
 # 
 #    SecurityError: Insecure: can't modify string
-class SecurityError < RDoc::NormalClass Exception < Object
+class SecurityError < Exception
 end
 
 ##
 # Raised when memory allocation fails.
-class NoMemoryError < RDoc::NormalClass Exception < Object
+class NoMemoryError < Exception
 end
 
 ##
 # EncodingError is the base class for encoding errors.
-class EncodingError < RDoc::NormalClass StandardError < Exception
+class EncodingError < StandardError
 end
 
 ##
@@ -22076,33 +22076,33 @@ end
 # <em>raises the exception:</em>
 # 
 #    Errno::ENOENT: No such file or directory - does/not/exist
-class SystemCallError < RDoc::NormalClass StandardError < Exception
+class SystemCallError < StandardError
 ##
 # If _errno_ corresponds to a known system error code, constructs
 # the appropriate <code>Errno</code> class for that error, otherwise
 # constructs a generic <code>SystemCallError</code> object. The
 # error number is subsequently available via the <code>errno</code>
 # method.
-def self.new; end
+def self.new(p1, p2=0); end
 
 ##
 # Return this SystemCallError's error number.
-def errno; end
+def errno(); end
 
 ##
 # Return +true+ if the receiver is a generic +SystemCallError+, or
 # if the error numbers +self+ and _other_ are the same.
-def self.===; end
+def self.===(p1); end
 
 end
 
-class message < RDoc::NormalClass Data < Object
+class message < Data
 end
 
 ##
 # Raised by Encoding and String methods when the source encoding is
 # incompatible with the target encoding.
-class CompatibilityError < RDoc::NormalClass EncodingError < StandardError
+class CompatibilityError < EncodingError
 end
 
 ##
@@ -22162,14 +22162,14 @@ end
 #   12
 #   14
 #   FiberError: dead fiber called
-class Fiber < RDoc::NormalClass Object < BasicObject
+class Fiber < Object
 ##
 # Yields control back to the context that resumed the fiber, passing
 # along any arguments that were passed to it. The fiber will resume
 # processing at this point when <code>resume</code> is called next.
 # Any arguments passed to the next <code>resume</code> will be the
 # value that this <code>Fiber.yield</code> expression evaluates to.
-def self.yield; end
+def self.yield(*args); end
 
 ##
 # Resumes the fiber from the point at which the last <code>Fiber.yield</code>
@@ -22182,7 +22182,7 @@ def self.yield; end
 # to the next <code>Fiber.yield</code> statement inside the fiber's block
 # or to the block value if it runs to completion without any
 # <code>Fiber.yield</code>
-def resume; end
+def resume(*args); end
 
 ##
 # Transfer control to another fiber, resuming it from where it last
@@ -22198,20 +22198,20 @@ def resume; end
 # You cannot resume a fiber that transferred control to another one.
 # This will cause a double resume error. You need to transfer control
 # back to this fiber before it can yield and resume.
-def transfer; end
+def transfer(*args); end
 
 ##
 # Returns true if the fiber can still be resumed (or transferred
 # to). After finishing execution of the fiber block this method will
 # always return false. You need to <code>require 'fiber'</code>
 # before using this method.
-def alive?; end
+def alive?(); end
 
 ##
 # Returns the current fiber. You need to <code>require 'fiber'</code>
 # before using this method. If you are not running in the context of
 # a fiber this method will return the root fiber.
-def self.current; end
+def self.current(); end
 
 end
 
@@ -22224,7 +22224,7 @@ end
 #    fiber = Fiber.new{}
 #    fiber.resume #=> nil
 #    fiber.resume #=> FiberError: dead fiber called
-class FiberError < RDoc::NormalClass StandardError < Exception
+class FiberError < StandardError
 end
 
 ##
@@ -22272,7 +22272,7 @@ end
 #    1:   5  6  7  8  9
 #    2:  10 11 12 13 14
 #    3:  15 16
-class Continuation < RDoc::NormalClass Object < BasicObject
+class Continuation < Object
 ##
 # Invokes the continuation. The program continues from the end of the
 # <code>callcc</code> block. If no arguments are given, the original
@@ -22283,7 +22283,7 @@ class Continuation < RDoc::NormalClass Object < BasicObject
 #    callcc {|cont|  cont.call }           #=> nil
 #    callcc {|cont|  cont.call 1 }         #=> 1
 #    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
-def call; end
+def call(*args); end
 
 ##
 # Invokes the continuation. The program continues from the end of the
@@ -22295,7 +22295,7 @@ def call; end
 #    callcc {|cont|  cont.call }           #=> nil
 #    callcc {|cont|  cont.call 1 }         #=> 1
 #    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
-def []; end
+def [](*args); end
 
 end
 
@@ -22330,14 +22330,14 @@ end
 # 
 #    Complex(1, 1) / 2    #=> ((1/2)+(1/2)*i)
 #    Complex(1, 1) / 2.0  #=> (0.5+0.5i)
-class Complex < RDoc::NormalClass Numeric < Object
+class Complex < Numeric
 ##
 # Returns a complex object which denotes the given rectangular form.
-def self.rectangular; end
+def self.rectangular(p1, p2=0); end
 
 ##
 # Returns a complex object which denotes the given rectangular form.
-def self.rect; end
+def self.rect(p1, p2=0); end
 
 ##
 # Returns a complex object which denotes the given polar form.
@@ -22346,35 +22346,35 @@ def self.rect; end
 #   Complex.polar(3, Math::PI/2)  #=> (1.836909530733566e-16+3.0i)
 #   Complex.polar(3, Math::PI)    #=> (-3.0+3.673819061467132e-16i)
 #   Complex.polar(3, -Math::PI/2) #=> (1.836909530733566e-16-3.0i)
-def self.polar; end
+def self.polar(p1, p2=0); end
 
 ##
 # Returns the real part.
-def real; end
+def real(); end
 
 ##
 # Returns the imaginary part.
-def imaginary; end
+def imaginary(); end
 
 ##
 # Returns the imaginary part.
-def imag; end
+def imag(); end
 
 ##
 # Returns negation of the value.
-def -@; end
+def -@(); end
 
 ##
 # Performs addition.
-def +; end
+def +(p1); end
 
 ##
 # Performs subtraction.
-def -; end
+def -(p1); end
 
 ##
 # Performs multiplication.
-def *; end
+def *(p1); end
 
 ##
 # Performs division.
@@ -22383,7 +22383,7 @@ def *; end
 # 
 #     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
 #     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
-def /; end
+def /(p1); end
 
 ##
 # Performs division.
@@ -22392,7 +22392,7 @@ def /; end
 # 
 #     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
 #     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
-def quo; end
+def quo(p1); end
 
 ##
 # Performs division as each part is a float, never returns a float.
@@ -22400,7 +22400,7 @@ def quo; end
 # For example:
 # 
 #     Complex(11,22).fdiv(3)  #=> (3.6666666666666665+7.333333333333333i)
-def fdiv; end
+def fdiv(p1); end
 
 ##
 # Performs exponentiation.
@@ -22409,69 +22409,69 @@ def fdiv; end
 # 
 #     Complex('i') ** 2             #=> (-1+0i)
 #     Complex(-8) ** Rational(1,3)  #=> (1.0000000000000002+1.7320508075688772i)
-def **; end
+def **(p1); end
 
 ##
 # Returns true if cmp equals object numerically.
-def ==; end
+def ==(p1); end
 
 ##
 # Returns the absolute part of its polar form.
-def abs; end
+def abs(); end
 
 ##
 # Returns the absolute part of its polar form.
-def magnitude; end
+def magnitude(); end
 
 ##
 # Returns square of the absolute value.
-def abs2; end
+def abs2(); end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def arg; end
+def arg(); end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def angle; end
+def angle(); end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def phase; end
+def phase(); end
 
 ##
 # Returns an array; [cmp.real, cmp.imag].
-def rectangular; end
+def rectangular(); end
 
 ##
 # Returns an array; [cmp.real, cmp.imag].
-def rect; end
+def rect(); end
 
 ##
 # Returns an array; [cmp.abs, cmp.arg].
-def polar; end
+def polar(); end
 
 ##
 # Returns the complex conjugate.
-def conjugate; end
+def conjugate(); end
 
 ##
 # Returns the complex conjugate.
-def conj; end
+def conj(); end
 
 ##
 # Returns the complex conjugate.
-def ~; end
+def ~(); end
 
 ##
 # Returns false.
-def real?; end
+def real?(); end
 
 ##
 # Returns the numerator.
@@ -22489,39 +22489,39 @@ def real?; end
 #    Complex(Rational(n.real, d), Rational(n.imag, d))
 #                             #=> ((1/2)+(2/3)*i)
 # See denominator.
-def numerator; end
+def numerator(); end
 
 ##
 # Returns the denominator (lcm of both denominator - real and imag).
 # 
 # See numerator.
-def denominator; end
+def denominator(); end
 
 ##
 # Returns the value as a string.
-def to_s; end
+def to_s(); end
 
 ##
 # Returns the value as a string for inspection.
-def inspect; end
+def inspect(); end
 
 ##
 # Returns the value as an integer if possible.
-def to_i; end
+def to_i(); end
 
 ##
 # Returns the value as a float if possible.
-def to_f; end
+def to_f(); end
 
 ##
 # If the imaginary part is exactly 0, returns the real part as a Rational,
 # otherwise a RangeError is raised.
-def to_r; end
+def to_r(); end
 
 ##
 # If the imaginary part is exactly 0, returns the real part as a Rational,
 # otherwise a RangeError is raised.
-def rationalize; end
+def rationalize(p1=0); end
 
 end
 

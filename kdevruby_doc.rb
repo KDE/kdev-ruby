@@ -108,7 +108,8 @@ class File
         puts "class #{o.name}"
         o.ancestors.each { |a| puts "include #{a.name}" }
       else
-        puts "class #{o.name} < #{o.superclass}"
+        base = (o.superclass.is_a? String) ? o.superclass : o.superclass.name
+        puts "class #{o.name} < #{base}"
         (o.ancestors - [o.superclass]).each { |a| puts "include #{a.name}" }
       end
       print_classes o.classes_hash
@@ -126,10 +127,13 @@ class File
       o = o.last
       print_comment o.comment
       if o.singleton
-        puts "def self.#{o.name}; end\n\n"
+        print "def self.#{o.name}"
       else
-        puts "def #{o.name}; end\n\n"
+        print "def #{o.name}"
       end
+      # Method arguments
+      print o.params.gsub(/((\w*) \= (\w*))/) { "#{$2}=0" }
+      puts "; end\n\n"
     end
   end
 end
