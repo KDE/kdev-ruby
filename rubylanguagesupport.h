@@ -102,6 +102,12 @@ public:
      */
     virtual KDevelop::ICodeHighlighting * codeHighlighting() const;
 
+    /**
+     * Override from KDevelop::IPlugin so it can @return an extension
+     * of the context menu.
+     */
+    KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *ctx);
+
 private:
     /**
      * @internal Find or create a launch for a the given @p name.
@@ -121,6 +127,10 @@ private:
      * used by the runCurrentTestFunction() slot.
      */
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
+
+public slots:
+    /// The slot for the Create New Class dialog.
+    void createNewClass();
 
 private Q_SLOTS:
      /// The slot that allows this plugin to run the current Ruby file.

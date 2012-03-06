@@ -56,6 +56,7 @@
 #include <navigation/railsdataprovider.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
+#include <codegen/rubyrefactoring.h>
 //END Includes
 
 
@@ -135,6 +136,10 @@ LanguageSupport::LanguageSupport(QObject * parent,
     action->setShortcut(Qt::META | Qt::SHIFT | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
 
+    action = actions->addAction("ruby_new_class");
+    action->setText(i18n("Create New Ruby Class"));
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(createNewClass()));
+
     m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
     m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
 
@@ -173,6 +178,18 @@ KDevelop::ILanguage * LanguageSupport::language()
 KDevelop::ICodeHighlighting* LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
+}
+
+ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context *ctx)
+{
+    KDevelop::ContextMenuExtension cm;
+    RubyRefactoring::self().doContextMenu(cm, ctx);
+    return cm;
+}
+
+void LanguageSupport::createNewClass()
+{
+    RubyRefactoring::self().createNewClass(NULL);
 }
 
 void LanguageSupport::runCurrentFile()
