@@ -1080,7 +1080,7 @@ lambda:
   {
     parser->lpar_beg = $<num>1;
     discard_pos();
-    $$ = ALLOC_N(token_block, $2, $3);
+    $$ = ALLOC_N(token_block, $3, $2);
     if ($3 != NULL)
       copy_last($$, $3);
     parser->last_pos = NULL;
