@@ -86,6 +86,7 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
+    virtual void visitBlockVariable(RubyAst *node);
     virtual void visitRequire(RubyAst *node);
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);

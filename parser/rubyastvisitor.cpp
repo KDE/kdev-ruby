@@ -280,29 +280,42 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
     }
     child->tree = n->next;
     visitBlock(child);
+    delete child;
 }
 
 void RubyAstVisitor::visitBlock(RubyAst *node)
 {
-    /* TODO */
+    Node *n;
+
+    if (node->tree == NULL)
+        return;
+    RubyAst *child = new RubyAst(node->tree->r, node->context);
+    for (n = node->tree->r; n != NULL; n = n->next) {
+        visitBlockVariable(child);
+        child->tree = n->next;
+    }
+    child->tree = node->tree->l;
+    visitStatements(child);
+    delete child;
+}
+
+void RubyAstVisitor::visitBlockVariable(RubyAst *node)
+{
     Q_UNUSED(node)
 }
 
 void RubyAstVisitor::visitExtend(RubyAst *node)
 {
-    /* TODO */
     Q_UNUSED(node)
 }
 
 void RubyAstVisitor::visitInclude(RubyAst *node)
 {
-    /* TODO */
     Q_UNUSED(node)
 }
 
 void RubyAstVisitor::visitRequire(RubyAst *node)
 {
-    /* TODO */
     Q_UNUSED(node)
 }
 
@@ -407,7 +420,7 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
 {
     /*
      * The method call body resides in the left child. Check if this
-     * is a require, an include/extend or just a normal method call.
+     * is either a require, an include/extend or just a normal method call.
      */
     const QByteArray & name = QByteArray(mc->tree->l->name);
     if (name == "require")
