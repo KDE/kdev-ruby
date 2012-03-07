@@ -86,6 +86,9 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
+    virtual void visitRequire(RubyAst *node);
+    virtual void visitInclude(RubyAst *node);
+    virtual void visitExtend(RubyAst *node);
 
 private:
     /**
@@ -118,6 +121,14 @@ private:
      * @param list A node that is the first item of a list of when statements.
      */
     void visitWhenStatements(RubyAst *list);
+
+    /**
+     * @internal Helper method that checks if this is either a require, an
+     * include/extend or just a regular method call.
+     *
+     * @param mc The given method call node.
+     */
+    void checkMethodCall(RubyAst *mc);
 };
 
 } // End of namespace Ruby

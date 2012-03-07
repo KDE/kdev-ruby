@@ -288,6 +288,24 @@ void RubyAstVisitor::visitBlock(RubyAst *node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitExtend(RubyAst *node)
+{
+    /* TODO */
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitInclude(RubyAst *node)
+{
+    /* TODO */
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitRequire(RubyAst *node)
+{
+    /* TODO */
+    Q_UNUSED(node)
+}
+
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
@@ -311,7 +329,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_singleton_class: visitClassStatement(node); break;
         case token_module: visitModuleStatement(node); break;
         case token_function: visitMethodStatement(node); break;
-        case token_method_call: visitMethodCall(node); break;
+        case token_method_call: checkMethodCall(node); break;
         case token_assign:
         case token_op_assign: visitAssignmentStatement(node); break;
         case token_object: visitVariable(node); break;
@@ -385,6 +403,22 @@ void RubyAstVisitor::visitWhenStatements(RubyAst *list)
     }
 }
 
+void RubyAstVisitor::checkMethodCall(RubyAst *mc)
+{
+    /*
+     * The method call body resides in the left child. Check if this
+     * is a require, an include/extend or just a normal method call.
+     */
+    const QByteArray & name = QByteArray(mc->tree->l->name);
+    if (name == "require")
+        visitRequire(mc);
+    else if (name == "include")
+        visitInclude(mc);
+    else if (name == "extend")
+        visitExtend(mc);
+    else
+        visitMethodCall(mc);
+}
 
 } // End of namespace Ruby
 
