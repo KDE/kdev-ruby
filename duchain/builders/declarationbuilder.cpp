@@ -187,6 +187,21 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     closeDeclaration();
 }
 
+void DeclarationBuilder::visitBlockVariable(RubyAst *node)
+{
+    /* TODO Type should be inferred from the yield calls from the caller method */
+    AbstractType::Ptr type(new ObjectType());
+
+    // create variable declaration for argument
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = m_editor->findRange(node->tree);
+    openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
+    currentDeclaration()->setKind(Declaration::Instance);
+    currentDeclaration()->setType(type);
+    DeclarationBuilderBase::visitBlockVariable(node);
+    closeDeclaration();    
+}
+
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
     QualifiedIdentifier id = identifierForNode(new NameAst(node));

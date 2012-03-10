@@ -66,6 +66,7 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitParameter(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
+    virtual void visitBlockVariable(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
 
 private:

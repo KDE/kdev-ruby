@@ -172,6 +172,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     /* Check the parameters */
     DUContext *params = openContext(node, rg, DUContext::Function, name);
     RubyAstVisitor::visitMethodArguments(node);
+    m_importedParentContexts.append(params);
     closeContext();
 
     /* And now take care of the method body */

@@ -49,7 +49,7 @@ public:
     ContextBuilder();
     virtual ~ContextBuilder();
 
-    void setEditor(EditorIntegrator *editor); //TODO: remove?
+    void setEditor(EditorIntegrator *editor);
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
     
@@ -90,8 +90,7 @@ private:
     void addImportedContexts();
 
 private:
-    QList<KDevelop::DUContext *> m_importedParentContexts; //TODO: Really?
-    KDevelop::QualifiedIdentifier lastMethodName;
+    QList<KDevelop::DUContext *> m_importedParentContexts;
 };
 
 } // End of namespace Ruby
