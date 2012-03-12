@@ -82,3 +82,6 @@ end
 
 def initialize parent=nil
 end
+
+def `(p1)
+end

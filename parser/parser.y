@@ -2755,11 +2755,16 @@ static int parser_yylex(struct parser_t * parser)
     parser->expr_seen = 0;
     t = ',';
   } else if (*c == '`') {
-    tokp.startLine = parser->line;
-    tokp.startCol = parser->column;
-    curs += parse_string(parser, c, curs);
-    tokp.endLine = parser->line;
-    t = tBACKTICK;
+    if (parser->def_seen) {
+      curs++;
+      t = '`';
+    } else {
+      tokp.startLine = parser->line;
+      tokp.startCol = parser->column;
+      curs += parse_string(parser, c, curs);
+      tokp.endLine = parser->line;
+      t = tBACKTICK;
+    }
   } else if (*c == '~') {
     curs++;
     tokp.startLine = tokp.endLine = parser->line;
