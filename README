@@ -1,8 +1,18 @@
 KDevelop Ruby Support
 =====================
 
-Authors
-=======
+== Generating the documentation ==
+
+This plugin needs the generated documentation/builtins.rb file to exist. 
+In order to generate this file, you'll have to use the
+documentation/kdevruby_doc.rb script. The expected usage is:
+
+  ruby kdevruby_doc.rb source_dir output_file
+  
+The 'source_dir' parameter is the path to the Ruby source code tree, and the
+'output_file' parameter is the name of the finally generated file.
+
+== Authors ==
 
 - Alexander Dymo <adymo@kdevelop.org>
   (Started the plugin)
@@ -10,8 +20,7 @@ Authors
 - Miquel Sabaté <mikisabate@gmail.com>
   (Maintainer, Parser)
 
-Hacking
-=======
+== Hacking ==
 
 Are you without a nice project and just dying to cut your teeth
 on the Ruby plugin for KDevelop?

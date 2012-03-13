@@ -193,7 +193,7 @@ if ARGV.size != 2
   print <<-USAGE
 KDevelop Ruby Documentation generator.
 Usage:
-  ruby_doc source_dir   # source_dir => ruby source code root directory
+  ruby kdevruby_doc.rb source_dir output_file
   USAGE
   exit
 end
