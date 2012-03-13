@@ -1,3 +1,8 @@
+##
+# Ruby Version: 1.9.3
+# This file is generated, all changes made in this file will be lost!
+
+
 module Kernel
 ##
 # Converts _block_ to a +Proc+ object (and therefore
@@ -15,7 +20,7 @@ module Kernel
 # <em>produces:</em>
 # 
 #    goodbye cruel world
-def at_exit(); end
+def at_exit(&block); end
 
 ##
 # Seeds the pseudorandom number generator to the value of
@@ -26,7 +31,7 @@ def at_exit(); end
 # <code>srand</code>, but without the sequence.) By setting the seed
 # to a known value, scripts can be made deterministic during testing.
 # The previous seed value is returned. Also see <code>Kernel::rand</code>.
-def srand(p1=0); end
+def srand(number=0); end
 
 ##
 # If <i>max</i> is +Range+, returns a pseudorandom number where
@@ -50,7 +55,7 @@ def srand(p1=0); end
 #    [ rand(10), rand(1000) ]   #=> [6, 817]
 #    srand 1234                 #=> 1234
 #    [ rand,  rand ]            #=> [0.191519450163469, 0.49766366626136]
-def rand(p1=0); end
+def rand(max=0); end
 
 ##
 #  Uses the integer <i>aCmd</i> to perform various tests on
@@ -106,16 +111,16 @@ def rand(p1=0); end
 #         |         | is prior to that of file2
 #    ">"  | boolean | True if the modification time of file1
 #         |         | is after that of file2
-def test(*args); end
+def test(int_cmd, file1  , file2=0); end
 
 ##
 # Equivalent to <code>Proc.new</code>.
-def proc(); end
+def proc(&block); end
 
 ##
 # Equivalent to <code>Proc.new</code>, except the resulting Proc objects
 # check the number of parameters passed when called.
-def lambda(); end
+def lambda(&block); end
 
 ##
 # Returns a +Binding+ object, describing the variable and
@@ -128,35 +133,53 @@ def lambda(); end
 #    end
 #    b = get_binding("hello")
 #    eval("param", b)   #=> "hello"
-def binding(); end
+def binding; end
 
 ##
 # Returns x/y;
-def Rational(*args); end
+def Rational(x, y=0); end
 
 ##
 # Equivalent to <code>$_.sub(<i>args</i>)</code>, except that
 # <code>$_</code> will be updated if substitution occurs.
 # Available only when -p/-n command line option specified.
-def sub(*args); end
+def sub(pattern, replacement); end
+
+##
+# Equivalent to <code>$_.sub(<i>args</i>)</code>, except that
+# <code>$_</code> will be updated if substitution occurs.
+# Available only when -p/-n command line option specified.
+def sub(pattern, &block); end
 
 ##
 # Equivalent to <code>$_.gsub...</code>, except that <code>$_</code>
 # receives the modified result.
 # Available only when -p/-n command line option specified.
-def gsub(*args); end
+def gsub(pattern, replacement); end
+
+##
+# Equivalent to <code>$_.gsub...</code>, except that <code>$_</code>
+# receives the modified result.
+# Available only when -p/-n command line option specified.
+def gsub(pattern, &block); end
 
 ##
 # Equivalent to <code>($_.dup).chop!</code>, except <code>nil</code>
 # is never returned. See <code>String#chop!</code>.
 # Available only when -p/-n command line option specified.
-def chop(); end
+def chop; end
 
 ##
 # Equivalent to <code>$_ = $_.chomp(<em>string</em>)</code>. See
 # <code>String#chomp</code>.
 # Available only when -p/-n command line option specified.
-def chomp(*args); end
+def chomp; end
+
+##
+# Equivalent to <code>$_ = $_.chomp(<em>string</em>)</code>. See
+# <code>String#chomp</code>.
+# Available only when -p/-n command line option specified.
+def chomp(string); end
 
 ##
 # Evaluates the Ruby expression(s) in <em>string</em>. If
@@ -171,7 +194,7 @@ def chomp(*args); end
 #    str = "hello"
 #    eval "str + ' Fred'"                      #=> "hello Fred"
 #    eval "str + ' Fred'", get_binding("bye")  #=> "bye Fred"
-def eval(p1, p2=0, p3=0, p4=0); end
+def eval(string , binding=0, filename=0, lineno=0); end
 
 ##
 # Returns the names of the current local variables.
@@ -181,7 +204,7 @@ def eval(p1, p2=0, p3=0, p4=0); end
 #       # ...
 #    end
 #    local_variables   #=> [:fred, :i]
-def local_variables(); end
+def local_variables; end
 
 ##
 # Returns <code>true</code> if <code>yield</code> would execute a
@@ -198,7 +221,7 @@ def local_variables(); end
 #    try                  #=> "no block"
 #    try { "hello" }      #=> "hello"
 #    try do "hello" end   #=> "hello"
-def iterator?(); end
+def iterator?; end
 
 ##
 # Returns <code>true</code> if <code>yield</code> would execute a
@@ -215,7 +238,41 @@ def iterator?(); end
 #    try                  #=> "no block"
 #    try { "hello" }      #=> "hello"
 #    try do "hello" end   #=> "hello"
-def block_given?(); end
+def iterator?; end
+
+##
+# Returns <code>true</code> if <code>yield</code> would execute a
+# block in the current context. The <code>iterator?</code> form
+# is mildly deprecated.
+# 
+#    def try
+#      if block_given?
+#        yield
+#      else
+#        "no block"
+#      end
+#    end
+#    try                  #=> "no block"
+#    try { "hello" }      #=> "hello"
+#    try do "hello" end   #=> "hello"
+def block_given?; end
+
+##
+# Returns <code>true</code> if <code>yield</code> would execute a
+# block in the current context. The <code>iterator?</code> form
+# is mildly deprecated.
+# 
+#    def try
+#      if block_given?
+#        yield
+#      else
+#        "no block"
+#      end
+#    end
+#    try                  #=> "no block"
+#    try { "hello" }      #=> "hello"
+#    try do "hello" end   #=> "hello"
+def block_given?; end
 
 ##
 # +catch+ executes its block. If a +throw+ is
@@ -247,7 +304,7 @@ def block_given?(); end
 # _arg_ is given, +catch+ assigns a new unique object to
 # +throw+.  this is useful for nested +catch+.  _arg_ can
 # be an arbitrary object, not only Symbol.
-def catch(p1=0); end
+def catch(arg=0, &block); end
 
 ##
 # Transfers control to the end of the active +catch+ block
@@ -256,7 +313,7 @@ def catch(p1=0); end
 # parameter supplies a return value for the +catch+ block,
 # which otherwise defaults to +nil+. For examples, see
 # <code>Kernel::catch</code>.
-def throw(p1, p2=0); end
+def throw(tag , obj=0); end
 
 ##
 # Repeatedly executes the block.
@@ -271,7 +328,22 @@ def throw(p1, p2=0); end
 #    end
 # 
 # StopIteration raised in the block breaks the loop.
-def loop(); end
+def loop(&block); end
+
+##
+# Repeatedly executes the block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    loop do
+#      print "Input: "
+#      line = gets
+#      break if !line or line =~ /^qQ/
+#      # ...
+#    end
+# 
+# StopIteration raised in the block breaks the loop.
+def loop; end
 
 ##
 # Returns the current execution stack---an array containing strings in
@@ -298,7 +370,7 @@ def loop(); end
 #    c(3)   #=> ["prog:13:in `<main>'"]
 #    c(4)   #=> []
 #    c(5)   #=> nil
-def caller(p1=0); end
+def caller(start=1); end
 
 ##
 # Loads and executes the Ruby
@@ -309,7 +381,7 @@ def caller(p1=0); end
 # under an anonymous module, protecting the calling program's global
 # namespace. In no circumstance will any local variables in the loaded
 # file be propagated to the loading environment.
-def load(p1, p2=0); end
+def load(filename, wrap=false); end
 
 ##
 # Loads the given +name+, returning +true+ if successful and +false+ if the
@@ -337,13 +409,13 @@ def load(p1, p2=0); end
 # 
 #   require "my-library.rb"
 #   require "db-driver"
-def require(p1); end
+def require(name); end
 
 ##
 # Ruby tries to load the library named _string_ relative to the requiring
 # file's path.  If the file's path cannot be determined a LoadError is raised.
 # If a file is loaded +true+ is returned and false otherwise.
-def require_relative(p1); end
+def require_relative(string); end
 
 ##
 # Registers _filename_ to be loaded (using <code>Kernel::require</code>)
@@ -351,7 +423,7 @@ def require_relative(p1); end
 # a symbol) is accessed.
 # 
 #    autoload(:MyModule, "/usr/local/lib/modules/my_module.rb")
-def autoload(p1, p2); end
+def autoload(module, filename); end
 
 ##
 # Returns _filename_ to be loaded if _name_ is registered as
@@ -359,7 +431,7 @@ def autoload(p1, p2); end
 # 
 #    autoload(:B, "b")
 #    autoload?(:B)            #=> "b"
-def autoload?(p1); end
+def autoload?(name); end
 
 ##
 # Replaces the current process by running the given external _command_.
@@ -399,7 +471,7 @@ def autoload?(p1); end
 # 
 #    exec "echo", "*"    # echoes an asterisk
 #    # never get here
-def exec(*args); end
+def exec(env=0, command=0, options=0); end
 
 ##
 # Creates a subprocess. If a block is specified, that block is run
@@ -418,7 +490,26 @@ def exec(*args); end
 # fork doesn't copy other threads.
 # 
 # If fork is not usable, Process.respond_to?(:fork) returns false.
-def fork(); end
+def fork; end
+
+##
+# Creates a subprocess. If a block is specified, that block is run
+# in the subprocess, and the subprocess terminates with a status of
+# zero. Otherwise, the +fork+ call returns twice, once in
+# the parent, returning the process ID of the child, and once in
+# the child, returning _nil_. The child process can exit using
+# <code>Kernel.exit!</code> to avoid running any
+# <code>at_exit</code> functions. The parent process should
+# use <code>Process.wait</code> to collect the termination statuses
+# of its children or use <code>Process.detach</code> to register
+# disinterest in their status; otherwise, the operating system
+# may accumulate zombie processes.
+# 
+# The thread calling fork is the only thread in the created child process.
+# fork doesn't copy other threads.
+# 
+# If fork is not usable, Process.respond_to?(:fork) returns false.
+def fork; end
 
 ##
 # Exits the process immediately. No exit handlers are
@@ -426,7 +517,7 @@ def fork(); end
 # exit status.
 # 
 #    Process.exit!(true)
-def exit!(p1=0); end
+def exit!(status=false); end
 
 ##
 # Executes _command..._ in a subshell.
@@ -456,7 +547,7 @@ def exit!(p1=0); end
 #    *
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def system(*args); end
+def system(env=0, command=0, options=0); end
 
 ##
 # spawn executes specified command and return its pid.
@@ -684,7 +775,235 @@ def system(*args); end
 # file descriptor mapping.
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def spawn(*args); end
+def spawn(env=0, command=0, options=0); end
+
+##
+# spawn executes specified command and return its pid.
+# 
+# This method doesn't wait for end of the command.
+# The parent process should
+# use <code>Process.wait</code> to collect
+# the termination status of its child or
+# use <code>Process.detach</code> to register
+# disinterest in their status;
+# otherwise, the operating system may accumulate zombie processes.
+# 
+# spawn has bunch of options to specify process attributes:
+# 
+#   env: hash
+#     name => val : set the environment variable
+#     name => nil : unset the environment variable
+#   command...:
+#     commandline                 : command line string which is passed to the standard shell
+#     cmdname, arg1, ...          : command name and one or more arguments (no shell)
+#     [cmdname, argv0], arg1, ... : command name, argv[0] and zero or more arguments (no shell)
+#   options: hash
+#     clearing environment variables:
+#       :unsetenv_others => true   : clear environment variables except specified by env
+#       :unsetenv_others => false  : don't clear (default)
+#     process group:
+#       :pgroup => true or 0 : make a new process group
+#       :pgroup => pgid      : join to specified process group
+#       :pgroup => nil       : don't change the process group (default)
+#     resource limit: resourcename is core, cpu, data, etc.  See Process.setrlimit.
+#       :rlimit_resourcename => limit
+#       :rlimit_resourcename => [cur_limit, max_limit]
+#     current directory:
+#       :chdir => str
+#     umask:
+#       :umask => int
+#     redirection:
+#       key:
+#         FD              : single file descriptor in child process
+#         [FD, FD, ...]   : multiple file descriptor in child process
+#       value:
+#         FD                        : redirect to the file descriptor in parent process
+#         string                    : redirect to file with open(string, "r" or "w")
+#         [string]                  : redirect to file with open(string, File::RDONLY)
+#         [string, open_mode]       : redirect to file with open(string, open_mode, 0644)
+#         [string, open_mode, perm] : redirect to file with open(string, open_mode, perm)
+#         [:child, FD]              : redirect to the redirected file descriptor
+#         :close                    : close the file descriptor in child process
+#       FD is one of follows
+#         :in     : the file descriptor 0 which is the standard input
+#         :out    : the file descriptor 1 which is the standard output
+#         :err    : the file descriptor 2 which is the standard error
+#         integer : the file descriptor of specified the integer
+#         io      : the file descriptor specified as io.fileno
+#     file descriptor inheritance: close non-redirected non-standard fds (3, 4, 5, ...) or not
+#       :close_others => false : inherit fds (default for system and exec)
+#       :close_others => true  : don't inherit (default for spawn and IO.popen)
+# 
+# If a hash is given as +env+, the environment is
+# updated by +env+ before <code>exec(2)</code> in the child process.
+# If a pair in +env+ has nil as the value, the variable is deleted.
+# 
+#   # set FOO as BAR and unset BAZ.
+#   pid = spawn({"FOO"=>"BAR", "BAZ"=>nil}, command)
+# 
+# If a hash is given as +options+,
+# it specifies
+# process group,
+# resource limit,
+# current directory,
+# umask and
+# redirects for the child process.
+# Also, it can be specified to clear environment variables.
+# 
+# The <code>:unsetenv_others</code> key in +options+ specifies
+# to clear environment variables, other than specified by +env+.
+# 
+#   pid = spawn(command, :unsetenv_others=>true) # no environment variable
+#   pid = spawn({"FOO"=>"BAR"}, command, :unsetenv_others=>true) # FOO only
+# 
+# The <code>:pgroup</code> key in +options+ specifies a process group.
+# The corresponding value should be true, zero or positive integer.
+# true and zero means the process should be a process leader of a new
+# process group.
+# Other values specifies a process group to be belongs.
+# 
+#   pid = spawn(command, :pgroup=>true) # process leader
+#   pid = spawn(command, :pgroup=>10) # belongs to the process group 10
+# 
+# The <code>:rlimit_</code><em>foo</em> key specifies a resource limit.
+# <em>foo</em> should be one of resource types such as <code>core</code>.
+# The corresponding value should be an integer or an array which have one or
+# two integers: same as cur_limit and max_limit arguments for
+# Process.setrlimit.
+# 
+#   cur, max = Process.getrlimit(:CORE)
+#   pid = spawn(command, :rlimit_core=>[0,max]) # disable core temporary.
+#   pid = spawn(command, :rlimit_core=>max) # enable core dump
+#   pid = spawn(command, :rlimit_core=>0) # never dump core.
+# 
+# The <code>:chdir</code> key in +options+ specifies the current directory.
+# 
+#   pid = spawn(command, :chdir=>"/var/tmp")
+# 
+# The <code>:umask</code> key in +options+ specifies the umask.
+# 
+#   pid = spawn(command, :umask=>077)
+# 
+# The :in, :out, :err, a fixnum, an IO and an array key specifies a redirection.
+# The redirection maps a file descriptor in the child process.
+# 
+# For example, stderr can be merged into stdout as follows:
+# 
+#   pid = spawn(command, :err=>:out)
+#   pid = spawn(command, 2=>1)
+#   pid = spawn(command, STDERR=>:out)
+#   pid = spawn(command, STDERR=>STDOUT)
+# 
+# The hash keys specifies a file descriptor
+# in the child process started by <code>spawn</code>.
+# :err, 2 and STDERR specifies the standard error stream (stderr).
+# 
+# The hash values specifies a file descriptor
+# in the parent process which invokes <code>spawn</code>.
+# :out, 1 and STDOUT specifies the standard output stream (stdout).
+# 
+# In the above example,
+# the standard output in the child process is not specified.
+# So it is inherited from the parent process.
+# 
+# The standard input stream (stdin) can be specified by :in, 0 and STDIN.
+# 
+# A filename can be specified as a hash value.
+# 
+#   pid = spawn(command, :in=>"/dev/null") # read mode
+#   pid = spawn(command, :out=>"/dev/null") # write mode
+#   pid = spawn(command, :err=>"log") # write mode
+#   pid = spawn(command, 3=>"/dev/null") # read mode
+# 
+# For stdout and stderr,
+# it is opened in write mode.
+# Otherwise read mode is used.
+# 
+# For specifying flags and permission of file creation explicitly,
+# an array is used instead.
+# 
+#   pid = spawn(command, :in=>["file"]) # read mode is assumed
+#   pid = spawn(command, :in=>["file", "r"])
+#   pid = spawn(command, :out=>["log", "w"]) # 0644 assumed
+#   pid = spawn(command, :out=>["log", "w", 0600])
+#   pid = spawn(command, :out=>["log", File::WRONLY|File::EXCL|File::CREAT, 0600])
+# 
+# The array specifies a filename, flags and permission.
+# The flags can be a string or an integer.
+# If the flags is omitted or nil, File::RDONLY is assumed.
+# The permission should be an integer.
+# If the permission is omitted or nil, 0644 is assumed.
+# 
+# If an array of IOs and integers are specified as a hash key,
+# all the elements are redirected.
+# 
+#   # stdout and stderr is redirected to log file.
+#   # The file "log" is opened just once.
+#   pid = spawn(command, [:out, :err]=>["log", "w"])
+# 
+# Another way to merge multiple file descriptors is [:child, fd].
+# \[:child, fd] means the file descriptor in the child process.
+# This is different from fd.
+# For example, :err=>:out means redirecting child stderr to parent stdout.
+# But :err=>[:child, :out] means redirecting child stderr to child stdout.
+# They differs if stdout is redirected in the child process as follows.
+# 
+#   # stdout and stderr is redirected to log file.
+#   # The file "log" is opened just once.
+#   pid = spawn(command, :out=>["log", "w"], :err=>[:child, :out])
+# 
+# \[:child, :out] can be used to merge stderr into stdout in IO.popen.
+# In this case, IO.popen redirects stdout to a pipe in the child process
+# and [:child, :out] refers the redirected stdout.
+# 
+#   io = IO.popen(["sh", "-c", "echo out; echo err >&2", :err=>[:child, :out]])
+#   p io.read #=> "out\nerr\n"
+# 
+# spawn closes all non-standard unspecified descriptors by default.
+# The "standard" descriptors are 0, 1 and 2.
+# This behavior is specified by :close_others option.
+# :close_others doesn't affect the standard descriptors which are
+# closed only if :close is specified explicitly.
+# 
+#   pid = spawn(command, :close_others=>true)  # close 3,4,5,... (default)
+#   pid = spawn(command, :close_others=>false) # don't close 3,4,5,...
+# 
+# :close_others is true by default for spawn and IO.popen.
+# 
+# So IO.pipe and spawn can be used as IO.popen.
+# 
+#   # similar to r = IO.popen(command)
+#   r, w = IO.pipe
+#   pid = spawn(command, :out=>w)   # r, w is closed in the child process.
+#   w.close
+# 
+# :close is specified as a hash value to close a fd individually.
+# 
+#   f = open(foo)
+#   system(command, f=>:close)        # don't inherit f.
+# 
+# If a file descriptor need to be inherited,
+# io=>io can be used.
+# 
+#   # valgrind has --log-fd option for log destination.
+#   # log_w=>log_w indicates log_w.fileno inherits to child process.
+#   log_r, log_w = IO.pipe
+#   pid = spawn("valgrind", "--log-fd=#{log_w.fileno}", "echo", "a", log_w=>log_w)
+#   log_w.close
+#   p log_r.read
+# 
+# It is also possible to exchange file descriptors.
+# 
+#   pid = spawn(command, :out=>:err, :err=>:out)
+# 
+# The hash keys specify file descriptors in the child process.
+# The hash values specifies file descriptors in the parent process.
+# So the above specifies exchanging stdout and stderr.
+# Internally, +spawn+ uses an extra file descriptor to resolve such cyclic
+# file descriptor mapping.
+# 
+# See <code>Kernel.exec</code> for the standard shell.
+def spawn(env=0, command=0, options=0); end
 
 ##
 # Suspends the current thread for _duration_ seconds (which may be any number,
@@ -698,7 +1017,7 @@ def spawn(*args); end
 #    Time.new    #=> 2008-03-08 19:56:20 +0900
 #    sleep 1.9   #=> 2
 #    Time.new    #=> 2008-03-08 19:56:22 +0900
-def sleep(*args); end
+def sleep(duration=0); end
 
 ##
 # Initiates the termination of the Ruby script by raising the
@@ -734,13 +1053,97 @@ def sleep(*args); end
 # 
 #    at_exit function
 #    in finalizer
-def exit(p1=0); end
+def exit(status=true); end
+
+##
+# Initiates the termination of the Ruby script by raising the
+# <code>SystemExit</code> exception. This exception may be caught. The
+# optional parameter is used to return a status code to the invoking
+# environment.
+# +true+ and +FALSE+ of _status_ means success and failure
+# respectively.  The interpretation of other integer values are
+# system dependent.
+# 
+#    begin
+#      exit
+#      puts "never get here"
+#    rescue SystemExit
+#      puts "rescued a SystemExit exception"
+#    end
+#    puts "after begin block"
+# 
+# <em>produces:</em>
+# 
+#    rescued a SystemExit exception
+#    after begin block
+# 
+# Just prior to termination, Ruby executes any <code>at_exit</code> functions
+# (see Kernel::at_exit) and runs any object finalizers (see
+# ObjectSpace::define_finalizer).
+# 
+#    at_exit { puts "at_exit function" }
+#    ObjectSpace.define_finalizer("string",  proc { puts "in finalizer" })
+#    exit
+# 
+# <em>produces:</em>
+# 
+#    at_exit function
+#    in finalizer
+def exit(status=true); end
+
+##
+# Initiates the termination of the Ruby script by raising the
+# <code>SystemExit</code> exception. This exception may be caught. The
+# optional parameter is used to return a status code to the invoking
+# environment.
+# +true+ and +FALSE+ of _status_ means success and failure
+# respectively.  The interpretation of other integer values are
+# system dependent.
+# 
+#    begin
+#      exit
+#      puts "never get here"
+#    rescue SystemExit
+#      puts "rescued a SystemExit exception"
+#    end
+#    puts "after begin block"
+# 
+# <em>produces:</em>
+# 
+#    rescued a SystemExit exception
+#    after begin block
+# 
+# Just prior to termination, Ruby executes any <code>at_exit</code> functions
+# (see Kernel::at_exit) and runs any object finalizers (see
+# ObjectSpace::define_finalizer).
+# 
+#    at_exit { puts "at_exit function" }
+#    ObjectSpace.define_finalizer("string",  proc { puts "in finalizer" })
+#    exit
+# 
+# <em>produces:</em>
+# 
+#    at_exit function
+#    in finalizer
+def exit(status=true); end
 
 ##
 # Terminate execution immediately, effectively by calling
 # <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
 # to STDERR prior to terminating.
-def abort(p1); end
+def abort; end
+
+##
+# Terminate execution immediately, effectively by calling
+# <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
+# to STDERR prior to terminating.
+def abort(msg=0); end
+
+##
+# Terminate execution immediately, effectively by calling
+# <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
+# to STDERR prior to terminating.
+def abort(msg=0); end
 
 ##
 # With no arguments, raises the exception in <code>$!</code> or raises
@@ -756,7 +1159,7 @@ def abort(p1); end
 # 
 #    raise "Failed to create socket"
 #    raise ArgumentError, "No parameters", caller
-def raise(*args); end
+def raise; end
 
 ##
 # With no arguments, raises the exception in <code>$!</code> or raises
@@ -772,23 +1175,193 @@ def raise(*args); end
 # 
 #    raise "Failed to create socket"
 #    raise ArgumentError, "No parameters", caller
-def fail(*args); end
+def raise(string); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def raise(exception , string=0, array=0); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def raise; end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def raise(string); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def raise(exception , string=0, array=0); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail; end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail(string); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail(exception , string=0, array=0); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail; end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail(string); end
+
+##
+# With no arguments, raises the exception in <code>$!</code> or raises
+# a <code>RuntimeError</code> if <code>$!</code> is +nil+.
+# With a single +String+ argument, raises a
+# +RuntimeError+ with the string as a message. Otherwise,
+# the first parameter should be the name of an +Exception+
+# class (or an object that returns an +Exception+ object when sent
+# an +exception+ message). The optional second parameter sets the
+# message associated with the exception, and the third parameter is an
+# array of callback information. Exceptions are caught by the
+# +rescue+ clause of <code>begin...end</code> blocks.
+# 
+#    raise "Failed to create socket"
+#    raise ArgumentError, "No parameters", caller
+def fail(exception , string=0, array=0); end
 
 ##
 # Returns an array of the names of global variables.
 # 
 #    global_variables.grep /std/   #=> [:$stdin, :$stdout, :$stderr]
-def global_variables(); end
+def global_variables; end
 
 ##
 # Returns the name of the current method as a Symbol.
 # If called outside of a method, it returns <code>nil</code>.
-def __method__(); end
+def __method__; end
 
 ##
 # Returns the name of the current method as a Symbol.
 # If called outside of a method, it returns <code>nil</code>.
-def __callee__(); end
+def __method__; end
+
+##
+# Returns the name of the current method as a Symbol.
+# If called outside of a method, it returns <code>nil</code>.
+def __callee__; end
+
+##
+# Returns the name of the current method as a Symbol.
+# If called outside of a method, it returns <code>nil</code>.
+def __callee__; end
 
 ##
 # Controls tracing of assignments to global variables. The parameter
@@ -807,14 +1380,33 @@ def __callee__(); end
 # 
 #    $_ is now 'hello'
 #    $_ is now ' there'
-def trace_var(p1, p2=0); end
+def trace_var(symbol, cmd ); end
+
+##
+# Controls tracing of assignments to global variables. The parameter
+# +symbol_ identifies the variable (as either a string name or a
+# symbol identifier). _cmd_ (which may be a string or a
+# +Proc+ object) or block is executed whenever the variable
+# is assigned. The block or +Proc+ object receives the
+# variable's new value as a parameter. Also see
+# <code>Kernel::untrace_var</code>.
+# 
+#    trace_var :$_, proc {|v| puts "$_ is now '#{v}'" }
+#    $_ = "hello"
+#    $_ = ' there'
+# 
+# <em>produces:</em>
+# 
+#    $_ is now 'hello'
+#    $_ is now ' there'
+def trace_var(symbol, &block); end
 
 ##
 # Removes tracing for the specified command on the given global
 # variable and returns +nil+. If no command is specified,
 # removes all tracing for that variable and returns an array
 # containing the commands actually removed.
-def untrace_var(p1, p2=0); end
+def untrace_var(symbol  , cmd=0); end
 
 ##
 #  Calls the operating system function identified by _num_ and
@@ -843,7 +1435,7 @@ def untrace_var(p1, p2=0); end
 # Note::
 #   +syscall+ is essentially unsafe and unportable. Feel free to shoot your foot.
 #   DL (Fiddle) library is preferred for safer and a bit more portable programming.
-def syscall(*args); end
+def syscall(num , args=0); end
 
 ##
 # Creates an <code>IO</code> object connected to the given stream,
@@ -949,14 +1541,127 @@ def syscall(*args); end
 # <em>produces:</em>
 # 
 #    Got: in Child
-def open(*args); end
+def open(path , mode_enc=0, perm=0, opt=0); end
+
+##
+# Creates an <code>IO</code> object connected to the given stream,
+# file, or subprocess.
+# 
+# If <i>path</i> does not start with a pipe character
+# (``<code>|</code>''), treat it as the name of a file to open using
+# the specified mode (defaulting to ``<code>r</code>'').
+# 
+# The mode_enc is
+# either a string or an integer.  If it is an integer, it must be
+# bitwise-or of open(2) flags, such as File::RDWR or File::EXCL.
+# If it is a string, it is either "mode", "mode:ext_enc", or
+# "mode:ext_enc:int_enc".
+# The mode is one of the following:
+# 
+#  r: read (default)
+#  w: write
+#  a: append
+# 
+# The mode can be followed by "b" (means binary-mode), or "+"
+# (means both reading and writing allowed) or both.
+# If ext_enc (external encoding) is specified,
+# read string will be tagged by the encoding in reading,
+# and output string will be converted
+# to the specified encoding in writing.
+# If ext_enc starts with 'BOM|', check whether the input has a BOM. If
+# there is a BOM, strip it and set external encoding as
+# what the BOM tells. If there is no BOM, use ext_enc without 'BOM|'.
+# If two encoding names,
+# ext_enc and int_enc (external encoding and internal encoding),
+# are specified, the read string is converted from ext_enc
+# to int_enc then tagged with the int_enc in read mode,
+# and in write mode, the output string will be
+# converted from int_enc to ext_enc before writing.
+# 
+# If a file is being created, its initial permissions may be
+# set using the integer third parameter.
+# 
+# If a block is specified, it will be invoked with the
+# <code>File</code> object as a parameter, and the file will be
+# automatically closed when the block terminates. The call
+# returns the value of the block.
+# 
+# If <i>path</i> starts with a pipe character, a subprocess is
+# created, connected to the caller by a pair of pipes. The returned
+# <code>IO</code> object may be used to write to the standard input
+# and read from the standard output of this subprocess. If the command
+# following the ``<code>|</code>'' is a single minus sign, Ruby forks,
+# and this subprocess is connected to the parent. In the subprocess,
+# the <code>open</code> call returns <code>nil</code>. If the command
+# is not ``<code>-</code>'', the subprocess runs the command. If a
+# block is associated with an <code>open("|-")</code> call, that block
+# will be run twice---once in the parent and once in the child. The
+# block parameter will be an <code>IO</code> object in the parent and
+# <code>nil</code> in the child. The parent's <code>IO</code> object
+# will be connected to the child's <code>$stdin</code> and
+# <code>$stdout</code>. The subprocess will be terminated at the end
+# of the block.
+# 
+#    open("testfile") do |f|
+#      print f.gets
+#    end
+# 
+# <em>produces:</em>
+# 
+#    This is line one
+# 
+# Open a subprocess and read its output:
+# 
+#    cmd = open("|date")
+#    print cmd.gets
+#    cmd.close
+# 
+# <em>produces:</em>
+# 
+#    Wed Apr  9 08:56:31 CDT 2003
+# 
+# Open a subprocess running the same Ruby program:
+# 
+#    f = open("|-", "w+")
+#    if f == nil
+#      puts "in Child"
+#      exit
+#    else
+#      puts "Got: #{f.gets}"
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Got: in Child
+# 
+# Open a subprocess using a block to receive the I/O object:
+# 
+#    open("|-") do |f|
+#      if f == nil
+#        puts "in Child"
+#      else
+#        puts "Got: #{f.gets}"
+#      end
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Got: in Child
+def open(path , mode_enc=0, perm=0, opt=0, &block); end
 
 ##
 # Equivalent to:
 #    io.write(sprintf(string, obj, ...)
 # or
 #    $stdout.write(sprintf(string, obj, ...)
-def printf(*args); end
+def printf(io, string , obj=0); end
+
+##
+# Equivalent to:
+#    io.write(sprintf(string, obj, ...)
+# or
+#    $stdout.write(sprintf(string, obj, ...)
+def printf(string , obj=0); end
 
 ##
 # Prints each object in turn to <code>$stdout</code>. If the output
@@ -976,7 +1681,7 @@ def printf(*args); end
 # 
 #    cat12399
 #    cat, 1, 2, 3, 99
-def print(*args); end
+def print(obj, *more); end
 
 ##
 #  Equivalent to:
@@ -985,13 +1690,13 @@ def print(*args); end
 # 
 # Refer to the documentation for IO#putc for important information regarding
 # multi-byte characters.
-def putc(p1); end
+def putc(int); end
 
 ##
 # Equivalent to
 # 
 #     $stdout.puts(obj, ...)
-def puts(*args); end
+def puts(obj, *more); end
 
 ##
 # Returns (and assigns to <code>$_</code>) the next line from the list
@@ -1019,12 +1724,78 @@ def puts(*args); end
 # 
 # The style of programming using <code>$_</code> as an implicit
 # parameter is gradually losing favor in the Ruby community.
-def gets(*args); end
+def gets(sep=$/); end
+
+##
+# Returns (and assigns to <code>$_</code>) the next line from the list
+# of files in +ARGV+ (or <code>$*</code>), or from standard input if
+# no files are present on the command line. Returns +nil+ at end of
+# file. The optional argument specifies the record separator. The
+# separator is included with the contents of each record. A separator
+# of +nil+ reads the entire contents, and a zero-length separator
+# reads the input one paragraph at a time, where paragraphs are
+# divided by two consecutive newlines.  If the first argument is an
+# integer, or optional second argument is given, the returning string
+# would not be longer than the given value in bytes.  If multiple
+# filenames are present in +ARGV+, +gets(nil)+ will read the contents
+# one file at a time.
+# 
+#    ARGV << "testfile"
+#    print while gets
+# 
+# <em>produces:</em>
+# 
+#    This is line one
+#    This is line two
+#    This is line three
+#    And so on...
+# 
+# The style of programming using <code>$_</code> as an implicit
+# parameter is gradually losing favor in the Ruby community.
+def gets(limit); end
+
+##
+# Returns (and assigns to <code>$_</code>) the next line from the list
+# of files in +ARGV+ (or <code>$*</code>), or from standard input if
+# no files are present on the command line. Returns +nil+ at end of
+# file. The optional argument specifies the record separator. The
+# separator is included with the contents of each record. A separator
+# of +nil+ reads the entire contents, and a zero-length separator
+# reads the input one paragraph at a time, where paragraphs are
+# divided by two consecutive newlines.  If the first argument is an
+# integer, or optional second argument is given, the returning string
+# would not be longer than the given value in bytes.  If multiple
+# filenames are present in +ARGV+, +gets(nil)+ will read the contents
+# one file at a time.
+# 
+#    ARGV << "testfile"
+#    print while gets
+# 
+# <em>produces:</em>
+# 
+#    This is line one
+#    This is line two
+#    This is line three
+#    And so on...
+# 
+# The style of programming using <code>$_</code> as an implicit
+# parameter is gradually losing favor in the Ruby community.
+def gets(sep,limit); end
 
 ##
 # Equivalent to <code>Kernel::gets</code>, except
 # +readline+ raises +EOFError+ at end of file.
-def readline(*args); end
+def readline(sep=$/); end
+
+##
+# Equivalent to <code>Kernel::gets</code>, except
+# +readline+ raises +EOFError+ at end of file.
+def readline(limit); end
+
+##
+# Equivalent to <code>Kernel::gets</code>, except
+# +readline+ raises +EOFError+ at end of file.
+def readline(sep, limit); end
 
 ##
 # Calls select(2) system call.
@@ -1069,12 +1840,157 @@ def readline(*args); end
 #     ping pong
 #     (snipped)
 #     ping
-def select(p1, p2=0, p3=0, p4=0); end
+def select(read_arra); end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def select; end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def select; end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def select; end
 
 ##
 # Returns an array containing the lines returned by calling
 # <code>Kernel.gets(<i>sep</i>)</code> until the end of file.
-def readlines(*args); end
+def readlines(sep=$/); end
+
+##
+# Returns an array containing the lines returned by calling
+# <code>Kernel.gets(<i>sep</i>)</code> until the end of file.
+def readlines(limit); end
+
+##
+# Returns an array containing the lines returned by calling
+# <code>Kernel.gets(<i>sep</i>)</code> until the end of file.
+def readlines(sep,limit); end
 
 ##
 # Returns the standard output of running _cmd_ in a subshell.
@@ -1085,7 +2001,7 @@ def readlines(*args); end
 #    `ls testdir`.split[1]    #=> "main.rb"
 #    `echo oops && exit 99`   #=> "oops\n"
 #    $?.exitstatus            #=> 99
-def `(p1); end
+def `; end
 
 ##
 # For each object, directly writes _obj_.+inspect+ followed by a
@@ -1098,7 +2014,33 @@ def `(p1); end
 # <em>produces:</em>
 # 
 #    #<S name="dave", state="TX">
-def p(*args); end
+def p(obj); end
+
+##
+# For each object, directly writes _obj_.+inspect+ followed by a
+# newline to the program's standard output.
+# 
+#    S = Struct.new(:name, :state)
+#    s = S['dave', 'TX']
+#    p s
+# 
+# <em>produces:</em>
+# 
+#    #<S name="dave", state="TX">
+def p(obj1, obj2, *more); end
+
+##
+# For each object, directly writes _obj_.+inspect+ followed by a
+# newline to the program's standard output.
+# 
+#    S = Struct.new(:name, :state)
+#    s = S['dave', 'TX']
+#    p s
+# 
+# <em>produces:</em>
+# 
+#    #<S name="dave", state="TX">
+def p(); end
 
 ##
 # Specifies the handling of signals. The first parameter is a signal
@@ -1126,7 +2068,35 @@ def p(*args); end
 #     Terminating: 27461
 #     Child died
 #     Terminating: 27460
-def trap(*args); end
+def trap( signal, command ); end
+
+##
+# Specifies the handling of signals. The first parameter is a signal
+# name (a string such as ``SIGALRM'', ``SIGUSR1'', and so on) or a
+# signal number. The characters ``SIG'' may be omitted from the
+# signal name. The command or block specifies code to be run when the
+# signal is raised.
+# If the command is the string ``IGNORE'' or ``SIG_IGN'', the signal
+# will be ignored.
+# If the command is ``DEFAULT'' or ``SIG_DFL'', the Ruby's default handler
+# will be invoked.
+# If the command is ``EXIT'', the script will be terminated by the signal.
+# If the command is ``SYSTEM_DEFAULT'', the operating system's default
+# handler will be invoked.
+# Otherwise, the given command or block will be run.
+# The special signal name ``EXIT'' or signal number zero will be
+# invoked just prior to program termination.
+# trap returns the previous handler for the given signal.
+# 
+#     Signal.trap(0, proc { puts "Terminating: #{$$}" })
+#     Signal.trap("CLD")  { puts "Child died" }
+#     fork && Process.wait
+# 
+# produces:
+#     Terminating: 27461
+#     Child died
+#     Terminating: 27460
+def trap( signal , &block); end
 
 ##
 # Returns the string resulting from applying <i>format_string</i> to
@@ -1383,7 +2353,7 @@ def trap(*args); end
 #     #=> 1 : 2.000000
 #   sprintf("%{foo}f", { :foo => 1 })
 #     # => "1f"
-def sprintf(*args); end
+def sprintf(format_string  , arguments=0); end
 
 ##
 # Returns the string resulting from applying <i>format_string</i> to
@@ -1640,7 +2610,521 @@ def sprintf(*args); end
 #     #=> 1 : 2.000000
 #   sprintf("%{foo}f", { :foo => 1 })
 #     # => "1f"
-def format(*args); end
+def sprintf(format_string  , arguments=0); end
+
+##
+# Returns the string resulting from applying <i>format_string</i> to
+# any additional arguments.  Within the format string, any characters
+# other than format sequences are copied to the result.
+# 
+# The syntax of a format sequence is follows.
+# 
+#   %[flags][width][.precision]type
+# 
+# A format
+# sequence consists of a percent sign, followed by optional flags,
+# width, and precision indicators, then terminated with a field type
+# character.  The field type controls how the corresponding
+# <code>sprintf</code> argument is to be interpreted, while the flags
+# modify that interpretation.
+# 
+# The field type characters are:
+# 
+#     Field |  Integer Format
+#     ------+--------------------------------------------------------------
+#       b   | Convert argument as a binary number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..1'.
+#       B   | Equivalent to `b', but uses an uppercase 0B for prefix
+#           | in the alternative format by #.
+#       d   | Convert argument as a decimal number.
+#       i   | Identical to `d'.
+#       o   | Convert argument as an octal number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..7'.
+#       u   | Identical to `d'.
+#       x   | Convert argument as a hexadecimal number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..f' (representing an infinite string of
+#           | leading 'ff's).
+#       X   | Equivalent to `x', but uses uppercase letters.
+# 
+#     Field |  Float Format
+#     ------+--------------------------------------------------------------
+#       e   | Convert floating point argument into exponential notation
+#           | with one digit before the decimal point as [-]d.dddddde[+-]dd.
+#           | The precision specifies the number of digits after the decimal
+#           | point (defaulting to six).
+#       E   | Equivalent to `e', but uses an uppercase E to indicate
+#           | the exponent.
+#       f   | Convert floating point argument as [-]ddd.dddddd,
+#           | where the precision specifies the number of digits after
+#           | the decimal point.
+#       g   | Convert a floating point number using exponential form
+#           | if the exponent is less than -4 or greater than or
+#           | equal to the precision, or in dd.dddd form otherwise.
+#           | The precision specifies the number of significant digits.
+#       G   | Equivalent to `g', but use an uppercase `E' in exponent form.
+#       a   | Convert floating point argument as [-]0xh.hhhhp[+-]dd,
+#           | which is consisted from optional sign, "0x", fraction part
+#           | as hexadecimal, "p", and exponential part as decimal.
+#       A   | Equivalent to `a', but use uppercase `X' and `P'.
+# 
+#     Field |  Other Format
+#     ------+--------------------------------------------------------------
+#       c   | Argument is the numeric code for a single character or
+#           | a single character string itself.
+#       p   | The valuing of argument.inspect.
+#       s   | Argument is a string to be substituted.  If the format
+#           | sequence contains a precision, at most that many characters
+#           | will be copied.
+#       %   | A percent sign itself will be displayed.  No argument taken.
+# 
+# The flags modifies the behavior of the formats.
+# The flag characters are:
+# 
+#   Flag     | Applies to    | Meaning
+#   ---------+---------------+-----------------------------------------
+#   space    | bBdiouxX      | Leave a space at the start of
+#            | aAeEfgG       | non-negative numbers.
+#            | (numeric fmt) | For `o', `x', `X', `b' and `B', use
+#            |               | a minus sign with absolute value for
+#            |               | negative values.
+#   ---------+---------------+-----------------------------------------
+#   (digit)$ | all           | Specifies the absolute argument number
+#            |               | for this field.  Absolute and relative
+#            |               | argument numbers cannot be mixed in a
+#            |               | sprintf string.
+#   ---------+---------------+-----------------------------------------
+#    #       | bBoxX         | Use an alternative format.
+#            | aAeEfgG       | For the conversions `o', increase the precision
+#            |               | until the first digit will be `0' if
+#            |               | it is not formatted as complements.
+#            |               | For the conversions `x', `X', `b' and `B'
+#            |               | on non-zero, prefix the result with ``0x'',
+#            |               | ``0X'', ``0b'' and ``0B'', respectively.
+#            |               | For `a', `A', `e', `E', `f', `g', and 'G',
+#            |               | force a decimal point to be added,
+#            |               | even if no digits follow.
+#            |               | For `g' and 'G', do not remove trailing zeros.
+#   ---------+---------------+-----------------------------------------
+#   +        | bBdiouxX      | Add a leading plus sign to non-negative
+#            | aAeEfgG       | numbers.
+#            | (numeric fmt) | For `o', `x', `X', `b' and `B', use
+#            |               | a minus sign with absolute value for
+#            |               | negative values.
+#   ---------+---------------+-----------------------------------------
+#   -        | all           | Left-justify the result of this conversion.
+#   ---------+---------------+-----------------------------------------
+#   0 (zero) | bBdiouxX      | Pad with zeros, not spaces.
+#            | aAeEfgG       | For `o', `x', `X', `b' and `B', radix-1
+#            | (numeric fmt) | is used for negative numbers formatted as
+#            |               | complements.
+#   ---------+---------------+-----------------------------------------
+#   *        | all           | Use the next argument as the field width.
+#            |               | If negative, left-justify the result. If the
+#            |               | asterisk is followed by a number and a dollar
+#            |               | sign, use the indicated argument as the width.
+# 
+# Examples of flags:
+# 
+#  # `+' and space flag specifies the sign of non-negative numbers.
+#  sprintf("%d", 123)  #=> "123"
+#  sprintf("%+d", 123) #=> "+123"
+#  sprintf("% d", 123) #=> " 123"
+# 
+#  # `#' flag for `o' increases number of digits to show `0'.
+#  # `+' and space flag changes format of negative numbers.
+#  sprintf("%o", 123)   #=> "173"
+#  sprintf("%#o", 123)  #=> "0173"
+#  sprintf("%+o", -123) #=> "-173"
+#  sprintf("%o", -123)  #=> "..7605"
+#  sprintf("%#o", -123) #=> "..7605"
+# 
+#  # `#' flag for `x' add a prefix `0x' for non-zero numbers.
+#  # `+' and space flag disables complements for negative numbers.
+#  sprintf("%x", 123)   #=> "7b"
+#  sprintf("%#x", 123)  #=> "0x7b"
+#  sprintf("%+x", -123) #=> "-7b"
+#  sprintf("%x", -123)  #=> "..f85"
+#  sprintf("%#x", -123) #=> "0x..f85"
+#  sprintf("%#x", 0)    #=> "0"
+# 
+#  # `#' for `X' uses the prefix `0X'.
+#  sprintf("%X", 123)  #=> "7B"
+#  sprintf("%#X", 123) #=> "0X7B"
+# 
+#  # `#' flag for `b' add a prefix `0b' for non-zero numbers.
+#  # `+' and space flag disables complements for negative numbers.
+#  sprintf("%b", 123)   #=> "1111011"
+#  sprintf("%#b", 123)  #=> "0b1111011"
+#  sprintf("%+b", -123) #=> "-1111011"
+#  sprintf("%b", -123)  #=> "..10000101"
+#  sprintf("%#b", -123) #=> "0b..10000101"
+#  sprintf("%#b", 0)    #=> "0"
+# 
+#  # `#' for `B' uses the prefix `0B'.
+#  sprintf("%B", 123)  #=> "1111011"
+#  sprintf("%#B", 123) #=> "0B1111011"
+# 
+#  # `#' for `e' forces to show the decimal point.
+#  sprintf("%.0e", 1)  #=> "1e+00"
+#  sprintf("%#.0e", 1) #=> "1.e+00"
+# 
+#  # `#' for `f' forces to show the decimal point.
+#  sprintf("%.0f", 1234)  #=> "1234"
+#  sprintf("%#.0f", 1234) #=> "1234."
+# 
+#  # `#' for `g' forces to show the decimal point.
+#  # It also disables stripping lowest zeros.
+#  sprintf("%g", 123.4)   #=> "123.4"
+#  sprintf("%#g", 123.4)  #=> "123.400"
+#  sprintf("%g", 123456)  #=> "123456"
+#  sprintf("%#g", 123456) #=> "123456."
+# 
+# The field width is an optional integer, followed optionally by a
+# period and a precision.  The width specifies the minimum number of
+# characters that will be written to the result for this field.
+# 
+# Examples of width:
+# 
+#  # padding is done by spaces,       width=20
+#  # 0 or radix-1.             <------------------>
+#  sprintf("%20d", 123)   #=> "                 123"
+#  sprintf("%+20d", 123)  #=> "                +123"
+#  sprintf("%020d", 123)  #=> "00000000000000000123"
+#  sprintf("%+020d", 123) #=> "+0000000000000000123"
+#  sprintf("% 020d", 123) #=> " 0000000000000000123"
+#  sprintf("%-20d", 123)  #=> "123                 "
+#  sprintf("%-+20d", 123) #=> "+123                "
+#  sprintf("%- 20d", 123) #=> " 123                "
+#  sprintf("%020x", -123) #=> "..ffffffffffffffff85"
+# 
+# For
+# numeric fields, the precision controls the number of decimal places
+# displayed.  For string fields, the precision determines the maximum
+# number of characters to be copied from the string.  (Thus, the format
+# sequence <code>%10.10s</code> will always contribute exactly ten
+# characters to the result.)
+# 
+# Examples of precisions:
+# 
+#  # precision for `d', 'o', 'x' and 'b' is
+#  # minimum number of digits               <------>
+#  sprintf("%20.8d", 123)  #=> "            00000123"
+#  sprintf("%20.8o", 123)  #=> "            00000173"
+#  sprintf("%20.8x", 123)  #=> "            0000007b"
+#  sprintf("%20.8b", 123)  #=> "            01111011"
+#  sprintf("%20.8d", -123) #=> "           -00000123"
+#  sprintf("%20.8o", -123) #=> "            ..777605"
+#  sprintf("%20.8x", -123) #=> "            ..ffff85"
+#  sprintf("%20.8b", -11)  #=> "            ..110101"
+# 
+#  # "0x" and "0b" for `#x' and `#b' is not counted for
+#  # precision but "0" for `#o' is counted.  <------>
+#  sprintf("%#20.8d", 123)  #=> "            00000123"
+#  sprintf("%#20.8o", 123)  #=> "            00000173"
+#  sprintf("%#20.8x", 123)  #=> "          0x0000007b"
+#  sprintf("%#20.8b", 123)  #=> "          0b01111011"
+#  sprintf("%#20.8d", -123) #=> "           -00000123"
+#  sprintf("%#20.8o", -123) #=> "            ..777605"
+#  sprintf("%#20.8x", -123) #=> "          0x..ffff85"
+#  sprintf("%#20.8b", -11)  #=> "          0b..110101"
+# 
+#  # precision for `e' is number of
+#  # digits after the decimal point           <------>
+#  sprintf("%20.8e", 1234.56789) #=> "      1.23456789e+03"
+# 
+#  # precision for `f' is number of
+#  # digits after the decimal point               <------>
+#  sprintf("%20.8f", 1234.56789) #=> "       1234.56789000"
+# 
+#  # precision for `g' is number of
+#  # significant digits                          <------->
+#  sprintf("%20.8g", 1234.56789) #=> "           1234.5679"
+# 
+#  #                                         <------->
+#  sprintf("%20.8g", 123456789)  #=> "       1.2345679e+08"
+# 
+#  # precision for `s' is
+#  # maximum number of characters                    <------>
+#  sprintf("%20.8s", "string test") #=> "            string t"
+# 
+# Examples:
+# 
+#    sprintf("%d %04x", 123, 123)               #=> "123 007b"
+#    sprintf("%08b '%4s'", 123, 123)            #=> "01111011 ' 123'"
+#    sprintf("%1$*2$s %2$d %1$s", "hello", 8)   #=> "   hello 8 hello"
+#    sprintf("%1$*2$s %2$d", "hello", -8)       #=> "hello    -8"
+#    sprintf("%+g:% g:%-g", 1.23, 1.23, 1.23)   #=> "+1.23: 1.23:1.23"
+#    sprintf("%u", -123)                        #=> "-123"
+# 
+# For more complex formatting, Ruby supports a reference by name.
+# %<name>s style uses format style, but %{name} style doesn't.
+# 
+# Exapmles:
+#   sprintf("%<foo>d : %<bar>f", { :foo => 1, :bar => 2 })
+#     #=> 1 : 2.000000
+#   sprintf("%{foo}f", { :foo => 1 })
+#     # => "1f"
+def format(format_string  , arguments=0); end
+
+##
+# Returns the string resulting from applying <i>format_string</i> to
+# any additional arguments.  Within the format string, any characters
+# other than format sequences are copied to the result.
+# 
+# The syntax of a format sequence is follows.
+# 
+#   %[flags][width][.precision]type
+# 
+# A format
+# sequence consists of a percent sign, followed by optional flags,
+# width, and precision indicators, then terminated with a field type
+# character.  The field type controls how the corresponding
+# <code>sprintf</code> argument is to be interpreted, while the flags
+# modify that interpretation.
+# 
+# The field type characters are:
+# 
+#     Field |  Integer Format
+#     ------+--------------------------------------------------------------
+#       b   | Convert argument as a binary number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..1'.
+#       B   | Equivalent to `b', but uses an uppercase 0B for prefix
+#           | in the alternative format by #.
+#       d   | Convert argument as a decimal number.
+#       i   | Identical to `d'.
+#       o   | Convert argument as an octal number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..7'.
+#       u   | Identical to `d'.
+#       x   | Convert argument as a hexadecimal number.
+#           | Negative numbers will be displayed as a two's complement
+#           | prefixed with `..f' (representing an infinite string of
+#           | leading 'ff's).
+#       X   | Equivalent to `x', but uses uppercase letters.
+# 
+#     Field |  Float Format
+#     ------+--------------------------------------------------------------
+#       e   | Convert floating point argument into exponential notation
+#           | with one digit before the decimal point as [-]d.dddddde[+-]dd.
+#           | The precision specifies the number of digits after the decimal
+#           | point (defaulting to six).
+#       E   | Equivalent to `e', but uses an uppercase E to indicate
+#           | the exponent.
+#       f   | Convert floating point argument as [-]ddd.dddddd,
+#           | where the precision specifies the number of digits after
+#           | the decimal point.
+#       g   | Convert a floating point number using exponential form
+#           | if the exponent is less than -4 or greater than or
+#           | equal to the precision, or in dd.dddd form otherwise.
+#           | The precision specifies the number of significant digits.
+#       G   | Equivalent to `g', but use an uppercase `E' in exponent form.
+#       a   | Convert floating point argument as [-]0xh.hhhhp[+-]dd,
+#           | which is consisted from optional sign, "0x", fraction part
+#           | as hexadecimal, "p", and exponential part as decimal.
+#       A   | Equivalent to `a', but use uppercase `X' and `P'.
+# 
+#     Field |  Other Format
+#     ------+--------------------------------------------------------------
+#       c   | Argument is the numeric code for a single character or
+#           | a single character string itself.
+#       p   | The valuing of argument.inspect.
+#       s   | Argument is a string to be substituted.  If the format
+#           | sequence contains a precision, at most that many characters
+#           | will be copied.
+#       %   | A percent sign itself will be displayed.  No argument taken.
+# 
+# The flags modifies the behavior of the formats.
+# The flag characters are:
+# 
+#   Flag     | Applies to    | Meaning
+#   ---------+---------------+-----------------------------------------
+#   space    | bBdiouxX      | Leave a space at the start of
+#            | aAeEfgG       | non-negative numbers.
+#            | (numeric fmt) | For `o', `x', `X', `b' and `B', use
+#            |               | a minus sign with absolute value for
+#            |               | negative values.
+#   ---------+---------------+-----------------------------------------
+#   (digit)$ | all           | Specifies the absolute argument number
+#            |               | for this field.  Absolute and relative
+#            |               | argument numbers cannot be mixed in a
+#            |               | sprintf string.
+#   ---------+---------------+-----------------------------------------
+#    #       | bBoxX         | Use an alternative format.
+#            | aAeEfgG       | For the conversions `o', increase the precision
+#            |               | until the first digit will be `0' if
+#            |               | it is not formatted as complements.
+#            |               | For the conversions `x', `X', `b' and `B'
+#            |               | on non-zero, prefix the result with ``0x'',
+#            |               | ``0X'', ``0b'' and ``0B'', respectively.
+#            |               | For `a', `A', `e', `E', `f', `g', and 'G',
+#            |               | force a decimal point to be added,
+#            |               | even if no digits follow.
+#            |               | For `g' and 'G', do not remove trailing zeros.
+#   ---------+---------------+-----------------------------------------
+#   +        | bBdiouxX      | Add a leading plus sign to non-negative
+#            | aAeEfgG       | numbers.
+#            | (numeric fmt) | For `o', `x', `X', `b' and `B', use
+#            |               | a minus sign with absolute value for
+#            |               | negative values.
+#   ---------+---------------+-----------------------------------------
+#   -        | all           | Left-justify the result of this conversion.
+#   ---------+---------------+-----------------------------------------
+#   0 (zero) | bBdiouxX      | Pad with zeros, not spaces.
+#            | aAeEfgG       | For `o', `x', `X', `b' and `B', radix-1
+#            | (numeric fmt) | is used for negative numbers formatted as
+#            |               | complements.
+#   ---------+---------------+-----------------------------------------
+#   *        | all           | Use the next argument as the field width.
+#            |               | If negative, left-justify the result. If the
+#            |               | asterisk is followed by a number and a dollar
+#            |               | sign, use the indicated argument as the width.
+# 
+# Examples of flags:
+# 
+#  # `+' and space flag specifies the sign of non-negative numbers.
+#  sprintf("%d", 123)  #=> "123"
+#  sprintf("%+d", 123) #=> "+123"
+#  sprintf("% d", 123) #=> " 123"
+# 
+#  # `#' flag for `o' increases number of digits to show `0'.
+#  # `+' and space flag changes format of negative numbers.
+#  sprintf("%o", 123)   #=> "173"
+#  sprintf("%#o", 123)  #=> "0173"
+#  sprintf("%+o", -123) #=> "-173"
+#  sprintf("%o", -123)  #=> "..7605"
+#  sprintf("%#o", -123) #=> "..7605"
+# 
+#  # `#' flag for `x' add a prefix `0x' for non-zero numbers.
+#  # `+' and space flag disables complements for negative numbers.
+#  sprintf("%x", 123)   #=> "7b"
+#  sprintf("%#x", 123)  #=> "0x7b"
+#  sprintf("%+x", -123) #=> "-7b"
+#  sprintf("%x", -123)  #=> "..f85"
+#  sprintf("%#x", -123) #=> "0x..f85"
+#  sprintf("%#x", 0)    #=> "0"
+# 
+#  # `#' for `X' uses the prefix `0X'.
+#  sprintf("%X", 123)  #=> "7B"
+#  sprintf("%#X", 123) #=> "0X7B"
+# 
+#  # `#' flag for `b' add a prefix `0b' for non-zero numbers.
+#  # `+' and space flag disables complements for negative numbers.
+#  sprintf("%b", 123)   #=> "1111011"
+#  sprintf("%#b", 123)  #=> "0b1111011"
+#  sprintf("%+b", -123) #=> "-1111011"
+#  sprintf("%b", -123)  #=> "..10000101"
+#  sprintf("%#b", -123) #=> "0b..10000101"
+#  sprintf("%#b", 0)    #=> "0"
+# 
+#  # `#' for `B' uses the prefix `0B'.
+#  sprintf("%B", 123)  #=> "1111011"
+#  sprintf("%#B", 123) #=> "0B1111011"
+# 
+#  # `#' for `e' forces to show the decimal point.
+#  sprintf("%.0e", 1)  #=> "1e+00"
+#  sprintf("%#.0e", 1) #=> "1.e+00"
+# 
+#  # `#' for `f' forces to show the decimal point.
+#  sprintf("%.0f", 1234)  #=> "1234"
+#  sprintf("%#.0f", 1234) #=> "1234."
+# 
+#  # `#' for `g' forces to show the decimal point.
+#  # It also disables stripping lowest zeros.
+#  sprintf("%g", 123.4)   #=> "123.4"
+#  sprintf("%#g", 123.4)  #=> "123.400"
+#  sprintf("%g", 123456)  #=> "123456"
+#  sprintf("%#g", 123456) #=> "123456."
+# 
+# The field width is an optional integer, followed optionally by a
+# period and a precision.  The width specifies the minimum number of
+# characters that will be written to the result for this field.
+# 
+# Examples of width:
+# 
+#  # padding is done by spaces,       width=20
+#  # 0 or radix-1.             <------------------>
+#  sprintf("%20d", 123)   #=> "                 123"
+#  sprintf("%+20d", 123)  #=> "                +123"
+#  sprintf("%020d", 123)  #=> "00000000000000000123"
+#  sprintf("%+020d", 123) #=> "+0000000000000000123"
+#  sprintf("% 020d", 123) #=> " 0000000000000000123"
+#  sprintf("%-20d", 123)  #=> "123                 "
+#  sprintf("%-+20d", 123) #=> "+123                "
+#  sprintf("%- 20d", 123) #=> " 123                "
+#  sprintf("%020x", -123) #=> "..ffffffffffffffff85"
+# 
+# For
+# numeric fields, the precision controls the number of decimal places
+# displayed.  For string fields, the precision determines the maximum
+# number of characters to be copied from the string.  (Thus, the format
+# sequence <code>%10.10s</code> will always contribute exactly ten
+# characters to the result.)
+# 
+# Examples of precisions:
+# 
+#  # precision for `d', 'o', 'x' and 'b' is
+#  # minimum number of digits               <------>
+#  sprintf("%20.8d", 123)  #=> "            00000123"
+#  sprintf("%20.8o", 123)  #=> "            00000173"
+#  sprintf("%20.8x", 123)  #=> "            0000007b"
+#  sprintf("%20.8b", 123)  #=> "            01111011"
+#  sprintf("%20.8d", -123) #=> "           -00000123"
+#  sprintf("%20.8o", -123) #=> "            ..777605"
+#  sprintf("%20.8x", -123) #=> "            ..ffff85"
+#  sprintf("%20.8b", -11)  #=> "            ..110101"
+# 
+#  # "0x" and "0b" for `#x' and `#b' is not counted for
+#  # precision but "0" for `#o' is counted.  <------>
+#  sprintf("%#20.8d", 123)  #=> "            00000123"
+#  sprintf("%#20.8o", 123)  #=> "            00000173"
+#  sprintf("%#20.8x", 123)  #=> "          0x0000007b"
+#  sprintf("%#20.8b", 123)  #=> "          0b01111011"
+#  sprintf("%#20.8d", -123) #=> "           -00000123"
+#  sprintf("%#20.8o", -123) #=> "            ..777605"
+#  sprintf("%#20.8x", -123) #=> "          0x..ffff85"
+#  sprintf("%#20.8b", -11)  #=> "          0b..110101"
+# 
+#  # precision for `e' is number of
+#  # digits after the decimal point           <------>
+#  sprintf("%20.8e", 1234.56789) #=> "      1.23456789e+03"
+# 
+#  # precision for `f' is number of
+#  # digits after the decimal point               <------>
+#  sprintf("%20.8f", 1234.56789) #=> "       1234.56789000"
+# 
+#  # precision for `g' is number of
+#  # significant digits                          <------->
+#  sprintf("%20.8g", 1234.56789) #=> "           1234.5679"
+# 
+#  #                                         <------->
+#  sprintf("%20.8g", 123456789)  #=> "       1.2345679e+08"
+# 
+#  # precision for `s' is
+#  # maximum number of characters                    <------>
+#  sprintf("%20.8s", "string test") #=> "            string t"
+# 
+# Examples:
+# 
+#    sprintf("%d %04x", 123, 123)               #=> "123 007b"
+#    sprintf("%08b '%4s'", 123, 123)            #=> "01111011 ' 123'"
+#    sprintf("%1$*2$s %2$d %1$s", "hello", 8)   #=> "   hello 8 hello"
+#    sprintf("%1$*2$s %2$d", "hello", -8)       #=> "hello    -8"
+#    sprintf("%+g:% g:%-g", 1.23, 1.23, 1.23)   #=> "+1.23: 1.23:1.23"
+#    sprintf("%u", -123)                        #=> "-123"
+# 
+# For more complex formatting, Ruby supports a reference by name.
+# %<name>s style uses format style, but %{name} style doesn't.
+# 
+# Exapmles:
+#   sprintf("%<foo>d : %<bar>f", { :foo => 1, :bar => 2 })
+#     #=> 1 : 2.000000
+#   sprintf("%{foo}f", { :foo => 1 })
+#     # => "1f"
+def format(format_string  , arguments=0); end
 
 ##
 # Converts <i>arg</i> to a <code>Fixnum</code> or <code>Bignum</code>.
@@ -1659,7 +3143,7 @@ def format(*args); end
 #    Integer(Time.new)   #=> 1204973019
 #    Integer("0930", 10) #=> 930
 #    Integer("111", 2)   #=> 7
-def Integer(p1, p2=0); end
+def Integer(arg,base=0); end
 
 ##
 # Returns <i>arg</i> converted to a float. Numeric types are converted
@@ -1668,7 +3152,7 @@ def Integer(p1, p2=0); end
 # 
 #    Float(1)           #=> 1.0
 #    Float("123.456")   #=> 123.456
-def Float(p1); end
+def Float(arg); end
 
 ##
 # Converts <i>arg</i> to a <code>String</code> by calling its
@@ -1677,14 +3161,14 @@ def Float(p1); end
 #    String(self)        #=> "main"
 #    String(self.class)  #=> "Object"
 #    String(123456)      #=> "123456"
-def String(p1); end
+def String(arg); end
 
 ##
 # Returns <i>arg</i> as an <code>Array</code>. First tries to call
 # <i>arg</i><code>.to_ary</code>, then <i>arg</i><code>.to_a</code>.
 # 
 #    Array(1..5)   #=> [1, 2, 3, 4, 5]
-def Array(p1); end
+def Array(arg); end
 
 ##
 # Establishes _proc_ as the handler for tracing, or disables
@@ -1723,12 +3207,51 @@ def Array(p1); end
 #       line prog.rb:3        test     Test
 #       line prog.rb:4        test     Test
 #     return prog.rb:4        test     Test
-def set_trace_func(p1); end
+def set_trace_func(proc); end
+
+##
+# Establishes _proc_ as the handler for tracing, or disables
+# tracing if the parameter is +nil+. _proc_ takes up
+# to six parameters: an event name, a filename, a line number, an
+# object id, a binding, and the name of a class. _proc_ is
+# invoked whenever an event occurs. Events are: <code>c-call</code>
+# (call a C-language routine), <code>c-return</code> (return from a
+# C-language routine), <code>call</code> (call a Ruby method),
+# <code>class</code> (start a class or module definition),
+# <code>end</code> (finish a class or module definition),
+# <code>line</code> (execute code on a new line), <code>raise</code>
+# (raise an exception), and <code>return</code> (return from a Ruby
+# method). Tracing is disabled within the context of _proc_.
+# 
+#     class Test
+#     def test
+#       a = 1
+#       b = 2
+#     end
+#     end
+# 
+#     set_trace_func proc { |event, file, line, id, binding, classname|
+#        printf "%8s %s:%-2d %10s %8s\n", event, file, line, id, classname
+#     }
+#     t = Test.new
+#     t.test
+# 
+#       line prog.rb:11               false
+#     c-call prog.rb:11        new    Class
+#     c-call prog.rb:11 initialize   Object
+#   c-return prog.rb:11 initialize   Object
+#   c-return prog.rb:11        new    Class
+#       line prog.rb:12               false
+#       call prog.rb:2        test     Test
+#       line prog.rb:3        test     Test
+#       line prog.rb:4        test     Test
+#     return prog.rb:4        test     Test
+def set_trace_func(nil); end
 
 ##
 # Display the given message (followed by a newline) on STDERR unless
 # warnings are disabled (for example with the <code>-W0</code> flag).
-def warn(p1); end
+def warn(msg); end
 
 ##
 # Generates a <code>Continuation</code> object, which it passes to
@@ -1741,11 +3264,11 @@ def warn(p1); end
 # class <code>Continuation</code> for more details. Also see
 # <code>Kernel::throw</code> for an alternative mechanism for
 # unwinding a call stack.
-def callcc(); end
+def callcc(&block); end
 
 ##
 # Returns x+i*y;
-def Complex(*args); end
+def Complex(x, y=0); end
 
 end
 
@@ -1875,7 +3398,7 @@ module Marshal
 # * an instance of MatchData, Data, Method, UnboundMethod, Proc, Thread,
 #   ThreadGroup, Continuation
 # * objects which defines singleton methods
-def self.dump(p1, p2=0, p3=0); end
+def self.dump( obj  , limit=-1 , anIO=0); end
 
 ##
 # Returns the result of converting the serialized data in source into a
@@ -1883,7 +3406,7 @@ def self.dump(p1, p2=0, p3=0); end
 # may be either an instance of IO or an object that responds to
 # to_str. If proc is specified, it will be passed each object as it
 # is deserialized.
-def self.load(p1, p2=0); end
+def self.load( source  , proc=0); end
 
 ##
 # Returns the result of converting the serialized data in source into a
@@ -1891,7 +3414,23 @@ def self.load(p1, p2=0); end
 # may be either an instance of IO or an object that responds to
 # to_str. If proc is specified, it will be passed each object as it
 # is deserialized.
-def self.restore(p1, p2=0); end
+def self.load( source  , proc=0); end
+
+##
+# Returns the result of converting the serialized data in source into a
+# Ruby object (possibly with associated subordinate objects). source
+# may be either an instance of IO or an object that responds to
+# to_str. If proc is specified, it will be passed each object as it
+# is deserialized.
+def self.restore( source  , proc=0); end
+
+##
+# Returns the result of converting the serialized data in source into a
+# Ruby object (possibly with associated subordinate objects). source
+# may be either an instance of IO or an object that responds to
+# to_str. If proc is specified, it will be passed each object as it
+# is deserialized.
+def self.restore( source  , proc=0); end
 
 end
 
@@ -1907,26 +3446,35 @@ module FileTest
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?(p1); end
+def directory?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
 # <code>false</code> otherwise.
-def exist?(p1); end
+def exist?(file_name); end
+
+##
+# Returns <code>true</code> if the named file is a directory,
+# <code>false</code> otherwise.
+def exists?(file_name); end
 
 ##
 # Return <code>true</code> if the named file exists.
-def exists?(p1); end
+def exist?(file_name); end
+
+##
+# Return <code>true</code> if the named file exists.
+def exists?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the effective
 # user id of this process.
-def readable?(p1); end
+def readable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the real
 # user id of this process.
-def readable_real?(p1); end
+def readable_real?(file_name); end
 
 ##
 # If <i>file_name</i> is readable by others, returns an integer
@@ -1937,17 +3485,17 @@ def readable_real?(p1); end
 #    File.world_readable?("/etc/passwd")           #=> 420
 #    m = File.world_readable?("/etc/passwd")
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?(p1); end
+def world_readable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the effective
 # user id of this process.
-def writable?(p1); end
+def writable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the real
 # user id of this process.
-def writable_real?(p1); end
+def writable_real?(file_name); end
 
 ##
 # If <i>file_name</i> is writable by others, returns an integer
@@ -1958,80 +3506,80 @@ def writable_real?(p1); end
 #    File.world_writable?("/tmp")                  #=> 511
 #    m = File.world_writable?("/tmp")
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?(p1); end
+def world_writable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the effective
 # user id of this process.
-def executable?(p1); end
+def executable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the real
 # user id of this process.
-def executable_real?(p1); end
+def executable_real?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and is a
 # regular file.
-def file?(p1); end
+def file?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and has
 # a zero size.
-def zero?(p1); end
+def zero?(file_name); end
 
 ##
 # Returns +nil+ if +file_name+ doesn't exist or has zero size, the size of the
 # file otherwise.
-def size?(p1); end
+def size?(file_name); end
 
 ##
 # Returns the size of <code>file_name</code>.
-def size(p1); end
+def size(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective used id of the calling process is the owner of
 # the file.
-def owned?(p1); end
+def owned?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective group id of the calling process is the owner of
 # the file. Returns <code>false</code> on Windows.
-def grpowned?(p1); end
+def grpowned?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a pipe.
-def pipe?(p1); end
+def pipe?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a symbolic link.
-def symlink?(p1); end
+def symlink?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a socket.
-def socket?(p1); end
+def socket?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a block device.
-def blockdev?(p1); end
+def blockdev?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a character device.
-def chardev?(p1); end
+def chardev?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the setuid bit set.
-def setuid?(p1); end
+def setuid?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the setgid bit set.
-def setgid?(p1); end
+def setgid?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the sticky bit set.
-def sticky?(p1); end
+def sticky?(file_name); end
 
 ##
 # Returns <code>true</code> if the named files are identical.
@@ -2045,7 +3593,7 @@ def sticky?(p1); end
 #     p File.identical?("a", "c")      #=> true
 #     open("d", "w") {}
 #     p File.identical?("a", "d")      #=> false
-def identical?(p1, p2); end
+def identical?(file_1, file_2); end
 
 end
 
@@ -2062,7 +3610,15 @@ end
 module GC
 ##
 # Initiates garbage collection, unless manually disabled.
-def self.start(); end
+def self.start; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def self.garbage_collect; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def self.garbage_collect; end
 
 ##
 # Enables garbage collection, returning <code>true</code> if garbage
@@ -2071,7 +3627,7 @@ def self.start(); end
 #    GC.disable   #=> false
 #    GC.enable    #=> true
 #    GC.enable    #=> false
-def self.enable(); end
+def self.enable; end
 
 ##
 # Disables garbage collection, returning <code>true</code> if garbage
@@ -2079,11 +3635,11 @@ def self.enable(); end
 # 
 #    GC.disable   #=> false
 #    GC.disable   #=> true
-def self.disable(); end
+def self.disable; end
 
 ##
 # returns current status of GC stress mode.
-def self.stress(); end
+def self.stress; end
 
 ##
 # Updates the GC stress mode.
@@ -2092,13 +3648,13 @@ def self.stress(); end
 # all memory and object allocations.
 # 
 # Enabling stress mode makes Ruby very slow, it is only for debugging.
-def self.stress=(p1); end
+def self.stress = bool; end
 
 ##
 # The number of times GC occurred.
 # 
 # It returns the number of times GC occurred since the process started.
-def self.count(); end
+def self.count; end
 
 ##
 # Returns a Hash containing information about the GC.
@@ -2119,23 +3675,31 @@ def self.count(); end
 # the future.
 # 
 # This method is only expected to work on C Ruby.
-def self.stat(p1=0); end
+def self.stat; end
 
 ##
 # Initiates garbage collection, unless manually disabled.
-def garbage_collect(); end
+def start; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def garbage_collect; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def garbage_collect; end
 
 ##
 # The allocated size by malloc().
 # 
 # It returns the allocated size by malloc().
-def self.malloc_allocated_size(); end
+def self.malloc_allocated_size; end
 
 ##
 # The number of allocated memory object by malloc().
 # 
 # It returns the number of allocated memory object by malloc().
-def self.malloc_allocations(); end
+def self.malloc_allocations; end
 
 end
 
@@ -2193,20 +3757,59 @@ module ObjectSpace
 #    1.7976931348623157e+308
 #    2.2250738585072e-308
 #    Total count: 7
-def self.each_object(p1=0); end
+def self.each_object(module=0, &block); end
+
+##
+# Calls the block once for each living, nonimmediate object in this
+# Ruby process. If <i>module</i> is specified, calls the block
+# for only those classes or modules that match (or are a subclass of)
+# <i>module</i>. Returns the number of objects found. Immediate
+# objects (<code>Fixnum</code>s, <code>Symbol</code>s
+# <code>true</code>, <code>false</code>, and <code>nil</code>) are
+# never returned. In the example below, <code>each_object</code>
+# returns both the numbers we defined and several constants defined in
+# the <code>Math</code> module.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = 102.7
+#    b = 95       # Won't be returned
+#    c = 12345678987654321
+#    count = ObjectSpace.each_object(Numeric) {|x| p x }
+#    puts "Total count: #{count}"
+# 
+# <em>produces:</em>
+# 
+#    12345678987654321
+#    102.7
+#    2.71828182845905
+#    3.14159265358979
+#    2.22044604925031e-16
+#    1.7976931348623157e+308
+#    2.2250738585072e-308
+#    Total count: 7
+def self.each_object(module=0); end
 
 ##
 # Initiates garbage collection, unless manually disabled.
-def self.garbage_collect(); end
+def self.start; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def self.garbage_collect; end
+
+##
+# Initiates garbage collection, unless manually disabled.
+def self.garbage_collect; end
 
 ##
 # Adds <i>aProc</i> as a finalizer, to be called after <i>obj</i>
 # was destroyed.
-def self.define_finalizer(p1, p2=0); end
+def self.define_finalizer(obj, aProc=pro); end
 
 ##
 # Removes all finalizers for <i>obj</i>.
-def self.undefine_finalizer(p1); end
+def self.undefine_finalizer(obj); end
 
 ##
 # Converts an object id to a reference to the object. May not be
@@ -2215,7 +3818,7 @@ def self.undefine_finalizer(p1); end
 #    s = "I am a string"                    #=> "I am a string"
 #    r = ObjectSpace._id2ref(s.object_id)   #=> "I am a string"
 #    r == s                                 #=> true
-def self._id2ref(p1); end
+def self._id2ref(object_id); end
 
 ##
 # Counts objects for each type.
@@ -2231,7 +3834,7 @@ def self._id2ref(p1); end
 # It may be changed in future.
 # 
 # This method is not expected to work except C Ruby.
-def self.count_objects(p1=0); end
+def self.count_objects(result_hash=0); end
 
 end
 
@@ -2253,19 +3856,19 @@ end
 module Profiler
 ##
 # The current status of GC profile mode.
-def self.enabled?(); end
+def self.enable?; end
 
 ##
 # Starts the GC profiler.
-def self.enable(); end
+def self.enable; end
 
 ##
 # Stops the GC profiler.
-def self.disable(); end
+def self.disable; end
 
 ##
 # Clears the GC profiler data.
-def self.clear(); end
+def self.clear; end
 
 ##
 # Returns a profile data report such as:
@@ -2273,15 +3876,19 @@ def self.clear(); end
 #   GC 1 invokes.
 #   Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
 #       1               0.012               159240               212940                10647         0.00000000000001530000
-def self.result(); end
+def self.result; end
 
 ##
 # Writes the GC::Profiler#result to <tt>$stdout</tt> or the given IO object.
-def self.report(p1=0); end
+def self.report; end
+
+##
+# Writes the GC::Profiler#result to <tt>$stdout</tt> or the given IO object.
+def self.report io; end
 
 ##
 # The total time used for garbage collection in milliseconds
-def self.total_time(); end
+def self.total_time; end
 
 end
 
@@ -2300,14 +3907,28 @@ module Enumerable
 # 
 #    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
 #    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
-def to_a(*args); end
+def to_a; end
 
 ##
 # Returns an array containing the items in <i>enum</i>.
 # 
 #    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
 #    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
-def entries(*args); end
+def entries; end
+
+##
+# Returns an array containing the items in <i>enum</i>.
+# 
+#    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
+#    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
+def to_a; end
+
+##
+# Returns an array containing the items in <i>enum</i>.
+# 
+#    (1..7).to_a                       #=> [1, 2, 3, 4, 5, 6, 7]
+#    { 'a'=>1, 'b'=>2, 'c'=>3 }.to_a   #=> [["a", 1], ["b", 2], ["c", 3]]
+def entries; end
 
 ##
 # Returns an array containing the items in <i>enum</i> sorted,
@@ -2320,7 +3941,20 @@ def entries(*args); end
 # 
 #    %w(rhea kea flea).sort         #=> ["flea", "kea", "rhea"]
 #    (1..10).sort {|a,b| b <=> a}   #=> [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-def sort(); end
+def sort; end
+
+##
+# Returns an array containing the items in <i>enum</i> sorted,
+# either according to their own <code><=></code> method, or by using
+# the results of the supplied block. The block should return -1, 0, or
+# +1 depending on the comparison between <i>a</i> and <i>b</i>. As of
+# Ruby 1.8, the method <code>Enumerable#sort_by</code> implements a
+# built-in Schwartzian Transform, useful when key computation or
+# comparison is expensive.
+# 
+#    %w(rhea kea flea).sort         #=> ["flea", "kea", "rhea"]
+#    (1..10).sort {|a,b| b <=> a}   #=> [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+def sort(&block); end
 
 ##
 # Sorts <i>enum</i> using a set of keys generated by mapping the
@@ -2387,7 +4021,74 @@ def sort(); end
 # 
 #    sorted = Dir["*"].sort_by {|f| test(?M, f)}
 #    sorted   #=> ["mon", "tues", "wed", "thurs"]
-def sort_by(); end
+def sort_by(&block); end
+
+##
+# Sorts <i>enum</i> using a set of keys generated by mapping the
+# values in <i>enum</i> through the given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    %w{ apple pear fig }.sort_by {|word| word.length}
+#                  #=> ["fig", "pear", "apple"]
+# 
+# The current implementation of <code>sort_by</code> generates an
+# array of tuples containing the original collection element and the
+# mapped value. This makes <code>sort_by</code> fairly expensive when
+# the keysets are simple
+# 
+#    require 'benchmark'
+# 
+#    a = (1..100000).map {rand(100000)}
+# 
+#    Benchmark.bm(10) do |b|
+#      b.report("Sort")    { a.sort }
+#      b.report("Sort by") { a.sort_by {|a| a} }
+#    end
+# 
+# <em>produces:</em>
+# 
+#    user     system      total        real
+#    Sort        0.180000   0.000000   0.180000 (  0.175469)
+#    Sort by     1.980000   0.040000   2.020000 (  2.013586)
+# 
+# However, consider the case where comparing the keys is a non-trivial
+# operation. The following code sorts some files on modification time
+# using the basic <code>sort</code> method.
+# 
+#    files = Dir["*"]
+#    sorted = files.sort {|a,b| File.new(a).mtime <=> File.new(b).mtime}
+#    sorted   #=> ["mon", "tues", "wed", "thurs"]
+# 
+# This sort is inefficient: it generates two new <code>File</code>
+# objects during every comparison. A slightly better technique is to
+# use the <code>Kernel#test</code> method to generate the modification
+# times directly.
+# 
+#    files = Dir["*"]
+#    sorted = files.sort { |a,b|
+#      test(?M, a) <=> test(?M, b)
+#    }
+#    sorted   #=> ["mon", "tues", "wed", "thurs"]
+# 
+# This still generates many unnecessary <code>Time</code> objects. A
+# more efficient technique is to cache the sort keys (modification
+# times in this case) before the sort. Perl users often call this
+# approach a Schwartzian Transform, after Randal Schwartz. We
+# construct a temporary array, where each element is an array
+# containing our sort key along with the filename. We sort this array,
+# and then extract the filename from the result.
+# 
+#    sorted = Dir["*"].collect { |f|
+#       [test(?M, f), f]
+#    }.sort.collect { |f| f[1] }
+#    sorted   #=> ["mon", "tues", "wed", "thurs"]
+# 
+# This is exactly what <code>sort_by</code> does internally.
+# 
+#    sorted = Dir["*"].sort_by {|f| test(?M, f)}
+#    sorted   #=> ["mon", "tues", "wed", "thurs"]
+def sort_by; end
 
 ##
 # Returns an array of every element in <i>enum</i> for which
@@ -2400,7 +4101,20 @@ def sort_by(); end
 #    c.grep(/SEEK/)         #=> [:SEEK_SET, :SEEK_CUR, :SEEK_END]
 #    res = c.grep(/SEEK/) {|v| IO.const_get(v) }
 #    res                    #=> [0, 1, 2]
-def grep(p1); end
+def grep(pattern); end
+
+##
+# Returns an array of every element in <i>enum</i> for which
+# <code>Pattern === element</code>. If the optional <em>block</em> is
+# supplied, each matching element is passed to it, and the block's
+# result is stored in the output array.
+# 
+#    (1..100).grep 38..44   #=> [38, 39, 40, 41, 42, 43, 44]
+#    c = IO.constants
+#    c.grep(/SEEK/)         #=> [:SEEK_SET, :SEEK_CUR, :SEEK_END]
+#    res = c.grep(/SEEK/) {|v| IO.const_get(v) }
+#    res                    #=> [0, 1, 2]
+def grep(pattern, &block); end
 
 ##
 # Returns the number of items in <i>enum</i>, where #size is called
@@ -2413,7 +4127,33 @@ def grep(p1); end
 #    ary.count             #=> 4
 #    ary.count(2)          #=> 2
 #    ary.count{|x|x%2==0}  #=> 3
-def count(p1); end
+def count; end
+
+##
+# Returns the number of items in <i>enum</i>, where #size is called
+# if it responds to it, otherwise the items are counted through
+# enumeration.  If an argument is given, counts the number of items
+# in <i>enum</i>, for which equals to <i>item</i>.  If a block is
+# given, counts the number of elements yielding a true value.
+# 
+#    ary = [1, 2, 4, 2]
+#    ary.count             #=> 4
+#    ary.count(2)          #=> 2
+#    ary.count{|x|x%2==0}  #=> 3
+def count(item); end
+
+##
+# Returns the number of items in <i>enum</i>, where #size is called
+# if it responds to it, otherwise the items are counted through
+# enumeration.  If an argument is given, counts the number of items
+# in <i>enum</i>, for which equals to <i>item</i>.  If a block is
+# given, counts the number of elements yielding a true value.
+# 
+#    ary = [1, 2, 4, 2]
+#    ary.count             #=> 4
+#    ary.count(2)          #=> 2
+#    ary.count{|x|x%2==0}  #=> 3
+def count(&block); end
 
 ##
 # Passes each entry in <i>enum</i> to <em>block</em>. Returns the
@@ -2425,7 +4165,7 @@ def count(p1); end
 # 
 #    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
-def find(p1=0); end
+def detect(ifnone = nil, &block); end
 
 ##
 # Passes each entry in <i>enum</i> to <em>block</em>. Returns the
@@ -2437,7 +4177,79 @@ def find(p1=0); end
 # 
 #    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
-def detect(p1=0); end
+def find(ifnone = nil, &block); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def detect(ifnone = nil); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def find(ifnone = nil); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def detect(ifnone = nil, &block); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def find(ifnone = nil, &block); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def detect(ifnone = nil); end
+
+##
+# Passes each entry in <i>enum</i> to <em>block</em>. Returns the
+# first for which <em>block</em> is not false.  If no
+# object matches, calls <i>ifnone</i> and returns its result when it
+# is specified, or returns <code>nil</code> otherwise.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).detect  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).detect {|i| i % 5 == 0 and i % 7 == 0 }   #=> 35
+def find(ifnone = nil); end
 
 ##
 # Compares each entry in <i>enum</i> with <em>value</em> or passes
@@ -2450,7 +4262,33 @@ def detect(p1=0); end
 #    (1..10).find_index  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
 #    (1..100).find_index {|i| i % 5 == 0 and i % 7 == 0 }   #=> 34
 #    (1..100).find_index(50)                                #=> 49
-def find_index(p1); end
+def find_index(value); end
+
+##
+# Compares each entry in <i>enum</i> with <em>value</em> or passes
+# to <em>block</em>.  Returns the index for the first for which the
+# evaluated value is non-false.  If no object matches, returns
+# <code>nil</code>
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    (1..10).find_index  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).find_index {|i| i % 5 == 0 and i % 7 == 0 }   #=> 34
+#    (1..100).find_index(50)                                #=> 49
+def find_index(&block); end
+
+##
+# Compares each entry in <i>enum</i> with <em>value</em> or passes
+# to <em>block</em>.  Returns the index for the first for which the
+# evaluated value is non-false.  If no object matches, returns
+# <code>nil</code>
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    (1..10).find_index  {|i| i % 5 == 0 and i % 7 == 0 }   #=> nil
+#    (1..100).find_index {|i| i % 5 == 0 and i % 7 == 0 }   #=> 34
+#    (1..100).find_index(50)                                #=> 49
+def find_index; end
 
 ##
 # Returns an array containing all elements of <i>enum</i> for which
@@ -2460,7 +4298,7 @@ def find_index(p1); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
-def find_all(); end
+def find_all(&block); end
 
 ##
 # Returns an array containing all elements of <i>enum</i> for which
@@ -2470,7 +4308,67 @@ def find_all(); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
-def select(); end
+def select(&block); end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def find_all; end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def select; end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def find_all(&block); end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def select(&block); end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def find_all; end
+
+##
+# Returns an array containing all elements of <i>enum</i> for which
+# <em>block</em> is not <code>false</code> (see also
+# <code>Enumerable#reject</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).find_all {|i|  i % 3 == 0 }   #=> [3, 6, 9]
+def select; end
 
 ##
 # Returns an array for all elements of <i>enum</i> for which
@@ -2479,7 +4377,16 @@ def select(); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..10).reject {|i|  i % 3 == 0 }   #=> [1, 2, 4, 5, 7, 8, 10]
-def reject(); end
+def reject(&block); end
+
+##
+# Returns an array for all elements of <i>enum</i> for which
+# <em>block</em> is false (see also <code>Enumerable#find_all</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..10).reject {|i|  i % 3 == 0 }   #=> [1, 2, 4, 5, 7, 8, 10]
+def reject; end
 
 ##
 # Returns a new array with the results of running <em>block</em> once
@@ -2489,7 +4396,7 @@ def reject(); end
 # 
 #    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
 #    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
-def collect(); end
+def collect(&block); end
 
 ##
 # Returns a new array with the results of running <em>block</em> once
@@ -2499,7 +4406,67 @@ def collect(); end
 # 
 #    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
 #    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
-def map(); end
+def map(&block); end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def collect; end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def map; end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def collect(&block); end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def map(&block); end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def collect; end
+
+##
+# Returns a new array with the results of running <em>block</em> once
+# for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..4).collect {|i| i*i }   #=> [1, 4, 9, 16]
+#    (1..4).collect { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+def map; end
 
 ##
 # Returns a new array with the concatenated results of running
@@ -2508,7 +4475,7 @@ def map(); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
-def flat_map(); end
+def flat_map(&block); end
 
 ##
 # Returns a new array with the concatenated results of running
@@ -2517,7 +4484,61 @@ def flat_map(); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
-def collect_concat(); end
+def collect_concat(&block); end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def flat_map; end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def collect_concat; end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def flat_map(&block); end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def collect_concat(&block); end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def flat_map; end
+
+##
+# Returns a new array with the concatenated results of running
+# <em>block</em> once for every element in <i>enum</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    [[1,2],[3,4]].flat_map {|i| i }   #=> [1, 2, 3, 4]
+def collect_concat; end
 
 ##
 # Combines all elements of <i>enum</i> by applying a binary
@@ -2551,7 +4572,7 @@ def collect_concat(); end
 #       memo.length > word.length ? memo : word
 #    end
 #    longest                                       #=> "sheep"
-def inject(p1=0, p2=0); end
+def inject(initial, sym); end
 
 ##
 # Combines all elements of <i>enum</i> by applying a binary
@@ -2585,7 +4606,483 @@ def inject(p1=0, p2=0); end
 #       memo.length > word.length ? memo : word
 #    end
 #    longest                                       #=> "sheep"
-def reduce(p1=0, p2=0); end
+def inject(sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(initial, &block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(&block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(initial, sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(initial, &block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(&block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(initial, sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(initial, &block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def inject(&block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(initial, sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(sym); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(initial, &block); end
+
+##
+# Combines all elements of <i>enum</i> by applying a binary
+# operation, specified by a block or a symbol that names a
+# method or operator.
+# 
+# If you specify a block, then for each element in <i>enum</i>
+# the block is passed an accumulator value (<i>memo</i>) and the element.
+# If you specify a symbol instead, then each element in the collection
+# will be passed to the named method of <i>memo</i>.
+# In either case, the result becomes the new value for <i>memo</i>.
+# At the end of the iteration, the final value of <i>memo</i> is the
+# return value for the method.
+# 
+# If you do not explicitly specify an <i>initial</i> value for <i>memo</i>,
+# then uses the first element of collection is used as the initial value
+# of <i>memo</i>.
+# 
+# Examples:
+# 
+#    # Sum some numbers
+#    (5..10).reduce(:+)                            #=> 45
+#    # Same using a block and inject
+#    (5..10).inject {|sum, n| sum + n }            #=> 45
+#    # Multiply some numbers
+#    (5..10).reduce(1, :*)                         #=> 151200
+#    # Same using a block
+#    (5..10).inject(1) {|product, n| product * n } #=> 151200
+#    # find the longest word
+#    longest = %w{ cat sheep bear }.inject do |memo,word|
+#       memo.length > word.length ? memo : word
+#    end
+#    longest                                       #=> "sheep"
+def reduce(&block); end
 
 ##
 # Returns two arrays, the first containing the elements of
@@ -2595,7 +5092,17 @@ def reduce(p1=0, p2=0); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..6).partition {|v| v.even? }  #=> [[2, 4, 6], [1, 3, 5]]
-def partition(); end
+def partition(&block); end
+
+##
+# Returns two arrays, the first containing the elements of
+# <i>enum</i> for which the block evaluates to true, the second
+# containing the rest.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..6).partition {|v| v.even? }  #=> [[2, 4, 6], [1, 3, 5]]
+def partition; end
 
 ##
 # Returns a hash, which keys are evaluated result from the
@@ -2605,7 +5112,17 @@ def partition(); end
 # If no block is given, an enumerator is returned instead.
 # 
 #    (1..6).group_by {|i| i%3}   #=> {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
-def group_by(); end
+def group_by(&block); end
+
+##
+# Returns a hash, which keys are evaluated result from the
+# block, and values are arrays of elements in <i>enum</i>
+# corresponding to the key.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (1..6).group_by {|i| i%3}   #=> {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
+def group_by; end
 
 ##
 # Returns the first element, or the first +n+ elements, of the enumerable.
@@ -2616,7 +5133,18 @@ def group_by(); end
 #   %w[foo bar baz].first(2)  #=> ["foo", "bar"]
 #   %w[foo bar baz].first(10) #=> ["foo", "bar", "baz"]
 #   [].first                  #=> nil
-def first(p1=0); end
+def first; end
+
+##
+# Returns the first element, or the first +n+ elements, of the enumerable.
+# If the enumerable is empty, the first form returns <code>nil</code>, and the
+# second form returns an empty array.
+# 
+#   %w[foo bar baz].first     #=> "foo"
+#   %w[foo bar baz].first(2)  #=> ["foo", "bar"]
+#   %w[foo bar baz].first(10) #=> ["foo", "bar", "baz"]
+#   [].first                  #=> nil
+def first(n); end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2629,7 +5157,7 @@ def first(p1=0); end
 #    %w{ant bear cat}.all? {|word| word.length >= 3}   #=> true
 #    %w{ant bear cat}.all? {|word| word.length >= 4}   #=> false
 #    [ nil, true, 99 ].all?                            #=> false
-def all?(); end
+def all?; end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2643,7 +5171,7 @@ def all?(); end
 #    %w{ant bear cat}.any? {|word| word.length >= 3}   #=> true
 #    %w{ant bear cat}.any? {|word| word.length >= 4}   #=> true
 #    [ nil, true, 99 ].any?                            #=> true
-def any?(); end
+def any?; end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2657,7 +5185,7 @@ def any?(); end
 #    %w{ant bear cat}.one? {|word| word.length < 4}    #=> false
 #    [ nil, true, 99 ].one?                            #=> false
 #    [ nil, true, false ].one?                         #=> true
-def one?(); end
+def one?; end
 
 ##
 # Passes each element of the collection to the given block. The method
@@ -2670,7 +5198,7 @@ def one?(); end
 #    [].none?                                          #=> true
 #    [nil].none?                                       #=> true
 #    [nil,false].none?                                 #=> true
-def none?(); end
+def none?; end
 
 ##
 # Returns the object in <i>enum</i> with the minimum value. The
@@ -2680,7 +5208,17 @@ def none?(); end
 #    a = %w(albatross dog horse)
 #    a.min                                  #=> "albatross"
 #    a.min {|a,b| a.length <=> b.length }   #=> "dog"
-def min(); end
+def min; end
+
+##
+# Returns the object in <i>enum</i> with the minimum value. The
+# first form assumes all objects implement <code>Comparable</code>;
+# the second uses the block to return <em>a <=> b</em>.
+# 
+#    a = %w(albatross dog horse)
+#    a.min                                  #=> "albatross"
+#    a.min {|a,b| a.length <=> b.length }   #=> "dog"
+def min(&block); end
 
 ##
 # Returns the object in _enum_ with the maximum value. The
@@ -2690,7 +5228,17 @@ def min(); end
 #    a = %w(albatross dog horse)
 #    a.max                                  #=> "horse"
 #    a.max {|a,b| a.length <=> b.length }   #=> "albatross"
-def max(); end
+def max; end
+
+##
+# Returns the object in _enum_ with the maximum value. The
+# first form assumes all objects implement <code>Comparable</code>;
+# the second uses the block to return <em>a <=> b</em>.
+# 
+#    a = %w(albatross dog horse)
+#    a.max                                  #=> "horse"
+#    a.max {|a,b| a.length <=> b.length }   #=> "albatross"
+def max(&block); end
 
 ##
 # Returns two elements array which contains the minimum and the
@@ -2701,7 +5249,18 @@ def max(); end
 #    a = %w(albatross dog horse)
 #    a.minmax                                  #=> ["albatross", "horse"]
 #    a.minmax {|a,b| a.length <=> b.length }   #=> ["dog", "albatross"]
-def minmax(); end
+def minmax; end
+
+##
+# Returns two elements array which contains the minimum and the
+# maximum value in the enumerable.  The first form assumes all
+# objects implement <code>Comparable</code>; the second uses the
+# block to return <em>a <=> b</em>.
+# 
+#    a = %w(albatross dog horse)
+#    a.minmax                                  #=> ["albatross", "horse"]
+#    a.minmax {|a,b| a.length <=> b.length }   #=> ["dog", "albatross"]
+def minmax(&block); end
 
 ##
 # Returns the object in <i>enum</i> that gives the minimum
@@ -2711,7 +5270,17 @@ def minmax(); end
 # 
 #    a = %w(albatross dog horse)
 #    a.min_by {|x| x.length }   #=> "dog"
-def min_by(); end
+def min_by(&block); end
+
+##
+# Returns the object in <i>enum</i> that gives the minimum
+# value from the given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = %w(albatross dog horse)
+#    a.min_by {|x| x.length }   #=> "dog"
+def min_by; end
 
 ##
 # Returns the object in <i>enum</i> that gives the maximum
@@ -2721,7 +5290,17 @@ def min_by(); end
 # 
 #    a = %w(albatross dog horse)
 #    a.max_by {|x| x.length }   #=> "albatross"
-def max_by(); end
+def max_by(&block); end
+
+##
+# Returns the object in <i>enum</i> that gives the maximum
+# value from the given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = %w(albatross dog horse)
+#    a.max_by {|x| x.length }   #=> "albatross"
+def max_by; end
 
 ##
 # Returns two elements array array containing the objects in
@@ -2732,7 +5311,18 @@ def max_by(); end
 # 
 #    a = %w(albatross dog horse)
 #    a.minmax_by {|x| x.length }   #=> ["dog", "albatross"]
-def minmax_by(); end
+def minmax_by(&block); end
+
+##
+# Returns two elements array array containing the objects in
+# <i>enum</i> that gives the minimum and maximum values respectively
+# from the given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = %w(albatross dog horse)
+#    a.minmax_by {|x| x.length }   #=> ["dog", "albatross"]
+def minmax_by; end
 
 ##
 # Returns <code>true</code> if any member of <i>enum</i> equals
@@ -2740,7 +5330,7 @@ def minmax_by(); end
 # 
 #    IO.constants.include? :SEEK_SET          #=> true
 #    IO.constants.include? :SEEK_NO_FURTHER   #=> false
-def member?(p1); end
+def include?(obj); end
 
 ##
 # Returns <code>true</code> if any member of <i>enum</i> equals
@@ -2748,7 +5338,37 @@ def member?(p1); end
 # 
 #    IO.constants.include? :SEEK_SET          #=> true
 #    IO.constants.include? :SEEK_NO_FURTHER   #=> false
-def include?(p1); end
+def member?(obj); end
+
+##
+# Returns <code>true</code> if any member of <i>enum</i> equals
+# <i>obj</i>. Equality is tested using <code>==</code>.
+# 
+#    IO.constants.include? :SEEK_SET          #=> true
+#    IO.constants.include? :SEEK_NO_FURTHER   #=> false
+def include?(obj); end
+
+##
+# Returns <code>true</code> if any member of <i>enum</i> equals
+# <i>obj</i>. Equality is tested using <code>==</code>.
+# 
+#    IO.constants.include? :SEEK_SET          #=> true
+#    IO.constants.include? :SEEK_NO_FURTHER   #=> false
+def member?(obj); end
+
+##
+# Calls <em>block</em> with two arguments, the item and its index,
+# for each item in <i>enum</i>.  Given arguments are passed through
+# to #each().
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    hash = Hash.new
+#    %w(cat dog wombat).each_with_index {|item, index|
+#      hash[item] = index
+#    }
+#    hash   #=> {"cat"=>0, "dog"=>1, "wombat"=>2}
+def each_with_index(*args, &block); end
 
 ##
 # Calls <em>block</em> with two arguments, the item and its index,
@@ -2763,6 +5383,20 @@ def include?(p1); end
 #    }
 #    hash   #=> {"cat"=>0, "dog"=>1, "wombat"=>2}
 def each_with_index(*args); end
+
+##
+# Builds a temporary array and traverses that array in reverse order.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#     (1..3).reverse_each {|v| p v }
+# 
+#   produces:
+# 
+#     3
+#     2
+#     1
+def reverse_each(*args, &block); end
 
 ##
 # Builds a temporary array and traverses that array in reverse order.
@@ -2800,7 +5434,31 @@ def reverse_each(*args); end
 #    1
 #    [1, 2]
 #    nil
-def each_entry(*args); end
+def each_entry(&block); end
+
+##
+# Calls <i>block</i> once for each element in +self+, passing that
+# element as a parameter, converting multiple values from yield to an
+# array.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    class Foo
+#      include Enumerable
+#      def each
+#        yield 1
+#        yield 1,2
+#        yield
+#      end
+#    end
+#    Foo.new.each_entry{|o| p o }
+# 
+# produces:
+# 
+#    1
+#    [1, 2]
+#    nil
+def each_entry; end
 
 ##
 # Iterates the given block for each slice of <n> elements.  If no
@@ -2813,7 +5471,20 @@ def each_entry(*args); end
 #     [4, 5, 6]
 #     [7, 8, 9]
 #     [10]
-def each_slice(p1); end
+def each_slice(n, &block); end
+
+##
+# Iterates the given block for each slice of <n> elements.  If no
+# block is given, returns an enumerator.
+# 
+# e.g.:
+#     (1..10).each_slice(3) {|a| p a}
+#     # outputs below
+#     [1, 2, 3]
+#     [4, 5, 6]
+#     [7, 8, 9]
+#     [10]
+def each_slice(n); end
 
 ##
 # Iterates the given block for each array of consecutive <n>
@@ -2830,7 +5501,24 @@ def each_slice(p1); end
 #     [6, 7, 8]
 #     [7, 8, 9]
 #     [8, 9, 10]
-def each_cons(p1); end
+def each_cons(n, &block); end
+
+##
+# Iterates the given block for each array of consecutive <n>
+# elements.  If no block is given, returns an enumerator.
+# 
+# e.g.:
+#     (1..10).each_cons(3) {|a| p a}
+#     # outputs below
+#     [1, 2, 3]
+#     [2, 3, 4]
+#     [3, 4, 5]
+#     [4, 5, 6]
+#     [5, 6, 7]
+#     [6, 7, 8]
+#     [7, 8, 9]
+#     [8, 9, 10]
+def each_cons(n); end
 
 ##
 # Iterates the given block for each element with an arbitrary
@@ -2841,7 +5529,18 @@ def each_cons(p1); end
 # e.g.:
 #     evens = (1..10).each_with_object([]) {|i, a| a << i*2 }
 #     #=> [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-def each_with_object(p1); end
+def each_with_object(obj, &block); end
+
+##
+# Iterates the given block for each element with an arbitrary
+# object given, and returns the initially given object.
+# 
+# If no block is given, returns an enumerator.
+# 
+# e.g.:
+#     evens = (1..10).each_with_object([]) {|i, a| a << i*2 }
+#     #=> [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+def each_with_object(obj); end
 
 ##
 # Takes one element from <i>enum</i> and merges corresponding
@@ -2859,14 +5558,32 @@ def each_with_object(p1); end
 #    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 #    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
 #    a.zip([1,2],[8])       #=> [[4, 1, 8], [5, 2, nil], [6, nil, nil]]
-def zip(*args); end
+def zip(arg, *more); end
+
+##
+# Takes one element from <i>enum</i> and merges corresponding
+# elements from each <i>args</i>.  This generates a sequence of
+# <em>n</em>-element arrays, where <em>n</em> is one more than the
+# count of arguments.  The length of the resulting sequence will be
+# <code>enum#size</code>.  If the size of any argument is less than
+# <code>enum#size</code>, <code>nil</code> values are supplied. If
+# a block is given, it is invoked for each output array, otherwise
+# an array of arrays is returned.
+# 
+#    a = [ 4, 5, 6 ]
+#    b = [ 7, 8, 9 ]
+# 
+#    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+#    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
+#    a.zip([1,2],[8])       #=> [[4, 1, 8], [5, 2, nil], [6, nil, nil]]
+def zip(arg, *more, &block); end
 
 ##
 # Returns first n elements from <i>enum</i>.
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take(3)             #=> [1, 2, 3]
-def take(p1); end
+def take(n); end
 
 ##
 # Passes elements to the block until the block returns +nil+ or +false+,
@@ -2876,7 +5593,17 @@ def take(p1); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take_while {|i| i < 3 }   #=> [1, 2]
-def take_while(); end
+def take_while(&block); end
+
+##
+# Passes elements to the block until the block returns +nil+ or +false+,
+# then stops iterating and returns an array of all prior elements.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [1, 2, 3, 4, 5, 0]
+#    a.take_while {|i| i < 3 }   #=> [1, 2]
+def take_while; end
 
 ##
 # Drops first n elements from <i>enum</i>, and returns rest elements
@@ -2884,7 +5611,7 @@ def take_while(); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop(3)             #=> [4, 5, 0]
-def drop(p1); end
+def drop(n); end
 
 ##
 # Drops elements up to, but not including, the first element for
@@ -2895,7 +5622,18 @@ def drop(p1); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
-def drop_while(); end
+def drop_while(&block); end
+
+##
+# Drops elements up to, but not including, the first element for
+# which the block returns +nil+ or +false+ and returns an array
+# containing the remaining elements.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [1, 2, 3, 4, 5, 0]
+#    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
+def drop_while; end
 
 ##
 # Calls <i>block</i> for each element of <i>enum</i> repeatedly _n_
@@ -2911,7 +5649,23 @@ def drop_while(); end
 #    a = ["a", "b", "c"]
 #    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
 #    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
-def cycle(p1=0); end
+def cycle(n=nil, &block); end
+
+##
+# Calls <i>block</i> for each element of <i>enum</i> repeatedly _n_
+# times or forever if none or +nil+ is given.  If a non-positive
+# number is given or the collection is empty, does nothing.  Returns
+# +nil+ if the loop has finished without getting interrupted.
+# 
+# Enumerable#cycle saves elements in an internal array so changes
+# to <i>enum</i> after the first pass have no effect.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = ["a", "b", "c"]
+#    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
+#    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
+def cycle(n=nil); end
 
 ##
 # Creates an enumerator for each chunked elements.
@@ -3004,7 +5758,100 @@ def cycle(p1=0); end
 # If non-nil value is given,
 # it is duplicated for each "each" method invocation of the enumerator.
 # The duplicated object is passed to 2nd argument of the block for "chunk" method.
-def chunk(p1=0); end
+def chunk(&block); end
+
+##
+# Creates an enumerator for each chunked elements.
+# The consecutive elements which have same block value are chunked.
+# 
+# The result enumerator yields the block value and an array of chunked elements.
+# So "each" method can be called as follows.
+# 
+#   enum.chunk {|elt| key }.each {|key, ary| ... }
+#   enum.chunk(initial_state) {|elt, state| key }.each {|key, ary| ... }
+# 
+# For example, consecutive even numbers and odd numbers can be
+# splitted as follows.
+# 
+#   [3,1,4,1,5,9,2,6,5,3,5].chunk {|n|
+#     n.even?
+#   }.each {|even, ary|
+#     p [even, ary]
+#   }
+#   #=> [false, [3, 1]]
+#   #   [true, [4]]
+#   #   [false, [1, 5, 9]]
+#   #   [true, [2, 6]]
+#   #   [false, [5, 3, 5]]
+# 
+# This method is especially useful for sorted series of elements.
+# The following example counts words for each initial letter.
+# 
+#   open("/usr/share/dict/words", "r:iso-8859-1") {|f|
+#     f.chunk {|line| line.ord }.each {|ch, lines| p [ch.chr, lines.length] }
+#   }
+#   #=> ["\n", 1]
+#   #   ["A", 1327]
+#   #   ["B", 1372]
+#   #   ["C", 1507]
+#   #   ["D", 791]
+#   #   ...
+# 
+# The following key values has special meaning:
+# - nil and :_separator specifies that the elements are dropped.
+# - :_alone specifies that the element should be chunked as a singleton.
+# Other symbols which begins an underscore are reserved.
+# 
+# nil and :_separator can be used to ignore some elements.
+# For example, the sequence of hyphens in svn log can be eliminated as follows.
+# 
+#   sep = "-"*72 + "\n"
+#   IO.popen("svn log README") {|f|
+#     f.chunk {|line|
+#       line != sep || nil
+#     }.each {|_, lines|
+#       pp lines
+#     }
+#   }
+#   #=> ["r20018 | knu | 2008-10-29 13:20:42 +0900 (Wed, 29 Oct 2008) | 2 lines\n",
+#   #    "\n",
+#   #    "* README, README.ja: Update the portability section.\n",
+#   #    "\n"]
+#   #   ["r16725 | knu | 2008-05-31 23:34:23 +0900 (Sat, 31 May 2008) | 2 lines\n",
+#   #    "\n",
+#   #    "* README, README.ja: Add a note about default C flags.\n",
+#   #    "\n"]
+#   #   ...
+# 
+# paragraphs separated by empty lines can be parsed as follows.
+# 
+#   File.foreach("README").chunk {|line|
+#     /\A\s*\z/ !~ line || nil
+#   }.each {|_, lines|
+#     pp lines
+#   }
+# 
+# :_alone can be used to pass through bunch of elements.
+# For example, sort consecutive lines formed as Foo#bar and
+# pass other lines, chunk can be used as follows.
+# 
+#   pat = /\A[A-Z][A-Za-z0-9_]+\#/
+#   open(filename) {|f|
+#     f.chunk {|line| pat =~ line ? $& : :_alone }.each {|key, lines|
+#       if key != :_alone
+#         print lines.sort.join('')
+#       else
+#         print lines.join('')
+#       end
+#     }
+#   }
+# 
+# If the block needs to maintain state over multiple elements,
+# _initial_state_ argument can be used.
+# If non-nil value is given,
+# it is duplicated for each "each" method invocation of the enumerator.
+# The duplicated object is passed to 2nd argument of the block for "chunk" method.
+def chunk(initial_state, &block); end
 
 ##
 #  Creates an enumerator for each chunked elements.
@@ -3137,7 +5984,273 @@ def chunk(p1=0); end
 #        pp mail
 #      }
 #    }
-def slice_before(p1=0); end
+def slice_before(pattern); end
+
+##
+#  Creates an enumerator for each chunked elements.
+#  The beginnings of chunks are defined by _pattern_ and the block.
+#  If _pattern_ === _elt_ returns true or
+#  the block returns true for the element,
+#  the element is beginning of a chunk.
+# 
+#  The === and block is called from the first element to the last element
+#  of _enum_.
+#  The result for the first element is ignored.
+# 
+#  The result enumerator yields the chunked elements as an array for +each+
+#  method.
+#  +each+ method can be called as follows.
+# 
+#    enum.slice_before(pattern).each {|ary| ... }
+#    enum.slice_before {|elt| bool }.each {|ary| ... }
+#    enum.slice_before(initial_state) {|elt, state| bool }.each {|ary| ... }
+# 
+#  Other methods of Enumerator class and Enumerable module,
+#  such as map, etc., are also usable.
+# 
+#  For example, iteration over ChangeLog entries can be implemented as
+#  follows.
+# 
+#    # iterate over ChangeLog entries.
+#    open("ChangeLog") {|f|
+#      f.slice_before(/\A\S/).each {|e| pp e}
+#    }
+# 
+#    # same as above.  block is used instead of pattern argument.
+#    open("ChangeLog") {|f|
+#      f.slice_before {|line| /\A\S/ === line }.each {|e| pp e}
+#    }
+# 
+# "svn proplist -R" produces multiline output for each file.
+# They can be chunked as follows:
+# 
+#    IO.popen([{"LC_ALL"=>"C"}, "svn", "proplist", "-R"]) {|f|
+#      f.lines.slice_before(/\AProp/).each {|lines| p lines }
+#    }
+#    #=> ["Properties on '.':\n", "  svn:ignore\n", "  svk:merge\n"]
+#    #   ["Properties on 'goruby.c':\n", "  svn:eol-style\n"]
+#    #   ["Properties on 'complex.c':\n", "  svn:mime-type\n", "  svn:eol-style\n"]
+#    #   ["Properties on 'regparse.c':\n", "  svn:eol-style\n"]
+#    #   ...
+# 
+#  If the block needs to maintain state over multiple elements,
+#  local variables can be used.
+#  For example, three or more consecutive increasing numbers can be squashed
+#  as follows:
+# 
+#    a = [0,2,3,4,6,7,9]
+#    prev = a[0]
+#    p a.slice_before {|e|
+#      prev, prev2 = e, prev
+#      prev2 + 1 != e
+#    }.map {|es|
+#      es.length <= 2 ? es.join(",") : "#{es.first}-#{es.last}"
+#    }.join(",")
+#    #=> "0,2-4,6,7,9"
+# 
+#  However local variables are not appropriate to maintain state
+#  if the result enumerator is used twice or more.
+#  In such case, the last state of the 1st +each+ is used in 2nd +each+.
+#  _initial_state_ argument can be used to avoid this problem.
+#  If non-nil value is given as _initial_state_,
+#  it is duplicated for each "each" method invocation of the enumerator.
+#  The duplicated object is passed to 2nd argument of the block for
+#  +slice_before+ method.
+# 
+#    # word wrapping.
+#    # this assumes all characters have same width.
+#    def wordwrap(words, maxwidth)
+#      # if cols is a local variable, 2nd "each" may start with non-zero cols.
+#      words.slice_before(cols: 0) {|w, h|
+#        h[:cols] += 1 if h[:cols] != 0
+#        h[:cols] += w.length
+#        if maxwidth < h[:cols]
+#          h[:cols] = w.length
+#          true
+#        else
+#          false
+#        end
+#      }
+#    end
+#    text = (1..20).to_a.join(" ")
+#    enum = wordwrap(text.split(/\s+/), 10)
+#    puts "-"*10
+#    enum.each {|ws| puts ws.join(" ") }
+#    puts "-"*10
+#    #=> ----------
+#    #   1 2 3 4 5
+#    #   6 7 8 9 10
+#    #   11 12 13
+#    #   14 15 16
+#    #   17 18 19
+#    #   20
+#    #   ----------
+# 
+# mbox contains series of mails which start with Unix From line.
+# So each mail can be extracted by slice before Unix From line.
+# 
+#    # parse mbox
+#    open("mbox") {|f|
+#      f.slice_before {|line|
+#        line.start_with? "From "
+#      }.each {|mail|
+#        unix_from = mail.shift
+#        i = mail.index("\n")
+#        header = mail[0...i]
+#        body = mail[(i+1)..-1]
+#        body.pop if body.last == "\n"
+#        fields = header.slice_before {|line| !" \t".include?(line[0]) }.to_a
+#        p unix_from
+#        pp fields
+#        pp body
+#      }
+#    }
+# 
+#    # split mails in mbox (slice before Unix From line after an empty line)
+#    open("mbox") {|f|
+#      f.slice_before(emp: true) {|line,h|
+#        prevemp = h[:emp]
+#        h[:emp] = line == "\n"
+#        prevemp && line.start_with?("From ")
+#      }.each {|mail|
+#        mail.pop if mail.last == "\n"
+#        pp mail
+#      }
+#    }
+def slice_before(&block); end
+
+##
+#  Creates an enumerator for each chunked elements.
+#  The beginnings of chunks are defined by _pattern_ and the block.
+#  If _pattern_ === _elt_ returns true or
+#  the block returns true for the element,
+#  the element is beginning of a chunk.
+# 
+#  The === and block is called from the first element to the last element
+#  of _enum_.
+#  The result for the first element is ignored.
+# 
+#  The result enumerator yields the chunked elements as an array for +each+
+#  method.
+#  +each+ method can be called as follows.
+# 
+#    enum.slice_before(pattern).each {|ary| ... }
+#    enum.slice_before {|elt| bool }.each {|ary| ... }
+#    enum.slice_before(initial_state) {|elt, state| bool }.each {|ary| ... }
+# 
+#  Other methods of Enumerator class and Enumerable module,
+#  such as map, etc., are also usable.
+# 
+#  For example, iteration over ChangeLog entries can be implemented as
+#  follows.
+# 
+#    # iterate over ChangeLog entries.
+#    open("ChangeLog") {|f|
+#      f.slice_before(/\A\S/).each {|e| pp e}
+#    }
+# 
+#    # same as above.  block is used instead of pattern argument.
+#    open("ChangeLog") {|f|
+#      f.slice_before {|line| /\A\S/ === line }.each {|e| pp e}
+#    }
+# 
+# "svn proplist -R" produces multiline output for each file.
+# They can be chunked as follows:
+# 
+#    IO.popen([{"LC_ALL"=>"C"}, "svn", "proplist", "-R"]) {|f|
+#      f.lines.slice_before(/\AProp/).each {|lines| p lines }
+#    }
+#    #=> ["Properties on '.':\n", "  svn:ignore\n", "  svk:merge\n"]
+#    #   ["Properties on 'goruby.c':\n", "  svn:eol-style\n"]
+#    #   ["Properties on 'complex.c':\n", "  svn:mime-type\n", "  svn:eol-style\n"]
+#    #   ["Properties on 'regparse.c':\n", "  svn:eol-style\n"]
+#    #   ...
+# 
+#  If the block needs to maintain state over multiple elements,
+#  local variables can be used.
+#  For example, three or more consecutive increasing numbers can be squashed
+#  as follows:
+# 
+#    a = [0,2,3,4,6,7,9]
+#    prev = a[0]
+#    p a.slice_before {|e|
+#      prev, prev2 = e, prev
+#      prev2 + 1 != e
+#    }.map {|es|
+#      es.length <= 2 ? es.join(",") : "#{es.first}-#{es.last}"
+#    }.join(",")
+#    #=> "0,2-4,6,7,9"
+# 
+#  However local variables are not appropriate to maintain state
+#  if the result enumerator is used twice or more.
+#  In such case, the last state of the 1st +each+ is used in 2nd +each+.
+#  _initial_state_ argument can be used to avoid this problem.
+#  If non-nil value is given as _initial_state_,
+#  it is duplicated for each "each" method invocation of the enumerator.
+#  The duplicated object is passed to 2nd argument of the block for
+#  +slice_before+ method.
+# 
+#    # word wrapping.
+#    # this assumes all characters have same width.
+#    def wordwrap(words, maxwidth)
+#      # if cols is a local variable, 2nd "each" may start with non-zero cols.
+#      words.slice_before(cols: 0) {|w, h|
+#        h[:cols] += 1 if h[:cols] != 0
+#        h[:cols] += w.length
+#        if maxwidth < h[:cols]
+#          h[:cols] = w.length
+#          true
+#        else
+#          false
+#        end
+#      }
+#    end
+#    text = (1..20).to_a.join(" ")
+#    enum = wordwrap(text.split(/\s+/), 10)
+#    puts "-"*10
+#    enum.each {|ws| puts ws.join(" ") }
+#    puts "-"*10
+#    #=> ----------
+#    #   1 2 3 4 5
+#    #   6 7 8 9 10
+#    #   11 12 13
+#    #   14 15 16
+#    #   17 18 19
+#    #   20
+#    #   ----------
+# 
+# mbox contains series of mails which start with Unix From line.
+# So each mail can be extracted by slice before Unix From line.
+# 
+#    # parse mbox
+#    open("mbox") {|f|
+#      f.slice_before {|line|
+#        line.start_with? "From "
+#      }.each {|mail|
+#        unix_from = mail.shift
+#        i = mail.index("\n")
+#        header = mail[0...i]
+#        body = mail[(i+1)..-1]
+#        body.pop if body.last == "\n"
+#        fields = header.slice_before {|line| !" \t".include?(line[0]) }.to_a
+#        p unix_from
+#        pp fields
+#        pp body
+#      }
+#    }
+# 
+#    # split mails in mbox (slice before Unix From line after an empty line)
+#    open("mbox") {|f|
+#      f.slice_before(emp: true) {|line,h|
+#        prevemp = h[:emp]
+#        h[:emp] = line == "\n"
+#        prevemp && line.start_with?("From ")
+#      }.each {|mail|
+#        mail.pop if mail.last == "\n"
+#        pp mail
+#      }
+#    }
+def slice_before(initial_state, &block); end
 
 end
 
@@ -3174,7 +6287,7 @@ class Status < Object
 ##
 # Returns +true+ if the integer value of _stat_
 # equals <em>other</em>.
-def ==(p1); end
+def ==; end
 
 ##
 # Logical AND of the bits in _stat_ with <em>num</em>.
@@ -3183,7 +6296,7 @@ def ==(p1); end
 #    Process.wait
 #    sprintf('%04x', $?.to_i)       #=> "3700"
 #    sprintf('%04x', $? & 0x1e00)   #=> "1600"
-def &(p1); end
+def &; end
 
 ##
 # Shift the bits in _stat_ right <em>num</em> places.
@@ -3192,7 +6305,7 @@ def &(p1); end
 #    Process.wait       #=> 26563
 #    $?.to_i            #=> 25344
 #    $? >> 8            #=> 99
-def >>(p1); end
+def >>; end
 
 ##
 # Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
@@ -3201,21 +6314,30 @@ def >>(p1); end
 #    fork { exit 0xab }         #=> 26566
 #    Process.wait               #=> 26566
 #    sprintf('%04x', $?.to_i)   #=> "ab00"
-def to_i(); end
+def to_i; end
+
+##
+# Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
+# around in these bits is platform dependent.
+# 
+#    fork { exit 0xab }         #=> 26566
+#    Process.wait               #=> 26566
+#    sprintf('%04x', $?.to_i)   #=> "ab00"
+def to_int; end
 
 ##
 # Show pid and exit status as a string.
 # 
 #   system("false")
 #   p $?.to_s         #=> "pid 12766 exit 1"
-def to_s(); end
+def to_s; end
 
 ##
 # Override the inspection method.
 # 
 #   system("false")
 #   p $?.inspect #=> "#<Process::Status: pid 12861 exit 1>"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the process ID that this status object represents.
@@ -3223,35 +6345,35 @@ def inspect(); end
 #    fork { exit }   #=> 26569
 #    Process.wait    #=> 26569
 #    $?.pid          #=> 26569
-def pid(); end
+def pid; end
 
 ##
 # Returns +true+ if this process is stopped. This is only
 # returned if the corresponding <code>wait</code> call had the
 # <code>WUNTRACED</code> flag set.
-def stopped?(); end
+def stopped?; end
 
 ##
 # Returns the number of the signal that caused _stat_ to stop
 # (or +nil+ if self is not stopped).
-def stopsig(); end
+def stopsig; end
 
 ##
 # Returns +true+ if _stat_ terminated because of
 # an uncaught signal.
-def signaled?(); end
+def signaled?; end
 
 ##
 # Returns the number of the signal that caused _stat_ to
 # terminate (or +nil+ if self was not terminated by an
 # uncaught signal).
-def termsig(); end
+def termsig; end
 
 ##
 # Returns +true+ if _stat_ exited normally (for
 # example using an <code>exit()</code> call or finishing the
 # program).
-def exited?(); end
+def exited?; end
 
 ##
 # Returns the least significant eight bits of the return code of
@@ -3267,17 +6389,17 @@ def exited?(); end
 #    Process.wait       #=> 26573
 #    $?.exited?         #=> true
 #    $?.exitstatus      #=> 99
-def exitstatus(); end
+def exitstatus; end
 
 ##
 # Returns +true+ if _stat_ is successful, +false+ if not.
 # Returns +nil+ if <code>exited?</code> is not +true+.
-def success?(); end
+def success?; end
 
 ##
 # Returns +true+ if _stat_ generated a coredump
 # when it terminated. Not available on all platforms.
-def coredump?(); end
+def coredump?; end
 
 end
 
@@ -3319,7 +6441,7 @@ end
 # 
 #    exec "echo", "*"    # echoes an asterisk
 #    # never get here
-def self.exec(*args); end
+def self.exec(env=0, command=0, options=0); end
 
 ##
 # Creates a subprocess. If a block is specified, that block is run
@@ -3338,7 +6460,26 @@ def self.exec(*args); end
 # fork doesn't copy other threads.
 # 
 # If fork is not usable, Process.respond_to?(:fork) returns false.
-def self.fork(); end
+def self.fork; end
+
+##
+# Creates a subprocess. If a block is specified, that block is run
+# in the subprocess, and the subprocess terminates with a status of
+# zero. Otherwise, the +fork+ call returns twice, once in
+# the parent, returning the process ID of the child, and once in
+# the child, returning _nil_. The child process can exit using
+# <code>Kernel.exit!</code> to avoid running any
+# <code>at_exit</code> functions. The parent process should
+# use <code>Process.wait</code> to collect the termination statuses
+# of its children or use <code>Process.detach</code> to register
+# disinterest in their status; otherwise, the operating system
+# may accumulate zombie processes.
+# 
+# The thread calling fork is the only thread in the created child process.
+# fork doesn't copy other threads.
+# 
+# If fork is not usable, Process.respond_to?(:fork) returns false.
+def self.fork; end
 
 ##
 # spawn executes specified command and return its pid.
@@ -3566,7 +6707,235 @@ def self.fork(); end
 # file descriptor mapping.
 # 
 # See <code>Kernel.exec</code> for the standard shell.
-def self.spawn(*args); end
+def self.spawn(env=0, command=0, options=0); end
+
+##
+# spawn executes specified command and return its pid.
+# 
+# This method doesn't wait for end of the command.
+# The parent process should
+# use <code>Process.wait</code> to collect
+# the termination status of its child or
+# use <code>Process.detach</code> to register
+# disinterest in their status;
+# otherwise, the operating system may accumulate zombie processes.
+# 
+# spawn has bunch of options to specify process attributes:
+# 
+#   env: hash
+#     name => val : set the environment variable
+#     name => nil : unset the environment variable
+#   command...:
+#     commandline                 : command line string which is passed to the standard shell
+#     cmdname, arg1, ...          : command name and one or more arguments (no shell)
+#     [cmdname, argv0], arg1, ... : command name, argv[0] and zero or more arguments (no shell)
+#   options: hash
+#     clearing environment variables:
+#       :unsetenv_others => true   : clear environment variables except specified by env
+#       :unsetenv_others => false  : don't clear (default)
+#     process group:
+#       :pgroup => true or 0 : make a new process group
+#       :pgroup => pgid      : join to specified process group
+#       :pgroup => nil       : don't change the process group (default)
+#     resource limit: resourcename is core, cpu, data, etc.  See Process.setrlimit.
+#       :rlimit_resourcename => limit
+#       :rlimit_resourcename => [cur_limit, max_limit]
+#     current directory:
+#       :chdir => str
+#     umask:
+#       :umask => int
+#     redirection:
+#       key:
+#         FD              : single file descriptor in child process
+#         [FD, FD, ...]   : multiple file descriptor in child process
+#       value:
+#         FD                        : redirect to the file descriptor in parent process
+#         string                    : redirect to file with open(string, "r" or "w")
+#         [string]                  : redirect to file with open(string, File::RDONLY)
+#         [string, open_mode]       : redirect to file with open(string, open_mode, 0644)
+#         [string, open_mode, perm] : redirect to file with open(string, open_mode, perm)
+#         [:child, FD]              : redirect to the redirected file descriptor
+#         :close                    : close the file descriptor in child process
+#       FD is one of follows
+#         :in     : the file descriptor 0 which is the standard input
+#         :out    : the file descriptor 1 which is the standard output
+#         :err    : the file descriptor 2 which is the standard error
+#         integer : the file descriptor of specified the integer
+#         io      : the file descriptor specified as io.fileno
+#     file descriptor inheritance: close non-redirected non-standard fds (3, 4, 5, ...) or not
+#       :close_others => false : inherit fds (default for system and exec)
+#       :close_others => true  : don't inherit (default for spawn and IO.popen)
+# 
+# If a hash is given as +env+, the environment is
+# updated by +env+ before <code>exec(2)</code> in the child process.
+# If a pair in +env+ has nil as the value, the variable is deleted.
+# 
+#   # set FOO as BAR and unset BAZ.
+#   pid = spawn({"FOO"=>"BAR", "BAZ"=>nil}, command)
+# 
+# If a hash is given as +options+,
+# it specifies
+# process group,
+# resource limit,
+# current directory,
+# umask and
+# redirects for the child process.
+# Also, it can be specified to clear environment variables.
+# 
+# The <code>:unsetenv_others</code> key in +options+ specifies
+# to clear environment variables, other than specified by +env+.
+# 
+#   pid = spawn(command, :unsetenv_others=>true) # no environment variable
+#   pid = spawn({"FOO"=>"BAR"}, command, :unsetenv_others=>true) # FOO only
+# 
+# The <code>:pgroup</code> key in +options+ specifies a process group.
+# The corresponding value should be true, zero or positive integer.
+# true and zero means the process should be a process leader of a new
+# process group.
+# Other values specifies a process group to be belongs.
+# 
+#   pid = spawn(command, :pgroup=>true) # process leader
+#   pid = spawn(command, :pgroup=>10) # belongs to the process group 10
+# 
+# The <code>:rlimit_</code><em>foo</em> key specifies a resource limit.
+# <em>foo</em> should be one of resource types such as <code>core</code>.
+# The corresponding value should be an integer or an array which have one or
+# two integers: same as cur_limit and max_limit arguments for
+# Process.setrlimit.
+# 
+#   cur, max = Process.getrlimit(:CORE)
+#   pid = spawn(command, :rlimit_core=>[0,max]) # disable core temporary.
+#   pid = spawn(command, :rlimit_core=>max) # enable core dump
+#   pid = spawn(command, :rlimit_core=>0) # never dump core.
+# 
+# The <code>:chdir</code> key in +options+ specifies the current directory.
+# 
+#   pid = spawn(command, :chdir=>"/var/tmp")
+# 
+# The <code>:umask</code> key in +options+ specifies the umask.
+# 
+#   pid = spawn(command, :umask=>077)
+# 
+# The :in, :out, :err, a fixnum, an IO and an array key specifies a redirection.
+# The redirection maps a file descriptor in the child process.
+# 
+# For example, stderr can be merged into stdout as follows:
+# 
+#   pid = spawn(command, :err=>:out)
+#   pid = spawn(command, 2=>1)
+#   pid = spawn(command, STDERR=>:out)
+#   pid = spawn(command, STDERR=>STDOUT)
+# 
+# The hash keys specifies a file descriptor
+# in the child process started by <code>spawn</code>.
+# :err, 2 and STDERR specifies the standard error stream (stderr).
+# 
+# The hash values specifies a file descriptor
+# in the parent process which invokes <code>spawn</code>.
+# :out, 1 and STDOUT specifies the standard output stream (stdout).
+# 
+# In the above example,
+# the standard output in the child process is not specified.
+# So it is inherited from the parent process.
+# 
+# The standard input stream (stdin) can be specified by :in, 0 and STDIN.
+# 
+# A filename can be specified as a hash value.
+# 
+#   pid = spawn(command, :in=>"/dev/null") # read mode
+#   pid = spawn(command, :out=>"/dev/null") # write mode
+#   pid = spawn(command, :err=>"log") # write mode
+#   pid = spawn(command, 3=>"/dev/null") # read mode
+# 
+# For stdout and stderr,
+# it is opened in write mode.
+# Otherwise read mode is used.
+# 
+# For specifying flags and permission of file creation explicitly,
+# an array is used instead.
+# 
+#   pid = spawn(command, :in=>["file"]) # read mode is assumed
+#   pid = spawn(command, :in=>["file", "r"])
+#   pid = spawn(command, :out=>["log", "w"]) # 0644 assumed
+#   pid = spawn(command, :out=>["log", "w", 0600])
+#   pid = spawn(command, :out=>["log", File::WRONLY|File::EXCL|File::CREAT, 0600])
+# 
+# The array specifies a filename, flags and permission.
+# The flags can be a string or an integer.
+# If the flags is omitted or nil, File::RDONLY is assumed.
+# The permission should be an integer.
+# If the permission is omitted or nil, 0644 is assumed.
+# 
+# If an array of IOs and integers are specified as a hash key,
+# all the elements are redirected.
+# 
+#   # stdout and stderr is redirected to log file.
+#   # The file "log" is opened just once.
+#   pid = spawn(command, [:out, :err]=>["log", "w"])
+# 
+# Another way to merge multiple file descriptors is [:child, fd].
+# \[:child, fd] means the file descriptor in the child process.
+# This is different from fd.
+# For example, :err=>:out means redirecting child stderr to parent stdout.
+# But :err=>[:child, :out] means redirecting child stderr to child stdout.
+# They differs if stdout is redirected in the child process as follows.
+# 
+#   # stdout and stderr is redirected to log file.
+#   # The file "log" is opened just once.
+#   pid = spawn(command, :out=>["log", "w"], :err=>[:child, :out])
+# 
+# \[:child, :out] can be used to merge stderr into stdout in IO.popen.
+# In this case, IO.popen redirects stdout to a pipe in the child process
+# and [:child, :out] refers the redirected stdout.
+# 
+#   io = IO.popen(["sh", "-c", "echo out; echo err >&2", :err=>[:child, :out]])
+#   p io.read #=> "out\nerr\n"
+# 
+# spawn closes all non-standard unspecified descriptors by default.
+# The "standard" descriptors are 0, 1 and 2.
+# This behavior is specified by :close_others option.
+# :close_others doesn't affect the standard descriptors which are
+# closed only if :close is specified explicitly.
+# 
+#   pid = spawn(command, :close_others=>true)  # close 3,4,5,... (default)
+#   pid = spawn(command, :close_others=>false) # don't close 3,4,5,...
+# 
+# :close_others is true by default for spawn and IO.popen.
+# 
+# So IO.pipe and spawn can be used as IO.popen.
+# 
+#   # similar to r = IO.popen(command)
+#   r, w = IO.pipe
+#   pid = spawn(command, :out=>w)   # r, w is closed in the child process.
+#   w.close
+# 
+# :close is specified as a hash value to close a fd individually.
+# 
+#   f = open(foo)
+#   system(command, f=>:close)        # don't inherit f.
+# 
+# If a file descriptor need to be inherited,
+# io=>io can be used.
+# 
+#   # valgrind has --log-fd option for log destination.
+#   # log_w=>log_w indicates log_w.fileno inherits to child process.
+#   log_r, log_w = IO.pipe
+#   pid = spawn("valgrind", "--log-fd=#{log_w.fileno}", "echo", "a", log_w=>log_w)
+#   log_w.close
+#   p log_r.read
+# 
+# It is also possible to exchange file descriptors.
+# 
+#   pid = spawn(command, :out=>:err, :err=>:out)
+# 
+# The hash keys specify file descriptors in the child process.
+# The hash values specifies file descriptors in the parent process.
+# So the above specifies exchanging stdout and stderr.
+# Internally, +spawn+ uses an extra file descriptor to resolve such cyclic
+# file descriptor mapping.
+# 
+# See <code>Kernel.exec</code> for the standard shell.
+def self.spawn(env=0, command=0, options=0); end
 
 ##
 # Exits the process immediately. No exit handlers are
@@ -3574,7 +6943,7 @@ def self.spawn(*args); end
 # exit status.
 # 
 #    Process.exit!(true)
-def self.exit!(p1=0); end
+def self.exit!(status=false); end
 
 ##
 # Initiates the termination of the Ruby script by raising the
@@ -3610,13 +6979,97 @@ def self.exit!(p1=0); end
 # 
 #    at_exit function
 #    in finalizer
-def self.exit(p1=0); end
+def self.exit(status=true); end
+
+##
+# Initiates the termination of the Ruby script by raising the
+# <code>SystemExit</code> exception. This exception may be caught. The
+# optional parameter is used to return a status code to the invoking
+# environment.
+# +true+ and +FALSE+ of _status_ means success and failure
+# respectively.  The interpretation of other integer values are
+# system dependent.
+# 
+#    begin
+#      exit
+#      puts "never get here"
+#    rescue SystemExit
+#      puts "rescued a SystemExit exception"
+#    end
+#    puts "after begin block"
+# 
+# <em>produces:</em>
+# 
+#    rescued a SystemExit exception
+#    after begin block
+# 
+# Just prior to termination, Ruby executes any <code>at_exit</code> functions
+# (see Kernel::at_exit) and runs any object finalizers (see
+# ObjectSpace::define_finalizer).
+# 
+#    at_exit { puts "at_exit function" }
+#    ObjectSpace.define_finalizer("string",  proc { puts "in finalizer" })
+#    exit
+# 
+# <em>produces:</em>
+# 
+#    at_exit function
+#    in finalizer
+def self.exit(status=true); end
+
+##
+# Initiates the termination of the Ruby script by raising the
+# <code>SystemExit</code> exception. This exception may be caught. The
+# optional parameter is used to return a status code to the invoking
+# environment.
+# +true+ and +FALSE+ of _status_ means success and failure
+# respectively.  The interpretation of other integer values are
+# system dependent.
+# 
+#    begin
+#      exit
+#      puts "never get here"
+#    rescue SystemExit
+#      puts "rescued a SystemExit exception"
+#    end
+#    puts "after begin block"
+# 
+# <em>produces:</em>
+# 
+#    rescued a SystemExit exception
+#    after begin block
+# 
+# Just prior to termination, Ruby executes any <code>at_exit</code> functions
+# (see Kernel::at_exit) and runs any object finalizers (see
+# ObjectSpace::define_finalizer).
+# 
+#    at_exit { puts "at_exit function" }
+#    ObjectSpace.define_finalizer("string",  proc { puts "in finalizer" })
+#    exit
+# 
+# <em>produces:</em>
+# 
+#    at_exit function
+#    in finalizer
+def self.exit(status=true); end
 
 ##
 # Terminate execution immediately, effectively by calling
 # <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
 # to STDERR prior to terminating.
-def self.abort(p1); end
+def self.abort; end
+
+##
+# Terminate execution immediately, effectively by calling
+# <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
+# to STDERR prior to terminating.
+def self.abort(msg=0); end
+
+##
+# Terminate execution immediately, effectively by calling
+# <code>Kernel.exit(false)</code>. If _msg_ is given, it is written
+# to STDERR prior to terminating.
+def self.abort(msg=0); end
 
 ##
 # Sends the given signal to the specified process id(s), or to the
@@ -3647,7 +7100,7 @@ def self.abort(p1); end
 # <code>Errno::EPERM</code> when failed because of no privilege,
 # will be raised.  In these cases, signals may have been sent to
 # preceding processes.
-def self.kill(*args); end
+def self.kill(signal, pid, *more); end
 
 ##
 # Waits for a child process to exit, returns its process id, and
@@ -3686,20 +7139,7 @@ def self.kill(*args); end
 #    Time.now                         #=> 2008-03-08 19:56:16 +0900
 #    waitpid(pid, 0)                  #=> 27440
 #    Time.now                         #=> 2008-03-08 19:56:19 +0900
-def self.wait(p1=0, p2=0); end
-
-##
-# Waits for a child process to exit (see Process::waitpid for exact
-# semantics) and returns an array containing the process id and the
-# exit status (a <code>Process::Status</code> object) of that
-# child. Raises a <code>SystemError</code> if there are no child
-# processes.
-# 
-#    Process.fork { exit 99 }   #=> 27437
-#    pid, status = Process.wait2
-#    pid                        #=> 27437
-#    status.exitstatus          #=> 99
-def self.wait2(*args); end
+def self.wait(); end
 
 ##
 # Waits for a child process to exit, returns its process id, and
@@ -3738,7 +7178,46 @@ def self.wait2(*args); end
 #    Time.now                         #=> 2008-03-08 19:56:16 +0900
 #    waitpid(pid, 0)                  #=> 27440
 #    Time.now                         #=> 2008-03-08 19:56:19 +0900
-def self.waitpid(p1=0, p2=0); end
+def self.wait(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit, returns its process id, and
+# sets <code>$?</code> to a <code>Process::Status</code> object
+# containing information on that process. Which child it waits on
+# depends on the value of _pid_:
+# 
+# > 0::   Waits for the child whose process ID equals _pid_.
+# 
+# 0::     Waits for any child whose process group ID equals that of the
+#         calling process.
+# 
+# -1::    Waits for any child process (the default if no _pid_ is
+#         given).
+# 
+# < -1::  Waits for any child whose process group ID equals the absolute
+#         value of _pid_.
+# 
+# The _flags_ argument may be a logical or of the flag values
+# <code>Process::WNOHANG</code> (do not block if no child available)
+# or <code>Process::WUNTRACED</code> (return stopped children that
+# haven't been reported). Not all flags are available on all
+# platforms, but a flag value of zero will work on all platforms.
+# 
+# Calling this method raises a <code>SystemError</code> if there are
+# no child processes. Not available on all platforms.
+# 
+#    include Process
+#    fork { exit 99 }                 #=> 27429
+#    wait                             #=> 27429
+#    $?.exitstatus                    #=> 99
+# 
+#    pid = fork { sleep 3 }           #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, Process::WNOHANG)   #=> nil
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, 0)                  #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:19 +0900
+def self.waitpid(pid=-1, flags=0); end
 
 ##
 # Waits for a child process to exit (see Process::waitpid for exact
@@ -3751,7 +7230,163 @@ def self.waitpid(p1=0, p2=0); end
 #    pid, status = Process.wait2
 #    pid                        #=> 27437
 #    status.exitstatus          #=> 99
-def self.waitpid2(*args); end
+def self.wait2(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit (see Process::waitpid for exact
+# semantics) and returns an array containing the process id and the
+# exit status (a <code>Process::Status</code> object) of that
+# child. Raises a <code>SystemError</code> if there are no child
+# processes.
+# 
+#    Process.fork { exit 99 }   #=> 27437
+#    pid, status = Process.wait2
+#    pid                        #=> 27437
+#    status.exitstatus          #=> 99
+def self.waitpid2(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit, returns its process id, and
+# sets <code>$?</code> to a <code>Process::Status</code> object
+# containing information on that process. Which child it waits on
+# depends on the value of _pid_:
+# 
+# > 0::   Waits for the child whose process ID equals _pid_.
+# 
+# 0::     Waits for any child whose process group ID equals that of the
+#         calling process.
+# 
+# -1::    Waits for any child process (the default if no _pid_ is
+#         given).
+# 
+# < -1::  Waits for any child whose process group ID equals the absolute
+#         value of _pid_.
+# 
+# The _flags_ argument may be a logical or of the flag values
+# <code>Process::WNOHANG</code> (do not block if no child available)
+# or <code>Process::WUNTRACED</code> (return stopped children that
+# haven't been reported). Not all flags are available on all
+# platforms, but a flag value of zero will work on all platforms.
+# 
+# Calling this method raises a <code>SystemError</code> if there are
+# no child processes. Not available on all platforms.
+# 
+#    include Process
+#    fork { exit 99 }                 #=> 27429
+#    wait                             #=> 27429
+#    $?.exitstatus                    #=> 99
+# 
+#    pid = fork { sleep 3 }           #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, Process::WNOHANG)   #=> nil
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, 0)                  #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:19 +0900
+def self.wait(); end
+
+##
+# Waits for a child process to exit, returns its process id, and
+# sets <code>$?</code> to a <code>Process::Status</code> object
+# containing information on that process. Which child it waits on
+# depends on the value of _pid_:
+# 
+# > 0::   Waits for the child whose process ID equals _pid_.
+# 
+# 0::     Waits for any child whose process group ID equals that of the
+#         calling process.
+# 
+# -1::    Waits for any child process (the default if no _pid_ is
+#         given).
+# 
+# < -1::  Waits for any child whose process group ID equals the absolute
+#         value of _pid_.
+# 
+# The _flags_ argument may be a logical or of the flag values
+# <code>Process::WNOHANG</code> (do not block if no child available)
+# or <code>Process::WUNTRACED</code> (return stopped children that
+# haven't been reported). Not all flags are available on all
+# platforms, but a flag value of zero will work on all platforms.
+# 
+# Calling this method raises a <code>SystemError</code> if there are
+# no child processes. Not available on all platforms.
+# 
+#    include Process
+#    fork { exit 99 }                 #=> 27429
+#    wait                             #=> 27429
+#    $?.exitstatus                    #=> 99
+# 
+#    pid = fork { sleep 3 }           #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, Process::WNOHANG)   #=> nil
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, 0)                  #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:19 +0900
+def self.wait(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit, returns its process id, and
+# sets <code>$?</code> to a <code>Process::Status</code> object
+# containing information on that process. Which child it waits on
+# depends on the value of _pid_:
+# 
+# > 0::   Waits for the child whose process ID equals _pid_.
+# 
+# 0::     Waits for any child whose process group ID equals that of the
+#         calling process.
+# 
+# -1::    Waits for any child process (the default if no _pid_ is
+#         given).
+# 
+# < -1::  Waits for any child whose process group ID equals the absolute
+#         value of _pid_.
+# 
+# The _flags_ argument may be a logical or of the flag values
+# <code>Process::WNOHANG</code> (do not block if no child available)
+# or <code>Process::WUNTRACED</code> (return stopped children that
+# haven't been reported). Not all flags are available on all
+# platforms, but a flag value of zero will work on all platforms.
+# 
+# Calling this method raises a <code>SystemError</code> if there are
+# no child processes. Not available on all platforms.
+# 
+#    include Process
+#    fork { exit 99 }                 #=> 27429
+#    wait                             #=> 27429
+#    $?.exitstatus                    #=> 99
+# 
+#    pid = fork { sleep 3 }           #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, Process::WNOHANG)   #=> nil
+#    Time.now                         #=> 2008-03-08 19:56:16 +0900
+#    waitpid(pid, 0)                  #=> 27440
+#    Time.now                         #=> 2008-03-08 19:56:19 +0900
+def self.waitpid(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit (see Process::waitpid for exact
+# semantics) and returns an array containing the process id and the
+# exit status (a <code>Process::Status</code> object) of that
+# child. Raises a <code>SystemError</code> if there are no child
+# processes.
+# 
+#    Process.fork { exit 99 }   #=> 27437
+#    pid, status = Process.wait2
+#    pid                        #=> 27437
+#    status.exitstatus          #=> 99
+def self.wait2(pid=-1, flags=0); end
+
+##
+# Waits for a child process to exit (see Process::waitpid for exact
+# semantics) and returns an array containing the process id and the
+# exit status (a <code>Process::Status</code> object) of that
+# child. Raises a <code>SystemError</code> if there are no child
+# processes.
+# 
+#    Process.fork { exit 99 }   #=> 27437
+#    pid, status = Process.wait2
+#    pid                        #=> 27437
+#    status.exitstatus          #=> 99
+def self.waitpid2(pid=-1, flags=0); end
 
 ##
 # Waits for all children, returning an array of
@@ -3768,7 +7403,7 @@ def self.waitpid2(*args); end
 #    [[30982, #<Process::Status: pid 30982 exit 0>],
 #     [30979, #<Process::Status: pid 30979 exit 1>],
 #     [30976, #<Process::Status: pid 30976 exit 2>]]
-def self.waitall(); end
+def self.waitall; end
 
 ##
 # Some operating systems retain the status of terminated child
@@ -3812,14 +7447,14 @@ def self.waitall(); end
 #    system("ps -ho pid,state -p #{p1}")
 # 
 # <em>(produces no output)</em>
-def self.detach(p1); end
+def self.detach(pid); end
 
 ##
 # Returns the process id of this process. Not available on all
 # platforms.
 # 
 #    Process.pid   #=> 27415
-def self.pid(); end
+def self.pid; end
 
 ##
 # Returns the process id of the parent of this process. Returns
@@ -3832,7 +7467,7 @@ def self.pid(); end
 # 
 #    I am 27417
 #    Dad is 27417
-def self.ppid(); end
+def self.ppid; end
 
 ##
 # Returns the process group ID for this process. Not available on
@@ -3840,24 +7475,24 @@ def self.ppid(); end
 # 
 #    Process.getpgid(0)   #=> 25527
 #    Process.getpgrp      #=> 25527
-def self.getpgrp(); end
+def self.getpgrp; end
 
 ##
 # Equivalent to <code>setpgid(0,0)</code>. Not available on all
 # platforms.
-def self.setpgrp(); end
+def self.setpgrp; end
 
 ##
 # Returns the process group ID for the given process id. Not
 # available on all platforms.
 # 
 #    Process.getpgid(Process.ppid())   #=> 25527
-def self.getpgid(p1); end
+def self.getpgid(pid); end
 
 ##
 # Sets the process group ID of _pid_ (0 indicates this
 # process) to <em>integer</em>. Not available on all platforms.
-def self.setpgid(p1, p2); end
+def self.setpgid(pid, integer); end
 
 ##
 # Establishes this process as a new session and process group
@@ -3865,7 +7500,7 @@ def self.setpgid(p1, p2); end
 # available on all platforms.
 # 
 #    Process.setsid   #=> 27422
-def self.setsid(); end
+def self.setsid; end
 
 ##
 # Gets the scheduling priority for specified process, process group,
@@ -3879,7 +7514,7 @@ def self.setsid(); end
 # 
 #    Process.getpriority(Process::PRIO_USER, 0)      #=> 19
 #    Process.getpriority(Process::PRIO_PROCESS, 0)   #=> 19
-def self.getpriority(p1, p2); end
+def self.getpriority(kind, integer); end
 
 ##
 # See <code>Process#getpriority</code>.
@@ -3888,7 +7523,7 @@ def self.getpriority(p1, p2); end
 #    Process.setpriority(Process::PRIO_PROCESS, 0, 19)   #=> 0
 #    Process.getpriority(Process::PRIO_USER, 0)          #=> 19
 #    Process.getpriority(Process::PRIO_PROCESS, 0)       #=> 19
-def self.setpriority(p1, p2, p3); end
+def self.setpriority(kind, integer, priority); end
 
 ##
 # Gets the resource limit of the process.
@@ -3905,7 +7540,7 @@ def self.setpriority(p1, p2, p3); end
 # <code>Process::RLIM_SAVED_MAX</code> or
 # <code>Process::RLIM_SAVED_CUR</code>.
 # See Process.setrlimit and the system getrlimit(2) manual for details.
-def self.getrlimit(p1); end
+def self.getrlimit(resource); end
 
 ##
 # Sets the resource limit of the process.
@@ -3951,51 +7586,147 @@ def self.getrlimit(p1); end
 # the hard limit to try to make core dump possible.
 # 
 #   Process.setrlimit(:CORE, Process.getrlimit(:CORE)[1])
-def self.setrlimit(p1, p2, p3=0); end
+def self.setrlimit(resource, cur_limit, max_limit); end
+
+##
+# Sets the resource limit of the process.
+# _cur_limit_ means current (soft) limit and
+# _max_limit_ means maximum (hard) limit.
+# 
+# If _max_limit_ is not given, _cur_limit_ is used.
+# 
+# _resource_ indicates the kind of resource to limit.
+# It should be a symbol such as <code>:CORE</code>,
+# a string such as <code>"CORE"</code> or
+# a constant such as <code>Process::RLIMIT_CORE</code>.
+# The available resources are OS dependent.
+# Ruby may support following resources.
+# 
+# [AS] total available memory (bytes) (SUSv3, NetBSD, FreeBSD, OpenBSD but 4.4BSD-Lite)
+# [CORE] core size (bytes) (SUSv3)
+# [CPU] CPU time (seconds) (SUSv3)
+# [DATA] data segment (bytes) (SUSv3)
+# [FSIZE] file size (bytes) (SUSv3)
+# [MEMLOCK] total size for mlock(2) (bytes) (4.4BSD, GNU/Linux)
+# [MSGQUEUE] allocation for POSIX message queues (bytes) (GNU/Linux)
+# [NICE] ceiling on process's nice(2) value (number) (GNU/Linux)
+# [NOFILE] file descriptors (number) (SUSv3)
+# [NPROC] number of processes for the user (number) (4.4BSD, GNU/Linux)
+# [RSS] resident memory size (bytes) (4.2BSD, GNU/Linux)
+# [RTPRIO] ceiling on the process's real-time priority (number) (GNU/Linux)
+# [RTTIME] CPU time for real-time process (us) (GNU/Linux)
+# [SBSIZE] all socket buffers (bytes) (NetBSD, FreeBSD)
+# [SIGPENDING] number of queued signals allowed (signals) (GNU/Linux)
+# [STACK] stack size (bytes) (SUSv3)
+# 
+# _cur_limit_ and _max_limit_ may be
+# <code>:INFINITY</code>, <code>"INFINITY"</code> or
+# <code>Process::RLIM_INFINITY</code>,
+# which means that the resource is not limited.
+# They may be <code>Process::RLIM_SAVED_MAX</code>,
+# <code>Process::RLIM_SAVED_CUR</code> and
+# corresponding symbols and strings too.
+# See system setrlimit(2) manual for details.
+# 
+# The following example raises the soft limit of core size to
+# the hard limit to try to make core dump possible.
+# 
+#   Process.setrlimit(:CORE, Process.getrlimit(:CORE)[1])
+def self.setrlimit(resource, cur_limit); end
 
 ##
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.uid(); end
+def self.uid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.rid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.getuid; end
 
 ##
 # Sets the (integer) user ID for this process. Not available on all
 # platforms.
-def self.uid=(p1); end
+def self.uid= integer; end
 
 ##
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.gid(); end
+def self.gid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.rid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.getgid; end
 
 ##
 # Sets the group ID for this process.
-def self.gid=(p1); end
+def self.gid= fixnum; end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.euid(); end
+def self.euid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.eid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.geteuid; end
 
 ##
 # Sets the effective user ID for this process. Not available on all
 # platforms.
-def self.euid=(p1); end
+def self.euid= integer; end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.egid(); end
+def self.egid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.eid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.geteid; end
 
 ##
 # Sets the effective group ID for this process. Not available on all
 # platforms.
-def self.egid=(p1); end
+def self.egid = fixnum; end
 
 ##
 # Initializes the supplemental group access list by reading the
@@ -4008,14 +7739,14 @@ def self.egid=(p1); end
 #    Process.groups   #=> [0, 1, 2, 3, 4, 6, 10, 11, 20, 26, 27]
 #    Process.initgroups( "mgranger", 30 )   #=> [30, 6, 10, 11]
 #    Process.groups   #=> [30, 6, 10, 11]
-def self.initgroups(p1, p2); end
+def self.initgroups(username, gid); end
 
 ##
 # Get an <code>Array</code> of the gids of groups in the
 # supplemental group access list for this process.
 # 
 #    Process.groups   #=> [27, 6, 10, 11]
-def self.groups(); end
+def self.groups; end
 
 ##
 # Set the supplemental group access list to the given
@@ -4024,19 +7755,19 @@ def self.groups(); end
 #    Process.groups   #=> [0, 1, 2, 3, 4, 6, 10, 11, 20, 26, 27]
 #    Process.groups = [27, 6, 10, 11]   #=> [27, 6, 10, 11]
 #    Process.groups   #=> [27, 6, 10, 11]
-def self.groups=(p1); end
+def self.groups= array; end
 
 ##
 # Returns the maximum number of gids allowed in the supplemental
 # group access list.
 # 
 #    Process.maxgroups   #=> 32
-def self.maxgroups(); end
+def self.maxgroups; end
 
 ##
 # Sets the maximum number of gids allowed in the supplemental group
 # access list.
-def self.maxgroups=(p1); end
+def self.maxgroups= fixnum; end
 
 ##
 # Detach the process from controlling terminal and run in
@@ -4046,7 +7777,17 @@ def self.maxgroups=(p1); end
 # noclose is true, daemon() will redirect standard input,
 # standard output and standard error to /dev/null.
 # Return zero on success, or raise one of Errno::*.
-def self.daemon(p1=0, p2=0); end
+def self.daemon(); end
+
+##
+# Detach the process from controlling terminal and run in
+# the background as system daemon.  Unless the argument
+# nochdir is true (i.e. non false), it changes the current
+# working directory to the root ("/"). Unless the argument
+# noclose is true, daemon() will redirect standard input,
+# standard output and standard error to /dev/null.
+# Return zero on success, or raise one of Errno::*.
+def self.daemon(nochdir=nil,noclose=nil); end
 
 ##
 # Returns a <code>Tms</code> structure (see <code>Struct::Tms</code>)
@@ -4055,7 +7796,7 @@ def self.daemon(p1=0, p2=0); end
 # 
 #    t = Process.times
 #    [ t.utime, t.stime, t.cutime, t.cstime ]   #=> [0.0, 0.02, 0.00, 0.00]
-def self.times(); end
+def self.times; end
 
 end
 
@@ -4068,13 +7809,37 @@ module UID
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.rid(); end
+def self.uid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.rid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.getuid; end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.eid(); end
+def self.euid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.eid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.geteuid; end
 
 ##
 # Change the current process's real and effective user ID to that
@@ -4084,7 +7849,7 @@ def self.eid(); end
 #    [Process.uid, Process.euid]          #=> [0, 0]
 #    Process::UID.change_privilege(31)    #=> 31
 #    [Process.uid, Process.euid]          #=> [31, 31]
-def self.change_privilege(p1); end
+def self.change_privilege(integer); end
 
 ##
 # Set the effective user ID, and if possible, the saved user ID of
@@ -4094,7 +7859,17 @@ def self.change_privilege(p1); end
 #    [Process.uid, Process.euid]          #=> [0, 0]
 #    Process::UID.grant_privilege(31)     #=> 31
 #    [Process.uid, Process.euid]          #=> [0, 31]
-def self.grant_privilege(p1); end
+def self.grant_privilege(integer); end
+
+##
+# Set the effective user ID, and if possible, the saved user ID of
+# the process to the given _integer_. Returns the new
+# effective user ID. Not available on all platforms.
+# 
+#    [Process.uid, Process.euid]          #=> [0, 0]
+#    Process::UID.grant_privilege(31)     #=> 31
+#    [Process.uid, Process.euid]          #=> [0, 31]
+def self.eid= integer; end
 
 ##
 # Exchange real and effective user IDs and return the new effective
@@ -4103,17 +7878,17 @@ def self.grant_privilege(p1); end
 #    [Process.uid, Process.euid]   #=> [0, 31]
 #    Process::UID.re_exchange      #=> 0
 #    [Process.uid, Process.euid]   #=> [31, 0]
-def self.re_exchange(); end
+def self.re_exchange; end
 
 ##
 # Returns +true+ if the real and effective user IDs of a
 # process may be exchanged on the current platform.
-def self.re_exchangeable?(); end
+def self.re_exchangeable?; end
 
 ##
 # Returns +true+ if the current platform has saved user
 # ID functionality.
-def self.sid_available?(); end
+def self.sid_available?; end
 
 ##
 # Switch the effective and real user IDs of the current process. If
@@ -4121,7 +7896,15 @@ def self.sid_available?(); end
 # after the block is executed. Returns the new effective user ID if
 # called without a block, and the return value of the block if one
 # is given.
-def self.switch(); end
+def self.switch; end
+
+##
+# Switch the effective and real user IDs of the current process. If
+# a <em>block</em> is given, the user IDs will be switched back
+# after the block is executed. Returns the new effective user ID if
+# called without a block, and the return value of the block if one
+# is given.
+def self.switch(&block); end
 
 end
 
@@ -4134,14 +7917,40 @@ module GID
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.rid(); end
+def self.gid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.rid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.getgid; end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.eid(); end
+def self.egid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.eid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.geteid; end
 
 ##
 # Change the current process's real and effective group ID to that
@@ -4151,7 +7960,7 @@ def self.eid(); end
 #    [Process.gid, Process.egid]          #=> [0, 0]
 #    Process::GID.change_privilege(33)    #=> 33
 #    [Process.gid, Process.egid]          #=> [33, 33]
-def self.change_privilege(p1); end
+def self.change_privilege(integer); end
 
 ##
 # Set the effective group ID, and if possible, the saved group ID of
@@ -4161,7 +7970,17 @@ def self.change_privilege(p1); end
 #    [Process.gid, Process.egid]          #=> [0, 0]
 #    Process::GID.grant_privilege(31)     #=> 33
 #    [Process.gid, Process.egid]          #=> [0, 33]
-def self.grant_privilege(p1); end
+def self.grant_privilege(integer); end
+
+##
+# Set the effective group ID, and if possible, the saved group ID of
+# the process to the given _integer_. Returns the new
+# effective group ID. Not available on all platforms.
+# 
+#    [Process.gid, Process.egid]          #=> [0, 0]
+#    Process::GID.grant_privilege(31)     #=> 33
+#    [Process.gid, Process.egid]          #=> [0, 33]
+def self.eid = integer; end
 
 ##
 # Exchange real and effective group IDs and return the new effective
@@ -4170,17 +7989,17 @@ def self.grant_privilege(p1); end
 #    [Process.gid, Process.egid]   #=> [0, 33]
 #    Process::GID.re_exchange      #=> 0
 #    [Process.gid, Process.egid]   #=> [33, 0]
-def self.re_exchange(); end
+def self.re_exchange; end
 
 ##
 # Returns +true+ if the real and effective group IDs of a
 # process may be exchanged on the current platform.
-def self.re_exchangeable?(); end
+def self.re_exchangeable?; end
 
 ##
 # Returns +true+ if the current platform has saved group
 # ID functionality.
-def self.sid_available?(); end
+def self.sid_available?; end
 
 ##
 # Switch the effective and real group IDs of the current process. If
@@ -4188,7 +8007,15 @@ def self.sid_available?(); end
 # after the block is executed. Returns the new effective group ID if
 # called without a block, and the return value of the block if one
 # is given.
-def self.switch(); end
+def self.switch; end
+
+##
+# Switch the effective and real group IDs of the current process. If
+# a <em>block</em> is given, the group IDs will be switched back
+# after the block is executed. Returns the new effective group ID if
+# called without a block, and the return value of the block if one
+# is given.
+def self.switch(&block); end
 
 end
 
@@ -4203,84 +8030,134 @@ module Sys
 # Returns the (real) user ID of this process.
 # 
 #    Process.uid   #=> 501
-def self.getuid(); end
+def self.uid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.rid; end
+
+##
+# Returns the (real) user ID of this process.
+# 
+#    Process.uid   #=> 501
+def self.getuid; end
 
 ##
 # Returns the effective user ID for this process.
 # 
 #    Process.euid   #=> 501
-def self.geteuid(); end
+def self.euid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.eid; end
+
+##
+# Returns the effective user ID for this process.
+# 
+#    Process.euid   #=> 501
+def self.geteuid; end
 
 ##
 # Returns the (real) group ID for this process.
 # 
 #    Process.gid   #=> 500
-def self.getgid(); end
+def self.gid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.rid; end
+
+##
+# Returns the (real) group ID for this process.
+# 
+#    Process.gid   #=> 500
+def self.getgid; end
 
 ##
 # Returns the effective group ID for this process. Not available on
 # all platforms.
 # 
 #    Process.egid   #=> 500
-def self.getegid(); end
+def self.egid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.eid; end
+
+##
+# Returns the effective group ID for this process. Not available on
+# all platforms.
+# 
+#    Process.egid   #=> 500
+def self.geteid; end
 
 ##
 # Set the user ID of the current process to _integer_. Not
 # available on all platforms.
-def self.setuid(p1); end
+def self.setuid(integer); end
 
 ##
 # Set the group ID of the current process to _integer_. Not
 # available on all platforms.
-def self.setgid(p1); end
+def self.setgid(integer); end
 
 ##
 # Set the real user ID of the calling process to _integer_.
 # Not available on all platforms.
-def self.setruid(p1); end
+def self.setruid(integer); end
 
 ##
 # Set the real group ID of the calling process to _integer_.
 # Not available on all platforms.
-def self.setrgid(p1); end
+def self.setrgid(integer); end
 
 ##
 # Set the effective user ID of the calling process to
 # _integer_.  Not available on all platforms.
-def self.seteuid(p1); end
+def self.seteuid(integer); end
 
 ##
 # Set the effective group ID of the calling process to
 # _integer_.  Not available on all platforms.
-def self.setegid(p1); end
+def self.setegid(integer); end
 
 ##
 # Sets the (integer) real and/or effective user IDs of the current
 # process to _rid_ and _eid_, respectively. A value of
 # <code>-1</code> for either means to leave that ID unchanged. Not
 # available on all platforms.
-def self.setreuid(p1, p2); end
+def self.setreuid(rid, eid); end
 
 ##
 # Sets the (integer) real and/or effective group IDs of the current
 # process to <em>rid</em> and <em>eid</em>, respectively. A value of
 # <code>-1</code> for either means to leave that ID unchanged. Not
 # available on all platforms.
-def self.setregid(p1, p2); end
+def self.setregid(rid, eid); end
 
 ##
 # Sets the (integer) real, effective, and saved user IDs of the
 # current process to _rid_, _eid_, and _sid_ respectively. A
 # value of <code>-1</code> for any value means to
 # leave that ID unchanged. Not available on all platforms.
-def self.setresuid(p1, p2, p3); end
+def self.setresuid(rid, eid, sid); end
 
 ##
 # Sets the (integer) real, effective, and saved user IDs of the
 # current process to <em>rid</em>, <em>eid</em>, and <em>sid</em>
 # respectively. A value of <code>-1</code> for any value means to
 # leave that ID unchanged. Not available on all platforms.
-def self.setresgid(p1, p2, p3); end
+def self.setresgid(rid, eid, sid); end
 
 ##
 # Returns +true+ if the process was created as a result
@@ -4288,7 +8165,7 @@ def self.setresgid(p1, p2, p3); end
 # setgid bits set (and extra privileges were given as a result) or
 # if it has changed any of its real, effective or saved user or
 # group IDs since it began execution.
-def self.issetugid(); end
+def self.issetugid; end
 
 end
 
@@ -4361,14 +8238,42 @@ module Signal
 #     Terminating: 27461
 #     Child died
 #     Terminating: 27460
-def self.trap(*args); end
+def self.trap( signal, command ); end
+
+##
+# Specifies the handling of signals. The first parameter is a signal
+# name (a string such as ``SIGALRM'', ``SIGUSR1'', and so on) or a
+# signal number. The characters ``SIG'' may be omitted from the
+# signal name. The command or block specifies code to be run when the
+# signal is raised.
+# If the command is the string ``IGNORE'' or ``SIG_IGN'', the signal
+# will be ignored.
+# If the command is ``DEFAULT'' or ``SIG_DFL'', the Ruby's default handler
+# will be invoked.
+# If the command is ``EXIT'', the script will be terminated by the signal.
+# If the command is ``SYSTEM_DEFAULT'', the operating system's default
+# handler will be invoked.
+# Otherwise, the given command or block will be run.
+# The special signal name ``EXIT'' or signal number zero will be
+# invoked just prior to program termination.
+# trap returns the previous handler for the given signal.
+# 
+#     Signal.trap(0, proc { puts "Terminating: #{$$}" })
+#     Signal.trap("CLD")  { puts "Child died" }
+#     fork && Process.wait
+# 
+# produces:
+#     Terminating: 27461
+#     Child died
+#     Terminating: 27460
+def self.trap( signal , &block); end
 
 ##
 # Returns a list of signal names mapped to the corresponding
 # underlying signal numbers.
 # 
 #   Signal.list   #=> {"EXIT"=>0, "HUP"=>1, "INT"=>2, "QUIT"=>3, "ILL"=>4, "TRAP"=>5, "IOT"=>6, "ABRT"=>6, "FPE"=>8, "KILL"=>9, "BUS"=>7, "SEGV"=>11, "SYS"=>31, "PIPE"=>13, "ALRM"=>14, "TERM"=>15, "URG"=>23, "STOP"=>19, "TSTP"=>20, "CONT"=>18, "CHLD"=>17, "CLD"=>17, "TTIN"=>21, "TTOU"=>22, "IO"=>29, "XCPU"=>24, "XFSZ"=>25, "VTALRM"=>26, "PROF"=>27, "WINCH"=>28, "USR1"=>10, "USR2"=>12, "PWR"=>30, "POLL"=>29}
-def self.list(); end
+def self.list; end
 
 end
 
@@ -4407,59 +8312,59 @@ end
 #   Math.atan2(1.0, 0.0)   #=> 1.5707963267948966
 #   Math.atan2(1.0, -1.0)  #=> 2.356194490192345
 #   Math.atan2(0.0, -1.0)  #=> 3.141592653589793
-def self.atan2(p1, p2); end
+def self.atan2(y, x); end
 
 ##
 # Computes the cosine of <i>x</i> (expressed in radians). Returns
 # -1..1.
-def self.cos(p1); end
+def self.cos(x); end
 
 ##
 # Computes the sine of <i>x</i> (expressed in radians). Returns
 # -1..1.
-def self.sin(p1); end
+def self.sin(x); end
 
 ##
 # Returns the tangent of <i>x</i> (expressed in radians).
-def self.tan(p1); end
+def self.tan(x); end
 
 ##
 # Computes the arc cosine of <i>x</i>. Returns 0..PI.
-def self.acos(p1); end
+def self.acos(x); end
 
 ##
 # Computes the arc sine of <i>x</i>. Returns -{PI/2} .. {PI/2}.
-def self.asin(p1); end
+def self.asin(x); end
 
 ##
 # Computes the arc tangent of <i>x</i>. Returns -{PI/2} .. {PI/2}.
-def self.atan(p1); end
+def self.atan(x); end
 
 ##
 # Computes the hyperbolic cosine of <i>x</i> (expressed in radians).
-def self.cosh(p1); end
+def self.cosh(x); end
 
 ##
 # Computes the hyperbolic sine of <i>x</i> (expressed in
 # radians).
-def self.sinh(p1); end
+def self.sinh(x); end
 
 ##
 # Computes the hyperbolic tangent of <i>x</i> (expressed in
 # radians).
-def self.tanh(p1); end
+def self.tanh(); end
 
 ##
 # Computes the inverse hyperbolic cosine of <i>x</i>.
-def self.acosh(p1); end
+def self.acosh(x); end
 
 ##
 # Computes the inverse hyperbolic sine of <i>x</i>.
-def self.asinh(p1); end
+def self.asinh(x); end
 
 ##
 # Computes the inverse hyperbolic tangent of <i>x</i>.
-def self.atanh(p1); end
+def self.atanh(x); end
 
 ##
 # Returns e**x.
@@ -4467,7 +8372,7 @@ def self.atanh(p1); end
 #   Math.exp(0)       #=> 1.0
 #   Math.exp(1)       #=> 2.718281828459045
 #   Math.exp(1.5)     #=> 4.4816890703380645
-def self.exp(p1); end
+def self.exp(x); end
 
 ##
 # Returns the natural logarithm of <i>numeric</i>.
@@ -4478,7 +8383,18 @@ def self.exp(p1); end
 #   Math.log(Math::E)    #=> 1.0
 #   Math.log(Math::E**3) #=> 3.0
 #   Math.log(12,3)       #=> 2.2618595071429146
-def self.log(p1, p2=0); end
+def self.log(numeric); end
+
+##
+# Returns the natural logarithm of <i>numeric</i>.
+# If additional second argument is given, it will be the base
+# of logarithm.
+# 
+#   Math.log(1)          #=> 0.0
+#   Math.log(Math::E)    #=> 1.0
+#   Math.log(Math::E**3) #=> 3.0
+#   Math.log(12,3)       #=> 2.2618595071429146
+def self.log(num,base); end
 
 ##
 # Returns the base 2 logarithm of <i>numeric</i>.
@@ -4487,7 +8403,7 @@ def self.log(p1, p2=0); end
 #   Math.log2(2)      #=> 1.0
 #   Math.log2(32768)  #=> 15.0
 #   Math.log2(65536)  #=> 16.0
-def self.log2(p1); end
+def self.log2(numeric); end
 
 ##
 # Returns the base 10 logarithm of <i>numeric</i>.
@@ -4495,7 +8411,7 @@ def self.log2(p1); end
 #   Math.log10(1)       #=> 0.0
 #   Math.log10(10)      #=> 1.0
 #   Math.log10(10**100) #=> 100.0
-def self.log10(p1); end
+def self.log10(numeric); end
 
 ##
 # Returns the non-negative square root of <i>numeric</i>.
@@ -4515,7 +8431,7 @@ def self.log10(p1); end
 #   [8, 2.82842712474619, 8.0]
 #   [9, 3.0, 9.0]
 #   [10, 3.16227766016838, 10.0]
-def self.sqrt(p1); end
+def self.sqrt(numeric); end
 
 ##
 # Returns the cube root of <i>numeric</i>.
@@ -4543,7 +8459,7 @@ def self.sqrt(p1); end
 #   [7, 1.91293118277239, 7.0]
 #   [8, 2.0, 8.0]
 #   [9, 2.0800838230519, 9.0]
-def self.cbrt(p1); end
+def self.cbrt(numeric); end
 
 ##
 # Returns a two-element array containing the normalized fraction (a
@@ -4552,29 +8468,29 @@ def self.cbrt(p1); end
 # 
 #    fraction, exponent = Math.frexp(1234)   #=> [0.6025390625, 11]
 #    fraction * 2**exponent                  #=> 1234.0
-def self.frexp(p1); end
+def self.frexp(numeric); end
 
 ##
 # Returns the value of <i>flt</i>*(2**<i>int</i>).
 # 
 #    fraction, exponent = Math.frexp(1234)
 #    Math.ldexp(fraction, exponent)   #=> 1234.0
-def self.ldexp(p1, p2); end
+def self.ldexp(flt, int); end
 
 ##
 # Returns sqrt(x**2 + y**2), the hypotenuse of a right-angled triangle
 # with sides <i>x</i> and <i>y</i>.
 # 
 #    Math.hypot(3, 4)   #=> 5.0
-def self.hypot(p1, p2); end
+def self.hypot(x, y); end
 
 ##
 # Calculates the error function of x.
-def self.erf(p1); end
+def self.erf(x); end
 
 ##
 # Calculates the complementary error function of x.
-def self.erfc(p1); end
+def self.erfc(x); end
 
 ##
 # Calculates the gamma function of x.
@@ -4610,7 +8526,7 @@ def self.erfc(p1); end
 #  #   [24, 2.5852016738885062e+22, 25852016738884976640000]
 #  #   [25, 6.204484017332391e+23, 620448401733239439360000]
 #  #   [26, 1.5511210043330954e+25, 15511210043330985984000000]
-def self.gamma(p1); end
+def self.gamma(x); end
 
 ##
 # Calculates the logarithmic gamma of x and
@@ -4619,7 +8535,7 @@ def self.gamma(p1); end
 # Math.lgamma(x) is same as
 #  [Math.log(Math.gamma(x).abs), Math.gamma(x) < 0 ? -1 : 1]
 # but avoid overflow by Math.gamma(x) for large x.
-def self.lgamma(p1); end
+def self.lgamma(x); end
 
 end
 
@@ -4694,27 +8610,27 @@ module Comparable
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 0. Also returns true if
 # _obj_ and _other_ are the same object.
-def ==(p1); end
+def ==; end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 1.
-def >(p1); end
+def >; end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns 0 or 1.
-def >=(p1); end
+def >=; end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns -1.
-def <(p1); end
+def <; end
 
 ##
 # Compares two objects based on the receiver's <code><=></code>
 # method, returning true if it returns -1 or 0.
-def <=(p1); end
+def <=; end
 
 ##
 # Returns <code>false</code> if <i>obj</i> <code><=></code>
@@ -4725,7 +8641,7 @@ def <=(p1); end
 #    6.between?(1, 5)               #=> false
 #    'cat'.between?('ant', 'dog')   #=> true
 #    'gnu'.between?('ant', 'dog')   #=> false
-def between?(p1, p2); end
+def between?(min, max); end
 
 end
 
@@ -4743,7 +8659,7 @@ class Random < Object
 #     [ prng.integer(10), prng.integer(1000) ]  #=> [4, 664]
 #     prng = Random.new(1234)
 #     [ prng.rand, prng.rand ]   #=> [0.191519450378892, 0.622108771039832]
-def self.new(p1=0); end
+def self.new(seed=0); end
 
 ##
 # When the argument is an +Integer+ or a +Bignum+, it returns a
@@ -4764,20 +8680,41 @@ def self.new(p1=0); end
 # +begin+/+end+ of the range have to have subtract and add methods.
 # 
 # Otherwise, it raises an ArgumentError.
-def rand(*args); end
+def rand; end
+
+##
+# When the argument is an +Integer+ or a +Bignum+, it returns a
+# random integer greater than or equal to zero and less than the
+# argument.  Unlike Random.rand, when the argument is a negative
+# integer or zero, it raises an ArgumentError.
+# 
+# When the argument is a +Float+, it returns a random floating point
+# number between 0.0 and _max_, including 0.0 and excluding _max_.
+# 
+# When the argument _limit_ is a +Range+, it returns a random
+# number where range.member?(number) == true.
+#     prng.rand(5..9)  #=> one of [5, 6, 7, 8, 9]
+#     prng.rand(5...9) #=> one of [5, 6, 7, 8]
+#     prng.rand(5.0..9.0) #=> between 5.0 and 9.0, including 9.0
+#     prng.rand(5.0...9.0) #=> between 5.0 and 9.0, excluding 9.0
+# 
+# +begin+/+end+ of the range have to have subtract and add methods.
+# 
+# Otherwise, it raises an ArgumentError.
+def rand(limit); end
 
 ##
 # Returns a random binary string.  The argument size specified the length of
 # the result string.
-def bytes(p1); end
+def bytes(size); end
 
 ##
 # Returns the seed of the generator.
-def seed(); end
+def seed; end
 
 ##
 # Returns true if the generators' states equal.
-def ==(p1); end
+def ==; end
 
 ##
 # Seeds the pseudorandom number generator to the value of
@@ -4788,15 +8725,19 @@ def ==(p1); end
 # <code>srand</code>, but without the sequence.) By setting the seed
 # to a known value, scripts can be made deterministic during testing.
 # The previous seed value is returned. Also see <code>Kernel::rand</code>.
-def self.srand(p1=0); end
+def self.srand(number=0); end
 
 ##
 # Alias of _Random::DEFAULT.rand_.
-def self.rand(*args); end
+def self.rand; end
+
+##
+# Alias of _Random::DEFAULT.rand_.
+def self.rand(limit); end
 
 ##
 # Returns arbitrary value for seed.
-def self.new_seed(); end
+def self.new_seed; end
 
 end
 
@@ -4804,32 +8745,6 @@ end
 # ::VM   
 class RubyVM < Object
 class InstructionSequence < Object
-def inspect(); end
-
-def disasm(); end
-
-def disassemble(); end
-
-def to_a(); end
-
-def eval(); end
-
-def self.load(p1, p2=0); end
-
-def self.compile(p1, p2=0, p3=0, p4=0, p5=0); end
-
-def self.new(p1, p2=0, p3=0, p4=0, p5=0); end
-
-def self.compile_file(p1, p2=0); end
-
-def self.compile_option(); end
-
-def self.compile_option=(p1); end
-
-def self.disasm(p1); end
-
-def self.disassemble(p1); end
-
 end
 
 class Env < Object
@@ -4838,32 +8753,6 @@ end
 end
 
 class InstructionSequence < Object
-def inspect(); end
-
-def disasm(); end
-
-def disassemble(); end
-
-def to_a(); end
-
-def eval(); end
-
-def self.load(p1, p2=0); end
-
-def self.compile(p1, p2=0, p3=0, p4=0, p5=0); end
-
-def self.new(p1, p2=0, p3=0, p4=0, p5=0); end
-
-def self.compile_file(p1, p2=0); end
-
-def self.compile_option(); end
-
-def self.compile_option=(p1); end
-
-def self.disasm(p1); end
-
-def self.disassemble(p1); end
-
 end
 
 class Ripper < Object
@@ -4873,41 +8762,41 @@ class Ripper < Object
 # 
 # This method does not starts parsing.
 # See also Ripper#parse and Ripper.parse.
-def self.new(p1, p2=0, p3=0); end
+def self.new(src, filename=); end
 
 ##
 # Start parsing and returns the value of the root action.
-def parse(); end
+def parse; end
 
 ##
 # Return column number of current parsing line.
 # This number starts from 0.
-def column(); end
+def column; end
 
 ##
 # Return current parsing filename.
-def filename(); end
+def filename; end
 
 ##
 # Return line number of current parsing line.
 # This number starts from 1.
-def lineno(); end
+def lineno; end
 
 ##
 # Return true if parsed source ended by +\_\_END\_\_+.
-def end_seen?(); end
+def end_seen?; end
 
 ##
 # Return encoding of the source.
-def encoding(); end
+def encoding; end
 
 ##
 # Get yydebug.
-def yydebug(); end
+def yydebug; end
 
 ##
 # Set yydebug.
-def yydebug=(p1); end
+def yydebug = flag; end
 
 end
 
@@ -4947,11 +8836,11 @@ include Kernel
 #    l = Demo.new('Fred')
 #    m = l.method("hello")
 #    m.call   #=> "Hello, @iv = Fred"
-def method(p1); end
+def method(sym); end
 
 ##
 # Similar to _method_, searches public method only.
-def public_method(p1); end
+def public_method(sym); end
 
 ##
 # Defines a singleton method in the receiver. The _method_
@@ -4973,7 +8862,29 @@ def public_method(p1); end
 #    guy = "Bob"
 #    guy.define_singleton_method(:hello) { "#{self}: Hello there!" }
 #    guy.hello    #=>  "Bob: Hello there!"
-def define_singleton_method(*args); end
+def define_singleton_method(symbol, method); end
+
+##
+# Defines a singleton method in the receiver. The _method_
+# parameter can be a +Proc+, a +Method+ or an +UnboundMethod+ object.
+# If a block is specified, it is used as the method body.
+# 
+#    class A
+#      class << self
+#        def class_name
+#          to_s
+#        end
+#      end
+#    end
+#    A.define_singleton_method(:who_am_i) do
+#      "I am: #{class_name}"
+#    end
+#    A.who_am_i   # ==> "I am: A"
+# 
+#    guy = "Bob"
+#    guy.define_singleton_method(:hello) { "#{self}: Hello there!" }
+#    guy.hello    #=>  "Bob: Hello there!"
+def define_singleton_method(symbol, &block); end
 
 ##
 # Returns an integer identifier for <i>obj</i>. The same number will
@@ -4982,7 +8893,16 @@ def define_singleton_method(*args); end
 # <code>Object#object_id</code> is a different concept from the
 # <code>:name</code> notation, which returns the symbol id of
 # <code>name</code>. Replaces the deprecated <code>Object#id</code>.
-def object_id(); end
+def __id__; end
+
+##
+# Returns an integer identifier for <i>obj</i>. The same number will
+# be returned on all calls to <code>id</code> for a given object, and
+# no two active objects will share an id.
+# <code>Object#object_id</code> is a different concept from the
+# <code>:name</code> notation, which returns the symbol id of
+# <code>name</code>. Replaces the deprecated <code>Object#id</code>.
+def object_id; end
 
 ##
 # Returns +true+ if _obj_ responds to the given
@@ -4995,14 +8915,14 @@ def object_id(); end
 # 
 # If the method is not defined, <code>respond_to_missing?</code>
 # method is called and the result is returned.
-def respond_to?(p1, p2=0); end
+def respond_to?(symbol, include_private=false); end
 
 ##
 # Hook method to return whether the _obj_ can respond to _id_ method
 # or not.
 # 
 # See #respond_to?.
-def respond_to_missing?(p1, p2); end
+def respond_to_missing?(symbol, include_private); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -5016,7 +8936,21 @@ def respond_to_missing?(p1, p2); end
 #    end
 #    k = Klass.new
 #    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
-def send(*args); end
+def send(symbol , args=0); end
+
+##
+# Invokes the method identified by _symbol_, passing it any
+# arguments specified. You can use <code>__send__</code> if the name
+# +send+ clashes with an existing method in _obj_.
+# 
+#    class Klass
+#      def hello(*args)
+#        "Hello " + args.join(' ')
+#      end
+#    end
+#    k = Klass.new
+#    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
+def __send__(symbol , args=0); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -5024,7 +8958,7 @@ def send(*args); end
 # methods only.
 # 
 #    1.public_send(:puts, "hello")  # causes NoMethodError
-def public_send(*args); end
+def public_send(symbol , args=0); end
 
 ##
 # Creates a new Enumerator which will enumerate by on calling +method+ on
@@ -5048,7 +8982,7 @@ def public_send(*args); end
 #   # protect an array from being modified by some_method
 #   a = [1, 2, 3]
 #   some_method(a.to_enum)
-def to_enum(*args); end
+def to_enum(method = :each, *args); end
 
 ##
 # Creates a new Enumerator which will enumerate by on calling +method+ on
@@ -5072,7 +9006,55 @@ def to_enum(*args); end
 #   # protect an array from being modified by some_method
 #   a = [1, 2, 3]
 #   some_method(a.to_enum)
-def enum_for(*args); end
+def enum_for(method = :each, *args); end
+
+##
+# Creates a new Enumerator which will enumerate by on calling +method+ on
+# +obj+.
+# 
+# +method+:: the method to call on +obj+ to generate the enumeration
+# +args+:: arguments that will be passed in +method+ <i>in addition</i>
+#          to the item itself.  Note that the number of args
+#          must not exceed the number expected by +method+
+# 
+# === Example
+# 
+#   str = "xyz"
+# 
+#   enum = str.enum_for(:each_byte)
+#   enum.each { |b| puts b }
+#   # => 120
+#   # => 121
+#   # => 122
+# 
+#   # protect an array from being modified by some_method
+#   a = [1, 2, 3]
+#   some_method(a.to_enum)
+def to_enum(method = :each, *args); end
+
+##
+# Creates a new Enumerator which will enumerate by on calling +method+ on
+# +obj+.
+# 
+# +method+:: the method to call on +obj+ to generate the enumeration
+# +args+:: arguments that will be passed in +method+ <i>in addition</i>
+#          to the item itself.  Note that the number of args
+#          must not exceed the number expected by +method+
+# 
+# === Example
+# 
+#   str = "xyz"
+# 
+#   enum = str.enum_for(:each_byte)
+#   enum.each { |b| puts b }
+#   # => 120
+#   # => 121
+#   # => 122
+# 
+#   # protect an array from being modified by some_method
+#   a = [1, 2, 3]
+#   some_method(a.to_enum)
+def enum_for(method = :each, *args); end
 
 ##
 # Adds to _obj_ the instance methods from each module given as a
@@ -5094,7 +9076,7 @@ def enum_for(*args); end
 #    k.hello         #=> "Hello from Klass.\n"
 #    k.extend(Mod)   #=> #<Klass:0x401b3bc8>
 #    k.hello         #=> "Hello from Mod.\n"
-def extend(*args); end
+def extend(module, *more); end
 
 ##
 # Prints <i>obj</i> on the given port (default <code>$></code>).
@@ -5114,32 +9096,24 @@ def extend(*args); end
 # <em>produces:</em>
 # 
 #    1cat456
-def display(p1=0); end
-
-##
-# call_seq:
-#   nil.nil?               -> true
-#   <anything_else>.nil?   -> false
-# 
-# Only the object <i>nil</i> responds <code>true</code> to <code>nil?</code>.
-def nil?(); end
+def display(port=$>); end
 
 ##
 # Case Equality---For class <code>Object</code>, effectively the same
 # as calling  <code>#==</code>, but typically overridden by descendants
 # to provide meaningful semantics in <code>case</code> statements.
-def ===(p1); end
+def ===; end
 
 ##
 # Pattern Match---Overridden by descendants (notably
 # <code>Regexp</code> and <code>String</code>) to provide meaningful
 # pattern-match semantics.
-def =~(p1); end
+def =~; end
 
 ##
 # Returns true if two objects do not match (using the <i>=~</i>
 # method), otherwise false.
-def !~(p1); end
+def !~; end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -5163,22 +9137,59 @@ def !~(p1); end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def eql?(p1); end
+def eql?; end
 
 ##
-# Generates a <code>Fixnum</code> hash value for this object.
-# This function must have the property that a.eql?(b) implies
-# a.hash <code>==</code> b.hash.
-# The hash value is used by class <code>Hash</code>.
-# Any hash value that exceeds the capacity of a <code>Fixnum</code> will be
-# truncated before being used.
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
 # 
-#      "waffle".hash #=> -910576647
-def hash(); end
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def equal?(other); end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def eql?(other); end
 
 ##
 # Returns 0 if obj === other, otherwise nil.
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns the class of <i>obj</i>. This method must always be
@@ -5187,7 +9198,7 @@ def <=>(p1); end
 # 
 #    1.class      #=> Fixnum
 #    self.class   #=> Object
-def class(); end
+def class; end
 
 ##
 # Returns the singleton class of <i>obj</i>.  This method creates
@@ -5201,7 +9212,7 @@ def class(); end
 #    Object.new.singleton_class  #=> #<Class:#<Object:0xb7ce1e24>>
 #    String.singleton_class      #=> #<Class:String>
 #    nil.singleton_class         #=> NilClass
-def singleton_class(); end
+def singleton_class; end
 
 ##
 # Produces a shallow copy of <i>obj</i>---the instance variables of
@@ -5222,7 +9233,7 @@ def singleton_class(); end
 # This method may have class-specific behavior.  If so, that
 # behavior will be documented under the #+initialize_copy+ method of
 # the class.
-def clone(); end
+def clone; end
 
 ##
 # Produces a shallow copy of <i>obj</i>---the instance variables of
@@ -5237,33 +9248,33 @@ def clone(); end
 # This method may have class-specific behavior.  If so, that
 # behavior will be documented under the #+initialize_copy+ method of
 # the class.
-def dup(); end
+def dup; end
 
 ##
 # Marks <i>obj</i> as tainted---if the <code>$SAFE</code> level is
 # set appropriately, many method calls which might alter the running
 # programs environment will refuse to accept tainted strings.
-def taint(); end
+def taint; end
 
 ##
 # Returns <code>true</code> if the object is tainted.
-def tainted?(); end
+def tainted?; end
 
 ##
 # Removes the taint from <i>obj</i>.
-def untaint(); end
+def untaint; end
 
 ##
 # Marks <i>obj</i> as untrusted.
-def untrust(); end
+def untrust; end
 
 ##
 # Returns <code>true</code> if the object is untrusted.
-def untrusted?(); end
+def untrusted?; end
 
 ##
 # Removes the untrusted mark from <i>obj</i>.
-def trust(); end
+def trust; end
 
 ##
 # Prevents further modifications to <i>obj</i>. A
@@ -5281,7 +9292,7 @@ def trust(); end
 # 
 #    prog.rb:3:in `<<': can't modify frozen array (RuntimeError)
 #     from prog.rb:3
-def freeze(); end
+def freeze; end
 
 ##
 # Returns the freeze status of <i>obj</i>.
@@ -5289,14 +9300,14 @@ def freeze(); end
 #    a = [ "a", "b", "c" ]
 #    a.freeze    #=> ["a", "b", "c"]
 #    a.frozen?   #=> true
-def frozen?(); end
+def frozen?; end
 
 ##
 # Returns a string representing <i>obj</i>. The default
 # <code>to_s</code> prints the object's class and an encoding of the
 # object id. As a special case, the top-level object that is the
 # initial execution context of Ruby programs returns ``main.''
-def to_s(); end
+def to_s; end
 
 ##
 # Returns a string containing a human-readable representation of
@@ -5307,7 +9318,7 @@ def to_s(); end
 # 
 #    [ 1, 2, 3..4, 'five' ].inspect   #=> "[1, 2, 3..4, \"five\"]"
 #    Time.new.inspect                 #=> "2008-03-08 19:43:39 +0900"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns an array of the names of singleton methods for <i>obj</i>.
@@ -5337,7 +9348,7 @@ def inspect(); end
 #    Single.singleton_methods    #=> [:four]
 #    a.singleton_methods(false)  #=> [:two, :one]
 #    a.singleton_methods         #=> [:two, :one, :three]
-def singleton_methods(p1=0); end
+def singleton_methods(all=true); end
 
 ##
 # Returns an array of instance variable names for the receiver. Note
@@ -5351,7 +9362,7 @@ def singleton_methods(p1=0); end
 #      end
 #    end
 #    Fred.new.instance_variables   #=> [:@iv]
-def instance_variables(); end
+def instance_variables; end
 
 ##
 # Returns the value of the given instance variable, or nil if the
@@ -5368,7 +9379,7 @@ def instance_variables(); end
 #    fred = Fred.new('cat', 99)
 #    fred.instance_variable_get(:@a)    #=> "cat"
 #    fred.instance_variable_get("@b")   #=> 99
-def instance_variable_get(p1); end
+def instance_variable_get(symbol); end
 
 ##
 # Sets the instance variable names by <i>symbol</i> to
@@ -5385,7 +9396,7 @@ def instance_variable_get(p1); end
 #    fred.instance_variable_set(:@a, 'dog')   #=> "dog"
 #    fred.instance_variable_set(:@c, 'cat')   #=> "cat"
 #    fred.inspect                             #=> "#<Fred:0x401b3da8 @a=\"dog\", @b=99, @c=\"cat\">"
-def instance_variable_set(p1, p2); end
+def instance_variable_set(symbol, obj); end
 
 ##
 # Returns <code>true</code> if the given instance variable is
@@ -5400,7 +9411,7 @@ def instance_variable_set(p1, p2); end
 #    fred.instance_variable_defined?(:@a)    #=> true
 #    fred.instance_variable_defined?("@b")   #=> true
 #    fred.instance_variable_defined?("@c")   #=> false
-def instance_variable_defined?(p1); end
+def instance_variable_defined?(symbol); end
 
 ##
 # Removes the named instance variable from <i>obj</i>, returning that
@@ -5419,7 +9430,7 @@ def instance_variable_defined?(p1); end
 #    d.var      #=> 99
 #    d.remove   #=> 99
 #    d.var      #=> nil
-def remove_instance_variable(p1); end
+def remove_instance_variable(symbol); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an instance of the given
@@ -5433,7 +9444,7 @@ def remove_instance_variable(p1); end
 #    b.instance_of? A   #=> false
 #    b.instance_of? B   #=> true
 #    b.instance_of? C   #=> false
-def instance_of?(p1); end
+def instance_of?(class); end
 
 ##
 # Returns <code>true</code> if <i>class</i> is the class of
@@ -5457,7 +9468,7 @@ def instance_of?(p1); end
 #    b.kind_of? B       #=> true
 #    b.kind_of? C       #=> false
 #    b.kind_of? M       #=> true
-def kind_of?(p1); end
+def is_a?(class); end
 
 ##
 # Returns <code>true</code> if <i>class</i> is the class of
@@ -5481,7 +9492,55 @@ def kind_of?(p1); end
 #    b.kind_of? B       #=> true
 #    b.kind_of? C       #=> false
 #    b.kind_of? M       #=> true
-def is_a?(p1); end
+def kind_of?(class); end
+
+##
+# Returns <code>true</code> if <i>class</i> is the class of
+# <i>obj</i>, or if <i>class</i> is one of the superclasses of
+# <i>obj</i> or modules included in <i>obj</i>.
+# 
+#    module M;    end
+#    class A
+#      include M
+#    end
+#    class B < A; end
+#    class C < B; end
+# 
+#    b = B.new
+#    b.is_a? A          #=> true
+#    b.is_a? B          #=> true
+#    b.is_a? C          #=> false
+#    b.is_a? M          #=> true
+# 
+#    b.kind_of? A       #=> true
+#    b.kind_of? B       #=> true
+#    b.kind_of? C       #=> false
+#    b.kind_of? M       #=> true
+def is_a?(class); end
+
+##
+# Returns <code>true</code> if <i>class</i> is the class of
+# <i>obj</i>, or if <i>class</i> is one of the superclasses of
+# <i>obj</i> or modules included in <i>obj</i>.
+# 
+#    module M;    end
+#    class A
+#      include M
+#    end
+#    class B < A; end
+#    class C < B; end
+# 
+#    b = B.new
+#    b.is_a? A          #=> true
+#    b.is_a? B          #=> true
+#    b.is_a? C          #=> false
+#    b.is_a? M          #=> true
+# 
+#    b.kind_of? A       #=> true
+#    b.kind_of? B       #=> true
+#    b.kind_of? C       #=> false
+#    b.kind_of? M       #=> true
+def kind_of?(class); end
 
 ##
 # Yields <code>x</code> to the block, and then returns <code>x</code>.
@@ -5492,7 +9551,7 @@ def is_a?(p1); end
 #       .to_a                .tap {|x| puts "array: #{x.inspect}"}
 #       .select {|x| x%2==0} .tap {|x| puts "evens: #{x.inspect}"}
 #       .map { |x| x*x }     .tap {|x| puts "squares: #{x.inspect}"}
-def tap(); end
+def tap(&block); end
 
 end
 
@@ -5542,7 +9601,10 @@ include Comparable
 ##
 # Create a File::Stat object for the given file name (raising an
 # exception if the file doesn't exist).
-def self.new(p1); end
+##
+# Create a File::Stat object for the given file name (raising an
+# exception if the file doesn't exist).
+def self.new(file_name); end
 
 ##
 # Compares <code>File::Stat</code> objects by comparing their
@@ -5552,14 +9614,14 @@ def self.new(p1); end
 #    sleep 1
 #    f2 = File.new("f2", "w")
 #    f1.stat <=> f2.stat   #=> -1
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns an integer representing the device on which <i>stat</i>
 # resides.
 # 
 #    File.stat("testfile").dev   #=> 774
-def dev(); end
+def dev; end
 
 ##
 # Returns the major part of <code>File_Stat#dev</code> or
@@ -5567,7 +9629,7 @@ def dev(); end
 # 
 #    File.stat("/dev/fd1").dev_major   #=> 2
 #    File.stat("/dev/tty").dev_major   #=> 5
-def dev_major(); end
+def dev_major; end
 
 ##
 # Returns the minor part of <code>File_Stat#dev</code> or
@@ -5575,13 +9637,13 @@ def dev_major(); end
 # 
 #    File.stat("/dev/fd1").dev_minor   #=> 1
 #    File.stat("/dev/tty").dev_minor   #=> 0
-def dev_minor(); end
+def dev_minor; end
 
 ##
 # Returns the inode number for <i>stat</i>.
 # 
 #    File.stat("testfile").ino   #=> 1083669
-def ino(); end
+def ino; end
 
 ##
 # Returns an integer representing the permission bits of
@@ -5591,7 +9653,7 @@ def ino(); end
 #    File.chmod(0644, "testfile")   #=> 1
 #    s = File.stat("testfile")
 #    sprintf("%o", s.mode)          #=> "100644"
-def mode(); end
+def mode; end
 
 ##
 # Returns the number of hard links to <i>stat</i>.
@@ -5599,19 +9661,19 @@ def mode(); end
 #    File.stat("testfile").nlink             #=> 1
 #    File.link("testfile", "testfile.bak")   #=> 0
 #    File.stat("testfile").nlink             #=> 2
-def nlink(); end
+def nlink; end
 
 ##
 # Returns the numeric user id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").uid   #=> 501
-def uid(); end
+def uid; end
 
 ##
 # Returns the numeric group id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").gid   #=> 500
-def gid(); end
+def gid; end
 
 ##
 # Returns an integer representing the device type on which
@@ -5620,7 +9682,7 @@ def gid(); end
 # 
 #    File.stat("/dev/fd1").rdev   #=> 513
 #    File.stat("/dev/tty").rdev   #=> 1280
-def rdev(); end
+def rdev; end
 
 ##
 # Returns the major part of <code>File_Stat#rdev</code> or
@@ -5628,7 +9690,7 @@ def rdev(); end
 # 
 #    File.stat("/dev/fd1").rdev_major   #=> 2
 #    File.stat("/dev/tty").rdev_major   #=> 5
-def rdev_major(); end
+def rdev_major; end
 
 ##
 # Returns the minor part of <code>File_Stat#rdev</code> or
@@ -5636,20 +9698,20 @@ def rdev_major(); end
 # 
 #    File.stat("/dev/fd1").rdev_minor   #=> 1
 #    File.stat("/dev/tty").rdev_minor   #=> 0
-def rdev_minor(); end
+def rdev_minor; end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size(); end
+def size; end
 
 ##
 # Returns the native file system's block size. Will return <code>nil</code>
 # on platforms that don't support this information.
 # 
 #    File.stat("testfile").blksize   #=> 4096
-def blksize(); end
+def blksize; end
 
 ##
 # Returns the number of native file system blocks allocated for this
@@ -5657,20 +9719,20 @@ def blksize(); end
 # support this feature.
 # 
 #    File.stat("testfile").blocks   #=> 2
-def blocks(); end
+def blocks; end
 
 ##
 # Returns the last access time for this file as an object of class
 # <code>Time</code>.
 # 
 #    File.stat("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime(); end
+def atime; end
 
 ##
 # Returns the modification time of <i>stat</i>.
 # 
 #    File.stat("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime(); end
+def mtime; end
 
 ##
 # Returns the change time for <i>stat</i> (that is, the time
@@ -5680,7 +9742,7 @@ def mtime(); end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.stat("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime(); end
+def ctime; end
 
 ##
 # Produce a nicely formatted description of <i>stat</i>.
@@ -5691,7 +9753,7 @@ def ctime(); end
 #      #    blocks=8, atime=Wed Dec 10 10:16:12 CST 2003,
 #      #    mtime=Fri Sep 12 15:41:41 CDT 2003,
 #      #    ctime=Mon Oct 27 11:20:27 CST 2003>"
-def inspect(); end
+def inspect; end
 
 ##
 # Identifies the type of <i>stat</i>. The return string is one of:
@@ -5701,7 +9763,7 @@ def inspect(); end
 # ``<code>socket</code>'', or ``<code>unknown</code>''.
 # 
 #    File.stat("/dev/tty").ftype   #=> "characterSpecial"
-def ftype(); end
+def ftype; end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -5709,21 +9771,21 @@ def ftype(); end
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?(); end
+def directory?(file_name); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").readable?   #=> true
-def readable?(); end
+def readable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").readable_real?   #=> true
-def readable_real?(); end
+def readable_real?; end
 
 ##
 # If <i>stat</i> is readable by others, returns an integer
@@ -5733,21 +9795,21 @@ def readable_real?(); end
 # 
 #    m = File.stat("/etc/passwd").world_readable?  #=> 420
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?(); end
+def world_readable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").writable?   #=> true
-def writable?(); end
+def writable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").writable_real?   #=> true
-def writable_real?(); end
+def writable_real?; end
 
 ##
 # If <i>stat</i> is writable by others, returns an integer
@@ -5757,7 +9819,7 @@ def writable_real?(); end
 # 
 #    m = File.stat("/tmp").world_writable?         #=> 511
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?(); end
+def world_writable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is executable or if the
@@ -5766,32 +9828,32 @@ def world_writable?(); end
 # the process.
 # 
 #    File.stat("testfile").executable?   #=> false
-def executable?(); end
+def executable?; end
 
 ##
 # Same as <code>executable?</code>, but tests using the real owner of
 # the process.
-def executable_real?(); end
+def executable_real?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a regular file (not
 # a device file, pipe, socket, etc.).
 # 
 #    File.stat("testfile").file?   #=> true
-def file?(); end
+def file?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a zero-length file;
 # <code>false</code> otherwise.
 # 
 #    File.stat("testfile").zero?   #=> false
-def zero?(); end
+def zero?; end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size?(); end
+def size; end
 
 ##
 # Returns <code>true</code> if the effective user id of the process is
@@ -5799,7 +9861,7 @@ def size?(); end
 # 
 #    File.stat("testfile").owned?      #=> true
 #    File.stat("/etc/passwd").owned?   #=> false
-def owned?(); end
+def owned?; end
 
 ##
 # Returns true if the effective group id of the process is the same as
@@ -5807,12 +9869,12 @@ def owned?(); end
 # 
 #    File.stat("testfile").grpowned?      #=> true
 #    File.stat("/etc/passwd").grpowned?   #=> false
-def grpowned?(); end
+def grpowned?; end
 
 ##
 # Returns <code>true</code> if the operating system supports pipes and
 # <i>stat</i> is a pipe; <code>false</code> otherwise.
-def pipe?(); end
+def pipe?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a symbolic link,
@@ -5825,7 +9887,7 @@ def pipe?(); end
 #    File.symlink("testfile", "alink")   #=> 0
 #    File.stat("alink").symlink?         #=> false
 #    File.lstat("alink").symlink?        #=> true
-def symlink?(); end
+def symlink?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a socket,
@@ -5833,7 +9895,7 @@ def symlink?(); end
 # support this feature.
 # 
 #    File.stat("testfile").socket?   #=> false
-def socket?(); end
+def socket?; end
 
 ##
 # Returns <code>true</code> if the file is a block device,
@@ -5842,7 +9904,7 @@ def socket?(); end
 # 
 #    File.stat("testfile").blockdev?    #=> false
 #    File.stat("/dev/hda1").blockdev?   #=> true
-def blockdev?(); end
+def blockdev?; end
 
 ##
 # Returns <code>true</code> if the file is a character device,
@@ -5850,7 +9912,7 @@ def blockdev?(); end
 # support this feature.
 # 
 #    File.stat("/dev/tty").chardev?   #=> true
-def chardev?(); end
+def chardev?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-user-id
@@ -5858,7 +9920,7 @@ def chardev?(); end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/bin/su").setuid?   #=> true
-def setuid?(); end
+def setuid?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-group-id
@@ -5866,7 +9928,7 @@ def setuid?(); end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/usr/sbin/lpc").setgid?   #=> true
-def setgid?(); end
+def setgid?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has its sticky bit set,
@@ -5874,7 +9936,7 @@ def setgid?(); end
 # support this feature.
 # 
 #    File.stat("testfile").sticky?   #=> false
-def sticky?(); end
+def sticky?; end
 
 end
 
@@ -5883,7 +9945,7 @@ end
 # <code>File::Stat</code>).
 # 
 #    File.stat("testfile").mtime   #=> Tue Apr 08 12:58:04 CDT 2003
-def self.stat(p1); end
+def self.stat(file_name); end
 
 ##
 # Same as <code>File::stat</code>, but does not follow the last symbolic
@@ -5893,7 +9955,7 @@ def self.stat(p1); end
 #    File.stat("testfile").size              #=> 66
 #    File.lstat("link2test").size            #=> 8
 #    File.stat("link2test").size             #=> 66
-def self.lstat(p1); end
+def self.lstat(file_name); end
 
 ##
 # Identifies the type of the named file; the return string is one of
@@ -5905,19 +9967,19 @@ def self.lstat(p1); end
 #    File.ftype("testfile")            #=> "file"
 #    File.ftype("/dev/tty")            #=> "characterSpecial"
 #    File.ftype("/tmp/.X11-unix/X0")   #=> "socket"
-def self.ftype(p1); end
+def self.ftype(file_name); end
 
 ##
 # Returns the last access time for the named file as a Time object).
 # 
 #    File.atime("testfile")   #=> Wed Apr 09 08:51:48 CDT 2003
-def self.atime(p1); end
+def self.atime(file_name); end
 
 ##
 # Returns the modification time for the named file as a Time object.
 # 
 #    File.mtime("testfile")   #=> Tue Apr 08 12:58:04 CDT 2003
-def self.mtime(p1); end
+def self.mtime(file_name); end
 
 ##
 # Returns the change time for the named file (the time at which
@@ -5927,13 +9989,13 @@ def self.mtime(p1); end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.ctime("testfile")   #=> Wed Apr 09 08:53:13 CDT 2003
-def self.ctime(p1); end
+def self.ctime(file_name); end
 
 ##
 # Sets the access and modification times of each
 # named file to the first two arguments. Returns
 # the number of file names in the argument list.
-def self.utime(p1, p2, *args); end
+def self.utime(atime, mtime, file_name,*more); end
 
 ##
 # Changes permission bits on the named file(s) to the bit pattern
@@ -5943,7 +10005,7 @@ def self.utime(p1, p2, *args); end
 # processed.
 # 
 #    File.chmod(0644, "testfile", "out")   #=> 2
-def self.chmod(p1, *args); end
+def self.chmod(mode_int, file_name, *more ); end
 
 ##
 # Changes the owner and group of the named file(s) to the given
@@ -5954,20 +10016,20 @@ def self.chmod(p1, *args); end
 # Returns the number of files processed.
 # 
 #    File.chown(nil, 100, "testfile")
-def self.chown(p1, p2, *args); end
+def self.chown(owner_int, group_int, file_name,*more ); end
 
 ##
 # Equivalent to <code>File::chmod</code>, but does not follow symbolic
 # links (so it will change the permissions associated with the link,
 # not the file referenced by the link). Often not available.
-def self.lchmod(p1, *args); end
+def self.lchmod(mode_int, file_name, *more); end
 
 ##
 # Equivalent to <code>File::chown</code>, but does not follow symbolic
 # links (so it will change the owner associated with the link, not the
 # file referenced by the link). Often not available. Returns number
 # of files in the argument list.
-def self.lchown(p1, p2, *args); end
+def self.lchown(owner_int, group_int, file_name,..); end
 
 ##
 # Creates a new name for an existing file using a hard link. Will not
@@ -5976,7 +10038,7 @@ def self.lchown(p1, p2, *args); end
 # 
 #    File.link("testfile", ".testfile")   #=> 0
 #    IO.readlines(".testfile")[0]         #=> "This is line one\n"
-def self.link(p1, p2); end
+def self.link(old_name, new_name); end
 
 ##
 # Creates a symbolic link called <i>new_name</i> for the existing file
@@ -5984,7 +10046,7 @@ def self.link(p1, p2); end
 # platforms that do not support symbolic links.
 # 
 #    File.symlink("testfile", "link2test")   #=> 0
-def self.symlink(p1, p2); end
+def self.symlink(old_name, new_name); end
 
 ##
 # Returns the name of the file referenced by the given link.
@@ -5992,26 +10054,38 @@ def self.symlink(p1, p2); end
 # 
 #    File.symlink("testfile", "link2test")   #=> 0
 #    File.readlink("link2test")              #=> "testfile"
-def self.readlink(p1); end
+def self.readlink(link_name); end
 
 ##
 # Deletes the named files, returning the number of names
 # passed as arguments. Raises an exception on any error.
 # See also <code>Dir::rmdir</code>.
-def self.unlink(*args); end
+def self.delete(file_name, *more); end
 
 ##
 # Deletes the named files, returning the number of names
 # passed as arguments. Raises an exception on any error.
 # See also <code>Dir::rmdir</code>.
-def self.delete(*args); end
+def self.unlink(file_name, *more); end
+
+##
+# Deletes the named files, returning the number of names
+# passed as arguments. Raises an exception on any error.
+# See also <code>Dir::rmdir</code>.
+def self.delete(file_name, *more); end
+
+##
+# Deletes the named files, returning the number of names
+# passed as arguments. Raises an exception on any error.
+# See also <code>Dir::rmdir</code>.
+def self.unlink(file_name, *more); end
 
 ##
 # Renames the given file to the new name. Raises a
 # <code>SystemCallError</code> if the file cannot be renamed.
 # 
 #    File.rename("afile", "afile.bak")   #=> 0
-def self.rename(p1, p2); end
+def self.rename(old_name, new_name); end
 
 ##
 # Returns the current umask value for this process. If the optional
@@ -6022,7 +10096,18 @@ def self.rename(p1, p2); end
 # 
 #    File.umask(0006)   #=> 18
 #    File.umask         #=> 6
-def self.umask(*args); end
+def self.umask(); end
+
+##
+# Returns the current umask value for this process. If the optional
+# argument is given, set the umask to that value and return the
+# previous value. Umask values are <em>subtracted</em> from the
+# default permissions, so a umask of <code>0222</code> would make a
+# file read-only for everyone.
+# 
+#    File.umask(0006)   #=> 18
+#    File.umask         #=> 6
+def self.umask(integer); end
 
 ##
 # Truncates the file <i>file_name</i> to be at most <i>integer</i>
@@ -6033,7 +10118,7 @@ def self.umask(*args); end
 #    f.close                   #=> nil
 #    File.truncate("out", 5)   #=> 0
 #    File.size("out")          #=> 5
-def self.truncate(p1, p2); end
+def self.truncate(file_name, integer); end
 
 ##
 # Converts a pathname to an absolute pathname. Relative paths are
@@ -6047,7 +10132,7 @@ def self.truncate(p1, p2); end
 # 
 #    File.expand_path("~oracle/bin")           #=> "/home/oracle/bin"
 #    File.expand_path("../../bin", "/tmp/x")   #=> "/bin"
-def self.expand_path(p1, p2=0); end
+def self.expand_path(file_name  , dir_string=0); end
 
 ##
 # Converts a pathname to an absolute pathname. Relative paths are
@@ -6057,7 +10142,7 @@ def self.expand_path(p1, p2=0); end
 # it is NOT expanded, it is treated as a normal directory name.
 # 
 #    File.absolute_path("~oracle/bin")       #=> "<relative_path>/~oracle/bin"
-def self.absolute_path(p1, p2=0); end
+def self.absolute_path(file_name  , dir_string=0); end
 
 ##
 # Returns the real (absolute) pathname of _pathname_ in the actual
@@ -6068,7 +10153,7 @@ def self.absolute_path(p1, p2=0); end
 # 
 # All components of the pathname must exist when this method is
 # called.
-def self.realpath(p1, p2=0); end
+def self.realpath(pathname , dir_string=0); end
 
 ##
 # Returns the real (absolute) pathname of _pathname_ in the actual filesystem.
@@ -6078,7 +10163,7 @@ def self.realpath(p1, p2=0); end
 # for interpreting relative pathname instead of the current directory.
 # 
 # The last component of the real pathname can be nonexistent.
-def self.realdirpath(p1, p2=0); end
+def self.realdirpath(pathname , dir_string=0); end
 
 ##
 # Returns the last component of the filename given in <i>file_name</i>,
@@ -6089,7 +10174,7 @@ def self.realdirpath(p1, p2=0); end
 # 
 #    File.basename("/home/gumby/work/ruby.rb")          #=> "ruby.rb"
 #    File.basename("/home/gumby/work/ruby.rb", ".rb")   #=> "ruby"
-def self.basename(p1, p2=0); end
+def self.basename(file_name  , suffix=0); end
 
 ##
 # Returns all components of the filename given in <i>file_name</i>
@@ -6098,7 +10183,7 @@ def self.basename(p1, p2=0); end
 # local file system.
 # 
 #    File.dirname("/home/gumby/work/ruby.rb")   #=> "/home/gumby/work"
-def self.dirname(p1); end
+def self.dirname(file_name ); end
 
 ##
 # Returns the extension (the portion of file name in <i>path</i>
@@ -6108,14 +10193,14 @@ def self.dirname(p1); end
 #    File.extname("a/b/d/test.rb")   #=> ".rb"
 #    File.extname("test")            #=> ""
 #    File.extname(".profile")        #=> ""
-def self.extname(p1); end
+def self.extname(path); end
 
 ##
 # Returns the string representation of the path
 # 
 #    File.path("/dev/null")          #=> "/dev/null"
 #    File.path(Pathname.new("/tmp")) #=> "/tmp"
-def self.path(p1); end
+def self.path(path); end
 
 ##
 # Splits the given string into a directory and a file component and
@@ -6123,14 +10208,14 @@ def self.path(p1); end
 # <code>File::dirname</code> and <code>File::basename</code>.
 # 
 #    File.split("/home/gumby/.profile")   #=> ["/home/gumby", ".profile"]
-def self.split(p1); end
+def self.split(file_name); end
 
 ##
 # Returns a new string formed by joining the strings using
 # <code>File::SEPARATOR</code>.
 # 
 #    File.join("usr", "mail", "gumby")   #=> "usr/mail/gumby"
-def self.join(*args); end
+def self.join(string, *more); end
 
 ##
 # Same as <code>IO#stat</code>, but does not follow the last symbolic
@@ -6141,20 +10226,20 @@ def self.join(*args); end
 #    f = File.new("link2test")
 #    f.lstat.size                            #=> 8
 #    f.stat.size                             #=> 66
-def lstat(); end
+def lstat; end
 
 ##
 # Returns the last access time (a <code>Time</code> object)
 #  for <i>file</i>, or epoch if <i>file</i> has not been accessed.
 # 
 #    File.new("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime(); end
+def atime; end
 
 ##
 # Returns the modification time for <i>file</i>.
 # 
 #    File.new("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime(); end
+def mtime; end
 
 ##
 # Returns the change time for <i>file</i> (that is, the time directory
@@ -6163,13 +10248,13 @@ def mtime(); end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.new("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime(); end
+def ctime; end
 
 ##
 # Returns the size of <i>file</i> in bytes.
 # 
 #    File.new("testfile").size   #=> 66
-def size(); end
+def size; end
 
 ##
 # Changes permission bits on <i>file</i> to the bit pattern
@@ -6179,7 +10264,7 @@ def size(); end
 # 
 #    f = File.new("out", "w");
 #    f.chmod(0644)   #=> 0
-def chmod(p1); end
+def chmod(mode_int); end
 
 ##
 # Changes the owner and group of <i>file</i> to the given numeric
@@ -6190,7 +10275,7 @@ def chmod(p1); end
 # symbolic links. See also <code>File#lchown</code>.
 # 
 #    File.new("testfile").chown(502, 1000)
-def chown(p1, p2); end
+def chown(owner_int, group_int ); end
 
 ##
 # Truncates <i>file</i> to at most <i>integer</i> bytes. The file
@@ -6201,7 +10286,7 @@ def chown(p1, p2); end
 #    f.truncate(5)              #=> 0
 #    f.close()                  #=> nil
 #    File.size("out")           #=> 5
-def truncate(p1); end
+def truncate(integer); end
 
 ##
 # Locks or unlocks a file according to <i>locking_constant</i> (a
@@ -6241,7 +10326,7 @@ def truncate(p1); end
 #      f.flock(File::LOCK_SH)
 #      p f.read
 #    }
-def flock(p1); end
+def flock (locking_constant ); end
 
 ##
 # Returns the pathname used to create <i>file</i> as a string. Does
@@ -6249,7 +10334,7 @@ def flock(p1); end
 # 
 #    File.new("testfile").path               #=> "testfile"
 #    File.new("/tmp/../tmp/xxx", "w").path   #=> "/tmp/../tmp/xxx"
-def path(); end
+def path; end
 
 ##
 # Returns the pathname used to create <i>file</i> as a string. Does
@@ -6257,7 +10342,7 @@ def path(); end
 # 
 #    File.new("testfile").path               #=> "testfile"
 #    File.new("/tmp/../tmp/xxx", "w").path   #=> "/tmp/../tmp/xxx"
-def to_path(); end
+def path; end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -6265,26 +10350,35 @@ def to_path(); end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.directory?(p1); end
+def self.directory?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
 # <code>false</code> otherwise.
-def self.exist?(p1); end
+def self.exist?(file_name); end
+
+##
+# Returns <code>true</code> if the named file is a directory,
+# <code>false</code> otherwise.
+def self.exists?(file_name); end
 
 ##
 # Return <code>true</code> if the named file exists.
-def self.exists?(p1); end
+def self.exist?(file_name); end
+
+##
+# Return <code>true</code> if the named file exists.
+def self.exists?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the effective
 # user id of this process.
-def self.readable?(p1); end
+def self.readable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is readable by the real
 # user id of this process.
-def self.readable_real?(p1); end
+def self.readable_real?(file_name); end
 
 ##
 # If <i>file_name</i> is readable by others, returns an integer
@@ -6295,17 +10389,17 @@ def self.readable_real?(p1); end
 #    File.world_readable?("/etc/passwd")           #=> 420
 #    m = File.world_readable?("/etc/passwd")
 #    sprintf("%o", m)                              #=> "644"
-def self.world_readable?(p1); end
+def self.world_readable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the effective
 # user id of this process.
-def self.writable?(p1); end
+def self.writable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is writable by the real
 # user id of this process.
-def self.writable_real?(p1); end
+def self.writable_real?(file_name); end
 
 ##
 # If <i>file_name</i> is writable by others, returns an integer
@@ -6316,80 +10410,80 @@ def self.writable_real?(p1); end
 #    File.world_writable?("/tmp")                  #=> 511
 #    m = File.world_writable?("/tmp")
 #    sprintf("%o", m)                              #=> "777"
-def self.world_writable?(p1); end
+def self.world_writable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the effective
 # user id of this process.
-def self.executable?(p1); end
+def self.executable?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is executable by the real
 # user id of this process.
-def self.executable_real?(p1); end
+def self.executable_real?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and is a
 # regular file.
-def self.file?(p1); end
+def self.file?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and has
 # a zero size.
-def self.zero?(p1); end
+def self.zero?(file_name); end
 
 ##
 # Returns +nil+ if +file_name+ doesn't exist or has zero size, the size of the
 # file otherwise.
-def self.size?(p1); end
+def self.size?(file_name); end
 
 ##
 # Returns the size of <code>file_name</code>.
-def self.size(p1); end
+def self.size(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective used id of the calling process is the owner of
 # the file.
-def self.owned?(p1); end
+def self.owned?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file exists and the
 # effective group id of the calling process is the owner of
 # the file. Returns <code>false</code> on Windows.
-def self.grpowned?(p1); end
+def self.grpowned?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a pipe.
-def self.pipe?(p1); end
+def self.pipe?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a symbolic link.
-def self.symlink?(p1); end
+def self.symlink?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a socket.
-def self.socket?(p1); end
+def self.socket?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a block device.
-def self.blockdev?(p1); end
+def self.blockdev?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a character device.
-def self.chardev?(p1); end
+def self.chardev?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the setuid bit set.
-def self.setuid?(p1); end
+def self.setuid?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the setgid bit set.
-def self.setgid?(p1); end
+def self.setgid?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file has the sticky bit set.
-def self.sticky?(p1); end
+def self.sticky?(file_name); end
 
 ##
 # Returns <code>true</code> if the named files are identical.
@@ -6403,7 +10497,7 @@ def self.sticky?(p1); end
 #     p File.identical?("a", "c")      #=> true
 #     open("d", "w") {}
 #     p File.identical?("a", "d")      #=> false
-def self.identical?(p1, p2); end
+def self.identical?(file_1, file_2); end
 
 ##
 # Returns true if <i>path</i> matches against <i>pattern</i> The
@@ -6481,7 +10575,7 @@ def self.identical?(p1, p2); end
 #    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
-def self.fnmatch(p1, p2, p3=0); end
+def self.fnmatch( pattern, path,  , flags=0); end
 
 ##
 # Returns true if <i>path</i> matches against <i>pattern</i> The
@@ -6559,7 +10653,163 @@ def self.fnmatch(p1, p2, p3=0); end
 #    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
 #    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
-def self.fnmatch?(p1, p2, p3=0); end
+def self.fnmatch?( pattern, path,  , flags=0); end
+
+##
+# Returns true if <i>path</i> matches against <i>pattern</i> The
+# pattern is not a regular expression; instead it follows rules
+# similar to shell filename globbing. It may contain the following
+# metacharacters:
+# 
+# <code>*</code>::        Matches any file. Can be restricted by
+#                         other values in the glob. <code>*</code>
+#                         will match all files; <code>c*</code> will
+#                         match all files beginning with
+#                         <code>c</code>; <code>*c</code> will match
+#                         all files ending with <code>c</code>; and
+#                         <code>\*c*</code> will match all files that
+#                         have <code>c</code> in them (including at
+#                         the beginning or end). Equivalent to
+#                         <code>/ .* /x</code> in regexp.
+# <code>**</code>::       Matches directories recursively or files
+#                         expansively.
+# <code>?</code>::        Matches any one character. Equivalent to
+#                         <code>/.{1}/</code> in regexp.
+# <code>[set]</code>::    Matches any one character in +set+.
+#                         Behaves exactly like character sets in
+#                         Regexp, including set negation
+#                         (<code>[^a-z]</code>).
+# <code>\</code>::        Escapes the next metacharacter.
+# 
+# <i>flags</i> is a bitwise OR of the <code>FNM_xxx</code>
+# parameters. The same glob pattern and flags are used by
+# <code>Dir::glob</code>.
+# 
+#    File.fnmatch('cat',       'cat')        #=> true  # match entire string
+#    File.fnmatch('cat',       'category')   #=> false # only match partial string
+#    File.fnmatch('c{at,ub}s', 'cats')       #=> false # { } isn't supported
+# 
+#    File.fnmatch('c?t',     'cat')          #=> true  # '?' match only 1 character
+#    File.fnmatch('c??t',    'cat')          #=> false # ditto
+#    File.fnmatch('c*',      'cats')         #=> true  # '*' match 0 or more characters
+#    File.fnmatch('c*t',     'c/a/b/t')      #=> true  # ditto
+#    File.fnmatch('ca[a-z]', 'cat')          #=> true  # inclusive bracket expression
+#    File.fnmatch('ca[^t]',  'cat')          #=> false # exclusive bracket expression ('^' or '!')
+# 
+#    File.fnmatch('cat', 'CAT')                     #=> false # case sensitive
+#    File.fnmatch('cat', 'CAT', File::FNM_CASEFOLD) #=> true  # case insensitive
+# 
+#    File.fnmatch('?',   '/', File::FNM_PATHNAME)  #=> false # wildcard doesn't match '/' on FNM_PATHNAME
+#    File.fnmatch('*',   '/', File::FNM_PATHNAME)  #=> false # ditto
+#    File.fnmatch('[/]', '/', File::FNM_PATHNAME)  #=> false # ditto
+# 
+#    File.fnmatch('\?',   '?')                       #=> true  # escaped wildcard becomes ordinary
+#    File.fnmatch('\a',   'a')                       #=> true  # escaped ordinary remains ordinary
+#    File.fnmatch('\a',   '\a', File::FNM_NOESCAPE)  #=> true  # FNM_NOESACPE makes '\' ordinary
+#    File.fnmatch('[\?]', '?')                       #=> true  # can escape inside bracket expression
+# 
+#    File.fnmatch('*',   '.profile')                      #=> false # wildcard doesn't match leading
+#    File.fnmatch('*',   '.profile', File::FNM_DOTMATCH)  #=> true  # period by default.
+#    File.fnmatch('.*',  '.profile')                      #=> true
+# 
+#    rbfiles = '**' '/' '*.rb' # you don't have to do like this. just write in single string.
+#    File.fnmatch(rbfiles, 'main.rb')                    #=> false
+#    File.fnmatch(rbfiles, './main.rb')                  #=> false
+#    File.fnmatch(rbfiles, 'lib/song.rb')                #=> true
+#    File.fnmatch('**.rb', 'main.rb')                    #=> true
+#    File.fnmatch('**.rb', './main.rb')                  #=> false
+#    File.fnmatch('**.rb', 'lib/song.rb')                #=> true
+#    File.fnmatch('*',           'dave/.profile')                      #=> true
+# 
+#    pattern = '*' '/' '*'
+#    File.fnmatch(pattern, 'dave/.profile', File::FNM_PATHNAME)  #=> false
+#    File.fnmatch(pattern, 'dave/.profile', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
+# 
+#    pattern = '**' '/' 'foo'
+#    File.fnmatch(pattern, 'a/b/c/foo', File::FNM_PATHNAME)     #=> true
+#    File.fnmatch(pattern, '/a/b/c/foo', File::FNM_PATHNAME)    #=> true
+#    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
+#    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
+#    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
+def self.fnmatch( pattern, path,  , flags=0); end
+
+##
+# Returns true if <i>path</i> matches against <i>pattern</i> The
+# pattern is not a regular expression; instead it follows rules
+# similar to shell filename globbing. It may contain the following
+# metacharacters:
+# 
+# <code>*</code>::        Matches any file. Can be restricted by
+#                         other values in the glob. <code>*</code>
+#                         will match all files; <code>c*</code> will
+#                         match all files beginning with
+#                         <code>c</code>; <code>*c</code> will match
+#                         all files ending with <code>c</code>; and
+#                         <code>\*c*</code> will match all files that
+#                         have <code>c</code> in them (including at
+#                         the beginning or end). Equivalent to
+#                         <code>/ .* /x</code> in regexp.
+# <code>**</code>::       Matches directories recursively or files
+#                         expansively.
+# <code>?</code>::        Matches any one character. Equivalent to
+#                         <code>/.{1}/</code> in regexp.
+# <code>[set]</code>::    Matches any one character in +set+.
+#                         Behaves exactly like character sets in
+#                         Regexp, including set negation
+#                         (<code>[^a-z]</code>).
+# <code>\</code>::        Escapes the next metacharacter.
+# 
+# <i>flags</i> is a bitwise OR of the <code>FNM_xxx</code>
+# parameters. The same glob pattern and flags are used by
+# <code>Dir::glob</code>.
+# 
+#    File.fnmatch('cat',       'cat')        #=> true  # match entire string
+#    File.fnmatch('cat',       'category')   #=> false # only match partial string
+#    File.fnmatch('c{at,ub}s', 'cats')       #=> false # { } isn't supported
+# 
+#    File.fnmatch('c?t',     'cat')          #=> true  # '?' match only 1 character
+#    File.fnmatch('c??t',    'cat')          #=> false # ditto
+#    File.fnmatch('c*',      'cats')         #=> true  # '*' match 0 or more characters
+#    File.fnmatch('c*t',     'c/a/b/t')      #=> true  # ditto
+#    File.fnmatch('ca[a-z]', 'cat')          #=> true  # inclusive bracket expression
+#    File.fnmatch('ca[^t]',  'cat')          #=> false # exclusive bracket expression ('^' or '!')
+# 
+#    File.fnmatch('cat', 'CAT')                     #=> false # case sensitive
+#    File.fnmatch('cat', 'CAT', File::FNM_CASEFOLD) #=> true  # case insensitive
+# 
+#    File.fnmatch('?',   '/', File::FNM_PATHNAME)  #=> false # wildcard doesn't match '/' on FNM_PATHNAME
+#    File.fnmatch('*',   '/', File::FNM_PATHNAME)  #=> false # ditto
+#    File.fnmatch('[/]', '/', File::FNM_PATHNAME)  #=> false # ditto
+# 
+#    File.fnmatch('\?',   '?')                       #=> true  # escaped wildcard becomes ordinary
+#    File.fnmatch('\a',   'a')                       #=> true  # escaped ordinary remains ordinary
+#    File.fnmatch('\a',   '\a', File::FNM_NOESCAPE)  #=> true  # FNM_NOESACPE makes '\' ordinary
+#    File.fnmatch('[\?]', '?')                       #=> true  # can escape inside bracket expression
+# 
+#    File.fnmatch('*',   '.profile')                      #=> false # wildcard doesn't match leading
+#    File.fnmatch('*',   '.profile', File::FNM_DOTMATCH)  #=> true  # period by default.
+#    File.fnmatch('.*',  '.profile')                      #=> true
+# 
+#    rbfiles = '**' '/' '*.rb' # you don't have to do like this. just write in single string.
+#    File.fnmatch(rbfiles, 'main.rb')                    #=> false
+#    File.fnmatch(rbfiles, './main.rb')                  #=> false
+#    File.fnmatch(rbfiles, 'lib/song.rb')                #=> true
+#    File.fnmatch('**.rb', 'main.rb')                    #=> true
+#    File.fnmatch('**.rb', './main.rb')                  #=> false
+#    File.fnmatch('**.rb', 'lib/song.rb')                #=> true
+#    File.fnmatch('*',           'dave/.profile')                      #=> true
+# 
+#    pattern = '*' '/' '*'
+#    File.fnmatch(pattern, 'dave/.profile', File::FNM_PATHNAME)  #=> false
+#    File.fnmatch(pattern, 'dave/.profile', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
+# 
+#    pattern = '**' '/' 'foo'
+#    File.fnmatch(pattern, 'a/b/c/foo', File::FNM_PATHNAME)     #=> true
+#    File.fnmatch(pattern, '/a/b/c/foo', File::FNM_PATHNAME)    #=> true
+#    File.fnmatch(pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME)  #=> true
+#    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME)    #=> false
+#    File.fnmatch(pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH) #=> true
+def self.fnmatch?( pattern, path,  , flags=0); end
 
 ##
 # With no associated block, <code>File.open</code> is a synonym for
@@ -6569,7 +10819,37 @@ def self.fnmatch?(p1, p2, p3=0); end
 # <code>File.open</code> returns the value of the block.
 # 
 # See IO.new for a list of values for the +opt+ parameter.
-def self.open(*args); end
+def self.open(filename, mode="r" , opt=0); end
+
+##
+# With no associated block, <code>File.open</code> is a synonym for
+# File.new. If the optional code block is given, it will
+# be passed the opened +file+ as an argument, and the File object will
+# automatically be closed when the block terminates.  In this instance,
+# <code>File.open</code> returns the value of the block.
+# 
+# See IO.new for a list of values for the +opt+ parameter.
+def self.open(filename , mode=0, perm=0, opt=0); end
+
+##
+# With no associated block, <code>File.open</code> is a synonym for
+# File.new. If the optional code block is given, it will
+# be passed the opened +file+ as an argument, and the File object will
+# automatically be closed when the block terminates.  In this instance,
+# <code>File.open</code> returns the value of the block.
+# 
+# See IO.new for a list of values for the +opt+ parameter.
+def self.open(filename, mode="r" , opt=0, &block); end
+
+##
+# With no associated block, <code>File.open</code> is a synonym for
+# File.new. If the optional code block is given, it will
+# be passed the opened +file+ as an argument, and the File object will
+# automatically be closed when the block terminates.  In this instance,
+# <code>File.open</code> returns the value of the block.
+# 
+# See IO.new for a list of values for the +opt+ parameter.
+def self.open(filename , mode=0, perm=0, opt=0, &block); end
 
 ##
 # Opens the file named by +filename+ according to +mode+ (default is "r")
@@ -6592,7 +10872,30 @@ def self.open(*args); end
 #   f = File.new("testfile", "r")
 #   f = File.new("newfile",  "w+")
 #   f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
-def self.new(*args); end
+def self.new(filename, mode="r" , opt=0); end
+
+##
+# Opens the file named by +filename+ according to +mode+ (default is "r")
+# and returns a new <code>File</code> object.
+# 
+# === Parameters
+# 
+# See the description of class IO for a description of +mode+.  The file
+# mode may optionally be specified as a Fixnum by +or+-ing together the
+# flags (O_RDONLY etc, again described under +IO+).
+# 
+# Optional permission bits may be given in +perm+.  These mode and
+# permission bits are platform dependent; on Unix systems, see
+# <code>open(2)</code> for details.
+# 
+# Optional +opt+ parameter is same as in IO.open.
+# 
+# === Examples
+# 
+#   f = File.new("testfile", "r")
+#   f = File.new("newfile",  "w+")
+#   f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
+def self.new(filename , mode=0, perm=0, opt=0); end
 
 end
 
@@ -6611,7 +10914,10 @@ include Comparable
 ##
 # Create a File::Stat object for the given file name (raising an
 # exception if the file doesn't exist).
-def self.new(p1); end
+##
+# Create a File::Stat object for the given file name (raising an
+# exception if the file doesn't exist).
+def self.new(file_name); end
 
 ##
 # Compares <code>File::Stat</code> objects by comparing their
@@ -6621,14 +10927,14 @@ def self.new(p1); end
 #    sleep 1
 #    f2 = File.new("f2", "w")
 #    f1.stat <=> f2.stat   #=> -1
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns an integer representing the device on which <i>stat</i>
 # resides.
 # 
 #    File.stat("testfile").dev   #=> 774
-def dev(); end
+def dev; end
 
 ##
 # Returns the major part of <code>File_Stat#dev</code> or
@@ -6636,7 +10942,7 @@ def dev(); end
 # 
 #    File.stat("/dev/fd1").dev_major   #=> 2
 #    File.stat("/dev/tty").dev_major   #=> 5
-def dev_major(); end
+def dev_major; end
 
 ##
 # Returns the minor part of <code>File_Stat#dev</code> or
@@ -6644,13 +10950,13 @@ def dev_major(); end
 # 
 #    File.stat("/dev/fd1").dev_minor   #=> 1
 #    File.stat("/dev/tty").dev_minor   #=> 0
-def dev_minor(); end
+def dev_minor; end
 
 ##
 # Returns the inode number for <i>stat</i>.
 # 
 #    File.stat("testfile").ino   #=> 1083669
-def ino(); end
+def ino; end
 
 ##
 # Returns an integer representing the permission bits of
@@ -6660,7 +10966,7 @@ def ino(); end
 #    File.chmod(0644, "testfile")   #=> 1
 #    s = File.stat("testfile")
 #    sprintf("%o", s.mode)          #=> "100644"
-def mode(); end
+def mode; end
 
 ##
 # Returns the number of hard links to <i>stat</i>.
@@ -6668,19 +10974,19 @@ def mode(); end
 #    File.stat("testfile").nlink             #=> 1
 #    File.link("testfile", "testfile.bak")   #=> 0
 #    File.stat("testfile").nlink             #=> 2
-def nlink(); end
+def nlink; end
 
 ##
 # Returns the numeric user id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").uid   #=> 501
-def uid(); end
+def uid; end
 
 ##
 # Returns the numeric group id of the owner of <i>stat</i>.
 # 
 #    File.stat("testfile").gid   #=> 500
-def gid(); end
+def gid; end
 
 ##
 # Returns an integer representing the device type on which
@@ -6689,7 +10995,7 @@ def gid(); end
 # 
 #    File.stat("/dev/fd1").rdev   #=> 513
 #    File.stat("/dev/tty").rdev   #=> 1280
-def rdev(); end
+def rdev; end
 
 ##
 # Returns the major part of <code>File_Stat#rdev</code> or
@@ -6697,7 +11003,7 @@ def rdev(); end
 # 
 #    File.stat("/dev/fd1").rdev_major   #=> 2
 #    File.stat("/dev/tty").rdev_major   #=> 5
-def rdev_major(); end
+def rdev_major; end
 
 ##
 # Returns the minor part of <code>File_Stat#rdev</code> or
@@ -6705,20 +11011,20 @@ def rdev_major(); end
 # 
 #    File.stat("/dev/fd1").rdev_minor   #=> 1
 #    File.stat("/dev/tty").rdev_minor   #=> 0
-def rdev_minor(); end
+def rdev_minor; end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size(); end
+def size; end
 
 ##
 # Returns the native file system's block size. Will return <code>nil</code>
 # on platforms that don't support this information.
 # 
 #    File.stat("testfile").blksize   #=> 4096
-def blksize(); end
+def blksize; end
 
 ##
 # Returns the number of native file system blocks allocated for this
@@ -6726,20 +11032,20 @@ def blksize(); end
 # support this feature.
 # 
 #    File.stat("testfile").blocks   #=> 2
-def blocks(); end
+def blocks; end
 
 ##
 # Returns the last access time for this file as an object of class
 # <code>Time</code>.
 # 
 #    File.stat("testfile").atime   #=> Wed Dec 31 18:00:00 CST 1969
-def atime(); end
+def atime; end
 
 ##
 # Returns the modification time of <i>stat</i>.
 # 
 #    File.stat("testfile").mtime   #=> Wed Apr 09 08:53:14 CDT 2003
-def mtime(); end
+def mtime; end
 
 ##
 # Returns the change time for <i>stat</i> (that is, the time
@@ -6749,7 +11055,7 @@ def mtime(); end
 # Note that on Windows (NTFS), returns creation time (birth time).
 # 
 #    File.stat("testfile").ctime   #=> Wed Apr 09 08:53:14 CDT 2003
-def ctime(); end
+def ctime; end
 
 ##
 # Produce a nicely formatted description of <i>stat</i>.
@@ -6760,7 +11066,7 @@ def ctime(); end
 #      #    blocks=8, atime=Wed Dec 10 10:16:12 CST 2003,
 #      #    mtime=Fri Sep 12 15:41:41 CDT 2003,
 #      #    ctime=Mon Oct 27 11:20:27 CST 2003>"
-def inspect(); end
+def inspect; end
 
 ##
 # Identifies the type of <i>stat</i>. The return string is one of:
@@ -6770,7 +11076,7 @@ def inspect(); end
 # ``<code>socket</code>'', or ``<code>unknown</code>''.
 # 
 #    File.stat("/dev/tty").ftype   #=> "characterSpecial"
-def ftype(); end
+def ftype; end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -6778,21 +11084,21 @@ def ftype(); end
 # otherwise.
 # 
 #    File.directory?(".")
-def directory?(); end
+def directory?(file_name); end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").readable?   #=> true
-def readable?(); end
+def readable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is readable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").readable_real?   #=> true
-def readable_real?(); end
+def readable_real?; end
 
 ##
 # If <i>stat</i> is readable by others, returns an integer
@@ -6802,21 +11108,21 @@ def readable_real?(); end
 # 
 #    m = File.stat("/etc/passwd").world_readable?  #=> 420
 #    sprintf("%o", m)                              #=> "644"
-def world_readable?(); end
+def world_readable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the
 # effective user id of this process.
 # 
 #    File.stat("testfile").writable?   #=> true
-def writable?(); end
+def writable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is writable by the real
 # user id of this process.
 # 
 #    File.stat("testfile").writable_real?   #=> true
-def writable_real?(); end
+def writable_real?; end
 
 ##
 # If <i>stat</i> is writable by others, returns an integer
@@ -6826,7 +11132,7 @@ def writable_real?(); end
 # 
 #    m = File.stat("/tmp").world_writable?         #=> 511
 #    sprintf("%o", m)                              #=> "777"
-def world_writable?(); end
+def world_writable?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is executable or if the
@@ -6835,32 +11141,32 @@ def world_writable?(); end
 # the process.
 # 
 #    File.stat("testfile").executable?   #=> false
-def executable?(); end
+def executable?; end
 
 ##
 # Same as <code>executable?</code>, but tests using the real owner of
 # the process.
-def executable_real?(); end
+def executable_real?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a regular file (not
 # a device file, pipe, socket, etc.).
 # 
 #    File.stat("testfile").file?   #=> true
-def file?(); end
+def file?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a zero-length file;
 # <code>false</code> otherwise.
 # 
 #    File.stat("testfile").zero?   #=> false
-def zero?(); end
+def zero?; end
 
 ##
 # Returns the size of <i>stat</i> in bytes.
 # 
 #    File.stat("testfile").size   #=> 66
-def size?(); end
+def size; end
 
 ##
 # Returns <code>true</code> if the effective user id of the process is
@@ -6868,7 +11174,7 @@ def size?(); end
 # 
 #    File.stat("testfile").owned?      #=> true
 #    File.stat("/etc/passwd").owned?   #=> false
-def owned?(); end
+def owned?; end
 
 ##
 # Returns true if the effective group id of the process is the same as
@@ -6876,12 +11182,12 @@ def owned?(); end
 # 
 #    File.stat("testfile").grpowned?      #=> true
 #    File.stat("/etc/passwd").grpowned?   #=> false
-def grpowned?(); end
+def grpowned?; end
 
 ##
 # Returns <code>true</code> if the operating system supports pipes and
 # <i>stat</i> is a pipe; <code>false</code> otherwise.
-def pipe?(); end
+def pipe?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a symbolic link,
@@ -6894,7 +11200,7 @@ def pipe?(); end
 #    File.symlink("testfile", "alink")   #=> 0
 #    File.stat("alink").symlink?         #=> false
 #    File.lstat("alink").symlink?        #=> true
-def symlink?(); end
+def symlink?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> is a socket,
@@ -6902,7 +11208,7 @@ def symlink?(); end
 # support this feature.
 # 
 #    File.stat("testfile").socket?   #=> false
-def socket?(); end
+def socket?; end
 
 ##
 # Returns <code>true</code> if the file is a block device,
@@ -6911,7 +11217,7 @@ def socket?(); end
 # 
 #    File.stat("testfile").blockdev?    #=> false
 #    File.stat("/dev/hda1").blockdev?   #=> true
-def blockdev?(); end
+def blockdev?; end
 
 ##
 # Returns <code>true</code> if the file is a character device,
@@ -6919,7 +11225,7 @@ def blockdev?(); end
 # support this feature.
 # 
 #    File.stat("/dev/tty").chardev?   #=> true
-def chardev?(); end
+def chardev?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-user-id
@@ -6927,7 +11233,7 @@ def chardev?(); end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/bin/su").setuid?   #=> true
-def setuid?(); end
+def setuid?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has the set-group-id
@@ -6935,7 +11241,7 @@ def setuid?(); end
 # operating system doesn't support this feature.
 # 
 #    File.stat("/usr/sbin/lpc").setgid?   #=> true
-def setgid?(); end
+def setgid?; end
 
 ##
 # Returns <code>true</code> if <i>stat</i> has its sticky bit set,
@@ -6943,7 +11249,7 @@ def setgid?(); end
 # support this feature.
 # 
 #    File.stat("testfile").sticky?   #=> false
-def sticky?(); end
+def sticky?; end
 
 end
 
@@ -7038,7 +11344,7 @@ include Constants
 #    "%o" % s.mode   #=> "100644"
 #    s.blksize       #=> 4096
 #    s.atime         #=> Wed Apr 09 08:53:54 CDT 2003
-def stat(); end
+def stat; end
 
 ##
 # With no associated block, <code>IO.open</code> is a synonym for IO.new. If
@@ -7047,18 +11353,27 @@ def stat(); end
 # terminates. In this instance, IO.open returns the value of the block.
 # 
 # See IO.new for a description of values for the +opt+ parameter.
-def self.open(*args); end
+def self.open(fd, mode_string="r" , opt=0); end
+
+##
+# With no associated block, <code>IO.open</code> is a synonym for IO.new. If
+# the optional code block is given, it will be passed +io+ as an
+# argument, and the IO object will automatically be closed when the block
+# terminates. In this instance, IO.open returns the value of the block.
+# 
+# See IO.new for a description of values for the +opt+ parameter.
+def self.open(fd, mode_string="r" , opt=0, &block); end
 
 ##
 # Opens the given path, returning the underlying file descriptor as a
 # <code>Fixnum</code>.
 # 
 #    IO.sysopen("testfile")   #=> 3
-def self.sysopen(p1, p2=0, p3=0); end
+def self.sysopen(path, , mode=0, perm=0); end
 
 ##
 # Synonym for <code>IO.new</code>.
-def self.for_fd(*args); end
+def self.for_fd(fd, mode , opt=0); end
 
 ##
 # Runs the specified command as a subprocess; the subprocess's
@@ -7137,7 +11452,86 @@ def self.for_fd(*args); end
 #    21352 is here, f is nil
 #    #<Process::Status: pid 21352 exit 0>
 #    <foo>bar;zot;
-def self.popen(p1, p2=0, p3=0{}); end
+def self.popen(cmd, mode="r" , opt=0); end
+
+##
+# Runs the specified command as a subprocess; the subprocess's
+# standard input and output will be connected to the returned
+# <code>IO</code> object.
+# 
+# The PID of the started process can be obtained by IO#pid method.
+# 
+# _cmd_ is a string or an array as follows.
+# 
+#   cmd:
+#     "-"                                      : fork
+#     commandline                              : command line string which is passed to a shell
+#     [env, cmdname, arg1, ..., opts]          : command name and zero or more arguments (no shell)
+#     [env, [cmdname, argv0], arg1, ..., opts] : command name, argv[0] and zero or more arguments (no shell)
+#   (env and opts are optional.)
+# 
+# If _cmd_ is a +String+ ``<code>-</code>'',
+# then a new instance of Ruby is started as the subprocess.
+# 
+# If <i>cmd</i> is an +Array+ of +String+,
+# then it will be used as the subprocess's +argv+ bypassing a shell.
+# The array can contains a hash at first for environments and
+# a hash at last for options similar to <code>spawn</code>.
+# 
+# The default mode for the new file object is ``r'',
+# but <i>mode</i> may be set to any of the modes listed in the description for class IO.
+# The last argument <i>opt</i> qualifies <i>mode</i>.
+# 
+#   # set IO encoding
+#   IO.popen("nkf -e filename", :external_encoding=>"EUC-JP") {|nkf_io|
+#     euc_jp_string = nkf_io.read
+#   }
+# 
+#   # merge standard output and standard error using
+#   # spawn option.  See the document of Kernel.spawn.
+#   IO.popen(["ls", "/", :err=>[:child, :out]]) {|ls_io|
+#     ls_result_with_error = ls_io.read
+#   }
+# 
+# Raises exceptions which <code>IO.pipe</code> and
+# <code>Kernel.spawn</code> raise.
+# 
+# If a block is given, Ruby will run the command as a child connected
+# to Ruby with a pipe. Ruby's end of the pipe will be passed as a
+# parameter to the block.
+# At the end of block, Ruby close the pipe and sets <code>$?</code>.
+# In this case <code>IO.popen</code> returns
+# the value of the block.
+# 
+# If a block is given with a _cmd_ of ``<code>-</code>'',
+# the block will be run in two separate processes: once in the parent,
+# and once in a child. The parent process will be passed the pipe
+# object as a parameter to the block, the child version of the block
+# will be passed <code>nil</code>, and the child's standard in and
+# standard out will be connected to the parent through the pipe. Not
+# available on all platforms.
+# 
+#    f = IO.popen("uname")
+#    p f.readlines
+#    f.close
+#    puts "Parent is #{Process.pid}"
+#    IO.popen("date") { |f| puts f.gets }
+#    IO.popen("-") {|f| $stderr.puts "#{Process.pid} is here, f is #{f.inspect}"}
+#    p $?
+#    IO.popen(%w"sed -e s|^|<foo>| -e s&$&;zot;&", "r+") {|f|
+#      f.puts "bar"; f.close_write; puts f.gets
+#    }
+# 
+# <em>produces:</em>
+# 
+#    ["Linux\n"]
+#    Parent is 21346
+#    Thu Jan 15 22:41:19 JST 2009
+#    21346 is here, f is #<IO:fd 3>
+#    21352 is here, f is nil
+#    #<Process::Status: pid 21352 exit 0>
+#    <foo>bar;zot;
+def self.popen(cmd, mode="r" , opt=0, &block); end
 
 ##
 # Executes the block for every line in the named I/O port, where lines
@@ -7156,7 +11550,64 @@ def self.popen(p1, p2=0, p3=0{}); end
 # 
 # If the last argument is a hash, it's the keyword argument to open.
 # See <code>IO.read</code> for detail.
-def self.foreach(p1, p2=0, p3=0, p4=0, p5=0{}); end
+def self.foreach(name, sep=$/ , open_args=0, &block); end
+
+##
+# Executes the block for every line in the named I/O port, where lines
+# are separated by <em>sep</em>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    IO.foreach("testfile") {|x| print "GOT ", x }
+# 
+# <em>produces:</em>
+# 
+#    GOT This is line one
+#    GOT This is line two
+#    GOT This is line three
+#    GOT And so on...
+# 
+# If the last argument is a hash, it's the keyword argument to open.
+# See <code>IO.read</code> for detail.
+def self.foreach(name, limit , open_args=0, &block); end
+
+##
+# Executes the block for every line in the named I/O port, where lines
+# are separated by <em>sep</em>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    IO.foreach("testfile") {|x| print "GOT ", x }
+# 
+# <em>produces:</em>
+# 
+#    GOT This is line one
+#    GOT This is line two
+#    GOT This is line three
+#    GOT And so on...
+# 
+# If the last argument is a hash, it's the keyword argument to open.
+# See <code>IO.read</code> for detail.
+def self.foreach(name, sep, limit , open_args=0, &block); end
+
+##
+# Executes the block for every line in the named I/O port, where lines
+# are separated by <em>sep</em>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    IO.foreach("testfile") {|x| print "GOT ", x }
+# 
+# <em>produces:</em>
+# 
+#    GOT This is line one
+#    GOT This is line two
+#    GOT This is line three
+#    GOT And so on...
+# 
+# If the last argument is a hash, it's the keyword argument to open.
+# See <code>IO.read</code> for detail.
+def self.foreach(*more); end
 
 ##
 # Reads the entire file specified by <i>name</i> as individual
@@ -7168,7 +11619,31 @@ def self.foreach(p1, p2=0, p3=0, p4=0, p5=0{}); end
 # 
 # If the last argument is a hash, it's the keyword argument to open.
 # See <code>IO.read</code> for detail.
-def self.readlines(p1, p2=0, p3=0, p4=0, p5=0{}); end
+def self.readlines(name, sep=$/ , open_args=0); end
+
+##
+# Reads the entire file specified by <i>name</i> as individual
+# lines, and returns those lines in an array. Lines are separated by
+# <i>sep</i>.
+# 
+#    a = IO.readlines("testfile")
+#    a[0]   #=> "This is line one\n"
+# 
+# If the last argument is a hash, it's the keyword argument to open.
+# See <code>IO.read</code> for detail.
+def self.readlines(name, limit , open_args=0); end
+
+##
+# Reads the entire file specified by <i>name</i> as individual
+# lines, and returns those lines in an array. Lines are separated by
+# <i>sep</i>.
+# 
+#    a = IO.readlines("testfile")
+#    a[0]   #=> "This is line one\n"
+# 
+# If the last argument is a hash, it's the keyword argument to open.
+# See <code>IO.read</code> for detail.
+def self.readlines(name, sep, limit , open_args=0); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, then returns
@@ -7196,7 +11671,35 @@ def self.readlines(p1, p2=0, p3=0, p4=0, p5=0{}); end
 #    IO.read("testfile")           #=> "This is line one\nThis is line two\nThis is line three\nAnd so on...\n"
 #    IO.read("testfile", 20)       #=> "This is line one\nThi"
 #    IO.read("testfile", 20, 10)   #=> "ne one\nThis is line "
-def self.read(p1, p2=0, p3=0, p4=0, p5=0{}); end
+def self.read(name,  , length=0, offset=0); end
+
+##
+# Opens the file, optionally seeks to the given <i>offset</i>, then returns
+# <i>length</i> bytes (defaulting to the rest of the file).
+# <code>read</code> ensures the file is closed before returning.
+# 
+# If the last argument is a hash, it specifies option for internal
+# open().  The key would be the following.  open_args: is exclusive
+# to others.
+# 
+#  encoding: string or encoding
+# 
+#   specifies encoding of the read string.  encoding will be ignored
+#   if length is specified.
+# 
+#  mode: string
+# 
+#   specifies mode argument for open().  it should start with "r"
+#   otherwise it would cause error.
+# 
+#  open_args: array of strings
+# 
+#   specifies arguments for open() as an array.
+# 
+#    IO.read("testfile")           #=> "This is line one\nThis is line two\nThis is line three\nAnd so on...\n"
+#    IO.read("testfile", 20)       #=> "This is line one\nThi"
+#    IO.read("testfile", 20, 10)   #=> "ne one\nThis is line "
+def self.read(name, , open_args, length=0, offset=0); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, then returns
@@ -7207,7 +11710,7 @@ def self.read(p1, p2=0, p3=0, p4=0, p5=0{}); end
 #    IO.binread("testfile")           #=> "This is line one\nThis is line two\nThis is line three\nAnd so on...\n"
 #    IO.binread("testfile", 20)       #=> "This is line one\nThi"
 #    IO.binread("testfile", 20, 10)   #=> "ne one\nThis is line "
-def self.binread(p1, p2=0, p3=0); end
+def self.binread(name,  , length=0, offset=0); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, writes
@@ -7242,7 +11745,42 @@ def self.binread(p1, p2=0, p3=0); end
 #    # File could contain:  "This is line one\nThi0123456789two\nThis is line three\nAnd so on...\n"
 #    IO.write("testfile", "0123456789")      #=> 10
 #    # File would now read: "0123456789"
-def self.write(*args); end
+def self.write(name, string,  )   => fixnu, offset=0); end
+
+##
+# Opens the file, optionally seeks to the given <i>offset</i>, writes
+# <i>string</i>, then returns the length written.
+# <code>write</code> ensures the file is closed before returning.
+# If <i>offset</i> is not given, the file is truncated.  Otherwise,
+# it is not truncated.
+# 
+# If the last argument is a hash, it specifies option for internal
+# open().  The key would be the following.  open_args: is exclusive
+# to others.
+# 
+#  encoding: string or encoding
+# 
+#   specifies encoding of the read string.  encoding will be ignored
+#   if length is specified.
+# 
+#  mode: string
+# 
+#   specifies mode argument for open().  it should start with "w" or "a" or "r+"
+#   otherwise it would cause error.
+# 
+#  perm: fixnum
+# 
+#   specifies perm argument for open().
+# 
+#  open_args: array
+# 
+#   specifies arguments for open() as an array.
+# 
+#    IO.write("testfile", "0123456789", 20) # => 10
+#    # File could contain:  "This is line one\nThi0123456789two\nThis is line three\nAnd so on...\n"
+#    IO.write("testfile", "0123456789")      #=> 10
+#    # File would now read: "0123456789"
+def self.write(name, string, , open_args )   => fixnu, offset=0); end
 
 ##
 # Opens the file, optionally seeks to the given <i>offset</i>, writes
@@ -7256,7 +11794,7 @@ def self.write(*args); end
 #    # File could contain:  "This is line one\nThi0123456789two\nThis is line three\nAnd so on...\n"
 #    IO.binwrite("testfile", "0123456789")      #=> 10
 #    # File would now read: "0123456789"
-def self.binwrite(*args); end
+def self.binwrite(name, string,  )   => fixnu, offset=0); end
 
 ##
 # Calls select(2) system call.
@@ -7301,7 +11839,142 @@ def self.binwrite(*args); end
 #     ping pong
 #     (snipped)
 #     ping
-def self.select(p1, p2=0, p3=0, p4=0); end
+def self.select(read_arra); end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def self.select; end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def self.select; end
+
+##
+# Calls select(2) system call.
+# It monitors given arrays of <code>IO</code> objects, waits one or more
+# of <code>IO</code> objects ready for reading, are ready for writing,
+# and have pending exceptions respectably, and returns an array that
+# contains arrays of those IO objects.  It will return <code>nil</code>
+# if optional <i>timeout</i> value is given and no <code>IO</code> object
+# is ready in <i>timeout</i> seconds.
+# 
+# === Parameters
+# read_array:: an array of <code>IO</code> objects that wait until ready for read
+# write_array:: an array of <code>IO</code> objects that wait until ready for write
+# error_array:: an array of <code>IO</code> objects that wait for exceptions
+# timeout:: a numeric value in second
+# 
+# === Example
+# 
+#     rp, wp = IO.pipe
+#     mesg = "ping "
+#     100.times {
+#       rs, ws, = IO.select([rp], [wp])
+#       if r = rs[0]
+#         ret = r.read(5)
+#         print ret
+#         case ret
+#         when /ping/
+#           mesg = "pong\n"
+#         when /pong/
+#           mesg = "ping "
+#         end
+#       end
+#       if w = ws[0]
+#         w.write(mesg)
+#       end
+#     }
+# 
+# <em>produces:</em>
+# 
+#     ping pong
+#     ping pong
+#     ping pong
+#     (snipped)
+#     ping
+def self.select; end
 
 ##
 # Creates a pair of pipe endpoints (connected to each other) and
@@ -7353,7 +12026,215 @@ def self.select(p1, p2=0, p3=0, p4=0); end
 # 
 #    Sending message to parent
 #    Parent got: <Hi Dad>
-def self.pipe(p1=0, p2=0, p3=0{}); end
+def self.pipe; end
+
+##
+# Creates a pair of pipe endpoints (connected to each other) and
+# returns them as a two-element array of <code>IO</code> objects:
+# <code>[</code> <i>read_io</i>, <i>write_io</i> <code>]</code>.
+# 
+# If a block is given, the block is called and
+# returns the value of the block.
+# <i>read_io</i> and <i>write_io</i> are sent to the block as arguments.
+# If read_io and write_io are not closed when the block exits, they are closed.
+# i.e. closing read_io and/or write_io doesn't cause an error.
+# 
+# Not available on all platforms.
+# 
+# If an encoding (encoding name or encoding object) is specified as an optional argument,
+# read string from pipe is tagged with the encoding specified.
+# If the argument is a colon separated two encoding names "A:B",
+# the read string is converted from encoding A (external encoding)
+# to encoding B (internal encoding), then tagged with B.
+# If two optional arguments are specified, those must be
+# encoding objects or encoding names,
+# and the first one is the external encoding,
+# and the second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+# 
+# In the example below, the two processes close the ends of the pipe
+# that they are not using. This is not just a cosmetic nicety. The
+# read end of a pipe will not generate an end of file condition if
+# there are any writers with the pipe still open. In the case of the
+# parent process, the <code>rd.read</code> will never return if it
+# does not first issue a <code>wr.close</code>.
+# 
+#    rd, wr = IO.pipe
+# 
+#    if fork
+#      wr.close
+#      puts "Parent got: <#{rd.read}>"
+#      rd.close
+#      Process.wait
+#    else
+#      rd.close
+#      puts "Sending message to parent"
+#      wr.write "Hi Dad"
+#      wr.close
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Sending message to parent
+#    Parent got: <Hi Dad>
+def self.pipe(ext_enc); end
+
+##
+# Creates a pair of pipe endpoints (connected to each other) and
+# returns them as a two-element array of <code>IO</code> objects:
+# <code>[</code> <i>read_io</i>, <i>write_io</i> <code>]</code>.
+# 
+# If a block is given, the block is called and
+# returns the value of the block.
+# <i>read_io</i> and <i>write_io</i> are sent to the block as arguments.
+# If read_io and write_io are not closed when the block exits, they are closed.
+# i.e. closing read_io and/or write_io doesn't cause an error.
+# 
+# Not available on all platforms.
+# 
+# If an encoding (encoding name or encoding object) is specified as an optional argument,
+# read string from pipe is tagged with the encoding specified.
+# If the argument is a colon separated two encoding names "A:B",
+# the read string is converted from encoding A (external encoding)
+# to encoding B (internal encoding), then tagged with B.
+# If two optional arguments are specified, those must be
+# encoding objects or encoding names,
+# and the first one is the external encoding,
+# and the second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+# 
+# In the example below, the two processes close the ends of the pipe
+# that they are not using. This is not just a cosmetic nicety. The
+# read end of a pipe will not generate an end of file condition if
+# there are any writers with the pipe still open. In the case of the
+# parent process, the <code>rd.read</code> will never return if it
+# does not first issue a <code>wr.close</code>.
+# 
+#    rd, wr = IO.pipe
+# 
+#    if fork
+#      wr.close
+#      puts "Parent got: <#{rd.read}>"
+#      rd.close
+#      Process.wait
+#    else
+#      rd.close
+#      puts "Sending message to parent"
+#      wr.write "Hi Dad"
+#      wr.close
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Sending message to parent
+#    Parent got: <Hi Dad>
+def self.pipe("ext_enc:int_enc" , opt=0); end
+
+##
+# Creates a pair of pipe endpoints (connected to each other) and
+# returns them as a two-element array of <code>IO</code> objects:
+# <code>[</code> <i>read_io</i>, <i>write_io</i> <code>]</code>.
+# 
+# If a block is given, the block is called and
+# returns the value of the block.
+# <i>read_io</i> and <i>write_io</i> are sent to the block as arguments.
+# If read_io and write_io are not closed when the block exits, they are closed.
+# i.e. closing read_io and/or write_io doesn't cause an error.
+# 
+# Not available on all platforms.
+# 
+# If an encoding (encoding name or encoding object) is specified as an optional argument,
+# read string from pipe is tagged with the encoding specified.
+# If the argument is a colon separated two encoding names "A:B",
+# the read string is converted from encoding A (external encoding)
+# to encoding B (internal encoding), then tagged with B.
+# If two optional arguments are specified, those must be
+# encoding objects or encoding names,
+# and the first one is the external encoding,
+# and the second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+# 
+# In the example below, the two processes close the ends of the pipe
+# that they are not using. This is not just a cosmetic nicety. The
+# read end of a pipe will not generate an end of file condition if
+# there are any writers with the pipe still open. In the case of the
+# parent process, the <code>rd.read</code> will never return if it
+# does not first issue a <code>wr.close</code>.
+# 
+#    rd, wr = IO.pipe
+# 
+#    if fork
+#      wr.close
+#      puts "Parent got: <#{rd.read}>"
+#      rd.close
+#      Process.wait
+#    else
+#      rd.close
+#      puts "Sending message to parent"
+#      wr.write "Hi Dad"
+#      wr.close
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Sending message to parent
+#    Parent got: <Hi Dad>
+def self.pipe(ext_enc, int_enc , opt=0); end
+
+##
+# Creates a pair of pipe endpoints (connected to each other) and
+# returns them as a two-element array of <code>IO</code> objects:
+# <code>[</code> <i>read_io</i>, <i>write_io</i> <code>]</code>.
+# 
+# If a block is given, the block is called and
+# returns the value of the block.
+# <i>read_io</i> and <i>write_io</i> are sent to the block as arguments.
+# If read_io and write_io are not closed when the block exits, they are closed.
+# i.e. closing read_io and/or write_io doesn't cause an error.
+# 
+# Not available on all platforms.
+# 
+# If an encoding (encoding name or encoding object) is specified as an optional argument,
+# read string from pipe is tagged with the encoding specified.
+# If the argument is a colon separated two encoding names "A:B",
+# the read string is converted from encoding A (external encoding)
+# to encoding B (internal encoding), then tagged with B.
+# If two optional arguments are specified, those must be
+# encoding objects or encoding names,
+# and the first one is the external encoding,
+# and the second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+# 
+# In the example below, the two processes close the ends of the pipe
+# that they are not using. This is not just a cosmetic nicety. The
+# read end of a pipe will not generate an end of file condition if
+# there are any writers with the pipe still open. In the case of the
+# parent process, the <code>rd.read</code> will never return if it
+# does not first issue a <code>wr.close</code>.
+# 
+#    rd, wr = IO.pipe
+# 
+#    if fork
+#      wr.close
+#      puts "Parent got: <#{rd.read}>"
+#      rd.close
+#      Process.wait
+#    else
+#      rd.close
+#      puts "Sending message to parent"
+#      wr.write "Hi Dad"
+#      wr.close
+#    end
+# 
+# <em>produces:</em>
+# 
+#    Sending message to parent
+#    Parent got: <Hi Dad>
+def self.pipe(*more, &block); end
 
 ##
 # Try to convert <i>obj</i> into an IO, using to_io method.
@@ -7367,7 +12248,7 @@ def self.pipe(p1=0, p2=0, p3=0{}); end
 #    f = open("/tmp/zz.gz")       #=> #<File:/tmp/zz.gz>
 #    z = Zlib::GzipReader.open(f) #=> #<Zlib::GzipReader:0x81d8744>
 #    IO.try_convert(z)            #=> #<File:/tmp/zz.gz>
-def self.try_convert(p1); end
+def self.try_convert(obj); end
 
 ##
 # IO.copy_stream copies <i>src</i> to <i>dst</i>.
@@ -7390,7 +12271,53 @@ def self.try_convert(p1); end
 # When <i>src_offset</i> is specified and
 # <i>src</i> is an IO,
 # IO.copy_stream doesn't move the current file offset.
-def self.copy_stream(p1, p2, p3=0, p4=0); end
+def self.copy_stream(src, dst); end
+
+##
+# IO.copy_stream copies <i>src</i> to <i>dst</i>.
+# <i>src</i> and <i>dst</i> is either a filename or an IO.
+# 
+# This method returns the number of bytes copied.
+# 
+# If optional arguments are not given,
+# the start position of the copy is
+# the beginning of the filename or
+# the current file offset of the IO.
+# The end position of the copy is the end of file.
+# 
+# If <i>copy_length</i> is given,
+# No more than <i>copy_length</i> bytes are copied.
+# 
+# If <i>src_offset</i> is given,
+# it specifies the start position of the copy.
+# 
+# When <i>src_offset</i> is specified and
+# <i>src</i> is an IO,
+# IO.copy_stream doesn't move the current file offset.
+def self.copy_stream(src, dst, copy_length); end
+
+##
+# IO.copy_stream copies <i>src</i> to <i>dst</i>.
+# <i>src</i> and <i>dst</i> is either a filename or an IO.
+# 
+# This method returns the number of bytes copied.
+# 
+# If optional arguments are not given,
+# the start position of the copy is
+# the beginning of the filename or
+# the current file offset of the IO.
+# The end position of the copy is the end of file.
+# 
+# If <i>copy_length</i> is given,
+# No more than <i>copy_length</i> bytes are copied.
+# 
+# If <i>src_offset</i> is given,
+# it specifies the start position of the copy.
+# 
+# When <i>src_offset</i> is specified and
+# <i>src</i> is an IO,
+# IO.copy_stream doesn't move the current file offset.
+def self.copy_stream(src, dst, copy_length, src_offset); end
 
 ##
 # Returns a new IO object (a stream) for the given IO object or integer file
@@ -7475,7 +12402,7 @@ def self.copy_stream(p1, p2, p3=0, p4=0); end
 # 
 # Both of above print "Hello, World!" in UTF-16LE to standard error output
 # with converting EOL generated by <code>puts</code> to CR.
-def self.new(p1, p2=0, p3=0{}); end
+def self.new(fd , mode=0, opt=0); end
 
 ##
 # Reassociates <em>ios</em> with the I/O stream given in
@@ -7487,7 +12414,19 @@ def self.new(p1, p2=0, p3=0{}); end
 #    f2.readlines[0]   #=> "This is line one\n"
 #    f2.reopen(f1)     #=> #<File:testfile>
 #    f2.readlines[0]   #=> "This is line one\n"
-def reopen(p1, p2=0); end
+def reopen(other_IO); end
+
+##
+# Reassociates <em>ios</em> with the I/O stream given in
+# <i>other_IO</i> or to a new stream opened on <i>path</i>. This may
+# dynamically change the actual class of this stream.
+# 
+#    f1 = File.new("testfile")
+#    f2 = File.new("testfile")
+#    f2.readlines[0]   #=> "This is line one\n"
+#    f2.reopen(f1)     #=> #<File:testfile>
+#    f2.readlines[0]   #=> "This is line one\n"
+def reopen(path, mode_str); end
 
 ##
 # Writes the given object(s) to <em>ios</em>. The stream must be
@@ -7505,7 +12444,25 @@ def reopen(p1, p2=0); end
 # <em>produces:</em>
 # 
 #    This is 100 percent.
-def print(*args); end
+def print(); end
+
+##
+# Writes the given object(s) to <em>ios</em>. The stream must be
+# opened for writing. If the output field separator (<code>$,</code>)
+# is not <code>nil</code>, it will be inserted between each object.
+# If the output record separator (<code>$\\</code>)
+# is not <code>nil</code>, it will be appended to the output. If no
+# arguments are given, prints <code>$_</code>. Objects that aren't
+# strings will be converted by calling their <code>to_s</code> method.
+# With no argument, prints the contents of the variable <code>$_</code>.
+# Returns <code>nil</code>.
+# 
+#    $stdout.print("This is ", 100, " percent.\n")
+# 
+# <em>produces:</em>
+# 
+#    This is 100 percent.
+def print(obj, *more); end
 
 ##
 # If <i>obj</i> is <code>Numeric</code>, write the character whose code is
@@ -7520,7 +12477,7 @@ def print(*args); end
 # <em>produces:</em>
 # 
 #    AA
-def putc(p1); end
+def putc(obj); end
 
 ##
 # Writes the given objects to <em>ios</em> as with
@@ -7537,13 +12494,13 @@ def putc(p1); end
 #    is
 #    a
 #    test
-def puts(*args); end
+def puts(obj, *more); end
 
 ##
 # Formats and writes to <em>ios</em>, converting parameters under
 # control of the format string. See <code>Kernel#sprintf</code>
 # for details.
-def printf(*args); end
+def printf(format_string , obj=0); end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7561,7 +12518,7 @@ def printf(*args); end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def each(*args); end
+def each(sep=$/, &block); end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7579,7 +12536,403 @@ def each(*args); end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def each_line(*args); end
+def each(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(*more); end
 
 ##
 # Calls the given block once for each byte (0..255) in <em>ios</em>,
@@ -7592,7 +12945,46 @@ def each_line(*args); end
 #    checksum = 0
 #    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
 #    checksum                           #=> 12
-def each_byte(); end
+def bytes(&block); end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def bytes; end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def each_byte(&block); end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def each_byte; end
 
 ##
 # Calls the given block once for each character in <em>ios</em>,
@@ -7603,7 +12995,40 @@ def each_byte(); end
 # 
 #    f = File.new("testfile")
 #    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
-def each_char(); end
+def chars(&block); end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def chars; end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def each_char(&block); end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def each_char; end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
@@ -7611,7 +13036,31 @@ def each_char(); end
 # reading or an <code>IOError</code> will be raised.
 # 
 # If no block is given, an enumerator is returned instead.
-def each_codepoint(); end
+def each_codepoint(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def codepoints(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_codepoint; end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def codepoints; end
 
 ##
 # Executes the block for every line in <em>ios</em>, where lines are
@@ -7629,7 +13078,205 @@ def each_codepoint(); end
 #    2: This is line two
 #    3: This is line three
 #    4: And so on...
-def lines(*args); end
+def each(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def each_line(*more); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep=$/, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(sep,limit, &block); end
+
+##
+# Executes the block for every line in <em>ios</em>, where lines are
+# separated by <i>sep</i>. <em>ios</em> must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each {|line| puts "#{f.lineno}: #{line}" }
+# 
+# <em>produces:</em>
+# 
+#    1: This is line one
+#    2: This is line two
+#    3: This is line three
+#    4: And so on...
+def lines(*more); end
 
 ##
 # Calls the given block once for each byte (0..255) in <em>ios</em>,
@@ -7642,7 +13289,46 @@ def lines(*args); end
 #    checksum = 0
 #    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
 #    checksum                           #=> 12
-def bytes(); end
+def bytes(&block); end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def bytes; end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def each_byte(&block); end
+
+##
+# Calls the given block once for each byte (0..255) in <em>ios</em>,
+# passing the byte as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    checksum = 0
+#    f.each_byte {|x| checksum ^= x }   #=> #<File:testfile>
+#    checksum                           #=> 12
+def each_byte; end
 
 ##
 # Calls the given block once for each character in <em>ios</em>,
@@ -7653,7 +13339,40 @@ def bytes(); end
 # 
 #    f = File.new("testfile")
 #    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
-def chars(); end
+def chars(&block); end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def chars; end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def each_char(&block); end
+
+##
+# Calls the given block once for each character in <em>ios</em>,
+# passing the character as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    f = File.new("testfile")
+#    f.each_char {|c| print c, ' ' }   #=> #<File:testfile>
+def each_char; end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
@@ -7661,7 +13380,31 @@ def chars(); end
 # reading or an <code>IOError</code> will be raised.
 # 
 # If no block is given, an enumerator is returned instead.
-def codepoints(); end
+def each_codepoint(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def codepoints(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_codepoint; end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>ios</i>,
+# passing the codepoint as an argument. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+# If no block is given, an enumerator is returned instead.
+def codepoints; end
 
 ##
 # Writes the given string to <em>ios</em> using a low-level write.
@@ -7671,7 +13414,7 @@ def codepoints(); end
 # 
 #    f = File.new("out", "w")
 #    f.syswrite("ABCDEF")   #=> 6
-def syswrite(p1); end
+def syswrite(string); end
 
 ##
 # Reads <i>maxlen</i> bytes from <em>ios</em> using a low-level
@@ -7684,7 +13427,7 @@ def syswrite(p1); end
 # 
 #    f = File.new("testfile")
 #    f.sysread(16)   #=> "This is line one"
-def sysread(p1, p2=0); end
+def sysread(maxlen, outbuf=0); end
 
 ##
 # Returns an integer representing the numeric file descriptor for
@@ -7692,11 +13435,19 @@ def sysread(p1, p2=0); end
 # 
 #    $stdin.fileno    #=> 0
 #    $stdout.fileno   #=> 1
-def fileno(); end
+def fileno; end
+
+##
+# Returns an integer representing the numeric file descriptor for
+# <em>ios</em>.
+# 
+#    $stdin.fileno    #=> 0
+#    $stdout.fileno   #=> 1
+def to_i; end
 
 ##
 # Returns <em>ios</em>.
-def to_io(); end
+def to_io; end
 
 ##
 # Immediately writes all buffered data in <em>ios</em> to disk.
@@ -7707,7 +13458,7 @@ def to_io(); end
 # 
 # <code>NotImplementedError</code> is raised
 # if the underlying operating system does not support <em>fsync(2)</em>.
-def fsync(); end
+def fsync; end
 
 ##
 # Immediately writes all buffered data in <em>ios</em> to disk.
@@ -7715,7 +13466,7 @@ def fsync(); end
 # If the underlying operating system does not support <em>fdatasync(2)</em>,
 # <code>IO#fsync</code> is called instead (which might raise a
 # <code>NotImplementedError</code>).
-def fdatasync(); end
+def fdatasync; end
 
 ##
 # Returns the current ``sync mode'' of <em>ios</em>. When sync mode is
@@ -7725,7 +13476,7 @@ def fdatasync(); end
 # 
 #    f = File.new("testfile")
 #    f.sync   #=> false
-def sync(); end
+def sync; end
 
 ##
 # Sets the ``sync mode'' to <code>true</code> or <code>false</code>.
@@ -7737,7 +13488,7 @@ def sync(); end
 #    f.sync = true
 # 
 # <em>(produces no output)</em>
-def sync=(p1); end
+def sync = boolean; end
 
 ##
 # Returns the current line number in <em>ios</em>.  The stream must be
@@ -7756,7 +13507,7 @@ def sync=(p1); end
 #    f.lineno   #=> 1
 #    f.gets     #=> "This is line two\n"
 #    f.lineno   #=> 2
-def lineno(); end
+def lineno; end
 
 ##
 # Manually sets the current line number to the given value.
@@ -7770,7 +13521,7 @@ def lineno(); end
 #    $.                         #=> 1         # lineno of last read
 #    f.gets                     #=> "This is line two\n"
 #    $.                         #=> 1001      # lineno of last read
-def lineno=(p1); end
+def lineno = integer; end
 
 ##
 # Reads all of the lines in <em>ios</em>, and returns them in
@@ -7783,7 +13534,33 @@ def lineno=(p1); end
 # 
 #    f = File.new("testfile")
 #    f.readlines[0]   #=> "This is line one\n"
-def readlines(*args); end
+def readlines(sep=$/); end
+
+##
+# Reads all of the lines in <em>ios</em>, and returns them in
+# <i>anArray</i>. Lines are separated by the optional <i>sep</i>. If
+# <i>sep</i> is <code>nil</code>, the rest of the stream is returned
+# as a single record.  If the first argument is an integer, or
+# optional second argument is given, the returning string would not be
+# longer than the given value in bytes. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+#    f = File.new("testfile")
+#    f.readlines[0]   #=> "This is line one\n"
+def readlines(limit); end
+
+##
+# Reads all of the lines in <em>ios</em>, and returns them in
+# <i>anArray</i>. Lines are separated by the optional <i>sep</i>. If
+# <i>sep</i> is <code>nil</code>, the rest of the stream is returned
+# as a single record.  If the first argument is an integer, or
+# optional second argument is given, the returning string would not be
+# longer than the given value in bytes. The stream must be opened for
+# reading or an <code>IOError</code> will be raised.
+# 
+#    f = File.new("testfile")
+#    f.readlines[0]   #=> "This is line one\n"
+def readlines(sep, limit); end
 
 ##
 # Reads at most <i>maxlen</i> bytes from <em>ios</em> using
@@ -7828,7 +13605,52 @@ def readlines(*args); end
 # 
 # Note that this method is identical to readpartial
 # except the non-blocking flag is set.
-def read_nonblock(*args); end
+def read_nonblock(maxlen); end
+
+##
+# Reads at most <i>maxlen</i> bytes from <em>ios</em> using
+# the read(2) system call after O_NONBLOCK is set for
+# the underlying file descriptor.
+# 
+# If the optional <i>outbuf</i> argument is present,
+# it must reference a String, which will receive the data.
+# 
+# read_nonblock just calls the read(2) system call.
+# It causes all errors the read(2) system call causes: Errno::EWOULDBLOCK, Errno::EINTR, etc.
+# The caller should care such errors.
+# 
+# If the exception is Errno::EWOULDBLOCK or Errno::AGAIN,
+# it is extended by IO::WaitReadable.
+# So IO::WaitReadable can be used to rescue the exceptions for retrying read_nonblock.
+# 
+# read_nonblock causes EOFError on EOF.
+# 
+# If the read byte buffer is not empty,
+# read_nonblock reads from the buffer like readpartial.
+# In this case, the read(2) system call is not called.
+# 
+# When read_nonblock raises an exception kind of IO::WaitReadable,
+# read_nonblock should not be called
+# until io is readable for avoiding busy loop.
+# This can be done as follows.
+# 
+#   # emulates blocking read (readpartial).
+#   begin
+#     result = io.read_nonblock(maxlen)
+#   rescue IO::WaitReadable
+#     IO.select([io])
+#     retry
+#   end
+# 
+# Although IO#read_nonblock doesn't raise IO::WaitWritable.
+# OpenSSL::Buffering#read_nonblock can raise IO::WaitWritable.
+# If IO and SSL should be used polymorphically,
+# IO::WaitWritable should be rescued too.
+# See the document of OpenSSL::Buffering#read_nonblock for sample code.
+# 
+# Note that this method is identical to readpartial
+# except the non-blocking flag is set.
+def read_nonblock(maxlen, outbuf); end
 
 ##
 # Writes the given string to <em>ios</em> using
@@ -7877,7 +13699,7 @@ def read_nonblock(*args); end
 # On some platforms such as Windows, write_nonblock is not supported
 # according to the kind of the IO object.
 # In such cases, write_nonblock raises <code>Errno::EBADF</code>.
-def write_nonblock(p1); end
+def write_nonblock(string); end
 
 ##
 # Reads at most <i>maxlen</i> bytes from the I/O stream.
@@ -7929,7 +13751,59 @@ def write_nonblock(p1); end
 # 
 # The later means that readpartial is nonblocking-flag insensitive.
 # It blocks on the situation IO#sysread causes Errno::EWOULDBLOCK as if the fd is blocking mode.
-def readpartial(*args); end
+def readpartial(maxlen); end
+
+##
+# Reads at most <i>maxlen</i> bytes from the I/O stream.
+# It blocks only if <em>ios</em> has no data immediately available.
+# It doesn't block if some data available.
+# If the optional <i>outbuf</i> argument is present,
+# it must reference a String, which will receive the data.
+# It raises <code>EOFError</code> on end of file.
+# 
+# readpartial is designed for streams such as pipe, socket, tty, etc.
+# It blocks only when no data immediately available.
+# This means that it blocks only when following all conditions hold.
+# * the byte buffer in the IO object is empty.
+# * the content of the stream is empty.
+# * the stream is not reached to EOF.
+# 
+# When readpartial blocks, it waits data or EOF on the stream.
+# If some data is reached, readpartial returns with the data.
+# If EOF is reached, readpartial raises EOFError.
+# 
+# When readpartial doesn't blocks, it returns or raises immediately.
+# If the byte buffer is not empty, it returns the data in the buffer.
+# Otherwise if the stream has some content,
+# it returns the data in the stream.
+# Otherwise if the stream is reached to EOF, it raises EOFError.
+# 
+#    r, w = IO.pipe           #               buffer          pipe content
+#    w << "abc"               #               ""              "abc".
+#    r.readpartial(4096)      #=> "abc"       ""              ""
+#    r.readpartial(4096)      # blocks because buffer and pipe is empty.
+# 
+#    r, w = IO.pipe           #               buffer          pipe content
+#    w << "abc"               #               ""              "abc"
+#    w.close                  #               ""              "abc" EOF
+#    r.readpartial(4096)      #=> "abc"       ""              EOF
+#    r.readpartial(4096)      # raises EOFError
+# 
+#    r, w = IO.pipe           #               buffer          pipe content
+#    w << "abc\ndef\n"        #               ""              "abc\ndef\n"
+#    r.gets                   #=> "abc\n"     "def\n"         ""
+#    w << "ghi\n"             #               "def\n"         "ghi\n"
+#    r.readpartial(4096)      #=> "def\n"     ""              "ghi\n"
+#    r.readpartial(4096)      #=> "ghi\n"     ""              ""
+# 
+# Note that readpartial behaves similar to sysread.
+# The differences are:
+# * If the byte buffer is not empty, read from the byte buffer instead of "sysread for buffered IO (IOError)".
+# * It doesn't cause Errno::EWOULDBLOCK and Errno::EINTR.  When readpartial meets EWOULDBLOCK and EINTR by read system call, readpartial retry the system call.
+# 
+# The later means that readpartial is nonblocking-flag insensitive.
+# It blocks on the situation IO#sysread causes Errno::EWOULDBLOCK as if the fd is blocking mode.
+def readpartial(maxlen, outbuf); end
 
 ##
 # Reads <i>length</i> bytes from the I/O stream.
@@ -7987,7 +13861,7 @@ def readpartial(*args); end
 # Note that this method behaves like fread() function in C.
 # If you need the behavior like read(2) system call,
 # consider readpartial, read_nonblock and sysread.
-def read(p1=0, p2=0); end
+def read(length=0, buffer=0); end
 
 ##
 # Writes the given string to <em>ios</em>. The stream must be opened
@@ -8002,7 +13876,7 @@ def read(p1=0, p2=0); end
 # 
 #    This is a test
 #    That was 15 bytes of data
-def write(p1); end
+def write(string); end
 
 ##
 # Reads the next ``line'' from the I/O stream; lines are separated by
@@ -8018,12 +13892,54 @@ def write(p1); end
 # 
 #    File.new("testfile").gets   #=> "This is line one\n"
 #    $_                          #=> "This is line one\n"
-def gets(*args); end
+def gets(sep=$/); end
+
+##
+# Reads the next ``line'' from the I/O stream; lines are separated by
+# <i>sep</i>. A separator of <code>nil</code> reads the entire
+# contents, and a zero-length separator reads the input a paragraph at
+# a time (two successive newlines in the input separate paragraphs).
+# The stream must be opened for reading or an <code>IOError</code>
+# will be raised. The line read in will be returned and also assigned
+# to <code>$_</code>. Returns <code>nil</code> if called at end of
+# file.  If the first argument is an integer, or optional second
+# argument is given, the returning string would not be longer than the
+# given value in bytes.
+# 
+#    File.new("testfile").gets   #=> "This is line one\n"
+#    $_                          #=> "This is line one\n"
+def gets(limit); end
+
+##
+# Reads the next ``line'' from the I/O stream; lines are separated by
+# <i>sep</i>. A separator of <code>nil</code> reads the entire
+# contents, and a zero-length separator reads the input a paragraph at
+# a time (two successive newlines in the input separate paragraphs).
+# The stream must be opened for reading or an <code>IOError</code>
+# will be raised. The line read in will be returned and also assigned
+# to <code>$_</code>. Returns <code>nil</code> if called at end of
+# file.  If the first argument is an integer, or optional second
+# argument is given, the returning string would not be longer than the
+# given value in bytes.
+# 
+#    File.new("testfile").gets   #=> "This is line one\n"
+#    $_                          #=> "This is line one\n"
+def gets(sep, limit); end
 
 ##
 # Reads a line as with <code>IO#gets</code>, but raises an
 # <code>EOFError</code> on end of file.
-def readline(*args); end
+def readline(sep=$/); end
+
+##
+# Reads a line as with <code>IO#gets</code>, but raises an
+# <code>EOFError</code> on end of file.
+def readline(limit); end
+
+##
+# Reads a line as with <code>IO#gets</code>, but raises an
+# <code>EOFError</code> on end of file.
+def readline(sep, limit); end
 
 ##
 # Reads a one-character string from <em>ios</em>. Returns
@@ -8032,7 +13948,7 @@ def readline(*args); end
 #    f = File.new("testfile")
 #    f.getc   #=> "h"
 #    f.getc   #=> "e"
-def getc(); end
+def getc; end
 
 ##
 # Gets the next 8-bit byte (0..255) from <em>ios</em>. Returns
@@ -8041,7 +13957,7 @@ def getc(); end
 #    f = File.new("testfile")
 #    f.getbyte   #=> 84
 #    f.getbyte   #=> 104
-def getbyte(); end
+def getbyte; end
 
 ##
 # Reads a one-character string from <em>ios</em>. Raises an
@@ -8050,12 +13966,12 @@ def getbyte(); end
 #    f = File.new("testfile")
 #    f.readchar   #=> "h"
 #    f.readchar   #=> "e"
-def readchar(); end
+def readchar; end
 
 ##
 # Reads a byte as with <code>IO#getbyte</code>, but raises an
 # <code>EOFError</code> on end of file.
-def readbyte(); end
+def readbyte; end
 
 ##
 # Pushes back bytes (passed as a parameter) onto <em>ios</em>,
@@ -8068,7 +13984,20 @@ def readbyte(); end
 #    b = f.getbyte              #=> 0x38
 #    f.ungetbyte(b)             #=> nil
 #    f.getbyte                  #=> 0x38
-def ungetbyte(p1); end
+def ungetbyte(string); end
+
+##
+# Pushes back bytes (passed as a parameter) onto <em>ios</em>,
+# such that a subsequent buffered read will return it. Only one byte
+# may be pushed back before a subsequent read operation (that is,
+# you will be able to read only the last of several bytes that have been pushed
+# back). Has no effect with unbuffered reads (such as <code>IO#sysread</code>).
+# 
+#    f = File.new("testfile")   #=> #<File:testfile>
+#    b = f.getbyte              #=> 0x38
+#    f.ungetbyte(b)             #=> nil
+#    f.getbyte                  #=> 0x38
+def ungetbyte(integer); end
 
 ##
 # Pushes back one character (passed as a parameter) onto <em>ios</em>,
@@ -8081,7 +14010,7 @@ def ungetbyte(p1); end
 #    c = f.getc                 #=> "8"
 #    f.ungetc(c)                #=> nil
 #    f.getc                     #=> "8"
-def ungetc(p1); end
+def ungetc(string); end
 
 ##
 # String Output---Writes <i>obj</i> to <em>ios</em>.
@@ -8093,7 +14022,7 @@ def ungetc(p1); end
 # <em>produces:</em>
 # 
 #    Hello world!
-def <<(p1); end
+def <<; end
 
 ##
 # Flushes any buffered data within <em>ios</em> to the underlying
@@ -8106,7 +14035,7 @@ def <<(p1); end
 # <em>produces:</em>
 # 
 #    no newline
-def flush(); end
+def flush; end
 
 ##
 # Returns the current offset (in bytes) of <em>ios</em>.
@@ -8115,7 +14044,16 @@ def flush(); end
 #    f.pos    #=> 0
 #    f.gets   #=> "This is line one\n"
 #    f.pos    #=> 17
-def tell(); end
+def pos; end
+
+##
+# Returns the current offset (in bytes) of <em>ios</em>.
+# 
+#    f = File.new("testfile")
+#    f.pos    #=> 0
+#    f.gets   #=> "This is line one\n"
+#    f.pos    #=> 17
+def tell; end
 
 ##
 # Seeks to a given offset <i>anInteger</i> in the stream according to
@@ -8133,7 +14071,7 @@ def tell(); end
 #    f = File.new("testfile")
 #    f.seek(-13, IO::SEEK_END)   #=> 0
 #    f.readline                  #=> "And so on...\n"
-def seek(p1, p2=0); end
+def seek(amount, whence=IO::SEEK_SET); end
 
 ##
 # Positions <em>ios</em> to the beginning of input, resetting
@@ -8146,7 +14084,7 @@ def seek(p1, p2=0); end
 #    f.readline   #=> "This is line one\n"
 # 
 # Note that it cannot be used with streams such as pipes, ttys, and sockets.
-def rewind(); end
+def rewind; end
 
 ##
 # Returns the current offset (in bytes) of <em>ios</em>.
@@ -8155,7 +14093,16 @@ def rewind(); end
 #    f.pos    #=> 0
 #    f.gets   #=> "This is line one\n"
 #    f.pos    #=> 17
-def pos(); end
+def pos; end
+
+##
+# Returns the current offset (in bytes) of <em>ios</em>.
+# 
+#    f = File.new("testfile")
+#    f.pos    #=> 0
+#    f.gets   #=> "This is line one\n"
+#    f.pos    #=> 17
+def tell; end
 
 ##
 # Seeks to the given position (in bytes) in <em>ios</em>.
@@ -8163,7 +14110,7 @@ def pos(); end
 #    f = File.new("testfile")
 #    f.pos = 17
 #    f.gets   #=> "This is line two\n"
-def pos=(p1); end
+def pos = integer; end
 
 ##
 # Returns true if <em>ios</em> is at end of file that means
@@ -8193,7 +14140,7 @@ def pos=(p1); end
 # So <code>IO#sysread</code> may not behave as you intend with
 # <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
 # first (which is not available for some streams).
-def eof(); end
+def eof; end
 
 ##
 # Returns true if <em>ios</em> is at end of file that means
@@ -8223,7 +14170,67 @@ def eof(); end
 # So <code>IO#sysread</code> may not behave as you intend with
 # <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
 # first (which is not available for some streams).
-def eof?(); end
+def eof?; end
+
+##
+# Returns true if <em>ios</em> is at end of file that means
+# there are no more data to read.
+# The stream must be opened for reading or an <code>IOError</code> will be
+# raised.
+# 
+#    f = File.new("testfile")
+#    dummy = f.readlines
+#    f.eof   #=> true
+# 
+# If <em>ios</em> is a stream such as pipe or socket, <code>IO#eof?</code>
+# blocks until the other end sends some data or closes it.
+# 
+#    r, w = IO.pipe
+#    Thread.new { sleep 1; w.close }
+#    r.eof?  #=> true after 1 second blocking
+# 
+#    r, w = IO.pipe
+#    Thread.new { sleep 1; w.puts "a" }
+#    r.eof?  #=> false after 1 second blocking
+# 
+#    r, w = IO.pipe
+#    r.eof?  # blocks forever
+# 
+# Note that <code>IO#eof?</code> reads data to the input byte buffer.
+# So <code>IO#sysread</code> may not behave as you intend with
+# <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
+# first (which is not available for some streams).
+def eof; end
+
+##
+# Returns true if <em>ios</em> is at end of file that means
+# there are no more data to read.
+# The stream must be opened for reading or an <code>IOError</code> will be
+# raised.
+# 
+#    f = File.new("testfile")
+#    dummy = f.readlines
+#    f.eof   #=> true
+# 
+# If <em>ios</em> is a stream such as pipe or socket, <code>IO#eof?</code>
+# blocks until the other end sends some data or closes it.
+# 
+#    r, w = IO.pipe
+#    Thread.new { sleep 1; w.close }
+#    r.eof?  #=> true after 1 second blocking
+# 
+#    r, w = IO.pipe
+#    Thread.new { sleep 1; w.puts "a" }
+#    r.eof?  #=> false after 1 second blocking
+# 
+#    r, w = IO.pipe
+#    r.eof?  # blocks forever
+# 
+# Note that <code>IO#eof?</code> reads data to the input byte buffer.
+# So <code>IO#sysread</code> may not behave as you intend with
+# <code>IO#eof?</code>, unless you call <code>IO#rewind</code>
+# first (which is not available for some streams).
+def eof?; end
 
 ##
 # Returns <code>true</code> if <em>ios</em> will be closed on exec.
@@ -8234,7 +14241,7 @@ def eof?(); end
 #    f.close_on_exec?                 #=> true
 #    f.close_on_exec = false
 #    f.close_on_exec?                 #=> false
-def close_on_exec?(); end
+def close_on_exec?; end
 
 ##
 # Sets a close-on-exec flag.
@@ -8243,7 +14250,7 @@ def close_on_exec?(); end
 #    f.close_on_exec = true
 #    system("cat", "/proc/self/fd/#{f.fileno}") # cat: /proc/self/fd/3: No such file or directory
 #    f.closed?                #=> false
-def close_on_exec=(p1); end
+def close_on_exec = bool; end
 
 ##
 # Closes <em>ios</em> and flushes any pending writes to the operating
@@ -8254,7 +14261,7 @@ def close_on_exec=(p1); end
 # 
 # If <em>ios</em> is opened by <code>IO.popen</code>,
 # <code>close</code> sets <code>$?</code>.
-def close(); end
+def close; end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is completely closed (for
@@ -8269,7 +14276,7 @@ def close(); end
 #    f.closed?       #=> false
 #    f.close_read    #=> nil
 #    f.closed?       #=> true
-def closed?(); end
+def closed?; end
 
 ##
 # Closes the read end of a duplex I/O stream (i.e., one that contains
@@ -8284,7 +14291,7 @@ def closed?(); end
 # 
 #    prog.rb:3:in `readlines': not opened for reading (IOError)
 #     from prog.rb:3
-def close_read(); end
+def close_read; end
 
 ##
 # Closes the write end of a duplex I/O stream (i.e., one that contains
@@ -8300,7 +14307,7 @@ def close_read(); end
 #    prog.rb:3:in `write': not opened for writing (IOError)
 #     from prog.rb:3:in `print'
 #     from prog.rb:3
-def close_write(); end
+def close_write; end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is associated with a
@@ -8308,7 +14315,7 @@ def close_write(); end
 # 
 #    File.new("testfile").isatty   #=> false
 #    File.new("/dev/tty").isatty   #=> true
-def isatty(); end
+def isatty; end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is associated with a
@@ -8316,7 +14323,23 @@ def isatty(); end
 # 
 #    File.new("testfile").isatty   #=> false
 #    File.new("/dev/tty").isatty   #=> true
-def tty?(); end
+def tty?; end
+
+##
+# Returns <code>true</code> if <em>ios</em> is associated with a
+# terminal device (tty), <code>false</code> otherwise.
+# 
+#    File.new("testfile").isatty   #=> false
+#    File.new("/dev/tty").isatty   #=> true
+def isatty; end
+
+##
+# Returns <code>true</code> if <em>ios</em> is associated with a
+# terminal device (tty), <code>false</code> otherwise.
+# 
+#    File.new("testfile").isatty   #=> false
+#    File.new("/dev/tty").isatty   #=> true
+def tty?; end
 
 ##
 # Puts <em>ios</em> into binary mode.
@@ -8325,11 +14348,11 @@ def tty?(); end
 # - newline conversion disabled
 # - encoding conversion disabled
 # - content is treated as ASCII-8BIT
-def binmode(); end
+def binmode; end
 
 ##
 # Returns <code>true</code> if <em>ios</em> is binmode.
-def binmode?(); end
+def binmode?; end
 
 ##
 # Seeks to a given <i>offset</i> in the stream according to the value
@@ -8339,7 +14362,7 @@ def binmode?(); end
 #    f = File.new("testfile")
 #    f.sysseek(-13, IO::SEEK_END)   #=> 53
 #    f.sysread(10)                  #=> "And so on."
-def sysseek(p1, p2=0); end
+def sysseek(offset, whence=IO::SEEK_SET); end
 
 ##
 #  Announce an intention to access data from the current file in a
@@ -8378,7 +14401,7 @@ def sysseek(p1, p2=0); end
 #  * <code>RangeError</code> - One of the arguments given was too big/small.
 # 
 # This list is not exhaustive; other Errno:: exceptions are also possible.
-def advise(p1, p2=0, p3=0); end
+def advise(advice, offset=0, len=0); end
 
 ##
 # Provides a mechanism for issuing low-level commands to control or
@@ -8387,7 +14410,7 @@ def advise(p1, p2=0, p3=0); end
 # string, it is interpreted as a binary sequence of bytes. On Unix
 # platforms, see <code>ioctl(2)</code> for details. Not implemented on
 # all platforms.
-def ioctl(p1, p2=0); end
+def ioctl(integer_cmd, arg); end
 
 ##
 # Provides a mechanism for issuing low-level commands to control or
@@ -8397,7 +14420,7 @@ def ioctl(p1, p2=0); end
 # of bytes (<code>Array#pack</code> might be a useful way to build this
 # string). On Unix platforms, see <code>fcntl(2)</code> for details.
 # Not implemented on all platforms.
-def fcntl(p1, p2=0); end
+def fcntl(integer_cmd, arg); end
 
 ##
 # Returns the process ID of a child process associated with
@@ -8414,21 +14437,21 @@ def fcntl(p1, p2=0); end
 # 
 #    In child, pid is 26209
 #    In parent, child pid is 26209
-def pid(); end
+def pid; end
 
 ##
 # Return a string describing this IO object.
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the Encoding object that represents the encoding of the file.
 # If io is write mode and no encoding is specified, returns <code>nil</code>.
-def external_encoding(); end
+def external_encoding; end
 
 ##
 # Returns the Encoding of the internal string if conversion is
 # specified.  Otherwise returns nil.
-def internal_encoding(); end
+def internal_encoding; end
 
 ##
 # If single argument is specified, read string from io is tagged
@@ -8440,12 +14463,60 @@ def internal_encoding(); end
 # second one is the internal encoding.
 # If the external encoding and the internal encoding is specified,
 # optional hash argument specify the conversion option.
-def set_encoding(p1, p2=0, p3=0{}); end
+def set_encoding(ext_enc); end
+
+##
+# If single argument is specified, read string from io is tagged
+# with the encoding specified.  If encoding is a colon separated two
+# encoding names "A:B", the read string is converted from encoding A
+# (external encoding) to encoding B (internal encoding), then tagged
+# with B.  If two arguments are specified, those must be encoding
+# objects or encoding names, and the first one is the external encoding, and the
+# second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+def set_encoding("ext_enc:int_enc"); end
+
+##
+# If single argument is specified, read string from io is tagged
+# with the encoding specified.  If encoding is a colon separated two
+# encoding names "A:B", the read string is converted from encoding A
+# (external encoding) to encoding B (internal encoding), then tagged
+# with B.  If two arguments are specified, those must be encoding
+# objects or encoding names, and the first one is the external encoding, and the
+# second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+def set_encoding(ext_enc, int_enc); end
+
+##
+# If single argument is specified, read string from io is tagged
+# with the encoding specified.  If encoding is a colon separated two
+# encoding names "A:B", the read string is converted from encoding A
+# (external encoding) to encoding B (internal encoding), then tagged
+# with B.  If two arguments are specified, those must be encoding
+# objects or encoding names, and the first one is the external encoding, and the
+# second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+def set_encoding("ext_enc:int_enc", opt); end
+
+##
+# If single argument is specified, read string from io is tagged
+# with the encoding specified.  If encoding is a colon separated two
+# encoding names "A:B", the read string is converted from encoding A
+# (external encoding) to encoding B (internal encoding), then tagged
+# with B.  If two arguments are specified, those must be encoding
+# objects or encoding names, and the first one is the external encoding, and the
+# second one is the internal encoding.
+# If the external encoding and the internal encoding is specified,
+# optional hash argument specify the conversion option.
+def set_encoding(ext_enc, int_enc, opt); end
 
 ##
 # Returns +true+ if the underlying file descriptor of _ios_ will be
 # closed automatically at its finalization, otherwise +false+.
-def autoclose?(); end
+def autoclose?; end
 
 ##
 # Sets auto-close flag.
@@ -8459,9 +14530,7 @@ def autoclose?(); end
 #    IO.for_fd(f.fileno).autoclose = true
 #    # ...
 #    f.gets # won't cause IOError
-def autoclose=(p1); end
-
-def to_i(); end
+def autoclose = bool; end
 
 end
 
@@ -8492,7 +14561,20 @@ class Proc < Object
 #    end
 #    proc = proc_from { "hello" }
 #    proc.call   #=> "hello"
-def self.new(*args); end
+def self.new(&block); end
+
+##
+# Creates a new <code>Proc</code> object, bound to the current
+# context. <code>Proc::new</code> may be called without a block only
+# within a method with an attached block, in which case that block is
+# converted to the <code>Proc</code> object.
+# 
+#    def proc_from
+#      Proc.new
+#    end
+#    proc = proc_from { "hello" }
+#    proc.call   #=> "hello"
+def self.new; end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8521,7 +14603,7 @@ def self.new(*args); end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def call(*args); end
+def call(params,*more); end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8550,13 +14632,129 @@ def call(*args); end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def [](*args); end
+def ]; end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def call(params,*more); end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def call(params,*more); end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def ]; end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def [](params,*more); end
 
 ##
 # Invokes the block with +obj+ as the proc's parameter like Proc#call.  It
 # is to allow a proc object to be a target of +when+ clause in a case
 # statement.
-def ===(*args); end
+def ===; end
 
 ##
 # Invokes the block, setting the block's parameters to the values in
@@ -8585,13 +14783,71 @@ def ===(*args); end
 #    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
 #     from prog.rb:5:in `call'
 #     from prog.rb:5:in `<main>'
-def yield(*args); end
+def call(params,*more); end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def ]; end
+
+##
+# Invokes the block, setting the block's parameters to the values in
+# <i>params</i> using something close to method calling semantics.
+# Generates a warning if multiple values are passed to a proc that
+# expects just one (previously this silently converted the parameters
+# to an array).  Note that prc.() invokes prc.call() with the parameters
+# given.  It's a syntax sugar to hide "call".
+# 
+# For procs created using <code>lambda</code> or <code>->()</code> an error
+# is generated if the wrong number of parameters are passed to a Proc with
+# multiple parameters.  For procs created using <code>Proc.new</code> or
+# <code>Kernel.proc</code>, extra parameters are silently discarded.
+# 
+# Returns the value of the last expression evaluated in the block. See
+# also <code>Proc#yield</code>.
+# 
+#    a_proc = Proc.new {|a, *b| b.collect {|i| i*a }}
+#    a_proc.call(9, 1, 2, 3)   #=> [9, 18, 27]
+#    a_proc[9, 1, 2, 3]        #=> [9, 18, 27]
+#    a_proc = lambda {|a,b| a}
+#    a_proc.call(1,2,3)
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:4:in `block in <main>': wrong number of arguments (3 for 2) (ArgumentError)
+#     from prog.rb:5:in `call'
+#     from prog.rb:5:in `<main>'
+def yield(params,*more); end
 
 ##
 # Part of the protocol for converting objects to <code>Proc</code>
 # objects. Instances of class <code>Proc</code> simply return
 # themselves.
-def to_proc(); end
+def to_proc; end
 
 ##
 # Returns the number of arguments that would not be ignored. If the block
@@ -8609,26 +14865,26 @@ def to_proc(); end
 #    Proc.new {|*a|}.arity      #=> -1
 #    Proc.new {|a,*b|}.arity    #=> -2
 #    Proc.new {|a,*b, c|}.arity    #=> -3
-def arity(); end
+def arity; end
 
 ##
 # Returns <code>true</code> if <i>prc</i> is the same object as
 # <i>other_proc</i>, or if they are both procs with the same body.
-def ==(p1); end
+def ==; end
 
 ##
 # Returns <code>true</code> if <i>prc</i> is the same object as
 # <i>other_proc</i>, or if they are both procs with the same body.
-def eql?(p1); end
+def eql?; end
 
 ##
 # Returns a hash value corresponding to proc body.
-def hash(); end
+def hash; end
 
 ##
 # Returns the unique identifier for this proc, along with
 # an indication of where the proc was defined.
-def to_s(); end
+def to_s; end
 
 ##
 # Returns +true+ for a Proc object for which argument handling is rigid.
@@ -8725,7 +14981,7 @@ def to_s(); end
 #   C.new.f(1,2)       #=> ArgumentError
 # 
 # The wrapper <i>def2</i> defines a method which has no tricks.
-def lambda?(); end
+def lambda?; end
 
 ##
 # Returns the binding associated with <i>prc</i>. Note that
@@ -8738,7 +14994,7 @@ def lambda?(); end
 # 
 #    b = fred(99)
 #    eval("param", b.binding)   #=> 99
-def binding(); end
+def binding; end
 
 ##
 # Returns a curried proc. If the optional <i>arity</i> argument is given,
@@ -8777,19 +15033,58 @@ def binding(); end
 # 
 #    b = proc { :foo }
 #    p b.curry[]                  #=> :foo
-def curry(p1=0); end
+def curry; end
+
+##
+# Returns a curried proc. If the optional <i>arity</i> argument is given,
+# it determines the number of arguments.
+# A curried proc receives some arguments. If a sufficient number of
+# arguments are supplied, it passes the supplied arguments to the original
+# proc and returns the result. Otherwise, returns another curried proc that
+# takes the rest of arguments.
+# 
+#    b = proc {|x, y, z| (x||0) + (y||0) + (z||0) }
+#    p b.curry[1][2][3]           #=> 6
+#    p b.curry[1, 2][3, 4]        #=> 6
+#    p b.curry(5)[1][2][3][4][5]  #=> 6
+#    p b.curry(5)[1, 2][3, 4][5]  #=> 6
+#    p b.curry(1)[1]              #=> 1
+# 
+#    b = proc {|x, y, z, *w| (x||0) + (y||0) + (z||0) + w.inject(0, &:+) }
+#    p b.curry[1][2][3]           #=> 6
+#    p b.curry[1, 2][3, 4]        #=> 10
+#    p b.curry(5)[1][2][3][4][5]  #=> 15
+#    p b.curry(5)[1, 2][3, 4][5]  #=> 15
+#    p b.curry(1)[1]              #=> 1
+# 
+#    b = lambda {|x, y, z| (x||0) + (y||0) + (z||0) }
+#    p b.curry[1][2][3]           #=> 6
+#    p b.curry[1, 2][3, 4]        #=> wrong number of arguments (4 for 3)
+#    p b.curry(5)                 #=> wrong number of arguments (5 for 3)
+#    p b.curry(1)                 #=> wrong number of arguments (1 for 3)
+# 
+#    b = lambda {|x, y, z, *w| (x||0) + (y||0) + (z||0) + w.inject(0, &:+) }
+#    p b.curry[1][2][3]           #=> 6
+#    p b.curry[1, 2][3, 4]        #=> 10
+#    p b.curry(5)[1][2][3][4][5]  #=> 15
+#    p b.curry(5)[1, 2][3, 4][5]  #=> 15
+#    p b.curry(1)                 #=> wrong number of arguments (1 for 3)
+# 
+#    b = proc { :foo }
+#    p b.curry[]                  #=> :foo
+def curry(arity); end
 
 ##
 # Returns the Ruby source filename and line number containing this proc
 # or +nil+ if this proc was not defined in Ruby (i.e. native)
-def source_location(); end
+def source_location; end
 
 ##
 # Returns the parameter information of this proc.
 # 
 #    prc = lambda{|x, y=42, *other|}
 #    prc.parameters  #=> [[:req, :x], [:opt, :y], [:rest, :other]]
-def parameters(); end
+def parameters; end
 
 end
 
@@ -8819,16 +15114,9 @@ end
 #    LocalJumpError: unexpected return
 class LocalJumpError < StandardError
 ##
-# call_seq:
-#   local_jump_error.exit_value  -> obj
-# 
-# Returns the exit value associated with this +LocalJumpError+.
-def exit_value(); end
-
-##
 # The reason this block was terminated:
 # :break, :redo, :retry, :next, :return, or :noreason.
-def reason(); end
+def reason; end
 
 end
 
@@ -8852,20 +15140,16 @@ class Method < Object
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def ==(p1); end
+def ==; end
 
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def eql?(p1); end
+def eql?; end
 
 ##
 # Returns a hash value corresponding to the method object.
-def hash(); end
-
-##
-# MISSING: documentation
-def clone(); end
+def hash; end
 
 ##
 # Invokes the <i>meth</i> with the specified arguments, returning the
@@ -8874,7 +15158,7 @@ def clone(); end
 #    m = 12.method("+")
 #    m.call(3)    #=> 15
 #    m.call(20)   #=> 32
-def call(*args); end
+def call(args, *more); end
 
 ##
 # Invokes the <i>meth</i> with the specified arguments, returning the
@@ -8883,7 +15167,25 @@ def call(*args); end
 #    m = 12.method("+")
 #    m.call(3)    #=> 15
 #    m.call(20)   #=> 32
-def [](*args); end
+def ]; end
+
+##
+# Invokes the <i>meth</i> with the specified arguments, returning the
+# method's return value.
+# 
+#    m = 12.method("+")
+#    m.call(3)    #=> 15
+#    m.call(20)   #=> 32
+def call(args, *more); end
+
+##
+# Invokes the <i>meth</i> with the specified arguments, returning the
+# method's return value.
+# 
+#    m = 12.method("+")
+#    m.call(3)    #=> 15
+#    m.call(20)   #=> 32
+def ]; end
 
 ##
 # Returns an indication of the number of arguments accepted by a
@@ -8913,50 +15215,62 @@ def [](*args); end
 #    "cat".method(:replace).arity   #=> 1
 #    "cat".method(:squeeze).arity   #=> -1
 #    "cat".method(:count).arity     #=> -1
-def arity(); end
+def arity; end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def inspect(); end
+def to_s; end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def to_s(); end
+def inspect; end
+
+##
+# Returns the name of the underlying method.
+# 
+#   "cat".method(:count).inspect   #=> "#<Method: String#count>"
+def to_s; end
+
+##
+# Returns the name of the underlying method.
+# 
+#   "cat".method(:count).inspect   #=> "#<Method: String#count>"
+def inspect; end
 
 ##
 # Returns a <code>Proc</code> object corresponding to this method.
-def to_proc(); end
+def to_proc; end
 
 ##
 # Returns the bound receiver of the method object.
-def receiver(); end
+def receiver; end
 
 ##
 # Returns the name of the method.
-def name(); end
+def name; end
 
 ##
 # Returns the class or module that defines the method.
-def owner(); end
+def owner; end
 
 ##
 # Dissociates <i>meth</i> from its current receiver. The resulting
 # <code>UnboundMethod</code> can subsequently be bound to a new object
 # of the same class (see <code>UnboundMethod</code>).
-def unbind(); end
+def unbind; end
 
 ##
 # Returns the Ruby source filename and line number containing this method
 # or nil if this method was not defined in Ruby (i.e. native)
-def source_location(); end
+def source_location; end
 
 ##
 # Returns the parameter information of this method.
-def parameters(); end
+def parameters; end
 
 end
 
@@ -9014,20 +15328,16 @@ class UnboundMethod < Object
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def ==(p1); end
+def ==; end
 
 ##
 # Two method objects are equal if they are bound to the same
 # object and refer to the same method definition.
-def eql?(p1); end
+def eql?; end
 
 ##
 # Returns a hash value corresponding to the method object.
-def hash(); end
-
-##
-# MISSING: documentation
-def clone(); end
+def hash; end
 
 ##
 # Returns an indication of the number of arguments accepted by a
@@ -9057,27 +15367,39 @@ def clone(); end
 #    "cat".method(:replace).arity   #=> 1
 #    "cat".method(:squeeze).arity   #=> -1
 #    "cat".method(:count).arity     #=> -1
-def arity(); end
+def arity; end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def inspect(); end
+def to_s; end
 
 ##
 # Returns the name of the underlying method.
 # 
 #   "cat".method(:count).inspect   #=> "#<Method: String#count>"
-def to_s(); end
+def inspect; end
+
+##
+# Returns the name of the underlying method.
+# 
+#   "cat".method(:count).inspect   #=> "#<Method: String#count>"
+def to_s; end
+
+##
+# Returns the name of the underlying method.
+# 
+#   "cat".method(:count).inspect   #=> "#<Method: String#count>"
+def inspect; end
 
 ##
 # Returns the name of the method.
-def name(); end
+def name; end
 
 ##
 # Returns the class or module that defines the method.
-def owner(); end
+def owner; end
 
 ##
 # Bind <i>umeth</i> to <i>obj</i>. If <code>Klass</code> was the class
@@ -9108,16 +15430,16 @@ def owner(); end
 #    In test, class = B
 #    prog.rb:16:in `bind': bind argument must be an instance of B (TypeError)
 #     from prog.rb:16
-def bind(p1); end
+def bind(obj); end
 
 ##
 # Returns the Ruby source filename and line number containing this method
 # or nil if this method was not defined in Ruby (i.e. native)
-def source_location(); end
+def source_location; end
 
 ##
 # Returns the parameter information of this method.
-def parameters(); end
+def parameters; end
 
 end
 
@@ -9165,7 +15487,7 @@ class Binding < Object
 #    end
 #    b = get_binding("hello")
 #    b.eval("param")   #=> "hello"
-def eval(p1, p2=0, p3=0); end
+def eval(string , filename=0, lineno=0); end
 
 end
 
@@ -9218,11 +15540,11 @@ class Module < Object
 # <em>produces:</em>
 # 
 #    Hello there, Dave!
-def instance_method(p1); end
+def instance_method(symbol); end
 
 ##
 # Similar to _instance_method_, searches public method only.
-def public_instance_method(p1); end
+def public_instance_method(symbol); end
 
 ##
 # Defines an instance method in the receiver. The _method_
@@ -9255,12 +15577,45 @@ def public_instance_method(p1); end
 #    In Fred
 #    Charge it!
 #    #<B:0x401b39e8>
-def define_method(*args); end
+def define_method(symbol, method); end
+
+##
+# Defines an instance method in the receiver. The _method_
+# parameter can be a +Proc+, a +Method+ or an +UnboundMethod+ object.
+# If a block is specified, it is used as the method body. This block
+# is evaluated using <code>instance_eval</code>, a point that is
+# tricky to demonstrate because <code>define_method</code> is private.
+# (This is why we resort to the +send+ hack in this example.)
+# 
+#    class A
+#      def fred
+#        puts "In Fred"
+#      end
+#      def create_method(name, &block)
+#        self.class.send(:define_method, name, &block)
+#      end
+#      define_method(:wilma) { puts "Charge it!" }
+#    end
+#    class B < A
+#      define_method(:barney, instance_method(:fred))
+#    end
+#    a = B.new
+#    a.barney
+#    a.wilma
+#    a.create_method(:betty) { p self }
+#    a.betty
+# 
+# <em>produces:</em>
+# 
+#    In Fred
+#    Charge it!
+#    #<B:0x401b39e8>
+def define_method(symbol, &block); end
 
 ##
 # Removes the method identified by _symbol_ from the current
 # class. For an example, see <code>Module.undef_method</code>.
-def remove_method(*args); end
+def remove_method(symbol); end
 
 ##
 # Prevents the current class from responding to calls to the named
@@ -9297,7 +15652,7 @@ def remove_method(*args); end
 #    In child
 #    In parent
 #    prog.rb:23: undefined method `hello' for #<Child:0x401b3bb4> (NoMethodError)
-def undef_method(*args); end
+def undef_method(symbol); end
 
 ##
 # Makes <i>new_name</i> a new copy of the method <i>old_name</i>. This can
@@ -9316,19 +15671,31 @@ def undef_method(*args); end
 # <em>produces:</em>
 # 
 #    Exiting with code 99
-def alias_method(p1, p2); end
+def alias_method(new_name, old_name); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
 # defined methods to public. With arguments, sets the named methods to
 # have public visibility.
-def public(*args); end
+def public; end
+
+##
+# With no arguments, sets the default visibility for subsequently
+# defined methods to public. With arguments, sets the named methods to
+# have public visibility.
+def public(symbol, *more); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
 # defined methods to protected. With arguments, sets the named methods
 # to have protected visibility.
-def protected(*args); end
+def protected; end
+
+##
+# With no arguments, sets the default visibility for subsequently
+# defined methods to protected. With arguments, sets the named methods
+# to have protected visibility.
+def protected(symbol, *more); end
 
 ##
 # With no arguments, sets the default visibility for subsequently
@@ -9343,7 +15710,22 @@ def protected(*args); end
 #      private :a
 #    end
 #    Mod.private_instance_methods   #=> [:a, :c]
-def private(*args); end
+def private; end
+
+##
+# With no arguments, sets the default visibility for subsequently
+# defined methods to private. With arguments, sets the named methods
+# to have private visibility.
+# 
+#    module Mod
+#      def a()  end
+#      def b()  end
+#      private
+#      def c()  end
+#      private :a
+#    end
+#    Mod.private_instance_methods   #=> [:a, :c]
+def private(symbol, *more); end
 
 ##
 # Creates module functions for the named methods. These functions may
@@ -9376,7 +15758,7 @@ def private(*args); end
 #    end
 #    Mod.one     #=> "This is one"
 #    c.call_one  #=> "This is the new one"
-def module_function(*args); end
+def module_function(symbol, *more); end
 
 ##
 # Returns +true+ if the named method is defined by
@@ -9399,7 +15781,7 @@ def module_function(*args); end
 #    C.method_defined? "method2"   #=> true
 #    C.method_defined? "method3"   #=> true
 #    C.method_defined? "method4"   #=> false
-def method_defined?(p1); end
+def method_defined?(symbol); end
 
 ##
 # Returns +true+ if the named public method is defined by
@@ -9422,7 +15804,7 @@ def method_defined?(p1); end
 #    C.public_method_defined? "method1"   #=> true
 #    C.public_method_defined? "method2"   #=> false
 #    C.method_defined? "method2"          #=> true
-def public_method_defined?(p1); end
+def public_method_defined?(symbol); end
 
 ##
 # Returns +true+ if the named private method is defined by
@@ -9445,7 +15827,7 @@ def public_method_defined?(p1); end
 #    C.private_method_defined? "method1"   #=> false
 #    C.private_method_defined? "method2"   #=> true
 #    C.method_defined? "method2"           #=> false
-def private_method_defined?(p1); end
+def private_method_defined?(symbol); end
 
 ##
 # Returns +true+ if the named protected method is defined
@@ -9468,11 +15850,11 @@ def private_method_defined?(p1); end
 #    C.protected_method_defined? "method1"   #=> false
 #    C.protected_method_defined? "method2"   #=> true
 #    C.method_defined? "method2"             #=> true
-def protected_method_defined?(p1); end
+def protected_method_defined?(symbol); end
 
 ##
 # Makes a list of existing class methods public.
-def public_class_method(*args); end
+def public_class_method(symbol, *more); end
 
 ##
 # Makes existing class methods private. Often used to hide the default
@@ -9485,7 +15867,7 @@ def public_class_method(*args); end
 #        @me
 #      end
 #    end
-def private_class_method(*args); end
+def private_class_method(symbol, *more); end
 
 ##
 # Evaluates the given block in the context of the class/module.
@@ -9501,7 +15883,7 @@ def private_class_method(*args); end
 # <em>produces:</em>
 # 
 #    Hello there!
-def module_exec(*args); end
+def module_exec(arg*more, &block); end
 
 ##
 # Evaluates the given block in the context of the class/module.
@@ -9517,7 +15899,39 @@ def module_exec(*args); end
 # <em>produces:</em>
 # 
 #    Hello there!
-def class_exec(*args); end
+def class_exec(arg*more, &block); end
+
+##
+# Evaluates the given block in the context of the class/module.
+# The method defined in the block will belong to the receiver.
+# 
+#    class Thing
+#    end
+#    Thing.class_exec{
+#      def hello() "Hello there!" end
+#    }
+#    puts Thing.new.hello()
+# 
+# <em>produces:</em>
+# 
+#    Hello there!
+def module_exec(arg*more, &block); end
+
+##
+# Evaluates the given block in the context of the class/module.
+# The method defined in the block will belong to the receiver.
+# 
+#    class Thing
+#    end
+#    Thing.class_exec{
+#      def hello() "Hello there!" end
+#    }
+#    puts Thing.new.hello()
+# 
+# <em>produces:</em>
+# 
+#    Hello there!
+def class_exec(arg*more, &block); end
 
 ##
 # Evaluates the string or block in the context of _mod_. This can
@@ -9537,7 +15951,7 @@ def class_exec(*args); end
 #    Hello there!
 #    dummy:123:in `module_eval': undefined local variable
 #        or method `code' for Thing:Class
-def module_eval(*args); end
+def class_eval(string , filename=0, lineno=0); end
 
 ##
 # Evaluates the string or block in the context of _mod_. This can
@@ -9557,7 +15971,47 @@ def module_eval(*args); end
 #    Hello there!
 #    dummy:123:in `module_eval': undefined local variable
 #        or method `code' for Thing:Class
-def class_eval(*args); end
+def module_eval(&block); end
+
+##
+# Evaluates the string or block in the context of _mod_. This can
+# be used to add methods to a class. <code>module_eval</code> returns
+# the result of evaluating its argument. The optional _filename_
+# and _lineno_ parameters set the text for error messages.
+# 
+#    class Thing
+#    end
+#    a = %q{def hello() "Hello there!" end}
+#    Thing.module_eval(a)
+#    puts Thing.new.hello()
+#    Thing.module_eval("invalid code", "dummy", 123)
+# 
+# <em>produces:</em>
+# 
+#    Hello there!
+#    dummy:123:in `module_eval': undefined local variable
+#        or method `code' for Thing:Class
+def class_eval(string , filename=0, lineno=0); end
+
+##
+# Evaluates the string or block in the context of _mod_. This can
+# be used to add methods to a class. <code>module_eval</code> returns
+# the result of evaluating its argument. The optional _filename_
+# and _lineno_ parameters set the text for error messages.
+# 
+#    class Thing
+#    end
+#    a = %q{def hello() "Hello there!" end}
+#    Thing.module_eval(a)
+#    puts Thing.new.hello()
+#    Thing.module_eval("invalid code", "dummy", 123)
+# 
+# <em>produces:</em>
+# 
+#    Hello there!
+#    dummy:123:in `module_eval': undefined local variable
+#        or method `code' for Thing:Class
+def module_eval(&block); end
 
 ##
 # Registers _filename_ to be loaded (using <code>Kernel::require</code>)
@@ -9568,7 +16022,7 @@ def class_eval(*args); end
 #    end
 #    A.autoload(:B, "b")
 #    A::B.doit            # autoloads "b"
-def autoload(p1, p2); end
+def autoload(module, filename); end
 
 ##
 # Returns _filename_ to be loaded if _name_ is registered as
@@ -9578,7 +16032,7 @@ def autoload(p1, p2); end
 #    end
 #    A.autoload(:B, "b")
 #    A.autoload?(:B)            #=> "b"
-def autoload?(p1); end
+def autoload?(name); end
 
 ##
 # When this module is included in another, Ruby calls
@@ -9587,7 +16041,7 @@ def autoload?(p1); end
 # to add the constants, methods, and module variables of this module
 # to _mod_ if this module has not already been added to
 # _mod_ or one of its ancestors. See also <code>Module#include</code>.
-def append_features(p1); end
+def append_features(mod); end
 
 ##
 # Extends the specified object by adding this module's constants and
@@ -9611,11 +16065,11 @@ def append_features(p1); end
 # 
 #    Picky added to Array
 #    Can't add Picky to a String
-def extend_object(p1); end
+def extend_object(obj); end
 
 ##
 # Invokes <code>Module.append_features</code> on each parameter in reverse order.
-def include(*args); end
+def include(module, *more); end
 
 ##
 # Returns the list of +Modules+ nested at the point of call.
@@ -9627,7 +16081,7 @@ def include(*args); end
 #    end
 #    $a           #=> [M1::M2, M1]
 #    $a[0].name   #=> "M1::M2"
-def self.nesting(); end
+def self.nesting; end
 
 ##
 # In the first form, returns an array of the names of all
@@ -9645,7 +16099,25 @@ def self.nesting(); end
 #    end
 # 
 # The second form calls the instance method +constants+.
-def self.constants(*args); end
+def self.constants; end
+
+##
+# In the first form, returns an array of the names of all
+# constants accessible from the point of call.
+# This list includes the names of all modules and classes
+# defined in the global scope.
+# 
+#    Module.constants.first(4)
+#       # => [:ARGF, :ARGV, :ArgumentError, :Array]
+# 
+#    Module.constants.include?(:SEEK_SET)   # => false
+# 
+#    class IO
+#      Module.constants.include?(:SEEK_SET) # => true
+#    end
+# 
+# The second form calls the instance method +constants+.
+def self.constants(inherited); end
 
 ##
 # Callback invoked whenever the receiver is included in another
@@ -9661,11 +16133,7 @@ def self.constants(*args); end
 #        module Enumerable
 #          include A
 #        end
-def included(p1); end
-
-##
-# Not documented
-def extended(p1); end
+def included( othermod ); end
 
 ##
 # Invoked as a callback whenever an instance method is added to the
@@ -9682,7 +16150,7 @@ def extended(p1); end
 # produces:
 # 
 #   Adding :some_instance_method
-def method_added(p1); end
+def method_added(method_name); end
 
 ##
 # Invoked as a callback whenever an instance method is removed from the
@@ -9703,24 +16171,20 @@ def method_added(p1); end
 # produces:
 # 
 #   Removing :some_instance_method
-def method_removed(p1); end
-
-##
-# Not documented
-def method_undefined(p1); end
+def method_removed(method_name); end
 
 ##
 # Prevents further modifications to <i>mod</i>.
 # 
 # This method returns self.
-def freeze(); end
+def freeze; end
 
 ##
 # Case Equality---Returns <code>true</code> if <i>anObject</i> is an
 # instance of <i>mod</i> or one of <i>mod</i>'s descendants. Of
 # limited use for modules, but can be used in <code>case</code>
 # statements to classify objects by class.
-def ===(p1); end
+def ===; end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -9744,7 +16208,55 @@ def ===(p1); end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def ==(p1); end
+def ==; end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def equal?(other); end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def eql?(other); end
 
 ##
 # Comparison---Returns -1 if <i>mod</i> includes <i>other_mod</i>, 0 if
@@ -9752,14 +16264,14 @@ def ==(p1); end
 # included by <i>other_mod</i>. Returns <code>nil</code> if <i>mod</i>
 # has no relationship with <i>other_mod</i> or if <i>other_mod</i> is
 # not a module.
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns true if <i>mod</i> is a subclass of <i>other</i>. Returns
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "A<B").
-def <(p1); end
+def <; end
 
 ##
 # Returns true if <i>mod</i> is a subclass of <i>other</i> or
@@ -9767,14 +16279,14 @@ def <(p1); end
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "A<B").
-def <=(p1); end
+def <=; end
 
 ##
 # Returns true if <i>mod</i> is an ancestor of <i>other</i>. Returns
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "B>A").
-def >(p1); end
+def >; end
 
 ##
 # Returns true if <i>mod</i> is an ancestor of <i>other</i>, or the
@@ -9782,13 +16294,13 @@ def >(p1); end
 # <code>nil</code> if there's no relationship between the two.
 # (Think of the relationship in terms of the class definition:
 # "class A<B" implies "B>A").
-def >=(p1); end
+def >=; end
 
 ##
 # Return a string representing this module or class. For basic
 # classes and modules, this is the name. For singletons, we
 # show information on the thing we're attached to as well.
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the list of modules included in <i>mod</i>.
@@ -9802,7 +16314,7 @@ def to_s(); end
 # 
 #    Mixin.included_modules   #=> []
 #    Outer.included_modules   #=> [Mixin]
-def included_modules(); end
+def included_modules; end
 
 ##
 # Returns <code>true</code> if <i>module</i> is included in
@@ -9818,11 +16330,11 @@ def included_modules(); end
 #    B.include?(A)   #=> true
 #    C.include?(A)   #=> true
 #    A.include?(A)   #=> false
-def include?(p1); end
+def include?(module); end
 
 ##
 # Returns the name of the module <i>mod</i>.  Returns nil for anonymous modules.
-def name(); end
+def name; end
 
 ##
 # Returns a list of modules included in <i>mod</i> (including
@@ -9835,20 +16347,24 @@ def name(); end
 # 
 #    Mod.ancestors    #=> [Mod, Comparable, Math]
 #    Math.ancestors   #=> [Math]
-def ancestors(); end
-
-def attr(*args); end
+def ancestors; end
 
 ##
 # Creates instance variables and corresponding methods that return the
 # value of each instance variable. Equivalent to calling
 # ``<code>attr</code><i>:name</i>'' on each name in turn.
-def attr_reader(*args); end
+def attr_reader(symbol, *more); end
+
+##
+# Creates instance variables and corresponding methods that return the
+# value of each instance variable. Equivalent to calling
+# ``<code>attr</code><i>:name</i>'' on each name in turn.
+def attr_reader(symbol, *more); end
 
 ##
 # Creates an accessor method to allow assignment to the attribute
 # <i>aSymbol</i><code>.id2name</code>.
-def attr_writer(*args); end
+def attr_writer(symbol, *more); end
 
 ##
 # Defines a named attribute for this module, where the name is
@@ -9860,7 +16376,7 @@ def attr_writer(*args); end
 #      attr_accessor(:one, :two)
 #    end
 #    Mod.instance_methods.sort   #=> [:one, :one=, :two, :two=]
-def attr_accessor(*args); end
+def attr_accessor(symbol, *more); end
 
 ##
 # Creates a new anonymous module. If a block is given, it is passed
@@ -9882,7 +16398,29 @@ def attr_accessor(*args); end
 # 
 # Assign the module to a constant (name starting uppercase) if you
 # want to treat it like a regular module.
-def self.new(); end
+def self.new; end
+
+##
+# Creates a new anonymous module. If a block is given, it is passed
+# the module object, and the block is evaluated in the context of this
+# module using <code>module_eval</code>.
+# 
+#    fred = Module.new do
+#      def meth1
+#        "hello"
+#      end
+#      def meth2
+#        "bye"
+#      end
+#    end
+#    a = "my string"
+#    a.extend(fred)   #=> "my string"
+#    a.meth1          #=> "hello"
+#    a.meth2          #=> "bye"
+# 
+# Assign the module to a constant (name starting uppercase) if you
+# want to treat it like a regular module.
+def self.new(&block); end
 
 ##
 # Returns an array containing the names of the public and protected instance
@@ -9906,19 +16444,19 @@ def self.new(); end
 #    B.instance_methods(false)         #=> [:method2]
 #    C.instance_methods(false)         #=> [:method3]
 #    C.instance_methods(true).length   #=> 43
-def instance_methods(*args); end
+def instance_methods(include_super=true); end
 
 ##
 # Returns a list of the public instance methods defined in <i>mod</i>.
 # If the optional parameter is not <code>false</code>, the methods of
 # any ancestors are included.
-def public_instance_methods(*args); end
+def public_instance_methods(include_super=true); end
 
 ##
 # Returns a list of the protected instance methods defined in
 # <i>mod</i>. If the optional parameter is not <code>false</code>, the
 # methods of any ancestors are included.
-def protected_instance_methods(*args); end
+def protected_instance_methods(include_super=true); end
 
 ##
 # Returns a list of the private instance methods defined in
@@ -9932,7 +16470,7 @@ def protected_instance_methods(*args); end
 #    end
 #    Mod.instance_methods           #=> [:method2]
 #    Mod.private_instance_methods   #=> [:method1]
-def private_instance_methods(*args); end
+def private_instance_methods(include_super=true); end
 
 ##
 # Returns an array of the names of the constants accessible in
@@ -9944,7 +16482,7 @@ def private_instance_methods(*args); end
 #   IO.constants(false).include?(:SYNC) #=> false
 # 
 # Also see <code>Module::const_defined?</code>.
-def constants(p1=0); end
+def constants(inherit=true); end
 
 ##
 # Checks for a constant with the given name in <i>mod</i>
@@ -9955,7 +16493,7 @@ def constants(p1=0); end
 # otherwise a +NameError+ is raised.
 # 
 #    Math.const_get(:PI)   #=> 3.14159265358979
-def const_get(p1, p2=0); end
+def const_get(sym, inherit=true); end
 
 ##
 # Sets the named constant to the given object, returning that object.
@@ -9964,7 +16502,7 @@ def const_get(p1, p2=0); end
 # 
 #    Math.const_set("HIGH_SCHOOL_PI", 22.0/7.0)   #=> 3.14285714285714
 #    Math::HIGH_SCHOOL_PI - Math::PI              #=> 0.00126448926734968
-def const_set(p1, p2); end
+def const_set(sym, obj); end
 
 ##
 # Checks for a constant with the given name in <i>mod</i>
@@ -9976,7 +16514,7 @@ def const_set(p1, p2); end
 #    Math.const_defined? "PI"   #=> true
 #    IO.const_defined? :SYNC   #=> true
 #    IO.const_defined? :SYNC, false   #=> false
-def const_defined?(p1, p2=0); end
+def const_defined?(sym, inherit=true); end
 
 ##
 # Removes the definition of the given constant, returning that
@@ -9984,7 +16522,7 @@ def const_defined?(p1, p2=0); end
 # removed, they just can't be refered with the names but still
 # exist.  It could cause very severe confusion.
 # Feel Free to Shoot Your Own Foot.
-def remove_const(p1); end
+def remove_const(sym); end
 
 ##
 # Invoked when a reference is made to an undefined constant in
@@ -10016,7 +16554,7 @@ def remove_const(p1); end
 #     return klass if klass
 #     raise "Class not found: #{name}"
 #   end
-def const_missing(p1); end
+def const_missing(sym); end
 
 ##
 # Returns an array of the names of class variables in <i>mod</i>.
@@ -10029,7 +16567,7 @@ def const_missing(p1); end
 #    end
 #    One.class_variables   #=> [:@@var1]
 #    Two.class_variables   #=> [:@@var2]
-def class_variables(); end
+def class_variables; end
 
 ##
 # Removes the definition of the <i>sym</i>, returning that
@@ -10046,7 +16584,7 @@ def class_variables(); end
 # 
 #    99
 #    nil
-def remove_class_variable(p1); end
+def remove_class_variable(sym); end
 
 ##
 # Returns the value of the given class variable (or throws a
@@ -10057,7 +16595,7 @@ def remove_class_variable(p1); end
 #      @@foo = 99
 #    end
 #    Fred.class_variable_get(:@@foo)     #=> 99
-def class_variable_get(p1); end
+def class_variable_get(symbol); end
 
 ##
 # Sets the class variable names by <i>symbol</i> to
@@ -10071,7 +16609,7 @@ def class_variable_get(p1); end
 #    end
 #    Fred.class_variable_set(:@@foo, 101)     #=> 101
 #    Fred.new.foo                             #=> 101
-def class_variable_set(p1, p2); end
+def class_variable_set(symbol, obj); end
 
 ##
 # Returns <code>true</code> if the given class variable is defined
@@ -10082,7 +16620,7 @@ def class_variable_set(p1, p2); end
 #    end
 #    Fred.class_variable_defined?(:@@foo)    #=> true
 #    Fred.class_variable_defined?(:@@bar)    #=> false
-def class_variable_defined?(p1); end
+def class_variable_defined?(symbol); end
 
 end
 
@@ -10135,7 +16673,7 @@ class Rational < Numeric
 #    Rational(7, 1).numerator     #=> 7
 #    Rational(9, -4).numerator    #=> -9
 #    Rational(-2, -10).numerator  #=> 1
-def numerator(); end
+def numerator; end
 
 ##
 # Returns the denominator (always positive).
@@ -10147,7 +16685,7 @@ def numerator(); end
 #    Rational(9, -4).denominator         #=> 4
 #    Rational(-2, -10).denominator       #=> 5
 #    rat.numerator.gcd(rat.denominator)  #=> 1
-def denominator(); end
+def denominator; end
 
 ##
 # Performs addition.
@@ -10159,7 +16697,7 @@ def denominator(); end
 #    Rational(-2, 9) + Rational(-9, 2)  #=> (-85/18)
 #    Rational(9, 8)  + 4                #=> (41/8)
 #    Rational(20, 9) + 9.8              #=> 12.022222222222222
-def +(p1); end
+def +; end
 
 ##
 # Performs subtraction.
@@ -10171,7 +16709,7 @@ def +(p1); end
 #    Rational(-2, 9) - Rational(-9, 2)  #=> (77/18)
 #    Rational(9, 8)  - 4                #=> (23/8)
 #    Rational(20, 9) - 9.8              #=> -7.577777777777778
-def -(p1); end
+def -; end
 
 ##
 # Performs multiplication.
@@ -10183,7 +16721,7 @@ def -(p1); end
 #    Rational(-2, 9) * Rational(-9, 2)  #=> (1/1)
 #    Rational(9, 8)  * 4                #=> (9/2)
 #    Rational(20, 9) * 9.8              #=> 21.77777777777778
-def *(p1); end
+def *; end
 
 ##
 # Performs division.
@@ -10195,7 +16733,7 @@ def *(p1); end
 #    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
 #    Rational(9, 8)  / 4                #=> (9/32)
 #    Rational(20, 9) / 9.8              #=> 0.22675736961451246
-def /(p1); end
+def /; end
 
 ##
 # Performs division.
@@ -10207,7 +16745,31 @@ def /(p1); end
 #    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
 #    Rational(9, 8)  / 4                #=> (9/32)
 #    Rational(20, 9) / 9.8              #=> 0.22675736961451246
-def quo(p1); end
+def quo(numeric); end
+
+##
+# Performs division.
+# 
+# For example:
+# 
+#    Rational(2, 3)  / Rational(2, 3)   #=> (1/1)
+#    Rational(900)   / Rational(1)      #=> (900/1)
+#    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
+#    Rational(9, 8)  / 4                #=> (9/32)
+#    Rational(20, 9) / 9.8              #=> 0.22675736961451246
+def quo; end
+
+##
+# Performs division.
+# 
+# For example:
+# 
+#    Rational(2, 3)  / Rational(2, 3)   #=> (1/1)
+#    Rational(900)   / Rational(1)      #=> (900/1)
+#    Rational(-2, 9) / Rational(-9, 2)  #=> (4/81)
+#    Rational(9, 8)  / 4                #=> (9/32)
+#    Rational(20, 9) / 9.8              #=> 0.22675736961451246
+def quo(numeric); end
 
 ##
 # Performs division and returns the value as a float.
@@ -10217,7 +16779,7 @@ def quo(p1); end
 #    Rational(2, 3).fdiv(1)       #=> 0.6666666666666666
 #    Rational(2, 3).fdiv(0.5)     #=> 1.3333333333333333
 #    Rational(2).fdiv(3)          #=> 0.6666666666666666
-def fdiv(p1); end
+def fdiv(numeric); end
 
 ##
 # Performs exponentiation.
@@ -10230,7 +16792,7 @@ def fdiv(p1); end
 #    Rational(-4)   ** Rational(1,2)  #=> (1.2246063538223773e-16+2.0i)
 #    Rational(1, 2) ** 0              #=> (1/1)
 #    Rational(1, 2) ** 0.0            #=> 1.0
-def **(p1); end
+def **; end
 
 ##
 # Performs comparison and returns -1, 0, or +1.
@@ -10242,7 +16804,7 @@ def **(p1); end
 #    Rational(2,3)   <=> Rational(1,3)   #=> 1
 #    Rational(1,3)   <=> 1               #=> -1
 #    Rational(1,3)   <=> 0.3             #=> 1
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns true if rat equals object numerically.
@@ -10254,7 +16816,7 @@ def <=>(p1); end
 #    Rational(0)     == 0.0              #=> true
 #    Rational('1/3') == 0.33             #=> false
 #    Rational('1/2') == '1/2'            #=> false
-def ==(p1); end
+def ==; end
 
 ##
 # Returns the truncated value (toward negative infinity).
@@ -10271,7 +16833,24 @@ def ==(p1); end
 # 
 #    '%f' % Rational('-123.456').floor(+1)  #=> "-123.500000"
 #    '%f' % Rational('-123.456').floor(-1)  #=> "-130.000000"
-def floor(*args); end
+def floor; end
+
+##
+# Returns the truncated value (toward negative infinity).
+# 
+# For example:
+# 
+#    Rational(3).floor      #=> 3
+#    Rational(2, 3).floor   #=> 0
+#    Rational(-3, 2).floor  #=> -1
+# 
+#           decimal      -  1  2  3 . 4  5  6
+#                          ^  ^  ^  ^   ^  ^
+#          precision      -3 -2 -1  0  +1 +2
+# 
+#    '%f' % Rational('-123.456').floor(+1)  #=> "-123.500000"
+#    '%f' % Rational('-123.456').floor(-1)  #=> "-130.000000"
+def floor(precision=0); end
 
 ##
 # Returns the truncated value (toward positive infinity).
@@ -10288,7 +16867,24 @@ def floor(*args); end
 # 
 #    '%f' % Rational('-123.456').ceil(+1)  #=> "-123.400000"
 #    '%f' % Rational('-123.456').ceil(-1)  #=> "-120.000000"
-def ceil(*args); end
+def ceil; end
+
+##
+# Returns the truncated value (toward positive infinity).
+# 
+# For example:
+# 
+#    Rational(3).ceil      #=> 3
+#    Rational(2, 3).ceil   #=> 1
+#    Rational(-3, 2).ceil  #=> -1
+# 
+#           decimal      -  1  2  3 . 4  5  6
+#                          ^  ^  ^  ^   ^  ^
+#          precision      -3 -2 -1  0  +1 +2
+# 
+#    '%f' % Rational('-123.456').ceil(+1)  #=> "-123.400000"
+#    '%f' % Rational('-123.456').ceil(-1)  #=> "-120.000000"
+def ceil(precision=0); end
 
 ##
 # Returns the truncated value (toward zero).
@@ -10305,7 +16901,24 @@ def ceil(*args); end
 # 
 #    '%f' % Rational('-123.456').truncate(+1)  #=>  "-123.400000"
 #    '%f' % Rational('-123.456').truncate(-1)  #=>  "-120.000000"
-def truncate(*args); end
+def truncate; end
+
+##
+# Returns the truncated value (toward zero).
+# 
+# For example:
+# 
+#    Rational(3).truncate      #=> 3
+#    Rational(2, 3).truncate   #=> 0
+#    Rational(-3, 2).truncate  #=> -1
+# 
+#           decimal      -  1  2  3 . 4  5  6
+#                          ^  ^  ^  ^   ^  ^
+#          precision      -3 -2 -1  0  +1 +2
+# 
+#    '%f' % Rational('-123.456').truncate(+1)  #=>  "-123.400000"
+#    '%f' % Rational('-123.456').truncate(-1)  #=>  "-120.000000"
+def truncate(precision=0); end
 
 ##
 # Returns the truncated value (toward the nearest integer;
@@ -10323,7 +16936,25 @@ def truncate(*args); end
 # 
 #    '%f' % Rational('-123.456').round(+1)  #=> "-123.500000"
 #    '%f' % Rational('-123.456').round(-1)  #=> "-120.000000"
-def round(*args); end
+def round; end
+
+##
+# Returns the truncated value (toward the nearest integer;
+# 0.5 => 1; -0.5 => -1).
+# 
+# For example:
+# 
+#    Rational(3).round      #=> 3
+#    Rational(2, 3).round   #=> 1
+#    Rational(-3, 2).round  #=> -2
+# 
+#           decimal      -  1  2  3 . 4  5  6
+#                          ^  ^  ^  ^   ^  ^
+#          precision      -3 -2 -1  0  +1 +2
+# 
+#    '%f' % Rational('-123.456').round(+1)  #=> "-123.500000"
+#    '%f' % Rational('-123.456').round(-1)  #=> "-120.000000"
+def round(precision=0); end
 
 ##
 # Returns the truncated value as an integer.
@@ -10338,7 +16969,7 @@ def round(*args); end
 #    Rational(300.6).to_i  #=> 300
 #    Rational(98,71).to_i  #=> 1
 #    Rational(-30,2).to_i  #=> -15
-def to_i(); end
+def to_i; end
 
 ##
 # Return the value as a float.
@@ -10349,7 +16980,7 @@ def to_i(); end
 #    Rational(9, 4).to_f   #=> 2.25
 #    Rational(-3, 4).to_f  #=> -0.75
 #    Rational(20, 3).to_f  #=> 6.666666666666667
-def to_f(); end
+def to_f; end
 
 ##
 # Returns self.
@@ -10358,7 +16989,7 @@ def to_f(); end
 # 
 #    Rational(2).to_r      #=> (2/1)
 #    Rational(-8, 6).to_r  #=> (-4/3)
-def to_r(); end
+def to_r; end
 
 ##
 # Returns a simpler approximation of the value if an optional
@@ -10371,7 +17002,20 @@ def to_r(); end
 #    r.rationalize                    #=> (5033165/16777216)
 #    r.rationalize(Rational('0.01'))  #=> (3/10)
 #    r.rationalize(Rational('0.1'))   #=> (1/3)
-def rationalize(p1=0); end
+def rationalize; end
+
+##
+# Returns a simpler approximation of the value if an optional
+# argument eps is given (rat-|eps| <= result <= rat+|eps|), self
+# otherwise.
+# 
+# For example:
+# 
+#    r = Rational(5033165, 16777216)
+#    r.rationalize                    #=> (5033165/16777216)
+#    r.rationalize(Rational('0.01'))  #=> (3/10)
+#    r.rationalize(Rational('0.1'))   #=> (1/3)
+def rationalize(eps); end
 
 ##
 # Returns the value as a string.
@@ -10381,7 +17025,7 @@ def rationalize(p1=0); end
 #    Rational(2).to_s      #=> "2/1"
 #    Rational(-8, 6).to_s  #=> "-4/3"
 #    Rational('0.5').to_s  #=> "1/2"
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the value as a string for inspection.
@@ -10391,7 +17035,7 @@ def to_s(); end
 #    Rational(2).inspect      #=> "(2/1)"
 #    Rational(-8, 6).inspect  #=> "(-4/3)"
 #    Rational('0.5').inspect  #=> "(1/2)"
-def inspect(); end
+def inspect; end
 
 end
 
@@ -10408,7 +17052,7 @@ class Integer < Numeric
 #    2.gcd(2)                    #=> 2
 #    3.gcd(-7)                   #=> 1
 #    ((1<<31)-1).gcd((1<<61)-1)  #=> 1
-def gcd(p1); end
+def gcd(int2); end
 
 ##
 # Returns the least common multiple (always positive).  0.lcm(x) and
@@ -10419,7 +17063,7 @@ def gcd(p1); end
 #    2.lcm(2)                    #=> 2
 #    3.lcm(-7)                   #=> 21
 #    ((1<<31)-1).lcm((1<<61)-1)  #=> 4951760154835678088235319297
-def lcm(p1); end
+def lcm(int2); end
 
 ##
 # Returns an array; [int.gcd(int2), int.lcm(int2)].
@@ -10429,15 +17073,15 @@ def lcm(p1); end
 #    2.gcdlcm(2)                    #=> [2, 2]
 #    3.gcdlcm(-7)                   #=> [1, 21]
 #    ((1<<31)-1).gcdlcm((1<<61)-1)  #=> [1, 4951760154835678088235319297]
-def gcdlcm(p1); end
+def gcdlcm(int2); end
 
 ##
 # Returns self.
-def numerator(); end
+def numerator; end
 
 ##
 # Returns 1.
-def denominator(); end
+def denominator; end
 
 ##
 # Returns the value as a rational.
@@ -10446,24 +17090,24 @@ def denominator(); end
 # 
 #    1.to_r        #=> (1/1)
 #    (1<<64).to_r  #=> (18446744073709551616/1)
-def to_r(); end
+def to_r; end
 
 ##
 # Returns the value as a rational.  An optional argument eps is
 # always ignored.
-def rationalize(p1=0); end
+def rationalize(eps=0); end
 
 ##
 # Always returns <code>true</code>.
-def integer?(); end
+def integer?; end
 
 ##
 # Returns <code>true</code> if <i>int</i> is an odd number.
-def odd?(); end
+def odd?; end
 
 ##
 # Returns <code>true</code> if <i>int</i> is an even number.
-def even?(); end
+def even?; end
 
 ##
 # Iterates <em>block</em>, passing in integer values from <i>int</i>
@@ -10476,7 +17120,20 @@ def even?(); end
 # <em>produces:</em>
 # 
 #    5 6 7 8 9 10
-def upto(p1); end
+def upto(limit, &block); end
+
+##
+# Iterates <em>block</em>, passing in integer values from <i>int</i>
+# up to and including <i>limit</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    5.upto(10) { |i| print i, " " }
+# 
+# <em>produces:</em>
+# 
+#    5 6 7 8 9 10
+def upto(limit); end
 
 ##
 # Iterates <em>block</em>, passing decreasing values from <i>int</i>
@@ -10490,7 +17147,21 @@ def upto(p1); end
 # <em>produces:</em>
 # 
 #    5.. 4.. 3.. 2.. 1..   Liftoff!
-def downto(p1); end
+def downto(limit, &block); end
+
+##
+# Iterates <em>block</em>, passing decreasing values from <i>int</i>
+# down to and including <i>limit</i>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    5.downto(1) { |n| print n, ".. " }
+#    print "  Liftoff!\n"
+# 
+# <em>produces:</em>
+# 
+#    5.. 4.. 3.. 2.. 1..   Liftoff!
+def downto(limit); end
 
 ##
 # Iterates block <i>int</i> times, passing in values from zero to
@@ -10505,28 +17176,57 @@ def downto(p1); end
 # <em>produces:</em>
 # 
 #    0 1 2 3 4
-def times(); end
+def times(&block); end
+
+##
+# Iterates block <i>int</i> times, passing in values from zero to
+# <i>int</i> - 1.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    5.times do |i|
+#      print i, " "
+#    end
+# 
+# <em>produces:</em>
+# 
+#    0 1 2 3 4
+def times; end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def succ(); end
+def next; end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def next(); end
+def succ; end
+
+##
+# Returns the <code>Integer</code> equal to <i>int</i> + 1.
+# 
+#    1.next      #=> 2
+#    (-1).next   #=> 0
+def next; end
+
+##
+# Returns the <code>Integer</code> equal to <i>int</i> + 1.
+# 
+#    1.next      #=> 2
+#    (-1).next   #=> 0
+def succ; end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> - 1.
 # 
 #    1.pred      #=> 0
 #    (-1).pred   #=> -2
-def pred(); end
+def pred; end
 
 ##
 # Returns a string containing the character represented by the
@@ -10535,7 +17235,7 @@ def pred(); end
 #    65.chr    #=> "A"
 #    230.chr   #=> "\346"
 #    255.chr(Encoding::UTF_8)   #=> "\303\277"
-def chr(*args); end
+def chr(encoding=0); end
 
 ##
 # Returns the int itself.
@@ -10545,32 +17245,132 @@ def chr(*args); end
 # This method is intended for compatibility to
 # character constant in Ruby 1.9.
 # For example, ?a.ord returns 97 both in 1.8 and 1.9.
-def ord(); end
+def ord; end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def to_i(); end
+def to_i; end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def to_int(); end
+def to_int; end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def floor(); end
+def floor; end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def ceil(); end
+def ceil; end
 
 ##
 # As <i>int</i> is already an <code>Integer</code>, all these
 # methods simply return the receiver.
-def truncate(); end
+def truncate; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_i; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_int; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def floor; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def ceil; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def truncate; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_i; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_int; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def floor; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def ceil; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def truncate; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_i; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_int; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def floor; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def ceil; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def truncate; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_i; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def to_int; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def floor; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def ceil; end
+
+##
+# As <i>int</i> is already an <code>Integer</code>, all these
+# methods simply return the receiver.
+def truncate; end
 
 ##
 # Rounds <i>flt</i> to a given precision in decimal digits (default 0 digits).
@@ -10580,7 +17380,7 @@ def truncate(); end
 #    1.round        #=> 1
 #    1.round(2)     #=> 1.0
 #    15.round(-1)   #=> 20
-def round(p1); end
+def round(ndigits=0); end
 
 end
 
@@ -10600,16 +17400,11 @@ class Numeric < Object
 include Comparable
 ##
 # Returns the numerator.
-def numerator(); end
+def numerator; end
 
 ##
 # Returns the denominator (always positive).
-def denominator(); end
-
-##
-# Trap attempts to add methods to <code>Numeric</code> objects. Always
-# raises a <code>TypeError</code>
-def singleton_method_added(p1); end
+def denominator; end
 
 ##
 # If <i>aNumeric</i> is the same type as <i>num</i>, returns an array
@@ -10622,25 +17417,25 @@ def singleton_method_added(p1); end
 #    1.coerce(2.5)   #=> [2.5, 1.0]
 #    1.2.coerce(3)   #=> [3.0, 1.2]
 #    1.coerce(2)     #=> [2, 1]
-def coerce(p1); end
+def coerce(numeric); end
 
 ##
 # Returns the corresponding imaginary number.
 # Not available for complex numbers.
-def i(); end
+def i; end
 
 ##
 # Unary Plus---Returns the receiver's value.
-def +@(); end
+def +@; end
 
 ##
 # Unary Minus---Returns the receiver's value, negated.
-def -@(); end
+def -@; end
 
 ##
 # Returns zero if <i>num</i> equals <i>other</i>, <code>nil</code>
 # otherwise.
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns <code>true</code> if <i>num</i> and <i>numeric</i> are the
@@ -10649,15 +17444,15 @@ def <=>(p1); end
 #    1 == 1.0          #=> true
 #    1.eql?(1.0)       #=> false
 #    (1.0).eql?(1.0)   #=> true
-def eql?(p1); end
+def eql?(numeric); end
 
 ##
 # Returns most exact division (rational for integers, float for floats).
-def quo(p1); end
+def quo(numeric); end
 
 ##
 # Returns float division.
-def fdiv(p1); end
+def fdiv(numeric); end
 
 ##
 # Uses <code>/</code> to perform division, then converts the result to
@@ -10668,7 +17463,7 @@ def fdiv(p1); end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[0]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def div(p1); end
+def div(numeric); end
 
 ##
 # Returns an array containing the quotient and modulus obtained by
@@ -10705,7 +17500,7 @@ def div(p1); end
 #    11.divmod(3.5)       #=> [3, 0.5]
 #    (-11).divmod(3.5)    #=> [-4, 3.0]
 #    (11.5).divmod(3.5)   #=> [3, 1.0]
-def divmod(p1); end
+def divmod(numeric); end
 
 ##
 #    x.modulo(y) means x-y*(x/y).floor
@@ -10714,7 +17509,7 @@ def divmod(p1); end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[1]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def %(p1); end
+def modulo(numeric); end
 
 ##
 #    x.modulo(y) means x-y*(x/y).floor
@@ -10723,13 +17518,13 @@ def %(p1); end
 # <i>num</i>.<code>divmod(</code><i>aNumeric</i><code>)[1]</code>.
 # 
 # See <code>Numeric#divmod</code>.
-def modulo(p1); end
+def modulo(numeric); end
 
 ##
 #    x.remainder(y) means x-y*(x/y).truncate
 # 
 # See <code>Numeric#divmod</code>.
-def remainder(p1); end
+def remainder(numeric); end
 
 ##
 # Returns the absolute value of <i>num</i>.
@@ -10737,7 +17532,7 @@ def remainder(p1); end
 #    12.abs         #=> 12
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def abs(); end
+def abs; end
 
 ##
 # Returns the absolute value of <i>num</i>.
@@ -10745,26 +17540,42 @@ def abs(); end
 #    12.abs         #=> 12
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def magnitude(); end
+def magnitude; end
+
+##
+# Returns the absolute value of <i>num</i>.
+# 
+#    12.abs         #=> 12
+#    (-34.56).abs   #=> 34.56
+#    -34.56.abs     #=> 34.56
+def abs; end
+
+##
+# Returns the absolute value of <i>num</i>.
+# 
+#    12.abs         #=> 12
+#    (-34.56).abs   #=> 34.56
+#    -34.56.abs     #=> 34.56
+def magnitude; end
 
 ##
 # Invokes the child class's <code>to_i</code> method to convert
 # <i>num</i> to an integer.
-def to_int(); end
+def to_int; end
 
 ##
 # Returns <code>true</code> if <i>num</i> is a <code>Real</code>
 # (i.e. non <code>Complex</code>).
-def real?(); end
+def real?; end
 
 ##
 # Returns <code>true</code> if <i>num</i> is an <code>Integer</code>
 # (including <code>Fixnum</code> and <code>Bignum</code>).
-def integer?(); end
+def integer?; end
 
 ##
 # Returns <code>true</code> if <i>num</i> has a zero value.
-def zero?(); end
+def zero?; end
 
 ##
 # Returns +self+ if <i>num</i> is not zero, <code>nil</code>
@@ -10773,7 +17584,7 @@ def zero?(); end
 #    a = %w( z Bb bB bb BB a aA Aa AA A )
 #    b = a.sort {|a,b| (a.downcase <=> b.downcase).nonzero? || a <=> b }
 #    b   #=> ["A", "a", "AA", "Aa", "aA", "BB", "Bb", "bB", "bb", "z"]
-def nonzero?(); end
+def nonzero?; end
 
 ##
 # Returns the largest integer less than or equal to <i>num</i>.
@@ -10782,7 +17593,7 @@ def nonzero?(); end
 # 
 #    1.floor      #=> 1
 #    (-1).floor   #=> -1
-def floor(); end
+def floor; end
 
 ##
 # Returns the smallest <code>Integer</code> greater than or equal to
@@ -10794,20 +17605,20 @@ def floor(); end
 #    1.2.ceil      #=> 2
 #    (-1.2).ceil   #=> -1
 #    (-1.0).ceil   #=> -1
-def ceil(); end
+def ceil; end
 
 ##
 # Rounds <i>num</i> to a given precision in decimal digits (default 0 digits).
 # Precision may be negative.  Returns a floating point number when <i>ndigits</i>
 # is more than zero.  <code>Numeric</code> implements this by converting itself
 # to a <code>Float</code> and invoking <code>Float#round</code>.
-def round(*args); end
+def round(ndigits=0); end
 
 ##
 # Returns <i>num</i> truncated to an integer. <code>Numeric</code>
 # implements this by converting its value to a float and invoking
 # <code>Float#truncate</code>.
-def truncate(); end
+def truncate; end
 
 ##
 # Invokes <em>block</em> with the sequence of numbers starting at
@@ -10833,59 +17644,125 @@ def truncate(); end
 # 
 #    1 3 5 7 9
 #    2.71828182845905 2.91828182845905 3.11828182845905
-def step(*args); end
+def step(limit, step=0, &block); end
+
+##
+# Invokes <em>block</em> with the sequence of numbers starting at
+# <i>num</i>, incremented by <i>step</i> (default 1) on each
+# call. The loop finishes when the value to be passed to the block
+# is greater than <i>limit</i> (if <i>step</i> is positive) or less
+# than <i>limit</i> (if <i>step</i> is negative). If all the
+# arguments are integers, the loop operates using an integer
+# counter. If any of the arguments are floating point numbers, all
+# are converted to floats, and the loop is executed <i>floor(n +
+# n*epsilon)+ 1</i> times, where <i>n = (limit -
+# num)/step</i>. Otherwise, the loop starts at <i>num</i>, uses
+# either the <code><</code> or <code>></code> operator to compare
+# the counter against <i>limit</i>, and increments itself using the
+# <code>+</code> operator.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    1.step(10, 2) { |i| print i, " " }
+#    Math::E.step(Math::PI, 0.2) { |f| print f, " " }
+# 
+# <em>produces:</em>
+# 
+#    1 3 5 7 9
+#    2.71828182845905 2.91828182845905 3.11828182845905
+def step(limit, step=0); end
 
 ##
 # Returns the value as a complex.
-def to_c(); end
+def to_c; end
 
 ##
 # Returns self.
-def real(); end
+def real; end
 
 ##
 # Returns zero.
-def imaginary(); end
+def imag; end
 
 ##
 # Returns zero.
-def imag(); end
+def imaginary; end
+
+##
+# Returns zero.
+def imag; end
+
+##
+# Returns zero.
+def imaginary; end
 
 ##
 # Returns square of self.
-def abs2(); end
+def abs2; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def arg(); end
+def arg; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def angle(); end
+def angle; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def phase(); end
+def phase; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def arg; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def angle; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def phase; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def arg; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def angle; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def phase; end
 
 ##
 # Returns an array; [num, 0].
-def rectangular(); end
+def rect; end
 
 ##
 # Returns an array; [num, 0].
-def rect(); end
+def rect; end
 
 ##
 # Returns an array; [num.abs, num.arg].
-def polar(); end
+def polar; end
 
 ##
 # Returns self.
-def conjugate(); end
+def conj; end
 
 ##
 # Returns self.
-def conj(); end
+def conjugate; end
+
+##
+# Returns self.
+def conj; end
+
+##
+# Returns self.
+def conjugate; end
 
 end
 
@@ -10909,14 +17786,14 @@ class Float < Numeric
 #    n = 0.3.numerator    #=> 5404319552844595
 #    d = 0.3.denominator  #=> 18014398509481984
 #    n.fdiv(d)            #=> 0.3
-def numerator(); end
+def numerator; end
 
 ##
 # Returns the denominator (always positive).  The result is machine
 # dependent.
 # 
 # See numerator.
-def denominator(); end
+def denominator; end
 
 ##
 # Returns the value as a rational.
@@ -10930,7 +17807,7 @@ def denominator(); end
 #    2.5.to_r    #=> (5/2)
 #    -0.75.to_r  #=> (-3/4)
 #    0.0.to_r    #=> (0/1)
-def to_r(); end
+def to_r; end
 
 ##
 # Returns a simpler approximation of the value (flt-|eps| <= result
@@ -10942,14 +17819,14 @@ def to_r(); end
 #    0.3.rationalize          #=> (3/10)
 #    1.333.rationalize        #=> (1333/1000)
 #    1.333.rationalize(0.01)  #=> (4/3)
-def rationalize(p1=0); end
+def rationalize(eps=0); end
 
 ##
 # Returns a string containing a representation of self. As well as a
 # fixed or exponential form of the number, the call may return
 # ``<code>NaN</code>'', ``<code>Infinity</code>'', and
 # ``<code>-Infinity</code>''.
-def to_s(); end
+def to_s; end
 
 ##
 # Returns an array with both <i>aNumeric</i> and <i>flt</i> represented
@@ -10958,63 +17835,81 @@ def to_s(); end
 # 
 #    1.2.coerce(3)       #=> [3.0, 1.2]
 #    2.5.coerce(1.1)     #=> [1.1, 2.5]
-def coerce(p1); end
+def coerce(numeric); end
 
 ##
 # Returns float, negated.
-def -@(); end
+def -@; end
 
 ##
 # Returns a new float which is the sum of <code>float</code>
 # and <code>other</code>.
-def +(p1); end
+def +; end
 
 ##
 # Returns a new float which is the difference of <code>float</code>
 # and <code>other</code>.
-def -(p1); end
+def -; end
 
 ##
 # Returns a new float which is the product of <code>float</code>
 # and <code>other</code>.
-def *(p1); end
+def *; end
 
 ##
 # Returns a new float which is the result of dividing
 # <code>float</code> by <code>other</code>.
-def /(p1); end
+def /; end
 
 ##
 # Returns float / numeric.
-def quo(p1); end
+def quo(numeric); end
 
 ##
 # Returns float / numeric.
-def fdiv(p1); end
+def quo(numeric); end
 
 ##
 # Return the modulo after division of <code>flt</code> by <code>other</code>.
 # 
 #    6543.21.modulo(137)      #=> 104.21
 #    6543.21.modulo(137.24)   #=> 92.9299999999996
-def %(p1); end
+def %; end
 
 ##
 # Return the modulo after division of <code>flt</code> by <code>other</code>.
 # 
 #    6543.21.modulo(137)      #=> 104.21
 #    6543.21.modulo(137.24)   #=> 92.9299999999996
-def modulo(p1); end
+def modulo(other); end
+
+##
+# Return the modulo after division of <code>flt</code> by <code>other</code>.
+# 
+#    6543.21.modulo(137)      #=> 104.21
+#    6543.21.modulo(137.24)   #=> 92.9299999999996
+def modulo; end
+
+##
+# Return the modulo after division of <code>flt</code> by <code>other</code>.
+# 
+#    6543.21.modulo(137)      #=> 104.21
+#    6543.21.modulo(137.24)   #=> 92.9299999999996
+def modulo(other); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod(p1); end
+def divmod(numeric); end
 
 ##
 # Raises <code>float</code> the <code>other</code> power.
 # 
 #    2.0**3      #=> 8.0
-def **(p1); end
+##
+# Raises <code>float</code> the <code>other</code> power.
+# 
+#    2.0**3      #=> 8.0
+def **; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -11022,7 +17917,7 @@ def **(p1); end
 # requires <i>obj</i> to be a <code>Float</code>.
 # 
 #    1.0 == 1   #=> true
-def ==(p1); end
+def ==; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -11030,31 +17925,31 @@ def ==(p1); end
 # requires <i>obj</i> to be a <code>Float</code>.
 # 
 #    1.0 == 1   #=> true
-def ===(p1); end
+def ===; end
 
 ##
 # Returns -1, 0, +1 or nil depending on whether <i>flt</i> is less
 # than, equal to, or greater than <i>real</i>. This is the basis for
 # the tests in <code>Comparable</code>.
-def <=>(p1); end
+def <=>; end
 
 ##
 # <code>true</code> if <code>flt</code> is greater than <code>real</code>.
-def >(p1); end
+def >; end
 
 ##
 # <code>true</code> if <code>flt</code> is greater than
 # or equal to <code>real</code>.
-def >=(p1); end
+def >=; end
 
 ##
 # <code>true</code> if <code>flt</code> is less than <code>real</code>.
-def <(p1); end
+def <; end
 
 ##
 # <code>true</code> if <code>flt</code> is less than
 # or equal to <code>real</code>.
-def <=(p1); end
+def <=; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a
@@ -11062,41 +17957,71 @@ def <=(p1); end
 # with <code>Float#==</code>, which performs type conversions.
 # 
 #    1.0.eql?(1)   #=> false
-def eql?(p1); end
+def eql?(obj); end
 
 ##
 # Returns a hash code for this float.
-def hash(); end
+def hash; end
 
 ##
 # As <code>flt</code> is already a float, returns +self+.
-def to_f(); end
+def to_f; end
 
 ##
 # Returns the absolute value of <i>flt</i>.
 # 
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def abs(); end
+def abs; end
 
 ##
 # Returns the absolute value of <i>flt</i>.
 # 
 #    (-34.56).abs   #=> 34.56
 #    -34.56.abs     #=> 34.56
-def magnitude(); end
+def magnitude; end
+
+##
+# Returns the absolute value of <i>flt</i>.
+# 
+#    (-34.56).abs   #=> 34.56
+#    -34.56.abs     #=> 34.56
+def abs; end
+
+##
+# Returns the absolute value of <i>flt</i>.
+# 
+#    (-34.56).abs   #=> 34.56
+#    -34.56.abs     #=> 34.56
+def magnitude; end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is 0.0.
-def zero?(); end
+def zero?; end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def to_i(); end
+def to_i; end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def to_int(); end
+def to_int; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def truncate; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def to_i; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def to_int; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def truncate; end
 
 ##
 # Returns the largest integer less than or equal to <i>flt</i>.
@@ -11105,7 +18030,7 @@ def to_int(); end
 #    2.0.floor      #=> 2
 #    (-1.2).floor   #=> -2
 #    (-2.0).floor   #=> -2
-def floor(); end
+def floor; end
 
 ##
 # Returns the smallest <code>Integer</code> greater than or equal to
@@ -11115,7 +18040,7 @@ def floor(); end
 #    2.0.ceil      #=> 2
 #    (-1.2).ceil   #=> -1
 #    (-2.0).ceil   #=> -2
-def ceil(); end
+def ceil; end
 
 ##
 # Rounds <i>flt</i> to a given precision in decimal digits (default 0 digits).
@@ -11141,11 +18066,19 @@ def ceil(); end
 #    34567.89.round(1)  #=> 34567.9
 #    34567.89.round(2)  #=> 34567.89
 #    34567.89.round(3)  #=> 34567.89
-def round(p1=0); end
+def round(ndigits=0); end
 
 ##
 # Returns <i>flt</i> truncated to an <code>Integer</code>.
-def truncate(); end
+def to_i; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def to_int; end
+
+##
+# Returns <i>flt</i> truncated to an <code>Integer</code>.
+def truncate; end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is an invalid IEEE floating
@@ -11155,7 +18088,7 @@ def truncate(); end
 #    a.nan?        #=> false
 #    a = 0.0/0.0   #=> NaN
 #    a.nan?        #=> true
-def nan?(); end
+def nan?; end
 
 ##
 # Returns <code>nil</code>, -1, or +1 depending on whether <i>flt</i>
@@ -11164,25 +18097,49 @@ def nan?(); end
 #    (0.0).infinite?        #=> nil
 #    (-1.0/0.0).infinite?   #=> -1
 #    (+1.0/0.0).infinite?   #=> 1
-def infinite?(); end
+def infinite?; end
 
 ##
 # Returns <code>true</code> if <i>flt</i> is a valid IEEE floating
 # point number (it is not infinite, and <code>nan?</code> is
 # <code>false</code>).
-def finite?(); end
+def finite?; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def arg(); end
+def arg; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def angle(); end
+def angle; end
 
 ##
 # Returns 0 if the value is positive, pi otherwise.
-def phase(); end
+def phase; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def arg; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def angle; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def phase; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def arg; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def angle; end
+
+##
+# Returns 0 if the value is positive, pi otherwise.
+def phase; end
 
 end
 
@@ -11191,66 +18148,76 @@ end
 class NilClass < Object
 ##
 # Returns zero as a rational.
-def to_r(); end
+def to_r; end
 
 ##
 # Returns zero as a rational.  An optional argument eps is always
 # ignored.
-def rationalize(p1=0); end
+def rationalize(eps=0); end
 
 ##
 # Always returns zero.
 # 
 #    nil.to_i   #=> 0
-def to_i(); end
+def to_i; end
 
 ##
 # Always returns zero.
 # 
 #    nil.to_f   #=> 0.0
-def to_f(); end
+def to_f; end
 
 ##
 # Always returns the empty string.
-def to_s(); end
+def to_s; end
 
 ##
 # Always returns an empty array.
 # 
 #    nil.to_a   #=> []
-def to_a(); end
+def to_a; end
 
 ##
 # Always returns the string "nil".
-def inspect(); end
+def inspect; end
 
 ##
 # And---Returns <code>false</code>. <i>obj</i> is always
 # evaluated as it is the argument to a method call---there is no
 # short-circuit evaluation in this case.
-def &(p1); end
+def &; end
+
+##
+# And---Returns <code>false</code>. <i>obj</i> is always
+# evaluated as it is the argument to a method call---there is no
+# short-circuit evaluation in this case.
+def &; end
 
 ##
 # Or---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
-def |(p1); end
+def |; end
+
+##
+# Or---Returns <code>false</code> if <i>obj</i> is
+# <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
+def |; end
 
 ##
 # Exclusive Or---If <i>obj</i> is <code>nil</code> or
 # <code>false</code>, returns <code>false</code>; otherwise, returns
 # <code>true</code>.
-def ^(p1); end
+def ^; end
 
 ##
-# call_seq:
-#   nil.nil?               -> true
-# 
-# Only the object <i>nil</i> responds <code>true</code> to <code>nil?</code>.
-def nil?(); end
+# Exclusive Or---If <i>obj</i> is <code>nil</code> or
+# <code>false</code>, returns <code>false</code>; otherwise, returns
+# <code>true</code>.
+def ^; end
 
 ##
 # Returns zero as a complex.
-def to_c(); end
+def to_c; end
 
 end
 
@@ -11285,7 +18252,7 @@ include Comparable
 #    '21 june 09'.to_r  #=> (21/1)
 #    '21/06/09'.to_r    #=> (7/2)
 #    'bwv 1079'.to_r    #=> (0/1)
-def to_r(); end
+def to_r; end
 
 ##
 # Try to convert <i>obj</i> into a String, using to_str method.
@@ -11294,11 +18261,11 @@ def to_r(); end
 # 
 #    String.try_convert("str")     #=> "str"
 #    String.try_convert(/re/)      #=> nil
-def self.try_convert(p1); end
+def self.try_convert(obj); end
 
 ##
 # Returns a new string object containing a copy of <i>str</i>.
-def self.new(p1=0); end
+def self.new(str=""); end
 
 ##
 # Replaces the contents and taintedness of <i>str</i> with the corresponding
@@ -11306,7 +18273,7 @@ def self.new(p1=0); end
 # 
 #    s = "hello"         #=> "hello"
 #    s.replace "world"   #=> "world"
-def initialize_copy(p1); end
+def replace(other_str); end
 
 ##
 # Comparison---Returns -1 if <i>other_str</i> is greater than, 0 if
@@ -11326,27 +18293,27 @@ def initialize_copy(p1); end
 #    "abcdef" <=> "abcdef"    #=> 0
 #    "abcdef" <=> "abcdefg"   #=> -1
 #    "abcdef" <=> "ABCDEF"    #=> 1
-def <=>(p1); end
+def <=>; end
 
 ##
 # Equality---If <i>obj</i> is not a <code>String</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>str</i>
 # <code><=></code> <i>obj</i> returns zero.
-def ==(p1); end
+def ==; end
 
 ##
 # Equality---If <i>obj</i> is not a <code>String</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>str</i>
 # <code><=></code> <i>obj</i> returns zero.
-def ===(p1); end
+def ===; end
 
 ##
 # Two strings are equal if they have the same length and content.
-def eql?(p1); end
+def eql?(other); end
 
 ##
 # Return a hash based on the string's length and content.
-def hash(); end
+def hash; end
 
 ##
 # Case-insensitive version of <code>String#<=></code>.
@@ -11355,21 +18322,21 @@ def hash(); end
 #    "aBcDeF".casecmp("abcdef")    #=> 0
 #    "abcdef".casecmp("abcdefg")   #=> -1
 #    "abcdef".casecmp("ABCDEF")    #=> 0
-def casecmp(p1); end
+def casecmp(other_str); end
 
 ##
 # Concatenation---Returns a new <code>String</code> containing
 # <i>other_str</i> concatenated to <i>str</i>.
 # 
 #    "Hello from " + self.to_s   #=> "Hello from main"
-def +(p1); end
+def +; end
 
 ##
 # Copy---Returns a new <code>String</code> containing <i>integer</i> copies of
 # the receiver.
 # 
 #    "Ho! " * 3   #=> "Ho! Ho! Ho! "
-def *(p1); end
+def *; end
 
 ##
 # Format---Uses <i>str</i> as a format specification, and returns the result
@@ -11381,7 +18348,7 @@ def *(p1); end
 #    "%05d" % 123                              #=> "00123"
 #    "%-5s: %08x" % [ "ID", self.object_id ]   #=> "ID   : 200e14d6"
 #    "foo = %{foo}" % { :foo => 'bar' }        #=> "foo = bar"
-def %(p1); end
+def %; end
 
 ##
 # Element Reference---If passed a single <code>Fixnum</code>, returns a
@@ -11415,7 +18382,415 @@ def %(p1); end
 #    a[/[aeiou](.)\1/, 2]   #=> nil
 #    a["lo"]                #=> "lo"
 #    a["bye"]               #=> nil
-def [](*args); end
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def []; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(fixnum, fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(range); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp, fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp, capname); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(other_str); end
 
 ##
 # Element Assignment---Replaces some or all of the content of <i>str</i>. The
@@ -11431,7 +18806,103 @@ def [](*args); end
 # out of range; the <code>Range</code> form will raise a
 # <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
 # forms will silently ignore the assignment.
-def []=(*args); end
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
+
+##
+# Element Assignment---Replaces some or all of the content of <i>str</i>. The
+# portion of the string affected is determined using the same criteria as
+# <code>String#[]</code>. If the replacement string is not the same length as
+# the text it is replacing, the string will be adjusted accordingly. If the
+# regular expression or string is used as the index doesn't match a position
+# in the string, <code>IndexError</code> is raised. If the regular expression
+# form is used, the optional second <code>Fixnum</code> allows you to specify
+# which portion of the match to replace (effectively using the
+# <code>MatchData</code> indexing rules. The forms that take a
+# <code>Fixnum</code> will raise an <code>IndexError</code> if the value is
+# out of range; the <code>Range</code> form will raise a
+# <code>RangeError</code>, and the <code>Regexp</code> and <code>String</code>
+# forms will silently ignore the assignment.
+def []=; end
 
 ##
 # Inserts <i>other_str</i> before the character at the given
@@ -11445,26 +18916,34 @@ def []=(*args); end
 #    "abcd".insert(4, 'X')    #=> "abcdX"
 #    "abcd".insert(-3, 'X')   #=> "abXcd"
 #    "abcd".insert(-1, 'X')   #=> "abcdX"
-def insert(p1, p2); end
+def insert(index, other_str); end
 
 ##
 # Returns the character length of <i>str</i>.
-def length(); end
+def length; end
 
 ##
 # Returns the character length of <i>str</i>.
-def size(); end
+def size; end
+
+##
+# Returns the character length of <i>str</i>.
+def length; end
+
+##
+# Returns the character length of <i>str</i>.
+def size; end
 
 ##
 # Returns the length of <i>str</i> in bytes.
-def bytesize(); end
+def bytesize; end
 
 ##
 # Returns <code>true</code> if <i>str</i> has a length of zero.
 # 
 #    "hello".empty?   #=> false
 #    "".empty?        #=> true
-def empty?(); end
+def empty?; end
 
 ##
 # Match---If <i>obj</i> is a <code>Regexp</code>, use it as a pattern to match
@@ -11475,7 +18954,7 @@ def empty?(); end
 # 
 #    "cat o' 9 tails" =~ /\d/   #=> 7
 #    "cat o' 9 tails" =~ 9      #=> nil
-def =~(p1); end
+def =~; end
 
 ##
 # Converts <i>pattern</i> to a <code>Regexp</code> (if it isn't already one),
@@ -11500,7 +18979,32 @@ def =~(p1); end
 #    end
 # 
 # The return value is a value from block execution in this case.
-def match(*args); end
+def match(pattern); end
+
+##
+# Converts <i>pattern</i> to a <code>Regexp</code> (if it isn't already one),
+# then invokes its <code>match</code> method on <i>str</i>.  If the second
+# parameter is present, it specifies the position in the string to begin the
+# search.
+# 
+#    'hello'.match('(.)\1')      #=> #<MatchData "ll" 1:"l">
+#    'hello'.match('(.)\1')[0]   #=> "ll"
+#    'hello'.match(/(.)\1/)[0]   #=> "ll"
+#    'hello'.match('xx')         #=> nil
+# 
+# If a block is given, invoke the block with MatchData if match succeed, so
+# that you can write
+# 
+#    str.match(pat) {|m| ...}
+# 
+# instead of
+# 
+#    if m = str.match(pat)
+#      ...
+#    end
+# 
+# The return value is a value from block execution in this case.
+def match(pattern, pos); end
 
 ##
 # Returns the successor to <i>str</i>. The successor is calculated by
@@ -11521,12 +19025,7 @@ def match(*args); end
 #    "1999zzz".succ     #=> "2000aaa"
 #    "ZZZ9999".succ     #=> "AAAA0000"
 #    "***".succ         #=> "**+"
-def succ(); end
-
-##
-# Equivalent to <code>String#succ</code>, but modifies the receiver in
-# place.
-def succ!(); end
+def succ; end
 
 ##
 # Returns the successor to <i>str</i>. The successor is calculated by
@@ -11547,12 +19046,69 @@ def succ!(); end
 #    "1999zzz".succ     #=> "2000aaa"
 #    "ZZZ9999".succ     #=> "AAAA0000"
 #    "***".succ         #=> "**+"
-def next(); end
+def next; end
 
 ##
 # Equivalent to <code>String#succ</code>, but modifies the receiver in
 # place.
-def next!(); end
+def succ!; end
+
+##
+# Equivalent to <code>String#succ</code>, but modifies the receiver in
+# place.
+def next!; end
+
+##
+# Returns the successor to <i>str</i>. The successor is calculated by
+# incrementing characters starting from the rightmost alphanumeric (or
+# the rightmost character if there are no alphanumerics) in the
+# string. Incrementing a digit always results in another digit, and
+# incrementing a letter results in another letter of the same case.
+# Incrementing nonalphanumerics uses the underlying character set's
+# collating sequence.
+# 
+# If the increment generates a ``carry,'' the character to the left of
+# it is incremented. This process repeats until there is no carry,
+# adding an additional character if necessary.
+# 
+#    "abcd".succ        #=> "abce"
+#    "THX1138".succ     #=> "THX1139"
+#    "<<koala>>".succ   #=> "<<koalb>>"
+#    "1999zzz".succ     #=> "2000aaa"
+#    "ZZZ9999".succ     #=> "AAAA0000"
+#    "***".succ         #=> "**+"
+def succ; end
+
+##
+# Returns the successor to <i>str</i>. The successor is calculated by
+# incrementing characters starting from the rightmost alphanumeric (or
+# the rightmost character if there are no alphanumerics) in the
+# string. Incrementing a digit always results in another digit, and
+# incrementing a letter results in another letter of the same case.
+# Incrementing nonalphanumerics uses the underlying character set's
+# collating sequence.
+# 
+# If the increment generates a ``carry,'' the character to the left of
+# it is incremented. This process repeats until there is no carry,
+# adding an additional character if necessary.
+# 
+#    "abcd".succ        #=> "abce"
+#    "THX1138".succ     #=> "THX1139"
+#    "<<koala>>".succ   #=> "<<koalb>>"
+#    "1999zzz".succ     #=> "2000aaa"
+#    "ZZZ9999".succ     #=> "AAAA0000"
+#    "***".succ         #=> "**+"
+def next; end
+
+##
+# Equivalent to <code>String#succ</code>, but modifies the receiver in
+# place.
+def succ!; end
+
+##
+# Equivalent to <code>String#succ</code>, but modifies the receiver in
+# place.
+def next!; end
 
 ##
 # Iterates through successive values, starting at <i>str</i> and
@@ -11580,7 +19136,35 @@ def next!(); end
 #    "9".upto("11").to_a   #=> ["9", "10", "11"]
 #    "25".upto("5").to_a   #=> []
 #    "07".upto("11").to_a  #=> ["07", "08", "09", "10", "11"]
-def upto(p1, p2=0); end
+def upto(other_str, exclusive=false, &block); end
+
+##
+# Iterates through successive values, starting at <i>str</i> and
+# ending at <i>other_str</i> inclusive, passing each value in turn to
+# the block. The <code>String#succ</code> method is used to generate
+# each value.  If optional second argument exclusive is omitted or is false,
+# the last value will be included; otherwise it will be excluded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "a8".upto("b6") {|s| print s, ' ' }
+#    for s in "a8".."b6"
+#      print s, ' '
+#    end
+# 
+# <em>produces:</em>
+# 
+#    a8 a9 b0 b1 b2 b3 b4 b5 b6
+#    a8 a9 b0 b1 b2 b3 b4 b5 b6
+# 
+# If <i>str</i> and <i>other_str</i> contains only ascii numeric characters,
+# both are recognized as decimal numbers. In addition, the width of
+# string (e.g. leading zeros) is handled appropriately.
+# 
+#    "9".upto("11").to_a   #=> ["9", "10", "11"]
+#    "25".upto("5").to_a   #=> []
+#    "07".upto("11").to_a  #=> ["07", "08", "09", "10", "11"]
+def upto(other_str, exclusive=false); end
 
 ##
 # Returns the index of the first occurrence of the given <i>substring</i> or
@@ -11593,7 +19177,20 @@ def upto(p1, p2=0); end
 #    "hello".index('a')             #=> nil
 #    "hello".index(?e)              #=> 1
 #    "hello".index(/[aeiou]/, -3)   #=> 4
-def index(p1, p2=0); end
+def index(substring , offset=0); end
+
+##
+# Returns the index of the first occurrence of the given <i>substring</i> or
+# pattern (<i>regexp</i>) in <i>str</i>. Returns <code>nil</code> if not
+# found. If the second parameter is present, it specifies the position in the
+# string to begin the search.
+# 
+#    "hello".index('e')             #=> 1
+#    "hello".index('lo')            #=> 3
+#    "hello".index('a')             #=> nil
+#    "hello".index(?e)              #=> 1
+#    "hello".index(/[aeiou]/, -3)   #=> 4
+def index(regexp , offset=0); end
 
 ##
 # Returns the index of the last occurrence of the given <i>substring</i> or
@@ -11607,7 +19204,21 @@ def index(p1, p2=0); end
 #    "hello".rindex('a')             #=> nil
 #    "hello".rindex(?e)              #=> 1
 #    "hello".rindex(/[aeiou]/, -2)   #=> 1
-def rindex(p1, p2=0); end
+def rindex(substring , fixnum=0); end
+
+##
+# Returns the index of the last occurrence of the given <i>substring</i> or
+# pattern (<i>regexp</i>) in <i>str</i>. Returns <code>nil</code> if not
+# found. If the second parameter is present, it specifies the position in the
+# string to end the search---characters beyond this point will not be
+# considered.
+# 
+#    "hello".rindex('e')             #=> 1
+#    "hello".rindex('l')             #=> 3
+#    "hello".rindex('a')             #=> nil
+#    "hello".rindex(?e)              #=> 1
+#    "hello".rindex(/[aeiou]/, -2)   #=> 1
+def rindex(regexp , fixnum=0); end
 
 ##
 # Replaces the contents and taintedness of <i>str</i> with the corresponding
@@ -11615,29 +19226,29 @@ def rindex(p1, p2=0); end
 # 
 #    s = "hello"         #=> "hello"
 #    s.replace "world"   #=> "world"
-def replace(p1); end
+def replace(other_str); end
 
 ##
 # Makes string empty.
 # 
 #    a = "abcde"
 #    a.clear    #=> ""
-def clear(); end
+def clear; end
 
 ##
 # Returns a one-character string at the beginning of the string.
 # 
 #    a = "abcde"
 #    a.chr    #=> "a"
-def chr(); end
+def chr; end
 
 ##
 # returns the <i>index</i>th byte as an integer.
-def getbyte(p1); end
+def getbyte(index); end
 
 ##
 # modifies the <i>index</i>th byte as <i>int</i>.
-def setbyte(p1, p2); end
+def setbyte(index, int); end
 
 ##
 # Byte Reference---If passed a single <code>Fixnum</code>, returns a
@@ -11655,7 +19266,43 @@ def setbyte(p1, p2); end
 #    "hello".byteslice(1, 2)  #=> "el"
 #    "\x80\u3042".byteslice(1, 3) #=> "\u3042"
 #    "\x03\u3042\xff".byteslice(1..3) #=> "\u3942"
-def byteslice(*args); end
+def byteslice(fixnum); end
+
+##
+# Byte Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one byte at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a <code>Range</code>, a substring containing
+# bytes at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end.
+# The encoding of the resulted string keeps original encoding.
+# 
+#    "hello".byteslice(1)     #=> "e"
+#    "hello".byteslice(-1)    #=> "o"
+#    "hello".byteslice(1, 2)  #=> "el"
+#    "\x80\u3042".byteslice(1, 3) #=> "\u3042"
+#    "\x03\u3042\xff".byteslice(1..3) #=> "\u3942"
+def byteslice(fixnum, fixnum); end
+
+##
+# Byte Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one byte at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a <code>Range</code>, a substring containing
+# bytes at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end.
+# The encoding of the resulted string keeps original encoding.
+# 
+#    "hello".byteslice(1)     #=> "e"
+#    "hello".byteslice(-1)    #=> "o"
+#    "hello".byteslice(1, 2)  #=> "el"
+#    "\x80\u3042".byteslice(1, 3) #=> "\u3042"
+#    "\x03\u3042\xff".byteslice(1..3) #=> "\u3942"
+def byteslice(range); end
 
 ##
 # Returns the result of interpreting leading characters in <i>str</i> as an
@@ -11673,7 +19320,7 @@ def byteslice(*args); end
 #    "1100101".to_i(8)        #=> 294977
 #    "1100101".to_i(10)       #=> 1100101
 #    "1100101".to_i(16)       #=> 17826049
-def to_i(p1=0); end
+def to_i(base=10); end
 
 ##
 # Returns the result of interpreting leading characters in <i>str</i> as a
@@ -11684,15 +19331,23 @@ def to_i(p1=0); end
 #    "123.45e1".to_f        #=> 1234.5
 #    "45.67 degrees".to_f   #=> 45.67
 #    "thx1138".to_f         #=> 0.0
-def to_f(); end
+def to_f; end
 
 ##
 # Returns the receiver.
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the receiver.
-def to_str(); end
+def to_str; end
+
+##
+# Returns the receiver.
+def to_s; end
+
+##
+# Returns the receiver.
+def to_str; end
 
 ##
 # Returns a printable version of _str_, surrounded by quote marks,
@@ -11701,12 +19356,12 @@ def to_str(); end
 #    str = "hello"
 #    str[3] = "\b"
 #    str.inspect       #=> "\"hel\\bo\""
-def inspect(); end
+def inspect; end
 
 ##
 # Produces a version of <i>str</i> with all nonprinting characters replaced by
 # <code>\nnn</code> notation and all special characters escaped.
-def dump(); end
+def dump; end
 
 ##
 # Returns a copy of <i>str</i> with all lowercase letters replaced with their
@@ -11715,7 +19370,7 @@ def dump(); end
 # Note: case replacement is effective only in ASCII region.
 # 
 #    "hEllO".upcase   #=> "HELLO"
-def upcase(); end
+def upcase; end
 
 ##
 # Returns a copy of <i>str</i> with all uppercase letters replaced with their
@@ -11724,7 +19379,7 @@ def upcase(); end
 # Note: case replacement is effective only in ASCII region.
 # 
 #    "hEllO".downcase   #=> "hello"
-def downcase(); end
+def downcase; end
 
 ##
 # Returns a copy of <i>str</i> with the first character converted to uppercase
@@ -11734,7 +19389,7 @@ def downcase(); end
 #    "hello".capitalize    #=> "Hello"
 #    "HELLO".capitalize    #=> "Hello"
 #    "123ABC".capitalize   #=> "123abc"
-def capitalize(); end
+def capitalize; end
 
 ##
 # Returns a copy of <i>str</i> with uppercase alphabetic characters converted
@@ -11743,19 +19398,19 @@ def capitalize(); end
 # 
 #    "Hello".swapcase          #=> "hELLO"
 #    "cYbEr_PuNk11".swapcase   #=> "CyBeR_pUnK11"
-def swapcase(); end
+def swapcase; end
 
 ##
 # Upcases the contents of <i>str</i>, returning <code>nil</code> if no changes
 # were made.
 # Note: case replacement is effective only in ASCII region.
-def upcase!(); end
+def upcase!; end
 
 ##
 # Downcases the contents of <i>str</i>, returning <code>nil</code> if no
 # changes were made.
 # Note: case replacement is effective only in ASCII region.
-def downcase!(); end
+def downcase!; end
 
 ##
 # Modifies <i>str</i> by converting the first character to uppercase and the
@@ -11766,13 +19421,13 @@ def downcase!(); end
 #    a.capitalize!   #=> "Hello"
 #    a               #=> "Hello"
 #    a.capitalize!   #=> nil
-def capitalize!(); end
+def capitalize!; end
 
 ##
 # Equivalent to <code>String#swapcase</code>, but modifies the receiver in
 # place, returning <i>str</i>, or <code>nil</code> if no changes were made.
 # Note: case conversion is effective only in ASCII region.
-def swapcase!(); end
+def swapcase!; end
 
 ##
 # Treats leading characters from <i>str</i> as a string of hexadecimal digits
@@ -11783,7 +19438,7 @@ def swapcase!(); end
 #    "-1234".hex    #=> -4660
 #    "0".hex        #=> 0
 #    "wombat".hex   #=> 0
-def hex(); end
+def hex; end
 
 ##
 # Treats leading characters of <i>str</i> as a string of octal digits (with an
@@ -11794,7 +19449,7 @@ def hex(); end
 #    "-377".oct      #=> -255
 #    "bad".oct       #=> 0
 #    "0377bad".oct   #=> 255
-def oct(); end
+def oct; end
 
 ##
 # Divides <i>str</i> into substrings based on a delimiter, returning an array
@@ -11833,7 +19488,7 @@ def oct(); end
 #    "1,2,,3,4,,".split(',')         #=> ["1", "2", "", "3", "4"]
 #    "1,2,,3,4,,".split(',', 4)      #=> ["1", "2", "", "3,4,,"]
 #    "1,2,,3,4,,".split(',', -4)     #=> ["1", "2", "", "3", "4", "", ""]
-def split(p1=0, p2=0); end
+def split(pattern=$;, , limit=0); end
 
 ##
 # Splits <i>str</i> using the supplied parameter as the record separator
@@ -11863,7 +19518,97 @@ def split(p1=0, p2=0); end
 #    Example three
 #    "hello\n\n\n"
 #    "world"
-def lines(p1=0); end
+def each_line(separator=$/, &block); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def each_line(separator=$/); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def lines(separator=$/, &block); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def lines(separator=$/); end
 
 ##
 # Passes each byte in <i>str</i> to the given block, or returns
@@ -11874,7 +19619,40 @@ def lines(p1=0); end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111
-def bytes(); end
+def bytes(&block); end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def bytes; end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def each_byte(&block); end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def each_byte; end
 
 ##
 # Passes each character in <i>str</i> to the given block, or returns
@@ -11885,7 +19663,40 @@ def bytes(); end
 # <em>produces:</em>
 # 
 #    h e l l o
-def chars(); end
+def chars(&block); end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def chars; end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def each_char(&block); end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def each_char; end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
@@ -11899,17 +19710,59 @@ def chars(); end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111 1593
-def codepoints(); end
+def codepoints(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def codepoints; end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def each_codepoint(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def each_codepoint; end
 
 ##
 # Returns a new string with the characters from <i>str</i> in reverse order.
 # 
 #    "stressed".reverse   #=> "desserts"
-def reverse(); end
+def reverse; end
 
 ##
 # Reverses <i>str</i> in place.
-def reverse!(); end
+def reverse!; end
 
 ##
 # Append---Concatenates the given object to <i>str</i>. If the object is a
@@ -11919,7 +19772,7 @@ def reverse!(); end
 #    a = "hello "
 #    a << "world"   #=> "hello world"
 #    a.concat(33)   #=> "hello world!"
-def concat(p1); end
+def concat; end
 
 ##
 # Append---Concatenates the given object to <i>str</i>. If the object is a
@@ -11929,7 +19782,67 @@ def concat(p1); end
 #    a = "hello "
 #    a << "world"   #=> "hello world"
 #    a.concat(33)   #=> "hello world!"
-def <<(p1); end
+def concat(integer); end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def concat; end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def concat(obj); end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def <<; end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def concat(integer); end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def <<; end
+
+##
+# Append---Concatenates the given object to <i>str</i>. If the object is a
+# <code>Integer</code>, it is considered as a codepoint, and is converted
+# to a character before concatenation.
+# 
+#    a = "hello "
+#    a << "world"   #=> "hello world"
+#    a.concat(33)   #=> "hello world!"
+def concat(obj); end
 
 ##
 # Prepend---Prepend the given string to <i>str</i>.
@@ -11937,14 +19850,14 @@ def <<(p1); end
 # a = "world"
 # a.prepend("hello ") #=> "hello world"
 # a                   #=> "hello world"
-def prepend(p1); end
+def prepend(other_str); end
 
 ##
 # Applies a one-way cryptographic hash to <i>str</i> by invoking the standard
 # library function <code>crypt</code>. The argument is the salt string, which
 # should be two characters long, each character drawn from
 # <code>[a-zA-Z0-9./]</code>.
-def crypt(p1); end
+def crypt(other_str); end
 
 ##
 # Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
@@ -11960,7 +19873,7 @@ def crypt(p1); end
 # <code>:xxx</code> notation.
 # 
 #    'cat and dog'.to_sym   #=> :"cat and dog"
-def intern(); end
+def intern; end
 
 ##
 # Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
@@ -11976,13 +19889,45 @@ def intern(); end
 # <code>:xxx</code> notation.
 # 
 #    'cat and dog'.to_sym   #=> :"cat and dog"
-def to_sym(); end
+def to_sym; end
+
+##
+# Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
+# symbol if it did not previously exist. See <code>Symbol#id2name</code>.
+# 
+#    "Koala".intern         #=> :Koala
+#    s = 'cat'.to_sym       #=> :cat
+#    s == :cat              #=> true
+#    s = '@cat'.to_sym      #=> :@cat
+#    s == :@cat             #=> true
+# 
+# This can also be used to create symbols that cannot be represented using the
+# <code>:xxx</code> notation.
+# 
+#    'cat and dog'.to_sym   #=> :"cat and dog"
+def intern; end
+
+##
+# Returns the <code>Symbol</code> corresponding to <i>str</i>, creating the
+# symbol if it did not previously exist. See <code>Symbol#id2name</code>.
+# 
+#    "Koala".intern         #=> :Koala
+#    s = 'cat'.to_sym       #=> :cat
+#    s == :cat              #=> true
+#    s = '@cat'.to_sym      #=> :@cat
+#    s == :@cat             #=> true
+# 
+# This can also be used to create symbols that cannot be represented using the
+# <code>:xxx</code> notation.
+# 
+#    'cat and dog'.to_sym   #=> :"cat and dog"
+def to_sym; end
 
 ##
 # Return the <code>Integer</code> ordinal of a one-character string.
 # 
 #    "a".ord         #=> 97
-def ord(); end
+def ord; end
 
 ##
 # Returns <code>true</code> if <i>str</i> contains the given string or
@@ -11991,7 +19936,7 @@ def ord(); end
 #    "hello".include? "lo"   #=> true
 #    "hello".include? "ol"   #=> false
 #    "hello".include? ?h     #=> true
-def include?(p1); end
+def include? other_str; end
 
 ##
 # Returns true if <i>str</i> starts with one of the prefixes given.
@@ -12001,11 +19946,11 @@ def include?(p1); end
 #   # returns true if one of the prefixes matches.
 #   p "hello".start_with?("heaven", "hell")     #=> true
 #   p "hello".start_with?("heaven", "paradise") #=> false
-def start_with?(*args); end
+def start_with?(+, prefix=0); end
 
 ##
 # Returns true if <i>str</i> ends with one of the suffixes given.
-def end_with?(*args); end
+def end_with?(+, suffix=0); end
 
 ##
 # Both forms iterate through <i>str</i>, matching the pattern (which may be a
@@ -12032,7 +19977,34 @@ def end_with?(*args); end
 # 
 #    <<cruel>> <<world>>
 #    rceu lowlr
-def scan(p1); end
+def scan(pattern); end
+
+##
+# Both forms iterate through <i>str</i>, matching the pattern (which may be a
+# <code>Regexp</code> or a <code>String</code>). For each match, a result is
+# generated and either added to the result array or passed to the block. If
+# the pattern contains no groups, each individual result consists of the
+# matched string, <code>$&</code>.  If the pattern contains groups, each
+# individual result is itself an array containing one entry per group.
+# 
+#    a = "cruel world"
+#    a.scan(/\w+/)        #=> ["cruel", "world"]
+#    a.scan(/.../)        #=> ["cru", "el ", "wor"]
+#    a.scan(/(...)/)      #=> [["cru"], ["el "], ["wor"]]
+#    a.scan(/(..)(..)/)   #=> [["cr", "ue"], ["l ", "wo"]]
+# 
+# And the block form:
+# 
+#    a.scan(/\w+/) {|w| print "<<#{w}>> " }
+#    print "\n"
+#    a.scan(/(.)(.)/) {|x,y| print y, x }
+#    print "\n"
+# 
+# <em>produces:</em>
+# 
+#    <<cruel>> <<world>>
+#    rceu lowlr
+def scan(pattern, &block); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12042,7 +20014,7 @@ def scan(p1); end
 #    "hello".ljust(4)            #=> "hello"
 #    "hello".ljust(20)           #=> "hello               "
 #    "hello".ljust(20, '1234')   #=> "hello123412341234123"
-def ljust(*args); end
+def ljust(integer, padstr=' '); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12052,7 +20024,7 @@ def ljust(*args); end
 #    "hello".rjust(4)            #=> "hello"
 #    "hello".rjust(20)           #=> "               hello"
 #    "hello".rjust(20, '1234')   #=> "123412341234123hello"
-def rjust(*args); end
+def rjust(integer, padstr=' '); end
 
 ##
 # If <i>integer</i> is greater than the length of <i>str</i>, returns a new
@@ -12062,7 +20034,7 @@ def rjust(*args); end
 #    "hello".center(4)         #=> "hello"
 #    "hello".center(20)        #=> "       hello        "
 #    "hello".center(20, '123') #=> "1231231hello12312312"
-def center(*args); end
+def center(integer, padstr); end
 
 ##
 # Returns a copy of <i>str</i> with the <em>first</em> occurrence of
@@ -12097,7 +20069,77 @@ def center(*args); end
 #    "hello".sub(/(?<foo>[aeiou])/, '*\k<foo>*')  #=> "h*e*llo"
 #    'Is SHELL your preferred shell?'.sub(/[[:upper:]]{2,}/, ENV)
 #     #=> "Is /bin/bash your preferred shell?"
-def sub(*args); end
+def sub(pattern, replacement); end
+
+##
+# Returns a copy of <i>str</i> with the <em>first</em> occurrence of
+# <i>pattern</i> substituted for the second argument. The <i>pattern</i> is
+# typically a <code>Regexp</code>; if given as a <code>String</code>, any
+# regular expression metacharacters it contains will be interpreted
+# literally, e.g. <code>'\\\d'</code> will match a backlash followed by 'd',
+# instead of a digit.
+# 
+# If <i>replacement</i> is a <code>String</code> it will be substituted for
+# the matched text. It may contain back-references to the pattern's capture
+# groups of the form <code>\\\d</code>, where <i>d</i> is a group number, or
+# <code>\\\k<n></code>, where <i>n</i> is a group name. If it is a
+# double-quoted string, both back-references must be preceded by an
+# additional backslash. However, within <i>replacement</i> the special match
+# variables, such as <code>&$</code>, will not refer to the current match.
+# 
+# If the second argument is a <code>Hash</code>, and the matched text is one
+# of its keys, the corresponding value is the replacement string.
+# 
+# In the block form, the current match string is passed in as a parameter,
+# and variables such as <code>$1</code>, <code>$2</code>, <code>$`</code>,
+# <code>$&</code>, and <code>$'</code> will be set appropriately. The value
+# returned by the block will be substituted for the match on each call.
+# 
+# The result inherits any tainting in the original string or any supplied
+# replacement string.
+# 
+#    "hello".sub(/[aeiou]/, '*')                  #=> "h*llo"
+#    "hello".sub(/([aeiou])/, '<\1>')             #=> "h<e>llo"
+#    "hello".sub(/./) {|s| s.ord.to_s + ' ' }     #=> "104 ello"
+#    "hello".sub(/(?<foo>[aeiou])/, '*\k<foo>*')  #=> "h*e*llo"
+#    'Is SHELL your preferred shell?'.sub(/[[:upper:]]{2,}/, ENV)
+#     #=> "Is /bin/bash your preferred shell?"
+def sub(pattern, hash); end
+
+##
+# Returns a copy of <i>str</i> with the <em>first</em> occurrence of
+# <i>pattern</i> substituted for the second argument. The <i>pattern</i> is
+# typically a <code>Regexp</code>; if given as a <code>String</code>, any
+# regular expression metacharacters it contains will be interpreted
+# literally, e.g. <code>'\\\d'</code> will match a backlash followed by 'd',
+# instead of a digit.
+# 
+# If <i>replacement</i> is a <code>String</code> it will be substituted for
+# the matched text. It may contain back-references to the pattern's capture
+# groups of the form <code>\\\d</code>, where <i>d</i> is a group number, or
+# <code>\\\k<n></code>, where <i>n</i> is a group name. If it is a
+# double-quoted string, both back-references must be preceded by an
+# additional backslash. However, within <i>replacement</i> the special match
+# variables, such as <code>&$</code>, will not refer to the current match.
+# 
+# If the second argument is a <code>Hash</code>, and the matched text is one
+# of its keys, the corresponding value is the replacement string.
+# 
+# In the block form, the current match string is passed in as a parameter,
+# and variables such as <code>$1</code>, <code>$2</code>, <code>$`</code>,
+# <code>$&</code>, and <code>$'</code> will be set appropriately. The value
+# returned by the block will be substituted for the match on each call.
+# 
+# The result inherits any tainting in the original string or any supplied
+# replacement string.
+# 
+#    "hello".sub(/[aeiou]/, '*')                  #=> "h*llo"
+#    "hello".sub(/([aeiou])/, '<\1>')             #=> "h<e>llo"
+#    "hello".sub(/./) {|s| s.ord.to_s + ' ' }     #=> "104 ello"
+#    "hello".sub(/(?<foo>[aeiou])/, '*\k<foo>*')  #=> "h*e*llo"
+#    'Is SHELL your preferred shell?'.sub(/[[:upper:]]{2,}/, ENV)
+#     #=> "Is /bin/bash your preferred shell?"
+def sub(pattern, &block); end
 
 ##
 # Returns a copy of <i>str</i> with the <em>all</em> occurrences of
@@ -12134,7 +20176,118 @@ def sub(*args); end
 #    "hello".gsub(/./) {|s| s.ord.to_s + ' '}      #=> "104 101 108 108 111 "
 #    "hello".gsub(/(?<foo>[aeiou])/, '{\k<foo>}')  #=> "h{e}ll{o}"
 #    'hello'.gsub(/[eo]/, 'e' => 3, 'o' => '*')    #=> "h3ll*"
-def gsub(*args); end
+def gsub(pattern, replacement); end
+
+##
+# Returns a copy of <i>str</i> with the <em>all</em> occurrences of
+# <i>pattern</i> substituted for the second argument. The <i>pattern</i> is
+# typically a <code>Regexp</code>; if given as a <code>String</code>, any
+# regular expression metacharacters it contains will be interpreted
+# literally, e.g. <code>'\\\d'</code> will match a backlash followed by 'd',
+# instead of a digit.
+# 
+# If <i>replacement</i> is a <code>String</code> it will be substituted for
+# the matched text. It may contain back-references to the pattern's capture
+# groups of the form <code>\\\d</code>, where <i>d</i> is a group number, or
+# <code>\\\k<n></code>, where <i>n</i> is a group name. If it is a
+# double-quoted string, both back-references must be preceded by an
+# additional backslash. However, within <i>replacement</i> the special match
+# variables, such as <code>&$</code>, will not refer to the current match.
+# 
+# If the second argument is a <code>Hash</code>, and the matched text is one
+# of its keys, the corresponding value is the replacement string.
+# 
+# In the block form, the current match string is passed in as a parameter,
+# and variables such as <code>$1</code>, <code>$2</code>, <code>$`</code>,
+# <code>$&</code>, and <code>$'</code> will be set appropriately. The value
+# returned by the block will be substituted for the match on each call.
+# 
+# The result inherits any tainting in the original string or any supplied
+# replacement string.
+# 
+# When neither a block nor a second argument is supplied, an
+# <code>Enumerator</code> is returned.
+# 
+#    "hello".gsub(/[aeiou]/, '*')                  #=> "h*ll*"
+#    "hello".gsub(/([aeiou])/, '<\1>')             #=> "h<e>ll<o>"
+#    "hello".gsub(/./) {|s| s.ord.to_s + ' '}      #=> "104 101 108 108 111 "
+#    "hello".gsub(/(?<foo>[aeiou])/, '{\k<foo>}')  #=> "h{e}ll{o}"
+#    'hello'.gsub(/[eo]/, 'e' => 3, 'o' => '*')    #=> "h3ll*"
+def gsub(pattern, hash); end
+
+##
+# Returns a copy of <i>str</i> with the <em>all</em> occurrences of
+# <i>pattern</i> substituted for the second argument. The <i>pattern</i> is
+# typically a <code>Regexp</code>; if given as a <code>String</code>, any
+# regular expression metacharacters it contains will be interpreted
+# literally, e.g. <code>'\\\d'</code> will match a backlash followed by 'd',
+# instead of a digit.
+# 
+# If <i>replacement</i> is a <code>String</code> it will be substituted for
+# the matched text. It may contain back-references to the pattern's capture
+# groups of the form <code>\\\d</code>, where <i>d</i> is a group number, or
+# <code>\\\k<n></code>, where <i>n</i> is a group name. If it is a
+# double-quoted string, both back-references must be preceded by an
+# additional backslash. However, within <i>replacement</i> the special match
+# variables, such as <code>&$</code>, will not refer to the current match.
+# 
+# If the second argument is a <code>Hash</code>, and the matched text is one
+# of its keys, the corresponding value is the replacement string.
+# 
+# In the block form, the current match string is passed in as a parameter,
+# and variables such as <code>$1</code>, <code>$2</code>, <code>$`</code>,
+# <code>$&</code>, and <code>$'</code> will be set appropriately. The value
+# returned by the block will be substituted for the match on each call.
+# 
+# The result inherits any tainting in the original string or any supplied
+# replacement string.
+# 
+# When neither a block nor a second argument is supplied, an
+# <code>Enumerator</code> is returned.
+# 
+#    "hello".gsub(/[aeiou]/, '*')                  #=> "h*ll*"
+#    "hello".gsub(/([aeiou])/, '<\1>')             #=> "h<e>ll<o>"
+#    "hello".gsub(/./) {|s| s.ord.to_s + ' '}      #=> "104 101 108 108 111 "
+#    "hello".gsub(/(?<foo>[aeiou])/, '{\k<foo>}')  #=> "h{e}ll{o}"
+#    'hello'.gsub(/[eo]/, 'e' => 3, 'o' => '*')    #=> "h3ll*"
+def gsub(pattern, &block); end
+
+##
+# Returns a copy of <i>str</i> with the <em>all</em> occurrences of
+# <i>pattern</i> substituted for the second argument. The <i>pattern</i> is
+# typically a <code>Regexp</code>; if given as a <code>String</code>, any
+# regular expression metacharacters it contains will be interpreted
+# literally, e.g. <code>'\\\d'</code> will match a backlash followed by 'd',
+# instead of a digit.
+# 
+# If <i>replacement</i> is a <code>String</code> it will be substituted for
+# the matched text. It may contain back-references to the pattern's capture
+# groups of the form <code>\\\d</code>, where <i>d</i> is a group number, or
+# <code>\\\k<n></code>, where <i>n</i> is a group name. If it is a
+# double-quoted string, both back-references must be preceded by an
+# additional backslash. However, within <i>replacement</i> the special match
+# variables, such as <code>&$</code>, will not refer to the current match.
+# 
+# If the second argument is a <code>Hash</code>, and the matched text is one
+# of its keys, the corresponding value is the replacement string.
+# 
+# In the block form, the current match string is passed in as a parameter,
+# and variables such as <code>$1</code>, <code>$2</code>, <code>$`</code>,
+# <code>$&</code>, and <code>$'</code> will be set appropriately. The value
+# returned by the block will be substituted for the match on each call.
+# 
+# The result inherits any tainting in the original string or any supplied
+# replacement string.
+# 
+# When neither a block nor a second argument is supplied, an
+# <code>Enumerator</code> is returned.
+# 
+#    "hello".gsub(/[aeiou]/, '*')                  #=> "h*ll*"
+#    "hello".gsub(/([aeiou])/, '<\1>')             #=> "h<e>ll<o>"
+#    "hello".gsub(/./) {|s| s.ord.to_s + ' '}      #=> "104 101 108 108 111 "
+#    "hello".gsub(/(?<foo>[aeiou])/, '{\k<foo>}')  #=> "h{e}ll{o}"
+#    'hello'.gsub(/[eo]/, 'e' => 3, 'o' => '*')    #=> "h3ll*"
+def gsub(pattern); end
 
 ##
 # Returns a new <code>String</code> with the last character removed.  If the
@@ -12148,7 +20301,7 @@ def gsub(*args); end
 #    "string\n".chop     #=> "string"
 #    "string".chop       #=> "strin"
 #    "x".chop.chop       #=> ""
-def chop(); end
+def chop; end
 
 ##
 # Returns a new <code>String</code> with the given record separator removed
@@ -12164,14 +20317,14 @@ def chop(); end
 #    "hello\r".chomp          #=> "hello"
 #    "hello \n there".chomp   #=> "hello \n there"
 #    "hello".chomp("llo")     #=> "he"
-def chomp(*args); end
+def chomp(separator=$/); end
 
 ##
 # Returns a copy of <i>str</i> with leading and trailing whitespace removed.
 # 
 #    "    hello    ".strip   #=> "hello"
 #    "\tgoodbye\r\n".strip   #=> "goodbye"
-def strip(); end
+def strip; end
 
 ##
 # Returns a copy of <i>str</i> with leading whitespace removed. See also
@@ -12179,7 +20332,7 @@ def strip(); end
 # 
 #    "  hello  ".lstrip   #=> "hello  "
 #    "hello".lstrip       #=> "hello"
-def lstrip(); end
+def lstrip; end
 
 ##
 # Returns a copy of <i>str</i> with trailing whitespace removed. See also
@@ -12187,35 +20340,53 @@ def lstrip(); end
 # 
 #    "  hello  ".rstrip   #=> "  hello"
 #    "hello".rstrip       #=> "hello"
-def rstrip(); end
+def rstrip; end
 
 ##
 # Performs the substitutions of <code>String#sub</code> in place,
 # returning <i>str</i>, or <code>nil</code> if no substitutions were
 # performed.
-def sub!(*args); end
+def sub!(pattern, replacement); end
+
+##
+# Performs the substitutions of <code>String#sub</code> in place,
+# returning <i>str</i>, or <code>nil</code> if no substitutions were
+# performed.
+def sub!(pattern, &block); end
 
 ##
 # Performs the substitutions of <code>String#gsub</code> in place, returning
 # <i>str</i>, or <code>nil</code> if no substitutions were performed.
 # If no block and no <i>replacement</i> is given, an enumerator is returned instead.
-def gsub!(*args); end
+def gsub!(pattern, replacement); end
+
+##
+# Performs the substitutions of <code>String#gsub</code> in place, returning
+# <i>str</i>, or <code>nil</code> if no substitutions were performed.
+# If no block and no <i>replacement</i> is given, an enumerator is returned instead.
+def gsub!(pattern, &block); end
+
+##
+# Performs the substitutions of <code>String#gsub</code> in place, returning
+# <i>str</i>, or <code>nil</code> if no substitutions were performed.
+# If no block and no <i>replacement</i> is given, an enumerator is returned instead.
+def gsub!(pattern); end
 
 ##
 # Processes <i>str</i> as for <code>String#chop</code>, returning <i>str</i>,
 # or <code>nil</code> if <i>str</i> is the empty string.  See also
 # <code>String#chomp!</code>.
-def chop!(); end
+def chop!; end
 
 ##
 # Modifies <i>str</i> in place as described for <code>String#chomp</code>,
 # returning <i>str</i>, or <code>nil</code> if no modifications were made.
-def chomp!(p1=0); end
+def chomp!(separator=$/); end
 
 ##
 # Removes leading and trailing whitespace from <i>str</i>. Returns
 # <code>nil</code> if <i>str</i> was not altered.
-def strip!(); end
+def strip!; end
 
 ##
 # Removes leading whitespace from <i>str</i>, returning <code>nil</code> if no
@@ -12224,7 +20395,7 @@ def strip!(); end
 # 
 #    "  hello  ".lstrip   #=> "hello  "
 #    "hello".lstrip!      #=> nil
-def lstrip!(); end
+def lstrip!; end
 
 ##
 # Removes trailing whitespace from <i>str</i>, returning <code>nil</code> if
@@ -12233,7 +20404,7 @@ def lstrip!(); end
 # 
 #    "  hello  ".rstrip   #=> "  hello"
 #    "hello".rstrip!      #=> nil
-def rstrip!(); end
+def rstrip!; end
 
 ##
 # Returns a copy of <i>str</i> with the characters in <i>from_str</i>
@@ -12250,7 +20421,7 @@ def rstrip!(); end
 # 
 #    "hello".tr('a-y', 'b-z')    #=> "ifmmp"
 #    "hello".tr('^aeiou', '*')   #=> "*e**o"
-def tr(p1, p2); end
+def tr(from_str, to_str)   => new_st); end
 
 ##
 # Processes a copy of <i>str</i> as described under <code>String#tr</code>,
@@ -12260,7 +20431,7 @@ def tr(p1, p2); end
 #    "hello".tr_s('l', 'r')     #=> "hero"
 #    "hello".tr_s('el', '*')    #=> "h*o"
 #    "hello".tr_s('el', 'hx')   #=> "hhxo"
-def tr_s(p1, p2); end
+def tr_s(from_str, to_str); end
 
 ##
 # Returns a copy of <i>str</i> with all characters in the intersection of its
@@ -12271,7 +20442,7 @@ def tr_s(p1, p2); end
 #    "hello".delete "lo"            #=> "he"
 #    "hello".delete "aeiou", "^e"   #=> "hell"
 #    "hello".delete "ej-m"          #=> "ho"
-def delete(*args); end
+def delete(+, other_str=0); end
 
 ##
 # Builds a set of characters from the <i>other_str</i> parameter(s) using the
@@ -12283,7 +20454,7 @@ def delete(*args); end
 #    "yellow moon".squeeze                  #=> "yelow mon"
 #    "  now   is  the".squeeze(" ")         #=> " now is the"
 #    "putters shoot balls".squeeze("m-z")   #=> "puters shot balls"
-def squeeze(*args); end
+def squeeze(*, other_str=0); end
 
 ##
 # Each <i>other_str</i> parameter defines a set of characters to count.  The
@@ -12296,28 +20467,28 @@ def squeeze(*args); end
 #    a.count "lo", "o"       #=> 2
 #    a.count "hello", "^l"   #=> 4
 #    a.count "ej-m"          #=> 4
-def count(*args); end
+def count(+, other_str=0); end
 
 ##
 # Translates <i>str</i> in place, using the same rules as
 # <code>String#tr</code>. Returns <i>str</i>, or <code>nil</code> if no
 # changes were made.
-def tr!(p1, p2); end
+def tr!(from_str, to_str); end
 
 ##
 # Performs <code>String#tr_s</code> processing on <i>str</i> in place,
 # returning <i>str</i>, or <code>nil</code> if no changes were made.
-def tr_s!(p1, p2); end
+def tr_s!(from_str, to_str); end
 
 ##
 # Performs a <code>delete</code> operation in place, returning <i>str</i>, or
 # <code>nil</code> if <i>str</i> was not modified.
-def delete!(*args); end
+def delete!(+, other_str=0); end
 
 ##
 # Squeezes <i>str</i> in place, returning either <i>str</i>, or
 # <code>nil</code> if no changes were made.
-def squeeze!(*args); end
+def squeeze!(*, other_str=0); end
 
 ##
 # Splits <i>str</i> using the supplied parameter as the record separator
@@ -12347,7 +20518,97 @@ def squeeze!(*args); end
 #    Example three
 #    "hello\n\n\n"
 #    "world"
-def each_line(p1=0); end
+def each_line(separator=$/, &block); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def each_line(separator=$/); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def lines(separator=$/, &block); end
+
+##
+# Splits <i>str</i> using the supplied parameter as the record separator
+# (<code>$/</code> by default), passing each substring in turn to the supplied
+# block. If a zero-length record separator is supplied, the string is split
+# into paragraphs delimited by multiple successive newlines.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    print "Example one\n"
+#    "hello\nworld".each_line {|s| p s}
+#    print "Example two\n"
+#    "hello\nworld".each_line('l') {|s| p s}
+#    print "Example three\n"
+#    "hello\n\n\nworld".each_line('') {|s| p s}
+# 
+# <em>produces:</em>
+# 
+#    Example one
+#    "hello\n"
+#    "world"
+#    Example two
+#    "hel"
+#    "l"
+#    "o\nworl"
+#    "d"
+#    Example three
+#    "hello\n\n\n"
+#    "world"
+def lines(separator=$/); end
 
 ##
 # Passes each byte in <i>str</i> to the given block, or returns
@@ -12358,7 +20619,40 @@ def each_line(p1=0); end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111
-def each_byte(); end
+def bytes(&block); end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def bytes; end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def each_byte(&block); end
+
+##
+# Passes each byte in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_byte {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111
+def each_byte; end
 
 ##
 # Passes each character in <i>str</i> to the given block, or returns
@@ -12369,7 +20663,40 @@ def each_byte(); end
 # <em>produces:</em>
 # 
 #    h e l l o
-def each_char(); end
+def chars(&block); end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def chars; end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def each_char(&block); end
+
+##
+# Passes each character in <i>str</i> to the given block, or returns
+# an enumerator if no block is given.
+# 
+#    "hello".each_char {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    h e l l o
+def each_char; end
 
 ##
 # Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
@@ -12383,7 +20710,49 @@ def each_char(); end
 # <em>produces:</em>
 # 
 #    104 101 108 108 111 1593
-def each_codepoint(); end
+def codepoints(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def codepoints; end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def each_codepoint(&block); end
+
+##
+# Passes the <code>Integer</code> ordinal of each character in <i>str</i>,
+# also known as a <i>codepoint</i> when applied to Unicode strings to the
+# given block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    "hello\u0639".each_codepoint {|c| print c, ' ' }
+# 
+# <em>produces:</em>
+# 
+#    104 101 108 108 111 1593
+def each_codepoint; end
 
 ##
 # Returns a basic <em>n</em>-bit checksum of the characters in <i>str</i>,
@@ -12391,7 +20760,7 @@ def each_codepoint(); end
 # to 16. The result is simply the sum of the binary value of each character in
 # <i>str</i> modulo <code>2**n - 1</code>. This is not a particularly good
 # checksum.
-def sum(p1=0); end
+def sum(n=16); end
 
 ##
 # Element Reference---If passed a single <code>Fixnum</code>, returns a
@@ -12425,7 +20794,415 @@ def sum(p1=0); end
 #    a[/[aeiou](.)\1/, 2]   #=> nil
 #    a["lo"]                #=> "lo"
 #    a["bye"]               #=> nil
-def slice(*args); end
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice; end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(fixnum, fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(range); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp, fixnum); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(regexp, capname); end
+
+##
+# Element Reference---If passed a single <code>Fixnum</code>, returns a
+# substring of one character at that position. If passed two <code>Fixnum</code>
+# objects, returns a substring starting at the offset given by the first, and
+# a length given by the second. If given a range, a substring containing
+# characters at offsets given by the range is returned. In all three cases, if
+# an offset is negative, it is counted from the end of <i>str</i>. Returns
+# <code>nil</code> if the initial offset falls outside the string, the length
+# is negative, or the beginning of the range is greater than the end of the
+# string.
+# 
+# If a <code>Regexp</code> is supplied, the matching portion of <i>str</i> is
+# returned. If a numeric or name parameter follows the regular expression, that
+# component of the <code>MatchData</code> is returned instead. If a
+# <code>String</code> is given, that string is returned if it occurs in
+# <i>str</i>. In both cases, <code>nil</code> is returned if there is no
+# match.
+# 
+#    a = "hello there"
+#    a[1]                   #=> "e"
+#    a[1,3]                 #=> "ell"
+#    a[1..3]                #=> "ell"
+#    a[-3,2]                #=> "er"
+#    a[-4..-2]              #=> "her"
+#    a[12..-1]              #=> nil
+#    a[-2..-4]              #=> ""
+#    a[/[aeiou](.)\1/]      #=> "ell"
+#    a[/[aeiou](.)\1/, 0]   #=> "ell"
+#    a[/[aeiou](.)\1/, 1]   #=> "l"
+#    a[/[aeiou](.)\1/, 2]   #=> nil
+#    a["lo"]                #=> "lo"
+#    a["bye"]               #=> nil
+def slice(other_str); end
 
 ##
 # Deletes the specified portion from <i>str</i>, and returns the portion
@@ -12437,7 +21214,55 @@ def slice(*args); end
 #    string.slice!(/s.*t/)   #=> "sa st"
 #    string.slice!("r")      #=> "r"
 #    string                  #=> "thing"
-def slice!(*args); end
+def slice!(fixnum); end
+
+##
+# Deletes the specified portion from <i>str</i>, and returns the portion
+# deleted.
+# 
+#    string = "this is a string"
+#    string.slice!(2)        #=> "i"
+#    string.slice!(3..6)     #=> " is "
+#    string.slice!(/s.*t/)   #=> "sa st"
+#    string.slice!("r")      #=> "r"
+#    string                  #=> "thing"
+def slice!(fixnum, fixnum); end
+
+##
+# Deletes the specified portion from <i>str</i>, and returns the portion
+# deleted.
+# 
+#    string = "this is a string"
+#    string.slice!(2)        #=> "i"
+#    string.slice!(3..6)     #=> " is "
+#    string.slice!(/s.*t/)   #=> "sa st"
+#    string.slice!("r")      #=> "r"
+#    string                  #=> "thing"
+def slice!(range); end
+
+##
+# Deletes the specified portion from <i>str</i>, and returns the portion
+# deleted.
+# 
+#    string = "this is a string"
+#    string.slice!(2)        #=> "i"
+#    string.slice!(3..6)     #=> " is "
+#    string.slice!(/s.*t/)   #=> "sa st"
+#    string.slice!("r")      #=> "r"
+#    string                  #=> "thing"
+def slice!(regexp); end
+
+##
+# Deletes the specified portion from <i>str</i>, and returns the portion
+# deleted.
+# 
+#    string = "this is a string"
+#    string.slice!(2)        #=> "i"
+#    string.slice!(3..6)     #=> " is "
+#    string.slice!(/s.*t/)   #=> "sa st"
+#    string.slice!("r")      #=> "r"
+#    string                  #=> "thing"
+def slice!(other_str); end
 
 ##
 # Searches <i>sep</i> or pattern (<i>regexp</i>) in the string
@@ -12448,7 +21273,18 @@ def slice!(*args); end
 #    "hello".partition("l")         #=> ["he", "l", "lo"]
 #    "hello".partition("x")         #=> ["hello", "", ""]
 #    "hello".partition(/.l/)        #=> ["h", "el", "lo"]
-def partition(p1); end
+def partition(sep); end
+
+##
+# Searches <i>sep</i> or pattern (<i>regexp</i>) in the string
+# and returns the part before it, the match, and the part
+# after it.
+# If it is not found, returns two empty strings and <i>str</i>.
+# 
+#    "hello".partition("l")         #=> ["he", "l", "lo"]
+#    "hello".partition("x")         #=> ["hello", "", ""]
+#    "hello".partition(/.l/)        #=> ["h", "el", "lo"]
+def partition(regexp); end
 
 ##
 # Searches <i>sep</i> or pattern (<i>regexp</i>) in the string from the end
@@ -12459,15 +21295,26 @@ def partition(p1); end
 #    "hello".rpartition("l")         #=> ["hel", "l", "o"]
 #    "hello".rpartition("x")         #=> ["", "", "hello"]
 #    "hello".rpartition(/.l/)        #=> ["he", "ll", "o"]
-def rpartition(p1); end
+def rpartition(sep); end
+
+##
+# Searches <i>sep</i> or pattern (<i>regexp</i>) in the string from the end
+# of the string, and returns the part before it, the match, and the part
+# after it.
+# If it is not found, returns two empty strings and <i>str</i>.
+# 
+#    "hello".rpartition("l")         #=> ["hel", "l", "o"]
+#    "hello".rpartition("x")         #=> ["", "", "hello"]
+#    "hello".rpartition(/.l/)        #=> ["he", "ll", "o"]
+def rpartition(regexp); end
 
 ##
 # Returns the Encoding object that represents the encoding of obj.
-def encoding(); end
+def encoding; end
 
 ##
 # Changes the encoding to +encoding+ and returns self.
-def force_encoding(p1); end
+def force_encoding(encoding); end
 
 ##
 # Returns true for a string which encoded correctly.
@@ -12475,14 +21322,14 @@ def force_encoding(p1); end
 #   "\xc2\xa1".force_encoding("UTF-8").valid_encoding?  #=> true
 #   "\xc2".force_encoding("UTF-8").valid_encoding?      #=> false
 #   "\x80".force_encoding("UTF-8").valid_encoding?      #=> false
-def valid_encoding?(); end
+def valid_encoding?; end
 
 ##
 # Returns true for a string which has only ASCII characters.
 # 
 #   "abc".force_encoding("UTF-8").ascii_only?          #=> true
 #   "abc\u{6666}".force_encoding("UTF-8").ascii_only?  #=> false
-def ascii_only?(); end
+def ascii_only?; end
 
 ##
 # Decodes <i>str</i> (which may contain binary data) according to the
@@ -12587,7 +21434,7 @@ def ascii_only?(); end
 #     @         | ---     | skip to the offset given by the length argument
 #     X         | ---     | skip backward one byte
 #     x         | ---     | skip forward one byte
-def unpack(p1); end
+def unpack(format); end
 
 ##
 # The first form returns a copy of +str+ transcoded
@@ -12638,7 +21485,109 @@ def unpack(p1); end
 #   Replaces LF ("\n") with CRLF ("\r\n") if value is true.
 # :universal_newline ::
 #   Replaces CRLF ("\r\n") and CR ("\r") with LF ("\n") if value is true.
-def encode(*args); end
+def encode(encoding  , options=0); end
+
+##
+# The first form returns a copy of +str+ transcoded
+# to encoding +encoding+.
+# The second form returns a copy of +str+ transcoded
+# from src_encoding to dst_encoding.
+# The last form returns a copy of +str+ transcoded to
+# <tt>Encoding.default_internal</tt>.
+# 
+# By default, the first and second form raise
+# Encoding::UndefinedConversionError for characters that are
+# undefined in the destination encoding, and
+# Encoding::InvalidByteSequenceError for invalid byte sequences
+# in the source encoding. The last form by default does not raise
+# exceptions but uses replacement strings.
+# 
+# The +options+ Hash gives details for conversion and can have the following
+# keys:
+# 
+# :invalid ::
+#   If the value is +:replace+, #encode replaces invalid byte sequences in
+#   +str+ with the replacement character.  The default is to raise the
+#   Encoding::InvalidByteSequenceError exception
+# :undef ::
+#   If the value is +:replace+, #encode replaces characters which are
+#   undefined in the destination encoding with the replacement character.
+#   The default is to raise the Encoding::UndefinedConversionError.
+# :replace ::
+#   Sets the replacement string to the given value. The default replacement
+#   string is "\uFFFD" for Unicode encoding forms, and "?" otherwise.
+# :fallback ::
+#   Sets the replacement string by the given object for undefined
+#   character.  The object should be a Hash, a Proc, a Method, or an
+#   object which has [] method.
+#   Its key is an undefined character encoded in the source encoding
+#   of current transcoder. Its value can be any encoding until it
+#   can be converted into the destination encoding of the transcoder.
+# :xml ::
+#   The value must be +:text+ or +:attr+.
+#   If the value is +:text+ #encode replaces undefined characters with their
+#   (upper-case hexadecimal) numeric character references. '&', '<', and '>'
+#   are converted to "&amp;", "&lt;", and "&gt;", respectively.
+#   If the value is +:attr+, #encode also quotes the replacement result
+#   (using '"'), and replaces '"' with "&quot;".
+# :cr_newline ::
+#   Replaces LF ("\n") with CR ("\r") if value is true.
+# :crlf_newline ::
+#   Replaces LF ("\n") with CRLF ("\r\n") if value is true.
+# :universal_newline ::
+#   Replaces CRLF ("\r\n") and CR ("\r") with LF ("\n") if value is true.
+def encode(dst_encoding, src_encoding  , options=0); end
+
+##
+# The first form returns a copy of +str+ transcoded
+# to encoding +encoding+.
+# The second form returns a copy of +str+ transcoded
+# from src_encoding to dst_encoding.
+# The last form returns a copy of +str+ transcoded to
+# <tt>Encoding.default_internal</tt>.
+# 
+# By default, the first and second form raise
+# Encoding::UndefinedConversionError for characters that are
+# undefined in the destination encoding, and
+# Encoding::InvalidByteSequenceError for invalid byte sequences
+# in the source encoding. The last form by default does not raise
+# exceptions but uses replacement strings.
+# 
+# The +options+ Hash gives details for conversion and can have the following
+# keys:
+# 
+# :invalid ::
+#   If the value is +:replace+, #encode replaces invalid byte sequences in
+#   +str+ with the replacement character.  The default is to raise the
+#   Encoding::InvalidByteSequenceError exception
+# :undef ::
+#   If the value is +:replace+, #encode replaces characters which are
+#   undefined in the destination encoding with the replacement character.
+#   The default is to raise the Encoding::UndefinedConversionError.
+# :replace ::
+#   Sets the replacement string to the given value. The default replacement
+#   string is "\uFFFD" for Unicode encoding forms, and "?" otherwise.
+# :fallback ::
+#   Sets the replacement string by the given object for undefined
+#   character.  The object should be a Hash, a Proc, a Method, or an
+#   object which has [] method.
+#   Its key is an undefined character encoded in the source encoding
+#   of current transcoder. Its value can be any encoding until it
+#   can be converted into the destination encoding of the transcoder.
+# :xml ::
+#   The value must be +:text+ or +:attr+.
+#   If the value is +:text+ #encode replaces undefined characters with their
+#   (upper-case hexadecimal) numeric character references. '&', '<', and '>'
+#   are converted to "&amp;", "&lt;", and "&gt;", respectively.
+#   If the value is +:attr+, #encode also quotes the replacement result
+#   (using '"'), and replaces '"' with "&quot;".
+# :cr_newline ::
+#   Replaces LF ("\n") with CR ("\r") if value is true.
+# :crlf_newline ::
+#   Replaces LF ("\n") with CRLF ("\r\n") if value is true.
+# :universal_newline ::
+#   Replaces CRLF ("\r\n") and CR ("\r") with LF ("\n") if value is true.
+def encode(options=0); end
 
 ##
 # The first form transcodes the contents of <i>str</i> from
@@ -12648,7 +21597,17 @@ def encode(*args); end
 # The options Hash gives details for conversion. See String#encode
 # for details.
 # Returns the string even if no changes were made.
-def encode!(*args); end
+def encode!(encoding  , options=0); end
+
+##
+# The first form transcodes the contents of <i>str</i> from
+# str.encoding to +encoding+.
+# The second form transcodes the contents of <i>str</i> from
+# src_encoding to dst_encoding.
+# The options Hash gives details for conversion. See String#encode
+# for details.
+# Returns the string even if no changes were made.
+def encode!(dst_encoding, src_encoding  , options=0); end
 
 ##
 # Returns a complex which denotes the string form.  The parser
@@ -12669,7 +21628,7 @@ def encode!(*args); end
 #    '-0.0-0.0i'.to_c   #=> (-0.0-0.0i)
 #    '1/2+3/4i'.to_c    #=> ((1/2)+(3/4)*i)
 #    'ruby'.to_c        #=> (0+0i)
-def to_c(); end
+def to_c; end
 
 end
 
@@ -12731,7 +21690,16 @@ class BasicObject
 # <code>Object#object_id</code> is a different concept from the
 # <code>:name</code> notation, which returns the symbol id of
 # <code>name</code>. Replaces the deprecated <code>Object#id</code>.
-def __id__(); end
+def __id__; end
+
+##
+# Returns an integer identifier for <i>obj</i>. The same number will
+# be returned on all calls to <code>id</code> for a given object, and
+# no two active objects will share an id.
+# <code>Object#object_id</code> is a different concept from the
+# <code>:name</code> notation, which returns the symbol id of
+# <code>name</code>. Replaces the deprecated <code>Object#id</code>.
+def object_id; end
 
 ##
 # Evaluates a string containing Ruby source code, or the given block,
@@ -12750,7 +21718,26 @@ def __id__(); end
 #    end
 #    k = KlassWithSecret.new
 #    k.instance_eval { @secret }   #=> 99
-def instance_eval(*args); end
+def instance_eval(string  , filename=0, lineno=0); end
+
+##
+# Evaluates a string containing Ruby source code, or the given block,
+# within the context of the receiver (_obj_). In order to set the
+# context, the variable +self+ is set to _obj_ while
+# the code is executing, giving the code access to _obj_'s
+# instance variables. In the version of <code>instance_eval</code>
+# that takes a +String+, the optional second and third
+# parameters supply a filename and starting line number that are used
+# when reporting compilation errors.
+# 
+#    class KlassWithSecret
+#      def initialize
+#        @secret = 99
+#      end
+#    end
+#    k = KlassWithSecret.new
+#    k.instance_eval { @secret }   #=> 99
+def instance_eval(&block); end
 
 ##
 # Executes the given block within the context of the receiver
@@ -12765,7 +21752,7 @@ def instance_eval(*args); end
 #    end
 #    k = KlassWithSecret.new
 #    k.instance_exec(5) {|x| @secret+x }   #=> 104
-def instance_exec(*args); end
+def instance_exec(arg*more, &block); end
 
 ##
 # Invoked by Ruby when <i>obj</i> is sent a message it cannot handle.
@@ -12795,7 +21782,7 @@ def instance_exec(*args); end
 #    r.iv      #=> 4
 #    r.xxiii   #=> 23
 #    r.mm      #=> 2000
-def method_missing(*args); end
+def method_missing(symbol  , args=0); end
 
 ##
 # Invokes the method identified by _symbol_, passing it any
@@ -12809,35 +21796,21 @@ def method_missing(*args); end
 #    end
 #    k = Klass.new
 #    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
-def __send__(*args); end
+def send(symbol , args=0); end
 
 ##
-# Not documented
-def self.new(); end
-
-##
-# Equality---At the <code>Object</code> level, <code>==</code> returns
-# <code>true</code> only if <i>obj</i> and <i>other</i> are the
-# same object. Typically, this method is overridden in descendant
-# classes to provide class-specific meaning.
+# Invokes the method identified by _symbol_, passing it any
+# arguments specified. You can use <code>__send__</code> if the name
+# +send+ clashes with an existing method in _obj_.
 # 
-# Unlike <code>==</code>, the <code>equal?</code> method should never be
-# overridden by subclasses: it is used to determine object identity
-# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
-# object as <code>b</code>).
-# 
-# The <code>eql?</code> method returns <code>true</code> if
-# <i>obj</i> and <i>anObject</i> have the same value. Used by
-# <code>Hash</code> to test members for equality.  For objects of
-# class <code>Object</code>, <code>eql?</code> is synonymous with
-# <code>==</code>. Subclasses normally continue this tradition, but
-# there are exceptions. <code>Numeric</code> types, for example,
-# perform type conversion across <code>==</code>, but not across
-# <code>eql?</code>, so:
-# 
-#    1 == 1.0     #=> true
-#    1.eql? 1.0   #=> false
-def ==(p1); end
+#    class Klass
+#      def hello(*args)
+#        "Hello " + args.join(' ')
+#      end
+#    end
+#    k = Klass.new
+#    k.send :hello, "gentle", "readers"   #=> "Hello gentle readers"
+def __send__(symbol , args=0); end
 
 ##
 # Equality---At the <code>Object</code> level, <code>==</code> returns
@@ -12861,15 +21834,135 @@ def ==(p1); end
 # 
 #    1 == 1.0     #=> true
 #    1.eql? 1.0   #=> false
-def equal?(p1); end
+def ==; end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def equal?(other); end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def eql?(other); end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def equal?; end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def equal?(other); end
+
+##
+# Equality---At the <code>Object</code> level, <code>==</code> returns
+# <code>true</code> only if <i>obj</i> and <i>other</i> are the
+# same object. Typically, this method is overridden in descendant
+# classes to provide class-specific meaning.
+# 
+# Unlike <code>==</code>, the <code>equal?</code> method should never be
+# overridden by subclasses: it is used to determine object identity
+# (that is, <code>a.equal?(b)</code> iff <code>a</code> is the same
+# object as <code>b</code>).
+# 
+# The <code>eql?</code> method returns <code>true</code> if
+# <i>obj</i> and <i>anObject</i> have the same value. Used by
+# <code>Hash</code> to test members for equality.  For objects of
+# class <code>Object</code>, <code>eql?</code> is synonymous with
+# <code>==</code>. Subclasses normally continue this tradition, but
+# there are exceptions. <code>Numeric</code> types, for example,
+# perform type conversion across <code>==</code>, but not across
+# <code>eql?</code>, so:
+# 
+#    1 == 1.0     #=> true
+#    1.eql? 1.0   #=> false
+def eql?(other); end
 
 ##
 # Boolean negate.
-def !(); end
+def !; end
 
 ##
 # Returns true if two objects are not-equal, otherwise false.
-def !=(p1); end
+def !=; end
 
 ##
 # Invoked as a callback whenever a singleton method is added to the
@@ -12889,7 +21982,7 @@ def !=(p1); end
 #    Adding singleton_method_added
 #    Adding one
 #    Adding three
-def singleton_method_added(p1); end
+def singleton_method_added(symbol); end
 
 ##
 # Invoked as a callback whenever a singleton method is removed from
@@ -12912,7 +22005,7 @@ def singleton_method_added(p1); end
 # 
 #    Removing three
 #    Removing one
-def singleton_method_removed(p1); end
+def singleton_method_removed(symbol); end
 
 ##
 # Invoked as a callback whenever a singleton method is undefined in
@@ -12931,7 +22024,7 @@ def singleton_method_removed(p1); end
 # <em>produces:</em>
 # 
 #    Undefining one
-def singleton_method_undefined(p1); end
+def singleton_method_undefined(symbol); end
 
 end
 
@@ -12978,7 +22071,65 @@ include Enumerable
 #    # Create a structure named by its constant
 #    Customer = Struct.new(:name, :address)     #=> Customer
 #    Customer.new("Dave", "123 Main")           #=> #<struct Customer name="Dave", address="123 Main">
-def self.new(p1, *args); end
+def self.new( +> , aString=0, aSym=0); end
+
+##
+# Creates a new class, named by <i>aString</i>, containing accessor
+# methods for the given symbols. If the name <i>aString</i> is
+# omitted, an anonymous structure class will be created. Otherwise,
+# the name of this struct will appear as a constant in class
+# <code>Struct</code>, so it must be unique for all
+# <code>Struct</code>s in the system and should start with a capital
+# letter. Assigning a structure class to a constant effectively gives
+# the class the name of the constant.
+# 
+# <code>Struct::new</code> returns a new <code>Class</code> object,
+# which can then be used to create specific instances of the new
+# structure. The number of actual parameters must be
+# less than or equal to the number of attributes defined for this
+# class; unset parameters default to <code>nil</code>.  Passing too many
+# parameters will raise an <code>ArgumentError</code>.
+# 
+# The remaining methods listed in this section (class and instance)
+# are defined for this generated class.
+# 
+#    # Create a structure with a name in Struct
+#    Struct.new("Customer", :name, :address)    #=> Struct::Customer
+#    Struct::Customer.new("Dave", "123 Main")   #=> #<struct Struct::Customer name="Dave", address="123 Main">
+# 
+#    # Create a structure named by its constant
+#    Customer = Struct.new(:name, :address)     #=> Customer
+#    Customer.new("Dave", "123 Main")           #=> #<struct Customer name="Dave", address="123 Main">
+def self.new(arg, *more); end
+
+##
+# Creates a new class, named by <i>aString</i>, containing accessor
+# methods for the given symbols. If the name <i>aString</i> is
+# omitted, an anonymous structure class will be created. Otherwise,
+# the name of this struct will appear as a constant in class
+# <code>Struct</code>, so it must be unique for all
+# <code>Struct</code>s in the system and should start with a capital
+# letter. Assigning a structure class to a constant effectively gives
+# the class the name of the constant.
+# 
+# <code>Struct::new</code> returns a new <code>Class</code> object,
+# which can then be used to create specific instances of the new
+# structure. The number of actual parameters must be
+# less than or equal to the number of attributes defined for this
+# class; unset parameters default to <code>nil</code>.  Passing too many
+# parameters will raise an <code>ArgumentError</code>.
+# 
+# The remaining methods listed in this section (class and instance)
+# are defined for this generated class.
+# 
+#    # Create a structure with a name in Struct
+#    Struct.new("Customer", :name, :address)    #=> Struct::Customer
+#    Struct::Customer.new("Dave", "123 Main")   #=> #<struct Struct::Customer name="Dave", address="123 Main">
+# 
+#    # Create a structure named by its constant
+#    Customer = Struct.new(:name, :address)     #=> Customer
+#    Customer.new("Dave", "123 Main")           #=> #<struct Customer name="Dave", address="123 Main">
+def self.]; end
 
 ##
 # Equality---Returns <code>true</code> if <i>other_struct</i> is
@@ -12992,23 +22143,19 @@ def self.new(p1, *args); end
 #    jane  = Customer.new("Jane Doe", "456 Elm, Anytown NC", 12345)
 #    joe == joejr   #=> true
 #    joe == jane    #=> false
-def ==(p1); end
-
-##
-# code-seq:
-#   struct.eql?(other)   -> true or false
-# 
-# Two structures are equal if they are the same object, or if all their
-# fields are equal (using <code>eql?</code>).
-def eql?(p1); end
+def ==; end
 
 ##
 # Return a hash value based on this struct's contents.
-def hash(); end
+def hash; end
 
 ##
 # Describe the contents of this struct in a string.
-def inspect(); end
+def to_s; end
+
+##
+# Describe the contents of this struct in a string.
+def inspect; end
 
 ##
 # Returns the values for this instance as an array.
@@ -13016,7 +22163,7 @@ def inspect(); end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.to_a[1]   #=> "123 Maple, Anytown NC"
-def to_a(); end
+def to_a; end
 
 ##
 # Returns the values for this instance as an array.
@@ -13024,7 +22171,23 @@ def to_a(); end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.to_a[1]   #=> "123 Maple, Anytown NC"
-def values(); end
+def values; end
+
+##
+# Returns the values for this instance as an array.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.to_a[1]   #=> "123 Maple, Anytown NC"
+def to_a; end
+
+##
+# Returns the values for this instance as an array.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.to_a[1]   #=> "123 Maple, Anytown NC"
+def values; end
 
 ##
 # Returns the number of instance variables.
@@ -13032,7 +22195,7 @@ def values(); end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.length   #=> 3
-def size(); end
+def length; end
 
 ##
 # Returns the number of instance variables.
@@ -13040,7 +22203,23 @@ def size(); end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.length   #=> 3
-def length(); end
+def size; end
+
+##
+# Returns the number of instance variables.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.length   #=> 3
+def length; end
+
+##
+# Returns the number of instance variables.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.length   #=> 3
+def size; end
 
 ##
 # Calls <i>block</i> once for each instance variable, passing the
@@ -13057,7 +22236,24 @@ def length(); end
 #    Joe Smith
 #    123 Maple, Anytown NC
 #    12345
-def each(); end
+def each(&block); end
+
+##
+# Calls <i>block</i> once for each instance variable, passing the
+# value as a parameter.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.each {|x| puts(x) }
+# 
+# <em>produces:</em>
+# 
+#    Joe Smith
+#    123 Maple, Anytown NC
+#    12345
+def each; end
 
 ##
 # Calls <i>block</i> once for each instance variable, passing the name
@@ -13074,7 +22270,24 @@ def each(); end
 #    name => Joe Smith
 #    address => 123 Maple, Anytown NC
 #    zip => 12345
-def each_pair(); end
+def each_pair(&block); end
+
+##
+# Calls <i>block</i> once for each instance variable, passing the name
+# (as a symbol) and the value as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+#    joe.each_pair {|name, value| puts("#{name} => #{value}") }
+# 
+# <em>produces:</em>
+# 
+#    name => Joe Smith
+#    address => 123 Maple, Anytown NC
+#    zip => 12345
+def each_pair; end
 
 ##
 # Attribute Reference---Returns the value of the instance variable
@@ -13089,7 +22302,22 @@ def each_pair(); end
 #    joe["name"]   #=> "Joe Smith"
 #    joe[:name]    #=> "Joe Smith"
 #    joe[0]        #=> "Joe Smith"
-def [](p1); end
+def []; end
+
+##
+# Attribute Reference---Returns the value of the instance variable
+# named by <i>symbol</i>, or indexed (0..length-1) by
+# <i>fixnum</i>. Will raise <code>NameError</code> if the named
+# variable does not exist, or <code>IndexError</code> if the index is
+# out of range.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+# 
+#    joe["name"]   #=> "Joe Smith"
+#    joe[:name]    #=> "Joe Smith"
+#    joe[0]        #=> "Joe Smith"
+def []; end
 
 ##
 # Attribute Assignment---Assigns to the instance variable named by
@@ -13106,7 +22334,24 @@ def [](p1); end
 # 
 #    joe.name   #=> "Luke"
 #    joe.zip    #=> "90210"
-def []=(p1, p2); end
+def []=; end
+
+##
+# Attribute Assignment---Assigns to the instance variable named by
+# <i>symbol</i> or <i>fixnum</i> the value <i>obj</i> and
+# returns it. Will raise a <code>NameError</code> if the named
+# variable does not exist, or an <code>IndexError</code> if the index
+# is out of range.
+# 
+#    Customer = Struct.new(:name, :address, :zip)
+#    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
+# 
+#    joe["name"] = "Luke"
+#    joe[:zip]   = "90210"
+# 
+#    joe.name   #=> "Luke"
+#    joe.zip    #=> "90210"
+def []=; end
 
 ##
 # Invokes the block passing in successive elements from
@@ -13117,7 +22362,18 @@ def []=(p1, p2); end
 #    Lots = Struct.new(:a, :b, :c, :d, :e, :f)
 #    l = Lots.new(11, 22, 33, 44, 55, 66)
 #    l.select {|v| (v % 2).zero? }   #=> [22, 44, 66]
-def select(*args); end
+def select(&block); end
+
+##
+# Invokes the block passing in successive elements from
+# <i>struct</i>, returning an array containing those elements
+# for which the block returns a true value (equivalent to
+# <code>Enumerable#select</code>).
+# 
+#    Lots = Struct.new(:a, :b, :c, :d, :e, :f)
+#    l = Lots.new(11, 22, 33, 44, 55, 66)
+#    l.select {|v| (v % 2).zero? }   #=> [22, 44, 66]
+def select; end
 
 ##
 # Returns an array containing the elements in
@@ -13130,7 +22386,7 @@ def select(*args); end
 #    a.values_at(1, 3, 5, 7)
 #    a.values_at(-1, -3, -5, -7)
 #    a.values_at(1..3, 2...5)
-def values_at(*args); end
+def values_at(selector,*more ); end
 
 ##
 # Returns an array of strings representing the names of the instance
@@ -13139,9 +22395,7 @@ def values_at(*args); end
 #    Customer = Struct.new(:name, :address, :zip)
 #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
 #    joe.members   #=> [:name, :address, :zip]
-def members(); end
-
-def to_s(); end
+def members; end
 
 end
 
@@ -13186,117 +22440,157 @@ include Comparable
 #                                    :default_proc, :compact, :extend,
 #                                    :Tms, :getwd, :$=, :ThreadGroup,
 #                                    :wait2, :$>]
-def self.all_symbols(); end
+def self.all_symbols    => array; end
 
 ##
 # Equality---If <i>sym</i> and <i>obj</i> are exactly the same
 # symbol, returns <code>true</code>.
-def ==(p1); end
+def ==; end
 
 ##
 # Equality---If <i>sym</i> and <i>obj</i> are exactly the same
 # symbol, returns <code>true</code>.
-def ===(p1); end
+def ===; end
 
 ##
 # Returns the representation of <i>sym</i> as a symbol literal.
 # 
 #    :fred.inspect   #=> ":fred"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the name or string corresponding to <i>sym</i>.
 # 
 #    :fred.id2name   #=> "fred"
-def to_s(); end
+def id2name; end
 
 ##
 # Returns the name or string corresponding to <i>sym</i>.
 # 
 #    :fred.id2name   #=> "fred"
-def id2name(); end
+def to_s; end
+
+##
+# Returns the name or string corresponding to <i>sym</i>.
+# 
+#    :fred.id2name   #=> "fred"
+def id2name; end
+
+##
+# Returns the name or string corresponding to <i>sym</i>.
+# 
+#    :fred.id2name   #=> "fred"
+def to_s; end
 
 ##
 # In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
 # to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
 # in this case.
-def intern(); end
+def to_sym; end
 
 ##
 # In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
 # to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
 # in this case.
-def to_sym(); end
+def intern; end
+
+##
+# In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
+# to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
+# in this case.
+def to_sym; end
+
+##
+# In general, <code>to_sym</code> returns the <code>Symbol</code> corresponding
+# to an object. As <i>sym</i> is already a symbol, <code>self</code> is returned
+# in this case.
+def intern; end
 
 ##
 # Returns a _Proc_ object which respond to the given method by _sym_.
 # 
 #   (1..3).collect(&:to_s)  #=> ["1", "2", "3"]
-def to_proc(); end
+def to_proc; end
 
 ##
 # Same as <code>sym.to_s.succ.intern</code>.
-def succ(); end
+##
+# Same as <code>sym.to_s.succ.intern</code>.
+def succ; end
 
 ##
 # Same as <code>sym.to_s.succ.intern</code>.
-def next(); end
+##
+# Same as <code>sym.to_s.succ.intern</code>.
+def succ; end
 
 ##
 # Compares _sym_ with _other_ in string form.
-def <=>(p1); end
+##
+# Compares _sym_ with _other_ in string form.
+def <=>; end
 
 ##
 # Case-insensitive version of <code>Symbol#<=></code>.
-def casecmp(p1); end
+##
+# Case-insensitive version of <code>Symbol#<=></code>.
+def casecmp(other); end
 
 ##
 # Returns <code>sym.to_s =~ obj</code>.
-def =~(p1); end
+def =~; end
 
 ##
 # Returns <code>sym.to_s[]</code>.
-def [](*args); end
+def []; end
 
 ##
 # Returns <code>sym.to_s[]</code>.
-def slice(*args); end
+def []; end
+
+##
+# Returns <code>sym.to_s[]</code>.
+def slice; end
+
+##
+# Returns <code>sym.to_s[]</code>.
+def slice; end
 
 ##
 # Same as <code>sym.to_s.length</code>.
-def length(); end
+def length; end
 
 ##
 # Same as <code>sym.to_s.length</code>.
-def size(); end
+def length; end
 
 ##
 # Returns that _sym_ is :"" or not.
-def empty?(); end
+def empty?; end
 
 ##
 # Returns <code>sym.to_s =~ obj</code>.
-def match(p1); end
+def match; end
 
 ##
 # Same as <code>sym.to_s.upcase.intern</code>.
-def upcase(); end
+def upcase; end
 
 ##
 # Same as <code>sym.to_s.downcase.intern</code>.
-def downcase(); end
+def downcase; end
 
 ##
 # Same as <code>sym.to_s.capitalize.intern</code>.
-def capitalize(); end
+def capitalize; end
 
 ##
 # Same as <code>sym.to_s.swapcase.intern</code>.
-def swapcase(); end
+def swapcase; end
 
 ##
 # Returns the Encoding object that represents the encoding of _sym_.
-def encoding(); end
+def encoding; end
 
 end
 
@@ -13373,7 +22667,7 @@ class Class < Module
 # 
 #    New subclass: Bar
 #    New subclass: Baz
-def inherited(p1); end
+def inherited(subclass); end
 
 ##
 # Allocates space for a new object of <i>class</i>'s class and does not
@@ -13399,7 +22693,7 @@ def allocate(); end
 # <code>initialize</code> method, passing it <i>args</i>.
 # This is the method that ends up getting called whenever
 # an object is constructed using .new.
-def new(*args); end
+def new(args, *more); end
 
 ##
 # Creates a new anonymous (unnamed) class with the given superclass
@@ -13425,7 +22719,33 @@ def new(*args); end
 # 
 # Assign the class to a constant (name starting uppercase) if you
 # want to treat it like a regular class.
-def self.new(p1=0); end
+def self.new(super_class=Object); end
+
+##
+# Creates a new anonymous (unnamed) class with the given superclass
+# (or <code>Object</code> if no parameter is given). You can give a
+# class a name by assigning the class object to a constant.
+# 
+# If a block is given, it is passed the class object, and the block
+# is evaluated in the context of this class using
+# <code>class_eval</code>.
+# 
+#    fred = Class.new do
+#      def meth1
+#        "hello"
+#      end
+#      def meth2
+#        "bye"
+#      end
+#    end
+# 
+#    a = fred.new     #=> #<#<Class:0x100381890>:0x100376b98>
+#    a.meth1          #=> "hello"
+#    a.meth2          #=> "bye"
+# 
+# Assign the class to a constant (name starting uppercase) if you
+# want to treat it like a regular class.
+def self.new(super_class=Object, &block); end
 
 ##
 # Returns the superclass of <i>class</i>, or <code>nil</code>.
@@ -13440,7 +22760,7 @@ def self.new(p1=0); end
 # returns nil when the given class hasn't a parent class:
 # 
 #    BasicObject.superclass   #=> nil
-def superclass(); end
+def superclass; end
 
 end
 
@@ -13465,7 +22785,31 @@ include Enumerable
 #    Hash["a", 100, "b", 200]             #=> {"a"=>100, "b"=>200}
 #    Hash[ [ ["a", 100], ["b", 200] ] ]   #=> {"a"=>100, "b"=>200}
 #    Hash["a" => 100, "b" => 200]         #=> {"a"=>100, "b"=>200}
-def self.[](*args); end
+def self. ]; end
+
+##
+# Creates a new hash populated with the given objects. Equivalent to
+# the literal <code>{ <i>key</i> => <i>value</i>, ... }</code>. In the first
+# form, keys and values occur in pairs, so there must be an even number of arguments.
+# The second and third form take a single argument which is either
+# an array of key-value pairs or an object convertible to a hash.
+# 
+#    Hash["a", 100, "b", 200]             #=> {"a"=>100, "b"=>200}
+#    Hash[ [ ["a", 100], ["b", 200] ] ]   #=> {"a"=>100, "b"=>200}
+#    Hash["a" => 100, "b" => 200]         #=> {"a"=>100, "b"=>200}
+def self. ] ]; end
+
+##
+# Creates a new hash populated with the given objects. Equivalent to
+# the literal <code>{ <i>key</i> => <i>value</i>, ... }</code>. In the first
+# form, keys and values occur in pairs, so there must be an even number of arguments.
+# The second and third form take a single argument which is either
+# an array of key-value pairs or an object convertible to a hash.
+# 
+#    Hash["a", 100, "b", 200]             #=> {"a"=>100, "b"=>200}
+#    Hash[ [ ["a", 100], ["b", 200] ] ]   #=> {"a"=>100, "b"=>200}
+#    Hash["a" => 100, "b" => 200]         #=> {"a"=>100, "b"=>200}
+def self.[]; end
 
 ##
 # Try to convert <i>obj</i> into a hash, using to_hash method.
@@ -13474,7 +22818,7 @@ def self.[](*args); end
 # 
 #    Hash.try_convert({1=>2})   # => {1=>2}
 #    Hash.try_convert("1=>2")   # => nil
-def self.try_convert(p1); end
+def self.try_convert(obj); end
 
 ##
 # Returns a new, empty hash. If this hash is subsequently accessed by
@@ -13503,7 +22847,65 @@ def self.try_convert(p1); end
 #    h["c"].upcase!   #=> "GO FISH: C"
 #    h["d"]           #=> "Go Fish: d"
 #    h.keys           #=> ["c", "d"]
-def self.new(p1=0); end
+def self.new; end
+
+##
+# Returns a new, empty hash. If this hash is subsequently accessed by
+# a key that doesn't correspond to a hash entry, the value returned
+# depends on the style of <code>new</code> used to create the hash. In
+# the first form, the access returns <code>nil</code>. If
+# <i>obj</i> is specified, this single object will be used for
+# all <em>default values</em>. If a block is specified, it will be
+# called with the hash object and the key, and should return the
+# default value. It is the block's responsibility to store the value
+# in the hash if required.
+# 
+#    h = Hash.new("Go Fish")
+#    h["a"] = 100
+#    h["b"] = 200
+#    h["a"]           #=> 100
+#    h["c"]           #=> "Go Fish"
+#    # The following alters the single default object
+#    h["c"].upcase!   #=> "GO FISH"
+#    h["d"]           #=> "GO FISH"
+#    h.keys           #=> ["a", "b"]
+# 
+#    # While this creates a new default object each time
+#    h = Hash.new { |hash, key| hash[key] = "Go Fish: #{key}" }
+#    h["c"]           #=> "Go Fish: c"
+#    h["c"].upcase!   #=> "GO FISH: C"
+#    h["d"]           #=> "Go Fish: d"
+#    h.keys           #=> ["c", "d"]
+def self.new(obj); end
+
+##
+# Returns a new, empty hash. If this hash is subsequently accessed by
+# a key that doesn't correspond to a hash entry, the value returned
+# depends on the style of <code>new</code> used to create the hash. In
+# the first form, the access returns <code>nil</code>. If
+# <i>obj</i> is specified, this single object will be used for
+# all <em>default values</em>. If a block is specified, it will be
+# called with the hash object and the key, and should return the
+# default value. It is the block's responsibility to store the value
+# in the hash if required.
+# 
+#    h = Hash.new("Go Fish")
+#    h["a"] = 100
+#    h["b"] = 200
+#    h["a"]           #=> 100
+#    h["c"]           #=> "Go Fish"
+#    # The following alters the single default object
+#    h["c"].upcase!   #=> "GO FISH"
+#    h["d"]           #=> "GO FISH"
+#    h.keys           #=> ["a", "b"]
+# 
+#    # While this creates a new default object each time
+#    h = Hash.new { |hash, key| hash[key] = "Go Fish: #{key}" }
+#    h["c"]           #=> "Go Fish: c"
+#    h["c"].upcase!   #=> "GO FISH: C"
+#    h["d"]           #=> "Go Fish: d"
+#    h.keys           #=> ["c", "d"]
+def self.new(&block); end
 
 ##
 # Replaces the contents of <i>hsh</i> with the contents of
@@ -13511,7 +22913,7 @@ def self.new(p1=0); end
 # 
 #    h = { "a" => 100, "b" => 200 }
 #    h.replace({ "c" => 300, "d" => 400 })   #=> {"c"=>300, "d"=>400}
-def initialize_copy(p1); end
+def replace(other_hash); end
 
 ##
 # Rebuilds the hash based on the current hash values for each key. If
@@ -13528,11 +22930,11 @@ def initialize_copy(p1); end
 #    h[a]       #=> nil
 #    h.rehash   #=> {["z", "b"]=>100, ["c", "d"]=>300}
 #    h[a]       #=> 100
-def rehash(); end
+def rehash; end
 
 ##
 # Returns +self+.
-def to_hash(); end
+def to_hash   => hsh; end
 
 ##
 # Converts <i>hsh</i> to a nested array of <code>[</code> <i>key,
@@ -13540,14 +22942,21 @@ def to_hash(); end
 # 
 #    h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300  }
 #    h.to_a   #=> [["c", 300], ["a", 100], ["d", 400]]
-def to_a(); end
+def to_a; end
 
 ##
 # Return the contents of this hash as a string.
 # 
 #     h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300  }
 #     h.to_s   #=> "{\"c\"=>300, \"a\"=>100, \"d\"=>400}"
-def inspect(); end
+def to_s; end
+
+##
+# Return the contents of this hash as a string.
+# 
+#     h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300  }
+#     h.to_s   #=> "{\"c\"=>300, \"a\"=>100, \"d\"=>400}"
+def inspect; end
 
 ##
 # Equality---Two hashes are equal if they each contain the same number
@@ -13562,7 +22971,7 @@ def inspect(); end
 #    h1 == h2   #=> false
 #    h2 == h3   #=> true
 #    h3 == h4   #=> false
-def ==(p1); end
+def ==; end
 
 ##
 # Element Reference---Retrieves the <i>value</i> object corresponding
@@ -13572,17 +22981,17 @@ def ==(p1); end
 #    h = { "a" => 100, "b" => 200 }
 #    h["a"]   #=> 100
 #    h["c"]   #=> nil
-def [](p1); end
+def []; end
 
 ##
 # Compute a hash-code for this hash. Two hashes with the same content
 # will have the same hash code (and will compare using <code>eql?</code>).
-def hash(); end
+def hash; end
 
 ##
 # Returns <code>true</code> if <i>hash</i> and <i>other</i> are
 # both hashes with the same content.
-def eql?(p1); end
+def eql?(other); end
 
 ##
 # Returns a value from the hash for the given key. If the key can't be
@@ -13606,7 +23015,31 @@ def eql?(p1); end
 # 
 #    prog.rb:2:in `fetch': key not found (KeyError)
 #     from prog.rb:2
-def fetch(p1, p2=0); end
+def fetch(key  , default=0); end
+
+##
+# Returns a value from the hash for the given key. If the key can't be
+# found, there are several options: With no other arguments, it will
+# raise an <code>KeyError</code> exception; if <i>default</i> is
+# given, then that will be returned; if the optional code block is
+# specified, then that will be run and its result returned.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.fetch("a")                            #=> 100
+#    h.fetch("z", "go fish")                 #=> "go fish"
+#    h.fetch("z") { |el| "go fish, #{el}"}   #=> "go fish, z"
+# 
+# The following example shows that an exception is raised if the key
+# is not found and a default value is not supplied.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.fetch("z")
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:2:in `fetch': key not found (KeyError)
+#     from prog.rb:2
+def fetch(key, &block); end
 
 ##
 # Element Assignment---Associates the value given by
@@ -13619,7 +23052,7 @@ def fetch(p1, p2=0); end
 #    h["a"] = 9
 #    h["c"] = 4
 #    h   #=> {"a"=>9, "b"=>200, "c"=>4}
-def []=(p1, p2); end
+def []=; end
 
 ##
 # Element Assignment---Associates the value given by
@@ -13632,7 +23065,33 @@ def []=(p1, p2); end
 #    h["a"] = 9
 #    h["c"] = 4
 #    h   #=> {"a"=>9, "b"=>200, "c"=>4}
-def store(p1, p2); end
+def store(key, value); end
+
+##
+# Element Assignment---Associates the value given by
+# <i>value</i> with the key given by <i>key</i>.
+# <i>key</i> should not have its value changed while it is in
+# use as a key (a <code>String</code> passed as a key will be
+# duplicated and frozen).
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h["a"] = 9
+#    h["c"] = 4
+#    h   #=> {"a"=>9, "b"=>200, "c"=>4}
+def store; end
+
+##
+# Element Assignment---Associates the value given by
+# <i>value</i> with the key given by <i>key</i>.
+# <i>key</i> should not have its value changed while it is in
+# use as a key (a <code>String</code> passed as a key will be
+# duplicated and frozen).
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h["a"] = 9
+#    h["c"] = 4
+#    h   #=> {"a"=>9, "b"=>200, "c"=>4}
+def store(key, value); end
 
 ##
 # Returns the default value, the value that would be returned by
@@ -13650,7 +23109,7 @@ def store(p1, p2); end
 #    h = Hash.new {|h,k| h[k] = k.to_i*10}   #=> {}
 #    h.default                               #=> nil
 #    h.default(2)                            #=> 20
-def default(p1=0); end
+def default(key=nil); end
 
 ##
 # Sets the default value, the value returned for a key that does not
@@ -13667,7 +23126,7 @@ def default(p1=0); end
 #    end
 #    h[2]       #=> #<Proc:0x401b3948@-:6>
 #    h["cat"]   #=> #<Proc:0x401b3948@-:6>
-def default=(p1); end
+def default = obj; end
 
 ##
 # If <code>Hash::new</code> was invoked with a block, return that
@@ -13678,7 +23137,7 @@ def default=(p1); end
 #    a = []                             #=> []
 #    p.call(a, 2)
 #    a                                  #=> [nil, nil, 4]
-def default_proc(); end
+def default_proc; end
 
 ##
 # Sets the default proc to be executed on each key lookup.
@@ -13688,7 +23147,7 @@ def default_proc(); end
 #    end
 #    h[2]       #=> 4
 #    h["cat"]   #=> "catcat"
-def default_proc=(p1); end
+def default_proc = proc_obj; end
 
 ##
 # Returns the key of an occurrence of a given value. If the value is
@@ -13698,7 +23157,7 @@ def default_proc=(p1); end
 #    h.key(200)   #=> "b"
 #    h.key(300)   #=> "c"
 #    h.key(999)   #=> nil
-def key(p1); end
+def key(value); end
 
 ##
 # Returns the number of key-value pairs in the hash.
@@ -13707,7 +23166,7 @@ def key(p1); end
 #    h.length        #=> 4
 #    h.delete("a")   #=> 200
 #    h.length        #=> 3
-def size(); end
+def length; end
 
 ##
 # Returns the number of key-value pairs in the hash.
@@ -13716,13 +23175,31 @@ def size(); end
 #    h.length        #=> 4
 #    h.delete("a")   #=> 200
 #    h.length        #=> 3
-def length(); end
+def size; end
+
+##
+# Returns the number of key-value pairs in the hash.
+# 
+#    h = { "d" => 100, "a" => 200, "v" => 300, "e" => 400 }
+#    h.length        #=> 4
+#    h.delete("a")   #=> 200
+#    h.length        #=> 3
+def length; end
+
+##
+# Returns the number of key-value pairs in the hash.
+# 
+#    h = { "d" => 100, "a" => 200, "v" => 300, "e" => 400 }
+#    h.length        #=> 4
+#    h.delete("a")   #=> 200
+#    h.length        #=> 3
+def size; end
 
 ##
 # Returns <code>true</code> if <i>hsh</i> contains no key-value pairs.
 # 
 #    {}.empty?   #=> true
-def empty?(); end
+def empty?; end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the
@@ -13737,7 +23214,22 @@ def empty?(); end
 # 
 #    100
 #    200
-def each_value(); end
+def each_value(&block); end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the
+# value as a parameter.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each_value {|value| puts value }
+# 
+# <em>produces:</em>
+# 
+#    100
+#    200
+def each_value; end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key
@@ -13752,7 +23244,22 @@ def each_value(); end
 # 
 #    a
 #    b
-def each_key(); end
+def each_key(&block); end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key
+# as a parameter.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each_key {|key| puts key }
+# 
+# <em>produces:</em>
+# 
+#    a
+#    b
+def each_key; end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
@@ -13767,7 +23274,7 @@ def each_key(); end
 # 
 #    a is 100
 #    b is 200
-def each_pair(); end
+def each(&block); end
 
 ##
 # Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
@@ -13782,7 +23289,97 @@ def each_pair(); end
 # 
 #    a is 100
 #    b is 200
-def each(); end
+def each_pair(&block); end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each; end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each_pair; end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each(&block); end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each_pair(&block); end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each; end
+
+##
+# Calls <i>block</i> once for each key in <i>hsh</i>, passing the key-value
+# pair as parameters.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.each {|key, value| puts "#{key} is #{value}" }
+# 
+# <em>produces:</em>
+# 
+#    a is 100
+#    b is 200
+def each_pair; end
 
 ##
 # Returns a new array populated with the keys from this hash. See also
@@ -13790,7 +23387,7 @@ def each(); end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300, "d" => 400 }
 #    h.keys   #=> ["a", "b", "c", "d"]
-def keys(); end
+def keys; end
 
 ##
 # Returns a new array populated with the values from <i>hsh</i>. See
@@ -13798,7 +23395,7 @@ def keys(); end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.values   #=> [100, 200, 300]
-def values(); end
+def values; end
 
 ##
 # Return an array containing the values associated with the given keys.
@@ -13806,7 +23403,7 @@ def values(); end
 # 
 #   h = { "cat" => "feline", "dog" => "canine", "cow" => "bovine" }
 #   h.values_at("cow", "cat")  #=> ["bovine", "feline"]
-def values_at(*args); end
+def values_at(key, *more); end
 
 ##
 # Removes a key-value pair from <i>hsh</i> and returns it as the
@@ -13816,7 +23413,7 @@ def values_at(*args); end
 #    h = { 1 => "a", 2 => "b", 3 => "c" }
 #    h.shift   #=> [1, "a"]
 #    h         #=> {2=>"b", 3=>"c"}
-def shift(); end
+def shift; end
 
 ##
 # Deletes and returns a key-value pair from <i>hsh</i> whose key is
@@ -13829,7 +23426,20 @@ def shift(); end
 #    h.delete("a")                              #=> 100
 #    h.delete("z")                              #=> nil
 #    h.delete("z") { |el| "#{el} not found" }   #=> "z not found"
-def delete(p1); end
+def delete(key); end
+
+##
+# Deletes and returns a key-value pair from <i>hsh</i> whose key is
+# equal to <i>key</i>. If the key is not found, returns the
+# <em>default value</em>. If the optional code block is given and the
+# key is not found, pass in the key and return the result of
+# <i>block</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.delete("a")                              #=> 100
+#    h.delete("z")                              #=> nil
+#    h.delete("z") { |el| "#{el} not found" }   #=> "z not found"
+def delete(key, &block); end
 
 ##
 # Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
@@ -13839,14 +23449,31 @@ def delete(p1); end
 # 
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.delete_if {|key, value| key >= "b" }   #=> {"a"=>100}
-def delete_if(); end
+def delete_if(&block); end
+
+##
+# Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
+# evaluates to <code>true</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200, "c" => 300 }
+#    h.delete_if {|key, value| key >= "b" }   #=> {"a"=>100}
+def delete_if; end
 
 ##
 # Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
 # evaluates to false.
 # 
 # If no block is given, an enumerator is returned instead.
-def keep_if(); end
+def keep_if(&block); end
+
+##
+# Deletes every key-value pair from <i>hsh</i> for which <i>block</i>
+# evaluates to false.
+# 
+# If no block is given, an enumerator is returned instead.
+def keep_if; end
 
 ##
 # Returns a new hash consisting of entries for which the block returns true.
@@ -13856,30 +23483,56 @@ def keep_if(); end
 #    h = { "a" => 100, "b" => 200, "c" => 300 }
 #    h.select {|k,v| k > "a"}  #=> {"b" => 200, "c" => 300}
 #    h.select {|k,v| v < 200}  #=> {"a" => 100}
-def select(); end
+def select(&block); end
+
+##
+# Returns a new hash consisting of entries for which the block returns true.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    h = { "a" => 100, "b" => 200, "c" => 300 }
+#    h.select {|k,v| k > "a"}  #=> {"b" => 200, "c" => 300}
+#    h.select {|k,v| v < 200}  #=> {"a" => 100}
+def select; end
 
 ##
 # Equivalent to <code>Hash#keep_if</code>, but returns
 # <code>nil</code> if no changes were made.
-def select!(); end
+def select!(&block); end
+
+##
+# Equivalent to <code>Hash#keep_if</code>, but returns
+# <code>nil</code> if no changes were made.
+def select!; end
 
 ##
 # Same as <code>Hash#delete_if</code>, but works on (and returns) a
 # copy of the <i>hsh</i>. Equivalent to
 # <code><i>hsh</i>.dup.delete_if</code>.
-def reject(); end
+def reject(&block); end
+
+##
+# Same as <code>Hash#delete_if</code>, but works on (and returns) a
+# copy of the <i>hsh</i>. Equivalent to
+# <code><i>hsh</i>.dup.delete_if</code>.
+def reject; end
 
 ##
 # Equivalent to <code>Hash#delete_if</code>, but returns
 # <code>nil</code> if no changes were made.
-def reject!(); end
+def reject!(&block); end
+
+##
+# Equivalent to <code>Hash#delete_if</code>, but returns
+# <code>nil</code> if no changes were made.
+def reject!; end
 
 ##
 # Removes all key-value pairs from <i>hsh</i>.
 # 
 #    h = { "a" => 100, "b" => 200 }   #=> {"a"=>100, "b"=>200}
 #    h.clear                          #=> {}
-def clear(); end
+def clear; end
 
 ##
 # Returns a new hash created by using <i>hsh</i>'s values as keys, and
@@ -13887,7 +23540,7 @@ def clear(); end
 # 
 #    h = { "n" => 100, "m" => 100, "y" => 300, "d" => 200, "a" => 0 }
 #    h.invert   #=> {0=>"a", 100=>"m", 200=>"d", 300=>"y"}
-def invert(); end
+def invert; end
 
 ##
 # Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
@@ -13904,7 +23557,58 @@ def invert(); end
 #    h2 = { "b" => 254, "c" => 300 }
 #    h1.merge!(h2) { |key, v1, v2| v1 }
 #                    #=> {"a"=>100, "b"=>200, "c"=>300}
-def update(p1); end
+def merge!(other_hash); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def update(other_hash); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def merge!(other_hash, &block); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def update(other_hash, &block); end
 
 ##
 # Replaces the contents of <i>hsh</i> with the contents of
@@ -13912,7 +23616,7 @@ def update(p1); end
 # 
 #    h = { "a" => 100, "b" => 200 }
 #    h.replace({ "c" => 300, "d" => 400 })   #=> {"c"=>300, "d"=>400}
-def replace(p1); end
+def replace(other_hash); end
 
 ##
 # Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
@@ -13929,7 +23633,58 @@ def replace(p1); end
 #    h2 = { "b" => 254, "c" => 300 }
 #    h1.merge!(h2) { |key, v1, v2| v1 }
 #                    #=> {"a"=>100, "b"=>200, "c"=>300}
-def merge!(p1); end
+def merge!(other_hash); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def update(other_hash); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def merge!(other_hash, &block); end
+
+##
+# Adds the contents of <i>other_hash</i> to <i>hsh</i>.  If no
+# block is specified, entries with duplicate keys are overwritten
+# with the values from <i>other_hash</i>, otherwise the value
+# of each duplicate key is determined by calling the block with
+# the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge!(h2) { |key, v1, v2| v1 }
+#                    #=> {"a"=>100, "b"=>200, "c"=>300}
+def update(other_hash, &block); end
 
 ##
 # Returns a new hash containing the contents of <i>other_hash</i> and
@@ -13944,7 +23699,22 @@ def merge!(p1); end
 #    h1.merge(h2){|key, oldval, newval| newval - oldval}
 #                   #=> {"a"=>100, "b"=>54,  "c"=>300}
 #    h1             #=> {"a"=>100, "b"=>200}
-def merge(p1); end
+def merge(other_hash); end
+
+##
+# Returns a new hash containing the contents of <i>other_hash</i> and
+# the contents of <i>hsh</i>. If no block is specified, the value for
+# entries with duplicate keys will be that of <i>other_hash</i>. Otherwise
+# the value for each duplicate key is determined by calling the block
+# with the key, its value in <i>hsh</i> and its value in <i>other_hash</i>.
+# 
+#    h1 = { "a" => 100, "b" => 200 }
+#    h2 = { "b" => 254, "c" => 300 }
+#    h1.merge(h2)   #=> {"a"=>100, "b"=>254, "c"=>300}
+#    h1.merge(h2){|key, oldval, newval| newval - oldval}
+#                   #=> {"a"=>100, "b"=>54,  "c"=>300}
+#    h1             #=> {"a"=>100, "b"=>200}
+def merge(other_hash, &block); end
 
 ##
 # Searches through the hash comparing _obj_ with the key using <code>==</code>.
@@ -13955,7 +23725,7 @@ def merge(p1); end
 #         "letters" => ["a", "b", "c" ]}
 #    h.assoc("letters")  #=> ["letters", ["a", "b", "c"]]
 #    h.assoc("foo")      #=> nil
-def assoc(p1); end
+def assoc(obj); end
 
 ##
 # Searches through the hash comparing _obj_ with the value using <code>==</code>.
@@ -13965,7 +23735,7 @@ def assoc(p1); end
 #    a = {1=> "one", 2 => "two", 3 => "three", "ii" => "two"}
 #    a.rassoc("two")    #=> [2, "two"]
 #    a.rassoc("four")   #=> nil
-def rassoc(p1); end
+def rassoc(obj); end
 
 ##
 # Returns a new array that is a one-dimensional flattening of this
@@ -13977,7 +23747,19 @@ def rassoc(p1); end
 #    a =  {1=> "one", 2 => [2,"two"], 3 => "three"}
 #    a.flatten    # => [1, "one", 2, [2, "two"], 3, "three"]
 #    a.flatten(2) # => [1, "one", 2, 2, "two", 3, "three"]
-def flatten(*args); end
+def flatten; end
+
+##
+# Returns a new array that is a one-dimensional flattening of this
+# hash. That is, for every key or value that is an array, extract
+# its elements into the new array.  Unlike Array#flatten, this
+# method does not flatten recursively by default.  The optional
+# <i>level</i> argument determines the level of recursion to flatten.
+# 
+#    a =  {1=> "one", 2 => [2,"two"], 3 => "three"}
+#    a.flatten    # => [1, "one", 2, [2, "two"], 3, "three"]
+#    a.flatten(2) # => [1, "one", 2, 2, "two", 3, "three"]
+def flatten(level); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -13985,7 +23767,7 @@ def flatten(*args); end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def include?(p1); end
+def has_key?(key); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -13993,7 +23775,7 @@ def include?(p1); end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def member?(p1); end
+def include?(key); end
 
 ##
 # Returns <code>true</code> if the given key is present in <i>hsh</i>.
@@ -14001,7 +23783,79 @@ def member?(p1); end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_key?("a")   #=> true
 #    h.has_key?("z")   #=> false
-def has_key?(p1); end
+def key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def member?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def has_key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def include?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def member?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def has_key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def include?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def member?(key); end
 
 ##
 # Returns <code>true</code> if the given value is present for some key
@@ -14010,15 +23864,7 @@ def has_key?(p1); end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_value?(100)   #=> true
 #    h.has_value?(999)   #=> false
-def has_value?(p1); end
-
-##
-# Returns <code>true</code> if the given key is present in <i>hsh</i>.
-# 
-#    h = { "a" => 100, "b" => 200 }
-#    h.has_key?("a")   #=> true
-#    h.has_key?("z")   #=> false
-def key?(p1); end
+def has_value?(value); end
 
 ##
 # Returns <code>true</code> if the given value is present for some key
@@ -14027,7 +23873,57 @@ def key?(p1); end
 #    h = { "a" => 100, "b" => 200 }
 #    h.has_value?(100)   #=> true
 #    h.has_value?(999)   #=> false
-def value?(p1); end
+def value?(value); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def has_key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def include?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def key?(key); end
+
+##
+# Returns <code>true</code> if the given key is present in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_key?("a")   #=> true
+#    h.has_key?("z")   #=> false
+def member?(key); end
+
+##
+# Returns <code>true</code> if the given value is present for some key
+# in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_value?(100)   #=> true
+#    h.has_value?(999)   #=> false
+def has_value?(value); end
+
+##
+# Returns <code>true</code> if the given value is present for some key
+# in <i>hsh</i>.
+# 
+#    h = { "a" => 100, "b" => 200 }
+#    h.has_value?(100)   #=> true
+#    h.has_value?(999)   #=> false
+def value?(value); end
 
 ##
 # Makes <i>hsh</i> compare its keys by their identity, i.e. it
@@ -14039,14 +23935,12 @@ def value?(p1); end
 #    h1.compare_by_identity? #=> true
 #    h1["a"]        #=> nil  # different objects.
 #    h1[:c]         #=> "c"  # same symbols are all same.
-def compare_by_identity(); end
+def compare_by_identity; end
 
 ##
 # Returns <code>true</code> if <i>hsh</i> will compare its keys by
 # their identity.  Also see <code>Hash#compare_by_identity</code>.
-def compare_by_identity?(); end
-
-def to_s(); end
+def compare_by_identity?; end
 
 end
 
@@ -14056,7 +23950,7 @@ class ENV < Object
 ##
 # Retrieves the +value+ for environment variable +name+ as a String.  Returns
 # +nil+ if the named variable does not exist.
-def self.[](p1); end
+def self.[]; end
 
 ##
 # Retrieves the environment variable +name+.
@@ -14065,197 +23959,383 @@ def self.[](p1); end
 # provided an IndexError is raised.  If a block is given it is called with
 # the missing name to provide a value.  If a default value is given it will
 # be returned when no block is given.
-def self.fetch(p1, p2=0); end
+def self.fetch(name); end
+
+##
+# Retrieves the environment variable +name+.
+# 
+# If the given name does not exist and neither +default+ nor a block a
+# provided an IndexError is raised.  If a block is given it is called with
+# the missing name to provide a value.  If a default value is given it will
+# be returned when no block is given.
+def self.fetch(name, default); end
+
+##
+# Retrieves the environment variable +name+.
+# 
+# If the given name does not exist and neither +default+ nor a block a
+# provided an IndexError is raised.  If a block is given it is called with
+# the missing name to provide a value.  If a default value is given it will
+# be returned when no block is given.
+def self.fetch(name, &block); end
 
 ##
 # Sets the environment variable +name+ to +value+.  If the value given is
 # +nil+ the environment variable is deleted.
-def self.[]=(p1, p2); end
+def self.[]=; end
 
 ##
 # Sets the environment variable +name+ to +value+.  If the value given is
 # +nil+ the environment variable is deleted.
-def self.store(p1, p2); end
+def self.store(name, value); end
+
+##
+# Sets the environment variable +name+ to +value+.  If the value given is
+# +nil+ the environment variable is deleted.
+def self.store; end
+
+##
+# Sets the environment variable +name+ to +value+.  If the value given is
+# +nil+ the environment variable is deleted.
+def self.store(name, value); end
 
 ##
 # Yields each environment variable +name+ and +value+.
 # 
 # If no block is given an Enumerator is returned.
-def self.each(); end
+def self.each(&block); end
 
 ##
 # Yields each environment variable +name+ and +value+.
 # 
 # If no block is given an Enumerator is returned.
-def self.each_pair(); end
+def self.each; end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each_pair(&block); end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each_pair; end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each(&block); end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each; end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each_pair(&block); end
+
+##
+# Yields each environment variable +name+ and +value+.
+# 
+# If no block is given an Enumerator is returned.
+def self.each_pair; end
 
 ##
 # Yields each environment variable name.
 # 
 # An Enumerator is returned if no block is given.
-def self.each_key(); end
+def self.each_key(&block); end
+
+##
+# Yields each environment variable name.
+# 
+# An Enumerator is returned if no block is given.
+def self.each_key; end
 
 ##
 # Yields each environment variable +value+.
 # 
 # An Enumerator is returned if no block was given.
-def self.each_value(); end
+def self.each_value(&block); end
+
+##
+# Yields each environment variable +value+.
+# 
+# An Enumerator is returned if no block was given.
+def self.each_value; end
 
 ##
 # Deletes the environment variable with +name+ and returns the value of the
 # variable.  If a block is given it will be called when the named environment
 # does not exist.
-def self.delete(p1); end
+def self.delete(name); end
+
+##
+# Deletes the environment variable with +name+ and returns the value of the
+# variable.  If a block is given it will be called when the named environment
+# does not exist.
+def self.delete(name, &block); end
 
 ##
 # Deletes every environment variable for which the block evaluates to +true+.
 # 
 # If no block is given an enumerator is returned instead.
-def self.delete_if(); end
+def self.delete_if(&block); end
+
+##
+# Deletes every environment variable for which the block evaluates to +true+.
+# 
+# If no block is given an enumerator is returned instead.
+def self.delete_if; end
 
 ##
 # Deletes every environment variable where the block evaluates to +false+.
 # 
 # Returns an enumerator if no block was given.
-def self.keep_if(); end
+def self.keep_if(&block); end
+
+##
+# Deletes every environment variable where the block evaluates to +false+.
+# 
+# Returns an enumerator if no block was given.
+def self.keep_if; end
 
 ##
 # Removes every environment variable.
-def self.clear(); end
+def self.clear; end
 
 ##
 # Same as ENV#delete_if, but works on (and returns) a copy of the
 # environment.
-def self.reject(); end
+def self.reject(&block); end
+
+##
+# Same as ENV#delete_if, but works on (and returns) a copy of the
+# environment.
+def self.reject; end
 
 ##
 # Equivalent to ENV#delete_if but returns +nil+ if no changes were made.
 # 
 # Returns an Enumerator if no block was given.
-def self.reject!(); end
+def self.reject!(&block); end
+
+##
+# Equivalent to ENV#delete_if but returns +nil+ if no changes were made.
+# 
+# Returns an Enumerator if no block was given.
+def self.reject!; end
 
 ##
 # Returns a copy of the environment for entries where the block returns true.
 # 
 # Returns an Enumerator if no block was given.
-def self.select(); end
+def self.select(&block); end
+
+##
+# Returns a copy of the environment for entries where the block returns true.
+# 
+# Returns an Enumerator if no block was given.
+def self.select; end
 
 ##
 # Equivalent to ENV#keep_if but returns +nil+ if no changes were made.
-def self.select!(); end
+def self.select!(&block); end
+
+##
+# Equivalent to ENV#keep_if but returns +nil+ if no changes were made.
+def self.select!; end
 
 ##
 # Removes an environment variable name-value pair from ENV and returns it as
 # an Array.  Returns +nil+ if when the environment is empty.
-def self.shift(); end
+def self.shift; end
 
 ##
 # Returns a new hash created by using environment variable names as values
 # and values as names.
-def self.invert(); end
+def self.invert; end
 
 ##
 # Replaces the contents of the environment variables with the contents of
 # +hash+.
-def self.replace(p1); end
+def self.replace(hash); end
 
 ##
 # Adds the contents of +hash+ to the environment variables.  If no block is
 # specified entries with duplicate keys are overwritten, otherwise the value
 # of each duplicate name is determined by calling the block with the key, its
 # value from the environment and its value from the hash.
-def self.update(p1); end
+def self.update(hash); end
+
+##
+# Adds the contents of +hash+ to the environment variables.  If no block is
+# specified entries with duplicate keys are overwritten, otherwise the value
+# of each duplicate name is determined by calling the block with the key, its
+# value from the environment and its value from the hash.
+def self.update(hash, &block); end
 
 ##
 # Returns the contents of the environment as a String.
-def self.inspect(); end
+def self.inspect; end
 
 ##
 # Re-hashing the environment variables does nothing.  It is provided for
 # compatibility with Hash.
-def self.rehash(); end
+def self.rehash; end
 
 ##
 # Converts the environment variables into an array of names and value arrays.
 # 
 #   ENV.to_a # => [["TERM" => "xterm-color"], ["SHELL" => "/bin/bash"], ...]
-def self.to_a(); end
+def self.to_a; end
 
 ##
 # Returns "ENV"
-def self.to_s(); end
+def self.to_s; end
 
 ##
 # Returns the name of the environment variable with +value+.  If the value is
 # not found +nil+ is returned.
-def self.key(p1); end
+def self.key(value); end
 
 ##
 # Deprecated method that is equivalent to ENV.key
-def self.index(p1); end
+def self.index(value); end
 
 ##
 # Returns the number of environment variables.
-def self.size(); end
+def self.length; end
 
 ##
 # Returns the number of environment variables.
-def self.length(); end
+def self.size; end
+
+##
+# Returns the number of environment variables.
+def self.length; end
+
+##
+# Returns the number of environment variables.
+def self.size; end
 
 ##
 # Returns true when there are no environment variables
-def self.empty?(); end
+def self.empty?; end
 
 ##
 # Returns every environment variable name in an Array
-def self.keys(); end
+def self.keys; end
 
 ##
 # Returns every environment variable value as an Array
-def self.values(); end
+def self.values; end
 
 ##
 # Returns an array containing the environment variable values associated with
 # the given names.  See also ENV.select.
-def self.values_at(*args); end
+def self.values_at(name, *more); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.include?(p1); end
+def self.key?(name); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.member?(p1); end
+def self.include?(name); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +name+.
-def self.has_key?(p1); end
+def self.has_key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.member?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.include?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.has_key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.member?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.include?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.has_key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.member?(name); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +value+.
-def self.has_value?(p1); end
-
-##
-# Returns +true+ if there is an environment variable with the given +name+.
-def self.key?(p1); end
+def self.value?(value); end
 
 ##
 # Returns +true+ if there is an environment variable with the given +value+.
-def self.value?(p1); end
+def self.has_value?(value); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.include?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.has_key?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +name+.
+def self.member?(name); end
+
+##
+# Returns +true+ if there is an environment variable with the given +value+.
+def self.value?(value); end
+
+##
+# Returns +true+ if there is an environment variable with the given +value+.
+def self.has_value?(value); end
 
 ##
 # Creates a hash with a copy of the environment variables.
-def self.to_hash(); end
+def self.to_hash; end
 
 ##
 # Returns an Array of the name and value of the environment variable with
 # +name+ or +nil+ if the name cannot be found.
-def self.assoc(p1); end
+def self.assoc(name); end
 
 ##
 # Returns an Array of the name and value of the environment variable with
 # +value+ or +nil+ if the value cannot be found.
-def self.rassoc(p1); end
+def self.rassoc(value); end
 
 end
 
@@ -14288,7 +24368,7 @@ class Status < Object
 ##
 # Returns +true+ if the integer value of _stat_
 # equals <em>other</em>.
-def ==(p1); end
+def ==; end
 
 ##
 # Logical AND of the bits in _stat_ with <em>num</em>.
@@ -14297,7 +24377,7 @@ def ==(p1); end
 #    Process.wait
 #    sprintf('%04x', $?.to_i)       #=> "3700"
 #    sprintf('%04x', $? & 0x1e00)   #=> "1600"
-def &(p1); end
+def &; end
 
 ##
 # Shift the bits in _stat_ right <em>num</em> places.
@@ -14306,7 +24386,7 @@ def &(p1); end
 #    Process.wait       #=> 26563
 #    $?.to_i            #=> 25344
 #    $? >> 8            #=> 99
-def >>(p1); end
+def >>; end
 
 ##
 # Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
@@ -14315,21 +24395,30 @@ def >>(p1); end
 #    fork { exit 0xab }         #=> 26566
 #    Process.wait               #=> 26566
 #    sprintf('%04x', $?.to_i)   #=> "ab00"
-def to_i(); end
+def to_i; end
+
+##
+# Returns the bits in _stat_ as a <code>Fixnum</code>. Poking
+# around in these bits is platform dependent.
+# 
+#    fork { exit 0xab }         #=> 26566
+#    Process.wait               #=> 26566
+#    sprintf('%04x', $?.to_i)   #=> "ab00"
+def to_int; end
 
 ##
 # Show pid and exit status as a string.
 # 
 #   system("false")
 #   p $?.to_s         #=> "pid 12766 exit 1"
-def to_s(); end
+def to_s; end
 
 ##
 # Override the inspection method.
 # 
 #   system("false")
 #   p $?.inspect #=> "#<Process::Status: pid 12861 exit 1>"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the process ID that this status object represents.
@@ -14337,35 +24426,35 @@ def inspect(); end
 #    fork { exit }   #=> 26569
 #    Process.wait    #=> 26569
 #    $?.pid          #=> 26569
-def pid(); end
+def pid; end
 
 ##
 # Returns +true+ if this process is stopped. This is only
 # returned if the corresponding <code>wait</code> call had the
 # <code>WUNTRACED</code> flag set.
-def stopped?(); end
+def stopped?; end
 
 ##
 # Returns the number of the signal that caused _stat_ to stop
 # (or +nil+ if self is not stopped).
-def stopsig(); end
+def stopsig; end
 
 ##
 # Returns +true+ if _stat_ terminated because of
 # an uncaught signal.
-def signaled?(); end
+def signaled?; end
 
 ##
 # Returns the number of the signal that caused _stat_ to
 # terminate (or +nil+ if self was not terminated by an
 # uncaught signal).
-def termsig(); end
+def termsig; end
 
 ##
 # Returns +true+ if _stat_ exited normally (for
 # example using an <code>exit()</code> call or finishing the
 # program).
-def exited?(); end
+def exited?; end
 
 ##
 # Returns the least significant eight bits of the return code of
@@ -14381,17 +24470,17 @@ def exited?(); end
 #    Process.wait       #=> 26573
 #    $?.exited?         #=> true
 #    $?.exitstatus      #=> 99
-def exitstatus(); end
+def exitstatus; end
 
 ##
 # Returns +true+ if _stat_ is successful, +false+ if not.
 # Returns +nil+ if <code>exited?</code> is not +true+.
-def success?(); end
+def success?; end
 
 ##
 # Returns +true+ if _stat_ generated a coredump
 # when it terminated. Not available on all platforms.
-def coredump?(); end
+def coredump?; end
 
 end
 
@@ -14502,15 +24591,7 @@ include Enumerable
 #     @         | ---     | moves to absolute position
 #     X         | ---     | back up a byte
 #     x         | ---     | null byte
-def pack(p1); end
-
-##
-# Returns a new array populated with the given objects.
-# 
-#   Array.[]( 1, 'a', /^A/ )
-#   Array[ 1, 'a', /^A/ ]
-#   [ 1, 'a', /^A/ ]
-def self.[](*args); end
+def pack ( aTemplateString ); end
 
 ##
 # Try to convert <i>obj</i> into an array, using +to_ary+ method.
@@ -14526,7 +24607,7 @@ def self.[](*args); end
 #    elsif tmp = String.try_convert(arg)
 #      # the argument is a string
 #    end
-def self.try_convert(p1); end
+def self.try_convert(obj); end
 
 ##
 # Returns a new array. In the first form, the new array is
@@ -14559,7 +24640,73 @@ def self.try_convert(p1); end
 #    squares
 # 
 #    copy = Array.new(squares)
-def self.new(p1=0, p2=0); end
+def self.new(size=0, obj=nil); end
+
+##
+# Returns a new array. In the first form, the new array is
+# empty. In the second it is created with _size_ copies of _obj_
+# (that is, _size_ references to the same
+# _obj_). The third form creates a copy of the array
+# passed as a parameter (the array is generated by calling
+# to_ary  on the parameter). In the last form, an array
+# of the given size is created. Each element in this array is
+# calculated by passing the element's index to the given block and
+# storing the return value.
+# 
+#    Array.new
+#    Array.new(2)
+#    Array.new(5, "A")
+# 
+#    # only one copy of the object is created
+#    a = Array.new(2, Hash.new)
+#    a[0]['cat'] = 'feline'
+#    a
+#    a[1]['cat'] = 'Felix'
+#    a
+# 
+#    # here multiple copies are created
+#    a = Array.new(2) { Hash.new }
+#    a[0]['cat'] = 'feline'
+#    a
+# 
+#    squares = Array.new(5) {|i| i*i}
+#    squares
+# 
+#    copy = Array.new(squares)
+def self.new(array); end
+
+##
+# Returns a new array. In the first form, the new array is
+# empty. In the second it is created with _size_ copies of _obj_
+# (that is, _size_ references to the same
+# _obj_). The third form creates a copy of the array
+# passed as a parameter (the array is generated by calling
+# to_ary  on the parameter). In the last form, an array
+# of the given size is created. Each element in this array is
+# calculated by passing the element's index to the given block and
+# storing the return value.
+# 
+#    Array.new
+#    Array.new(2)
+#    Array.new(5, "A")
+# 
+#    # only one copy of the object is created
+#    a = Array.new(2, Hash.new)
+#    a[0]['cat'] = 'feline'
+#    a
+#    a[1]['cat'] = 'Felix'
+#    a
+# 
+#    # here multiple copies are created
+#    a = Array.new(2) { Hash.new }
+#    a[0]['cat'] = 'feline'
+#    a
+# 
+#    squares = Array.new(5) {|i| i*i}
+#    squares
+# 
+#    copy = Array.new(squares)
+def self.new(size, &block); end
 
 ##
 # Replaces the contents of +self+ with the contents of
@@ -14568,25 +24715,29 @@ def self.new(p1=0, p2=0); end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.replace([ "x", "y", "z" ])   #=> ["x", "y", "z"]
 #    a                              #=> ["x", "y", "z"]
-def initialize_copy(p1); end
+def replace(other_ary); end
 
 ##
 # Creates a string representation of +self+.
-def inspect(); end
+def to_s; end
+
+##
+# Creates a string representation of +self+.
+def inspect; end
 
 ##
 # Returns +self+. If called on a subclass of Array, converts
 # the receiver to an Array object.
-def to_a(); end
+def to_a; end
 
 ##
 # Returns +self+.
-def to_ary(); end
+def to_ary; end
 
 ##
 # Return <code>true</code> if this array is frozen (or temporarily frozen
 # while being sorted).
-def frozen?(); end
+def frozen?; end
 
 ##
 # Equality---Two arrays are equal if they contain the same number
@@ -14596,17 +24747,17 @@ def frozen?(); end
 #    [ "a", "c" ]    == [ "a", "c", 7 ]     #=> false
 #    [ "a", "c", 7 ] == [ "a", "c", 7 ]     #=> true
 #    [ "a", "c", 7 ] == [ "a", "d", "f" ]   #=> false
-def ==(p1); end
+def ==; end
 
 ##
 # Returns <code>true</code> if +self+ and _other_ are the same object,
 # or are both arrays with the same content.
-def eql?(p1); end
+def eql?(other); end
 
 ##
 # Compute a hash-code for this array. Two arrays with the same content
 # will have the same hash code (and will compare using <code>eql?</code>).
-def hash(); end
+def hash; end
 
 ##
 # Element Reference---Returns the element at _index_,
@@ -14629,7 +24780,122 @@ def hash(); end
 #    a[5]                   #=> nil
 #    a[5, 1]                #=> []
 #    a[5..10]               #=> []
-def [](p1, p2=0); end
+def []; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def []; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def []; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(index); end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(start, length); end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(range); end
 
 ##
 # Element Assignment---Sets the element at _index_,
@@ -14652,7 +24918,53 @@ def [](p1, p2=0); end
 #    a[-1]   = "Z"               #=> ["A", "Z"]
 #    a[1..-1] = nil              #=> ["A", nil]
 #    a[1..-1] = []               #=> ["A"]
-def []=(*args); end
+def []=; end
+
+##
+# Element Assignment---Sets the element at _index_,
+# or replaces a subarray starting at _start_ and
+# continuing for _length_ elements, or replaces a subarray
+# specified by _range_.  If indices are greater than
+# the current capacity of the array, the array grows
+# automatically. A negative indices will count backward
+# from the end of the array. Inserts elements if _length_ is
+# zero. An +IndexError+ is raised if a negative index points
+# past the beginning of the array. See also
+# <code>Array#push</code>, and <code>Array#unshift</code>.
+# 
+#    a = Array.new
+#    a[4] = "4";                 #=> [nil, nil, nil, nil, "4"]
+#    a[0, 3] = [ 'a', 'b', 'c' ] #=> ["a", "b", "c", nil, "4"]
+#    a[1..2] = [ 1, 2 ]          #=> ["a", 1, 2, nil, "4"]
+#    a[0, 2] = "?"               #=> ["?", 2, nil, "4"]
+#    a[0..2] = "A"               #=> ["A", "4"]
+#    a[-1]   = "Z"               #=> ["A", "Z"]
+#    a[1..-1] = nil              #=> ["A", nil]
+#    a[1..-1] = []               #=> ["A"]
+def []=; end
+
+##
+# Element Assignment---Sets the element at _index_,
+# or replaces a subarray starting at _start_ and
+# continuing for _length_ elements, or replaces a subarray
+# specified by _range_.  If indices are greater than
+# the current capacity of the array, the array grows
+# automatically. A negative indices will count backward
+# from the end of the array. Inserts elements if _length_ is
+# zero. An +IndexError+ is raised if a negative index points
+# past the beginning of the array. See also
+# <code>Array#push</code>, and <code>Array#unshift</code>.
+# 
+#    a = Array.new
+#    a[4] = "4";                 #=> [nil, nil, nil, nil, "4"]
+#    a[0, 3] = [ 'a', 'b', 'c' ] #=> ["a", "b", "c", nil, "4"]
+#    a[1..2] = [ 1, 2 ]          #=> ["a", 1, 2, nil, "4"]
+#    a[0, 2] = "?"               #=> ["?", 2, nil, "4"]
+#    a[0..2] = "A"               #=> ["A", "4"]
+#    a[-1]   = "Z"               #=> ["A", "Z"]
+#    a[1..-1] = nil              #=> ["A", nil]
+#    a[1..-1] = []               #=> ["A"]
+def []=; end
 
 ##
 # Returns the element at _index_. A
@@ -14662,7 +24974,7 @@ def []=(*args); end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.at(0)     #=> "a"
 #    a.at(-1)    #=> "e"
-def at(p1); end
+def at(index); end
 
 ##
 # Tries to return the element at position <i>index</i>. If the index
@@ -14677,7 +24989,37 @@ def at(p1); end
 #    a.fetch(-1)              #=> 44
 #    a.fetch(4, 'cat')        #=> "cat"
 #    a.fetch(4) { |i| i*i }   #=> 16
-def fetch(p1, p2=0); end
+def fetch(index); end
+
+##
+# Tries to return the element at position <i>index</i>. If the index
+# lies outside the array, the first form throws an
+# <code>IndexError</code> exception, the second form returns
+# <i>default</i>, and the third form returns the value of invoking
+# the block, passing in the index. Negative values of <i>index</i>
+# count from the end of the array.
+# 
+#    a = [ 11, 22, 33, 44 ]
+#    a.fetch(1)               #=> 22
+#    a.fetch(-1)              #=> 44
+#    a.fetch(4, 'cat')        #=> "cat"
+#    a.fetch(4) { |i| i*i }   #=> 16
+def fetch(index, default ); end
+
+##
+# Tries to return the element at position <i>index</i>. If the index
+# lies outside the array, the first form throws an
+# <code>IndexError</code> exception, the second form returns
+# <i>default</i>, and the third form returns the value of invoking
+# the block, passing in the index. Negative values of <i>index</i>
+# count from the end of the array.
+# 
+#    a = [ 11, 22, 33, 44 ]
+#    a.fetch(1)               #=> 22
+#    a.fetch(-1)              #=> 44
+#    a.fetch(4, 'cat')        #=> "cat"
+#    a.fetch(4) { |i| i*i }   #=> 16
+def fetch(index, &block); end
 
 ##
 # Returns the first element, or the first +n+ elements, of the array.
@@ -14687,7 +25029,17 @@ def fetch(p1, p2=0); end
 #    a = [ "q", "r", "s", "t" ]
 #    a.first     #=> "q"
 #    a.first(2)  #=> ["q", "r"]
-def first(*args); end
+def first; end
+
+##
+# Returns the first element, or the first +n+ elements, of the array.
+# If the array is empty, the first form returns <code>nil</code>, and the
+# second form returns an empty array.
+# 
+#    a = [ "q", "r", "s", "t" ]
+#    a.first     #=> "q"
+#    a.first(2)  #=> ["q", "r"]
+def first(n); end
 
 ##
 # Returns the last element(s) of +self+. If the array is empty,
@@ -14696,13 +25048,22 @@ def first(*args); end
 #    a = [ "w", "x", "y", "z" ]
 #    a.last     #=> "z"
 #    a.last(2)  #=> ["y", "z"]
-def last(*args); end
+def last; end
+
+##
+# Returns the last element(s) of +self+. If the array is empty,
+# the first form returns <code>nil</code>.
+# 
+#    a = [ "w", "x", "y", "z" ]
+#    a.last     #=> "z"
+#    a.last(2)  #=> ["y", "z"]
+def last(n); end
 
 ##
 # Appends the elements of <i>other_ary</i> to +self+.
 # 
 #    [ "a", "b" ].concat( ["c", "d"] ) #=> [ "a", "b", "c", "d" ]
-def concat(p1); end
+def concat(other_ary); end
 
 ##
 # Append---Pushes the given object on to the end of this array. This
@@ -14711,7 +25072,7 @@ def concat(p1); end
 # 
 #    [ 1, 2 ] << "c" << "d" << [ 3, 4 ]
 #            #=>  [ 1, 2, "c", "d", [ 3, 4 ] ]
-def <<(p1); end
+def <<; end
 
 ##
 # Append---Pushes the given object(s) on to the end of this array. This
@@ -14721,7 +25082,7 @@ def <<(p1); end
 #    a = [ "a", "b", "c" ]
 #    a.push("d", "e", "f")
 #            #=> ["a", "b", "c", "d", "e", "f"]
-def push(*args); end
+def push(obj, *more ); end
 
 ##
 # Removes the last element from +self+ and returns it, or
@@ -14734,7 +25095,20 @@ def push(*args); end
 #    a.pop     #=> "d"
 #    a.pop(2)  #=> ["b", "c"]
 #    a         #=> ["a"]
-def pop(*args); end
+def pop; end
+
+##
+# Removes the last element from +self+ and returns it, or
+# <code>nil</code> if the array is empty.
+# 
+# If a number _n_ is given, returns an array of the last n elements
+# (or less) just like <code>array.slice!(-n, n)</code> does.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.pop     #=> "d"
+#    a.pop(2)  #=> ["b", "c"]
+#    a         #=> ["a"]
+def pop(n); end
 
 ##
 # Returns the first element of +self+ and removes it (shifting all
@@ -14751,7 +25125,24 @@ def pop(*args); end
 #    args = [ "-m", "-q", "filename" ]
 #    args.shift(2)  #=> ["-m", "-q"]
 #    args           #=> ["filename"]
-def shift(*args); end
+def shift; end
+
+##
+# Returns the first element of +self+ and removes it (shifting all
+# other elements down by one). Returns <code>nil</code> if the array
+# is empty.
+# 
+# If a number _n_ is given, returns an array of the first n elements
+# (or less) just like <code>array.slice!(0, n)</code> does.
+# 
+#    args = [ "-m", "-q", "filename" ]
+#    args.shift     #=> "-m"
+#    args           #=> ["-q", "filename"]
+# 
+#    args = [ "-m", "-q", "filename" ]
+#    args.shift(2)  #=> ["-m", "-q"]
+#    args           #=> ["filename"]
+def shift(n); end
 
 ##
 # Prepends objects to the front of +self+,
@@ -14760,7 +25151,7 @@ def shift(*args); end
 #    a = [ "b", "c", "d" ]
 #    a.unshift("a")   #=> ["a", "b", "c", "d"]
 #    a.unshift(1, 2)  #=> [ 1, 2, "a", "b", "c", "d"]
-def unshift(*args); end
+def unshift(obj, *more); end
 
 ##
 # Inserts the given values before the element with the given index
@@ -14769,7 +25160,7 @@ def unshift(*args); end
 #    a = %w{ a b c d }
 #    a.insert(2, 99)         #=> ["a", "b", 99, "c", "d"]
 #    a.insert(-2, 1, 2, 3)   #=> ["a", "b", 99, "c", 1, 2, 3, "d"]
-def insert(*args); end
+def insert(index, obj*more); end
 
 ##
 # Calls <i>block</i> once for each element in +self+, passing that
@@ -14783,7 +25174,21 @@ def insert(*args); end
 # produces:
 # 
 #    a -- b -- c --
-def each(); end
+def each(&block); end
+
+##
+# Calls <i>block</i> once for each element in +self+, passing that
+# element as a parameter.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.each {|x| print x, " -- " }
+# 
+# produces:
+# 
+#    a -- b -- c --
+def each; end
 
 ##
 # Same as <code>Array#each</code>, but passes the index of the element
@@ -14797,7 +25202,21 @@ def each(); end
 # produces:
 # 
 #    0 -- 1 -- 2 --
-def each_index(); end
+def each_index(&block); end
+
+##
+# Same as <code>Array#each</code>, but passes the index of the element
+# instead of the element itself.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.each_index {|x| print x, " -- " }
+# 
+# produces:
+# 
+#    0 -- 1 -- 2 --
+def each_index; end
 
 ##
 # Same as <code>Array#each</code>, but traverses +self+ in reverse
@@ -14809,19 +25228,31 @@ def each_index(); end
 # produces:
 # 
 #    c b a
-def reverse_each(); end
+def reverse_each(&block); end
+
+##
+# Same as <code>Array#each</code>, but traverses +self+ in reverse
+# order.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.reverse_each {|x| print x, " " }
+# 
+# produces:
+# 
+#    c b a
+def reverse_each; end
 
 ##
 # Returns the number of elements in +self+. May be zero.
 # 
 #    [ 1, 2, 3, 4, 5 ].length   #=> 5
-def length(); end
+def length; end
 
 ##
 # Returns <code>true</code> if +self+ contains no elements.
 # 
 #    [].empty?   #=> true
-def empty?(); end
+def empty?; end
 
 ##
 # Returns the index of the first object in +self+ such that the object is
@@ -14838,7 +25269,7 @@ def empty?(); end
 #    a.index{|x|x=="b"}  #=> 1
 # 
 # This is an alias of <code>#find_index</code>.
-def find_index(p1); end
+def index(obj); end
 
 ##
 # Returns the index of the first object in +self+ such that the object is
@@ -14855,7 +25286,75 @@ def find_index(p1); end
 #    a.index{|x|x=="b"}  #=> 1
 # 
 # This is an alias of <code>#find_index</code>.
-def index(p1); end
+def index(&block); end
+
+##
+# Returns the index of the first object in +self+ such that the object is
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is true.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#rindex</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.index("b")        #=> 1
+#    a.index("z")        #=> nil
+#    a.index{|x|x=="b"}  #=> 1
+# 
+# This is an alias of <code>#find_index</code>.
+def index; end
+
+##
+# Returns the index of the first object in +self+ such that the object is
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is true.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#rindex</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.index("b")        #=> 1
+#    a.index("z")        #=> nil
+#    a.index{|x|x=="b"}  #=> 1
+# 
+# This is an alias of <code>#find_index</code>.
+def index(obj); end
+
+##
+# Returns the index of the first object in +self+ such that the object is
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is true.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#rindex</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.index("b")        #=> 1
+#    a.index("z")        #=> nil
+#    a.index{|x|x=="b"}  #=> 1
+# 
+# This is an alias of <code>#find_index</code>.
+def index(&block); end
+
+##
+# Returns the index of the first object in +self+ such that the object is
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is true.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#rindex</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.index("b")        #=> 1
+#    a.index("z")        #=> nil
+#    a.index{|x|x=="b"}  #=> 1
+# 
+# This is an alias of <code>#find_index</code>.
+def index; end
 
 ##
 # Returns the index of the last object in +self+
@@ -14871,7 +25370,39 @@ def index(p1); end
 #    a.rindex("b")        #=> 3
 #    a.rindex("z")        #=> nil
 #    a.rindex{|x|x=="b"}  #=> 3
-def rindex(p1); end
+def rindex(obj); end
+
+##
+# Returns the index of the last object in +self+
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is
+# true, starting from the last object.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#index</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "b", "b", "c" ]
+#    a.rindex("b")        #=> 3
+#    a.rindex("z")        #=> nil
+#    a.rindex{|x|x=="b"}  #=> 3
+def rindex(&block); end
+
+##
+# Returns the index of the last object in +self+
+# <code>==</code> to <i>obj</i>. If a block is given instead of an
+# argument, returns index of first object for which <em>block</em> is
+# true, starting from the last object.
+# Returns <code>nil</code> if no match is found.
+# See also <code>Array#index</code>.
+# 
+# If neither block nor argument is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "b", "b", "c" ]
+#    a.rindex("b")        #=> 3
+#    a.rindex("z")        #=> nil
+#    a.rindex{|x|x=="b"}  #=> 3
+def rindex; end
 
 ##
 # Returns a string created by converting each element of the array to
@@ -14879,14 +25410,14 @@ def rindex(p1); end
 # 
 #    [ "a", "b", "c" ].join        #=> "abc"
 #    [ "a", "b", "c" ].join("-")   #=> "a-b-c"
-def join(p1=0); end
+def join(sep=$,); end
 
 ##
 # Returns a new array containing +self+'s elements in reverse order.
 # 
 #    [ "a", "b", "c" ].reverse   #=> ["c", "b", "a"]
 #    [ 1 ].reverse               #=> [1]
-def reverse(); end
+def reverse; end
 
 ##
 # Reverses +self+ in place.
@@ -14894,7 +25425,7 @@ def reverse(); end
 #    a = [ "a", "b", "c" ]
 #    a.reverse!       #=> ["c", "b", "a"]
 #    a                #=> ["c", "b", "a"]
-def reverse!(); end
+def reverse!; end
 
 ##
 # Returns new array by rotating +self+ so that the element at
@@ -14906,7 +25437,7 @@ def reverse!(); end
 #    a                #=> ["a", "b", "c", "d"]
 #    a.rotate(2)      #=> ["c", "d", "a", "b"]
 #    a.rotate(-3)     #=> ["b", "c", "d", "a"]
-def rotate(p1=0); end
+def rotate(cnt=1); end
 
 ##
 # Rotates +self+ in place so that the element at +cnt+ comes first,
@@ -14918,7 +25449,7 @@ def rotate(p1=0); end
 #    a                #=> ["b", "c", "d", "a"]
 #    a.rotate!(2)     #=> ["d", "a", "b", "c"]
 #    a.rotate!(-3)    #=> ["a", "b", "c", "d"]
-def rotate!(p1=0); end
+def rotate!(cnt=1); end
 
 ##
 # Returns a new array created by sorting +self+. Comparisons for
@@ -14930,7 +25461,19 @@ def rotate!(p1=0); end
 #    a = [ "d", "a", "e", "c", "b" ]
 #    a.sort                    #=> ["a", "b", "c", "d", "e"]
 #    a.sort {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
-def sort(); end
+def sort; end
+
+##
+# Returns a new array created by sorting +self+. Comparisons for
+# the sort will be done using the <code><=></code> operator or using
+# an optional code block. The block implements a comparison between
+# <i>a</i> and <i>b</i>, returning -1, 0, or +1. See also
+# <code>Enumerable#sort_by</code>.
+# 
+#    a = [ "d", "a", "e", "c", "b" ]
+#    a.sort                    #=> ["a", "b", "c", "d", "e"]
+#    a.sort {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
+def sort(&block); end
 
 ##
 # Sorts +self+. Comparisons for
@@ -14942,14 +25485,33 @@ def sort(); end
 #    a = [ "d", "a", "e", "c", "b" ]
 #    a.sort!                    #=> ["a", "b", "c", "d", "e"]
 #    a.sort! {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
-def sort!(); end
+def sort!; end
+
+##
+# Sorts +self+. Comparisons for
+# the sort will be done using the <code><=></code> operator or using
+# an optional code block. The block implements a comparison between
+# <i>a</i> and <i>b</i>, returning -1, 0, or +1. See also
+# <code>Enumerable#sort_by</code>.
+# 
+#    a = [ "d", "a", "e", "c", "b" ]
+#    a.sort!                    #=> ["a", "b", "c", "d", "e"]
+#    a.sort! {|x,y| y <=> x }   #=> ["e", "d", "c", "b", "a"]
+def sort!(&block); end
 
 ##
 # Sorts +self+ in place using a set of keys generated by mapping the
 # values in +self+ through the given block.
 # 
 # If no block is given, an enumerator is returned instead.
-def sort_by!(); end
+def sort_by!(&block); end
+
+##
+# Sorts +self+ in place using a set of keys generated by mapping the
+# values in +self+ through the given block.
+# 
+# If no block is given, an enumerator is returned instead.
+def sort_by!; end
 
 ##
 # Invokes <i>block</i> once for each element of +self+. Creates a
@@ -14961,19 +25523,7 @@ def sort_by!(); end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
 #    a                          #=> ["a", "b", "c", "d"]
-def collect(); end
-
-##
-# Invokes the block once for each element of +self+, replacing the
-# element with the value returned by _block_.
-# See also <code>Enumerable#collect</code>.
-# 
-# If no block is given, an enumerator is returned instead.
-# 
-#    a = [ "a", "b", "c", "d" ]
-#    a.collect! {|x| x + "!" }
-#    a             #=>  [ "a!", "b!", "c!", "d!" ]
-def collect!(); end
+def collect(&block); end
 
 ##
 # Invokes <i>block</i> once for each element of +self+. Creates a
@@ -14985,7 +25535,31 @@ def collect!(); end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
 #    a                          #=> ["a", "b", "c", "d"]
-def map(); end
+def map(&block); end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def collect; end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def map; end
 
 ##
 # Invokes the block once for each element of +self+, replacing the
@@ -14997,7 +25571,139 @@ def map(); end
 #    a = [ "a", "b", "c", "d" ]
 #    a.collect! {|x| x + "!" }
 #    a             #=>  [ "a!", "b!", "c!", "d!" ]
-def map!(); end
+def collect!(&block); end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def map!(&block); end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def collect; end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def map; end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def collect(&block); end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def map(&block); end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def collect; end
+
+##
+# Invokes <i>block</i> once for each element of +self+. Creates a
+# new array containing the values returned by the block.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect {|x| x + "!" }   #=> ["a!", "b!", "c!", "d!"]
+#    a                          #=> ["a", "b", "c", "d"]
+def map; end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def collect!(&block); end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def map!(&block); end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def collect; end
+
+##
+# Invokes the block once for each element of +self+, replacing the
+# element with the value returned by _block_.
+# See also <code>Enumerable#collect</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.collect! {|x| x + "!" }
+#    a             #=>  [ "a!", "b!", "c!", "d!" ]
+def map; end
 
 ##
 # Invokes the block passing in successive elements from +self+,
@@ -15008,7 +25714,18 @@ def map!(); end
 # 
 #    a = %w{ a b c d e f }
 #    a.select {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
-def select(); end
+def select(&block); end
+
+##
+# Invokes the block passing in successive elements from +self+,
+# returning an array containing those elements for which the block
+# returns a true value (equivalent to <code>Enumerable#select</code>).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = %w{ a b c d e f }
+#    a.select {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
+def select; end
 
 ##
 # Invokes the block passing in successive elements from
@@ -15018,7 +25735,17 @@ def select(); end
 # See also <code>Array#keep_if</code>
 # 
 # If no block is given, an enumerator is returned instead.
-def select!(); end
+def select!(&block); end
+
+##
+# Invokes the block passing in successive elements from
+# +self+, deleting elements for which the block returns a
+# false value. It returns +self+ if changes were made,
+# otherwise it returns <code>nil</code>.
+# See also <code>Array#keep_if</code>
+# 
+# If no block is given, an enumerator is returned instead.
+def select!; end
 
 ##
 # Deletes every element of +self+ for which <i>block</i> evaluates
@@ -15029,7 +25756,18 @@ def select!(); end
 # 
 #    a = %w{ a b c d e f }
 #    a.keep_if {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
-def keep_if(); end
+def keep_if(&block); end
+
+##
+# Deletes every element of +self+ for which <i>block</i> evaluates
+# to false.
+# See also <code>Array#select!</code>
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = %w{ a b c d e f }
+#    a.keep_if {|v| v =~ /[aeiou]/}   #=> ["a", "e"]
+def keep_if; end
 
 ##
 # Returns an array containing the elements in
@@ -15042,7 +25780,7 @@ def keep_if(); end
 #    a.values_at(1, 3, 5, 7)
 #    a.values_at(-1, -3, -5, -7)
 #    a.values_at(1..3, 2...5)
-def values_at(*args); end
+def values_at(selector,*more ); end
 
 ##
 # Deletes items from +self+ that are equal to <i>obj</i>.
@@ -15057,7 +25795,22 @@ def values_at(*args); end
 #    a                               #=> ["a", "c"]
 #    a.delete("z")                   #=> nil
 #    a.delete("z") { "not found" }   #=> "not found"
-def delete(p1); end
+def delete(obj); end
+
+##
+# Deletes items from +self+ that are equal to <i>obj</i>.
+# If any items are found, returns <i>obj</i>.   If
+# the item is not found, returns <code>nil</code>. If the optional
+# code block is given, returns the result of <i>block</i> if the item
+# is not found.  (To remove <code>nil</code> elements and
+# get an informative return value, use #compact!)
+# 
+#    a = [ "a", "b", "b", "b", "c" ]
+#    a.delete("b")                   #=> "b"
+#    a                               #=> ["a", "c"]
+#    a.delete("z")                   #=> nil
+#    a.delete("z") { "not found" }   #=> "not found"
+def delete(obj, &block); end
 
 ##
 # Deletes the element at the specified index, returning that element,
@@ -15068,7 +25821,7 @@ def delete(p1); end
 #    a.delete_at(2)    #=> "cat"
 #    a                 #=> ["ant", "bat", "dog"]
 #    a.delete_at(99)   #=> nil
-def delete_at(p1); end
+def delete_at(index); end
 
 ##
 # Deletes every element of +self+ for which <i>block</i> evaluates
@@ -15081,7 +25834,20 @@ def delete_at(p1); end
 # 
 #    a = [ "a", "b", "c" ]
 #    a.delete_if {|x| x >= "b" }   #=> ["a"]
-def delete_if(); end
+def delete_if(&block); end
+
+##
+# Deletes every element of +self+ for which <i>block</i> evaluates
+# to true.
+# The array is changed instantly every time the block is called and
+# not after the iteration is over.
+# See also <code>Array#reject!</code>
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.delete_if {|x| x >= "b" }   #=> ["a"]
+def delete_if; end
 
 ##
 # Returns a new array containing the items in +self+
@@ -15089,7 +25855,15 @@ def delete_if(); end
 # See also <code>Array#delete_if</code>
 # 
 # If no block is given, an enumerator is returned instead.
-def reject(); end
+def reject(&block); end
+
+##
+# Returns a new array containing the items in +self+
+# for which the block is not true.
+# See also <code>Array#delete_if</code>
+# 
+# If no block is given, an enumerator is returned instead.
+def reject; end
 
 ##
 # Equivalent to <code>Array#delete_if</code>, deleting elements from
@@ -15100,7 +25874,18 @@ def reject(); end
 # See also <code>Enumerable#reject</code> and <code>Array#delete_if</code>.
 # 
 # If no block is given, an enumerator is returned instead.
-def reject!(); end
+def reject!(&block); end
+
+##
+# Equivalent to <code>Array#delete_if</code>, deleting elements from
+# +self+ for which the block evaluates to true, but returns
+# <code>nil</code> if no changes were made.
+# The array is changed instantly every time the block is called and
+# not after the iteration is over.
+# See also <code>Enumerable#reject</code> and <code>Array#delete_if</code>.
+# 
+# If no block is given, an enumerator is returned instead.
+def reject!; end
 
 ##
 # Converts any arguments to arrays, then merges elements of
@@ -15117,7 +25902,24 @@ def reject!(); end
 #    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 #    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
 #    a.zip([1,2],[8])       #=> [[4,1,8], [5,2,nil], [6,nil,nil]]
-def zip(*args); end
+def zip(arg, *more); end
+
+##
+# Converts any arguments to arrays, then merges elements of
+# +self+ with corresponding elements from each argument. This
+# generates a sequence of <code>self.size</code> <em>n</em>-element
+# arrays, where <em>n</em> is one more that the count of arguments. If
+# the size of any argument is less than <code>enumObj.size</code>,
+# <code>nil</code> values are supplied. If a block is given, it is
+# invoked for each output array, otherwise an array of arrays is
+# returned.
+# 
+#    a = [ 4, 5, 6 ]
+#    b = [ 7, 8, 9 ]
+#    [1,2,3].zip(a, b)      #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+#    [1,2].zip(a,b)         #=> [[1, 4, 7], [2, 5, 8]]
+#    a.zip([1,2],[8])       #=> [[4,1,8], [5,2,nil], [6,nil,nil]]
+def zip(arg, *more, &block); end
 
 ##
 # Assumes that +self+ is an array of arrays and transposes the
@@ -15125,7 +25927,7 @@ def zip(*args); end
 # 
 #    a = [[1,2], [3,4], [5,6]]
 #    a.transpose   #=> [[1, 3, 5], [2, 4, 6]]
-def transpose(); end
+def transpose; end
 
 ##
 # Replaces the contents of +self+ with the contents of
@@ -15134,14 +25936,14 @@ def transpose(); end
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.replace([ "x", "y", "z" ])   #=> ["x", "y", "z"]
 #    a                              #=> ["x", "y", "z"]
-def replace(p1); end
+def replace(other_ary); end
 
 ##
 # Removes all elements from +self+.
 # 
 #    a = [ "a", "b", "c", "d", "e" ]
 #    a.clear    #=> [ ]
-def clear(); end
+def clear; end
 
 ##
 # The first three forms set the selected elements of +self+ (which
@@ -15158,7 +25960,92 @@ def clear(); end
 #    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
 #    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
 #    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
-def fill(p1=0, p2=0); end
+def fill(obj); end
+
+##
+# The first three forms set the selected elements of +self+ (which
+# may be the entire array) to <i>obj</i>. A <i>start</i> of
+# <code>nil</code> is equivalent to zero. A <i>length</i> of
+# <code>nil</code> is equivalent to <i>self.length</i>. The last three
+# forms fill the array with the value of the block. The block is
+# passed the absolute index of each element to be filled.
+# Negative values of <i>start</i> count from the end of the array.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.fill("x")              #=> ["x", "x", "x", "x"]
+#    a.fill("z", 2, 2)        #=> ["x", "x", "z", "z"]
+#    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
+#    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
+#    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
+def fill(obj, start , length=0); end
+
+##
+# The first three forms set the selected elements of +self+ (which
+# may be the entire array) to <i>obj</i>. A <i>start</i> of
+# <code>nil</code> is equivalent to zero. A <i>length</i> of
+# <code>nil</code> is equivalent to <i>self.length</i>. The last three
+# forms fill the array with the value of the block. The block is
+# passed the absolute index of each element to be filled.
+# Negative values of <i>start</i> count from the end of the array.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.fill("x")              #=> ["x", "x", "x", "x"]
+#    a.fill("z", 2, 2)        #=> ["x", "x", "z", "z"]
+#    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
+#    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
+#    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
+def fill(obj, range ); end
+
+##
+# The first three forms set the selected elements of +self+ (which
+# may be the entire array) to <i>obj</i>. A <i>start</i> of
+# <code>nil</code> is equivalent to zero. A <i>length</i> of
+# <code>nil</code> is equivalent to <i>self.length</i>. The last three
+# forms fill the array with the value of the block. The block is
+# passed the absolute index of each element to be filled.
+# Negative values of <i>start</i> count from the end of the array.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.fill("x")              #=> ["x", "x", "x", "x"]
+#    a.fill("z", 2, 2)        #=> ["x", "x", "z", "z"]
+#    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
+#    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
+#    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
+def fill(&block); end
+
+##
+# The first three forms set the selected elements of +self+ (which
+# may be the entire array) to <i>obj</i>. A <i>start</i> of
+# <code>nil</code> is equivalent to zero. A <i>length</i> of
+# <code>nil</code> is equivalent to <i>self.length</i>. The last three
+# forms fill the array with the value of the block. The block is
+# passed the absolute index of each element to be filled.
+# Negative values of <i>start</i> count from the end of the array.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.fill("x")              #=> ["x", "x", "x", "x"]
+#    a.fill("z", 2, 2)        #=> ["x", "x", "z", "z"]
+#    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
+#    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
+#    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
+def fill(start  , length=0, &block); end
+
+##
+# The first three forms set the selected elements of +self+ (which
+# may be the entire array) to <i>obj</i>. A <i>start</i> of
+# <code>nil</code> is equivalent to zero. A <i>length</i> of
+# <code>nil</code> is equivalent to <i>self.length</i>. The last three
+# forms fill the array with the value of the block. The block is
+# passed the absolute index of each element to be filled.
+# Negative values of <i>start</i> count from the end of the array.
+# 
+#    a = [ "a", "b", "c", "d" ]
+#    a.fill("x")              #=> ["x", "x", "x", "x"]
+#    a.fill("z", 2, 2)        #=> ["x", "x", "z", "z"]
+#    a.fill("y", 0..1)        #=> ["y", "y", "z", "z"]
+#    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
+#    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
+def fill(range, &block); end
 
 ##
 # Returns <code>true</code> if the given object is present in
@@ -15168,7 +26055,7 @@ def fill(p1=0, p2=0); end
 #    a = [ "a", "b", "c" ]
 #    a.include?("b")   #=> true
 #    a.include?("z")   #=> false
-def include?(p1); end
+def include?(obj); end
 
 ##
 # Comparison---Returns an integer (-1, 0,
@@ -15184,7 +26071,7 @@ def include?(p1); end
 # 
 #    [ "a", "a", "c" ]    <=> [ "a", "b", "c" ]   #=> -1
 #    [ 1, 2, 3, 4, 5, 6 ] <=> [ 1, 2 ]            #=> +1
-def <=>(p1); end
+def <=>; end
 
 ##
 # Element Reference---Returns the element at _index_,
@@ -15207,7 +26094,122 @@ def <=>(p1); end
 #    a[5]                   #=> nil
 #    a[5, 1]                #=> []
 #    a[5..10]               #=> []
-def slice(p1, p2=0); end
+def slice; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice; end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(index); end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(start, length); end
+
+##
+# Element Reference---Returns the element at _index_,
+# or returns a subarray starting at _start_ and
+# continuing for _length_ elements, or returns a subarray
+# specified by _range_.
+# Negative indices count backward from the end of the
+# array (-1 is the last element). Returns +nil+ if the index
+# (or starting index) are out of range.
+# 
+#    a = [ "a", "b", "c", "d", "e" ]
+#    a[2] +  a[0] + a[1]    #=> "cab"
+#    a[6]                   #=> nil
+#    a[1, 2]                #=> [ "b", "c" ]
+#    a[1..3]                #=> [ "b", "c", "d" ]
+#    a[4..7]                #=> [ "e" ]
+#    a[6..10]               #=> nil
+#    a[-3, 3]               #=> [ "c", "d", "e" ]
+#    # special cases
+#    a[5]                   #=> nil
+#    a[5, 1]                #=> []
+#    a[5..10]               #=> []
+def slice(range); end
 
 ##
 # Deletes the element(s) given by an index (optionally with a length)
@@ -15221,7 +26223,35 @@ def slice(p1, p2=0); end
 #    a               #=> ["a"]
 #    a.slice!(100)   #=> nil
 #    a               #=> ["a"]
-def slice!(p1, p2=0); end
+def slice!(index); end
+
+##
+# Deletes the element(s) given by an index (optionally with a length)
+# or by a range. Returns the deleted object (or objects), or
+# <code>nil</code> if the index is out of range.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.slice!(1)     #=> "b"
+#    a               #=> ["a", "c"]
+#    a.slice!(-1)    #=> "c"
+#    a               #=> ["a"]
+#    a.slice!(100)   #=> nil
+#    a               #=> ["a"]
+def slice!(start, length); end
+
+##
+# Deletes the element(s) given by an index (optionally with a length)
+# or by a range. Returns the deleted object (or objects), or
+# <code>nil</code> if the index is out of range.
+# 
+#    a = [ "a", "b", "c" ]
+#    a.slice!(1)     #=> "b"
+#    a               #=> ["a", "c"]
+#    a.slice!(-1)    #=> "c"
+#    a               #=> ["a"]
+#    a.slice!(100)   #=> nil
+#    a               #=> ["a"]
+def slice!(range); end
 
 ##
 # Searches through an array whose elements are also arrays
@@ -15238,7 +26268,7 @@ def slice!(p1, p2=0); end
 #    a  = [ s1, s2, s3 ]
 #    a.assoc("letters")  #=> [ "letters", "a", "b", "c" ]
 #    a.assoc("foo")      #=> nil
-def assoc(p1); end
+def assoc(obj); end
 
 ##
 # Searches through the array whose elements are also arrays. Compares
@@ -15249,14 +26279,14 @@ def assoc(p1); end
 #    a = [ [ 1, "one"], [2, "two"], [3, "three"], ["ii", "two"] ]
 #    a.rassoc("two")    #=> [2, "two"]
 #    a.rassoc("four")   #=> nil
-def rassoc(p1); end
+def rassoc(obj); end
 
 ##
 # Concatenation---Returns a new array built by concatenating the
 # two arrays together to produce a third array.
 # 
 #    [ 1, 2, 3 ] + [ 4, 5 ]    #=> [ 1, 2, 3, 4, 5 ]
-def +(p1); end
+def +; end
 
 ##
 # Repetition---With a String argument, equivalent to
@@ -15265,7 +26295,16 @@ def +(p1); end
 # 
 #    [ 1, 2, 3 ] * 3    #=> [ 1, 2, 3, 1, 2, 3, 1, 2, 3 ]
 #    [ 1, 2, 3 ] * ","  #=> "1,2,3"
-def *(p1); end
+def *; end
+
+##
+# Repetition---With a String argument, equivalent to
+# self.join(str). Otherwise, returns a new array
+# built by concatenating the _int_ copies of +self+.
+# 
+#    [ 1, 2, 3 ] * 3    #=> [ 1, 2, 3, 1, 2, 3, 1, 2, 3 ]
+#    [ 1, 2, 3 ] * ","  #=> "1,2,3"
+def *; end
 
 ##
 # Array Difference---Returns a new array that is a copy of
@@ -15274,14 +26313,14 @@ def *(p1); end
 # library class Set.)
 # 
 #    [ 1, 1, 2, 2, 3, 3, 4, 5 ] - [ 1, 2, 4 ]  #=>  [ 3, 3, 5 ]
-def -(p1); end
+def -; end
 
 ##
 # Set Intersection---Returns a new array
 # containing elements common to the two arrays, with no duplicates.
 # 
 #    [ 1, 1, 3, 5 ] & [ 1, 2, 3 ]   #=> [ 1, 3 ]
-def &(p1); end
+def &; end
 
 ##
 # Set Union---Returns a new array by joining this array with
@@ -15289,7 +26328,7 @@ def &(p1); end
 # 
 #    [ "a", "b", "c" ] | [ "c", "d", "a" ]
 #           #=> [ "a", "b", "c", "d" ]
-def |(p1); end
+def |; end
 
 ##
 # Returns a new array by removing duplicate values in +self+.
@@ -15298,7 +26337,7 @@ def |(p1); end
 #    a.uniq   #=> ["a", "b", "c"]
 #    c = [ "a:def", "a:xyz", "b:abc", "b:xyz", "c:jkl" ]
 #    c.uniq {|s| s[/^\w+/]}  #=> [ "a:def", "b:abc", "c:jkl" ]
-def uniq(); end
+def uniq; end
 
 ##
 # Removes duplicate elements from +self+.
@@ -15311,14 +26350,14 @@ def uniq(); end
 #    b.uniq!   #=> nil
 #    c = [ "a:def", "a:xyz", "b:abc", "b:xyz", "c:jkl" ]
 #    c.uniq! {|s| s[/^\w+/]}  #=> [ "a:def", "b:abc", "c:jkl" ]
-def uniq!(); end
+def uniq!; end
 
 ##
 # Returns a copy of +self+ with all +nil+ elements removed.
 # 
 #    [ "a", nil, "b", nil, "c", nil ].compact
 #                      #=> [ "a", "b", "c" ]
-def compact(); end
+def compact; end
 
 ##
 # Removes +nil+ elements from the array.
@@ -15327,7 +26366,7 @@ def compact(); end
 # 
 #    [ "a", nil, "b", nil, "c" ].compact! #=> [ "a", "b", "c" ]
 #    [ "a", "b", "c" ].compact!           #=> nil
-def compact!(); end
+def compact!; end
 
 ##
 # Returns a new array that is a one-dimensional flattening of this
@@ -15341,7 +26380,21 @@ def compact!(); end
 #    a.flatten                 #=> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 #    a = [ 1, 2, [3, [4, 5] ] ]
 #    a.flatten(1)              #=> [1, 2, 3, [4, 5]]
-def flatten(p1=0); end
+def flatten; end
+
+##
+# Returns a new array that is a one-dimensional flattening of this
+# array (recursively). That is, for every element that is an array,
+# extract its elements into the new array.  If the optional
+# <i>level</i> argument determines the level of recursion to flatten.
+# 
+#    s = [ 1, 2, 3 ]           #=> [1, 2, 3]
+#    t = [ 4, 5, 6, [7, 8] ]   #=> [4, 5, 6, [7, 8]]
+#    a = [ s, t, 9, 10 ]       #=> [[1, 2, 3], [4, 5, 6, [7, 8]], 9, 10]
+#    a.flatten                 #=> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+#    a = [ 1, 2, [3, [4, 5] ] ]
+#    a.flatten(1)              #=> [1, 2, 3, [4, 5]]
+def flatten(level); end
 
 ##
 # Flattens +self+ in place.
@@ -15355,7 +26408,21 @@ def flatten(p1=0); end
 #    a            #=> [1, 2, 3, 4, 5]
 #    a = [ 1, 2, [3, [4, 5] ] ]
 #    a.flatten!(1) #=> [1, 2, 3, [4, 5]]
-def flatten!(p1=0); end
+def flatten!; end
+
+##
+# Flattens +self+ in place.
+# Returns <code>nil</code> if no modifications were made (i.e.,
+# <i>ary</i> contains no subarrays.)  If the optional <i>level</i>
+# argument determines the level of recursion to flatten.
+# 
+#    a = [ 1, 2, [3, [4, 5] ] ]
+#    a.flatten!   #=> [1, 2, 3, 4, 5]
+#    a.flatten!   #=> nil
+#    a            #=> [1, 2, 3, 4, 5]
+#    a = [ 1, 2, [3, [4, 5] ] ]
+#    a.flatten!(1) #=> [1, 2, 3, [4, 5]]
+def flatten!(level); end
 
 ##
 # Returns the number of elements.  If an argument is given, counts
@@ -15366,12 +26433,39 @@ def flatten!(p1=0); end
 #    ary.count             #=> 4
 #    ary.count(2)          #=> 2
 #    ary.count{|x|x%2==0}  #=> 3
-def count(p1); end
+def count; end
+
+##
+# Returns the number of elements.  If an argument is given, counts
+# the number of elements which equals to <i>obj</i>.  If a block is
+# given, counts the number of elements yielding a true value.
+# 
+#    ary = [1, 2, 4, 2]
+#    ary.count             #=> 4
+#    ary.count(2)          #=> 2
+#    ary.count{|x|x%2==0}  #=> 3
+def count(obj); end
+
+##
+# Returns the number of elements.  If an argument is given, counts
+# the number of elements which equals to <i>obj</i>.  If a block is
+# given, counts the number of elements yielding a true value.
+# 
+#    ary = [1, 2, 4, 2]
+#    ary.count             #=> 4
+#    ary.count(2)          #=> 2
+#    ary.count{|x|x%2==0}  #=> 3
+def count(&block); end
 
 ##
 # Shuffles elements in +self+ in place.
 # If +rng+ is given, it will be used as the random number generator.
-def shuffle!(*args); end
+def shuffle!; end
+
+##
+# Shuffles elements in +self+ in place.
+# If +rng+ is given, it will be used as the random number generator.
+def shuffle!(random: rng); end
 
 ##
 # Returns a new array with elements of this array shuffled.
@@ -15382,7 +26476,18 @@ def shuffle!(*args); end
 # If +rng+ is given, it will be used as the random number generator.
 # 
 #    a.shuffle(random: Random.new(1))  #=> [1, 3, 2]
-def shuffle(*args); end
+def shuffle; end
+
+##
+# Returns a new array with elements of this array shuffled.
+# 
+#    a = [ 1, 2, 3 ]           #=> [1, 2, 3]
+#    a.shuffle                 #=> [2, 3, 1]
+# 
+# If +rng+ is given, it will be used as the random number generator.
+# 
+#    a.shuffle(random: Random.new(1))  #=> [1, 3, 2]
+def shuffle(random: rng); end
 
 ##
 # Choose a random element or +n+ random elements from the array. The elements
@@ -15392,7 +26497,37 @@ def shuffle(*args); end
 # <code>nil</code> and the second form returns an empty array.
 # 
 # If +rng+ is given, it will be used as the random number generator.
-def sample(p1); end
+def sample; end
+
+##
+# Choose a random element or +n+ random elements from the array. The elements
+# are chosen by using random and unique indices into the array in order to
+# ensure that an element doesn't repeat itself unless the array already
+# contained duplicate elements. If the array is empty the first form returns
+# <code>nil</code> and the second form returns an empty array.
+# 
+# If +rng+ is given, it will be used as the random number generator.
+def sample(random: rng); end
+
+##
+# Choose a random element or +n+ random elements from the array. The elements
+# are chosen by using random and unique indices into the array in order to
+# ensure that an element doesn't repeat itself unless the array already
+# contained duplicate elements. If the array is empty the first form returns
+# <code>nil</code> and the second form returns an empty array.
+# 
+# If +rng+ is given, it will be used as the random number generator.
+def sample(n); end
+
+##
+# Choose a random element or +n+ random elements from the array. The elements
+# are chosen by using random and unique indices into the array in order to
+# ensure that an element doesn't repeat itself unless the array already
+# contained duplicate elements. If the array is empty the first form returns
+# <code>nil</code> and the second form returns an empty array.
+# 
+# If +rng+ is given, it will be used as the random number generator.
+def sample(n, random: rng); end
 
 ##
 # Calls <i>block</i> for each element repeatedly _n_ times or
@@ -15405,7 +26540,20 @@ def sample(p1); end
 #    a = ["a", "b", "c"]
 #    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
 #    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
-def cycle(p1=0); end
+def cycle(n=nil, &block); end
+
+##
+# Calls <i>block</i> for each element repeatedly _n_ times or
+# forever if none or +nil+ is given.  If a non-positive number is
+# given or the array is empty, does nothing.  Returns +nil+ if the
+# loop has finished without getting interrupted.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = ["a", "b", "c"]
+#    a.cycle {|x| puts x }  # print, a, b, c, a, b, c,.. forever.
+#    a.cycle(2) {|x| puts x }  # print, a, b, c, a, b, c.
+def cycle(n=nil); end
 
 ##
 # When invoked with a block, yield all permutations of length <i>n</i>
@@ -15425,7 +26573,67 @@ def cycle(p1=0); end
 #     a.permutation(3).to_a  #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
 #     a.permutation(0).to_a  #=> [[]] # one permutation of length 0
 #     a.permutation(4).to_a  #=> []   # no permutations of length 4
-def permutation(p1=0); end
+def permutation(&block); end
+
+##
+# When invoked with a block, yield all permutations of length <i>n</i>
+# of the elements of <i>ary</i>, then return the array itself.
+# If <i>n</i> is not specified, yield all permutations of all elements.
+# The implementation makes no guarantees about the order in which
+# the permutations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2, 3]
+#     a.permutation.to_a     #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(1).to_a  #=> [[1],[2],[3]]
+#     a.permutation(2).to_a  #=> [[1,2],[1,3],[2,1],[2,3],[3,1],[3,2]]
+#     a.permutation(3).to_a  #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(0).to_a  #=> [[]] # one permutation of length 0
+#     a.permutation(4).to_a  #=> []   # no permutations of length 4
+def permutation; end
+
+##
+# When invoked with a block, yield all permutations of length <i>n</i>
+# of the elements of <i>ary</i>, then return the array itself.
+# If <i>n</i> is not specified, yield all permutations of all elements.
+# The implementation makes no guarantees about the order in which
+# the permutations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2, 3]
+#     a.permutation.to_a     #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(1).to_a  #=> [[1],[2],[3]]
+#     a.permutation(2).to_a  #=> [[1,2],[1,3],[2,1],[2,3],[3,1],[3,2]]
+#     a.permutation(3).to_a  #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(0).to_a  #=> [[]] # one permutation of length 0
+#     a.permutation(4).to_a  #=> []   # no permutations of length 4
+def permutation(n, &block); end
+
+##
+# When invoked with a block, yield all permutations of length <i>n</i>
+# of the elements of <i>ary</i>, then return the array itself.
+# If <i>n</i> is not specified, yield all permutations of all elements.
+# The implementation makes no guarantees about the order in which
+# the permutations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2, 3]
+#     a.permutation.to_a     #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(1).to_a  #=> [[1],[2],[3]]
+#     a.permutation(2).to_a  #=> [[1,2],[1,3],[2,1],[2,3],[3,1],[3,2]]
+#     a.permutation(3).to_a  #=> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+#     a.permutation(0).to_a  #=> [[]] # one permutation of length 0
+#     a.permutation(4).to_a  #=> []   # no permutations of length 4
+def permutation(n); end
 
 ##
 # When invoked with a block, yields all combinations of length <i>n</i>
@@ -15444,7 +26652,26 @@ def permutation(p1=0); end
 #     a.combination(4).to_a  #=> [[1,2,3,4]]
 #     a.combination(0).to_a  #=> [[]] # one combination of length 0
 #     a.combination(5).to_a  #=> []   # no combinations of length 5
-def combination(p1); end
+def combination(n, &block); end
+
+##
+# When invoked with a block, yields all combinations of length <i>n</i>
+# of elements from <i>ary</i> and then returns <i>ary</i> itself.
+# The implementation makes no guarantees about the order in which
+# the combinations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2, 3, 4]
+#     a.combination(1).to_a  #=> [[1],[2],[3],[4]]
+#     a.combination(2).to_a  #=> [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+#     a.combination(3).to_a  #=> [[1,2,3],[1,2,4],[1,3,4],[2,3,4]]
+#     a.combination(4).to_a  #=> [[1,2,3,4]]
+#     a.combination(0).to_a  #=> [[]] # one combination of length 0
+#     a.combination(5).to_a  #=> []   # no combinations of length 5
+def combination(n); end
 
 ##
 # When invoked with a block, yield all repeated permutations of length
@@ -15462,7 +26689,25 @@ def combination(p1); end
 #     a.repeated_permutation(3).to_a  #=> [[1,1,1],[1,1,2],[1,2,1],[1,2,2],
 #                                     #    [2,1,1],[2,1,2],[2,2,1],[2,2,2]]
 #     a.repeated_permutation(0).to_a  #=> [[]] # one permutation of length 0
-def repeated_permutation(p1); end
+def repeated_permutation(n, &block); end
+
+##
+# When invoked with a block, yield all repeated permutations of length
+# <i>n</i> of the elements of <i>ary</i>, then return the array itself.
+# The implementation makes no guarantees about the order in which
+# the repeated permutations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2]
+#     a.repeated_permutation(1).to_a  #=> [[1], [2]]
+#     a.repeated_permutation(2).to_a  #=> [[1,1],[1,2],[2,1],[2,2]]
+#     a.repeated_permutation(3).to_a  #=> [[1,1,1],[1,1,2],[1,2,1],[1,2,2],
+#                                     #    [2,1,1],[2,1,2],[2,2,1],[2,2,2]]
+#     a.repeated_permutation(0).to_a  #=> [[]] # one permutation of length 0
+def repeated_permutation(n); end
 
 ##
 # When invoked with a block, yields all repeated combinations of
@@ -15484,7 +26729,29 @@ def repeated_permutation(p1); end
 #                                     #    [1,1,3,3],[1,2,2,2],[1,2,2,3],[1,2,3,3],[1,3,3,3],
 #                                     #    [2,2,2,2],[2,2,2,3],[2,2,3,3],[2,3,3,3],[3,3,3,3]]
 #     a.repeated_combination(0).to_a  #=> [[]] # one combination of length 0
-def repeated_combination(p1); end
+def repeated_combination(n, &block); end
+
+##
+# When invoked with a block, yields all repeated combinations of
+# length <i>n</i> of elements from <i>ary</i> and then returns
+# <i>ary</i> itself.
+# The implementation makes no guarantees about the order in which
+# the repeated combinations are yielded.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+# Examples:
+# 
+#     a = [1, 2, 3]
+#     a.repeated_combination(1).to_a  #=> [[1], [2], [3]]
+#     a.repeated_combination(2).to_a  #=> [[1,1],[1,2],[1,3],[2,2],[2,3],[3,3]]
+#     a.repeated_combination(3).to_a  #=> [[1,1,1],[1,1,2],[1,1,3],[1,2,2],[1,2,3],
+#                                     #    [1,3,3],[2,2,2],[2,2,3],[2,3,3],[3,3,3]]
+#     a.repeated_combination(4).to_a  #=> [[1,1,1,1],[1,1,1,2],[1,1,1,3],[1,1,2,2],[1,1,2,3],
+#                                     #    [1,1,3,3],[1,2,2,2],[1,2,2,3],[1,2,3,3],[1,3,3,3],
+#                                     #    [2,2,2,2],[2,2,2,3],[2,2,3,3],[2,3,3,3],[3,3,3,3]]
+#     a.repeated_combination(0).to_a  #=> [[]] # one combination of length 0
+def repeated_combination(n); end
 
 ##
 # Returns an array of all combinations of elements from all arrays.
@@ -15499,14 +26766,29 @@ def repeated_combination(p1); end
 #                               #     [2,3,5],[2,3,6],[2,4,5],[2,4,6]]
 #    [1,2].product()            #=> [[1],[2]]
 #    [1,2].product([])          #=> []
-def product(*args); end
+def product(other_ary, *more); end
+
+##
+# Returns an array of all combinations of elements from all arrays.
+# The length of the returned array is the product of the length
+# of +self+ and the argument arrays.
+# If given a block, <i>product</i> will yield all combinations
+# and return +self+ instead.
+# 
+#    [1,2,3].product([4,5])     #=> [[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]]
+#    [1,2].product([1,2])       #=> [[1,1],[1,2],[2,1],[2,2]]
+#    [1,2].product([3,4],[5,6]) #=> [[1,3,5],[1,3,6],[1,4,5],[1,4,6],
+#                               #     [2,3,5],[2,3,6],[2,4,5],[2,4,6]]
+#    [1,2].product()            #=> [[1],[2]]
+#    [1,2].product([])          #=> []
+def product(other_ary, *more, &block); end
 
 ##
 # Returns first n elements from <i>ary</i>.
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take(3)             #=> [1, 2, 3]
-def take(p1); end
+def take(n); end
 
 ##
 # Passes elements to the block until the block returns +nil+ or +false+,
@@ -15516,7 +26798,17 @@ def take(p1); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.take_while {|i| i < 3 }   #=> [1, 2]
-def take_while(); end
+def take_while(&block); end
+
+##
+# Passes elements to the block until the block returns +nil+ or +false+,
+# then stops iterating and returns an array of all prior elements.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [1, 2, 3, 4, 5, 0]
+#    a.take_while {|i| i < 3 }   #=> [1, 2]
+def take_while; end
 
 ##
 # Drops first n elements from +ary+ and returns the rest of
@@ -15524,7 +26816,7 @@ def take_while(); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop(3)             #=> [4, 5, 0]
-def drop(p1); end
+def drop(n); end
 
 ##
 # Drops elements up to, but not including, the first element for
@@ -15535,11 +26827,18 @@ def drop(p1); end
 # 
 #    a = [1, 2, 3, 4, 5, 0]
 #    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
-def drop_while(); end
+def drop_while(&block); end
 
-def to_s(); end
-
-def size(); end
+##
+# Drops elements up to, but not including, the first element for
+# which the block returns +nil+ or +false+ and returns an array
+# containing the remaining elements.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    a = [1, 2, 3, 4, 5, 0]
+#    a.drop_while {|i| i < 3 }   #=> [3, 4, 5, 0]
+def drop_while; end
 
 end
 
@@ -15657,18 +26956,54 @@ end
 #       #-> ObjectSpace.enum_for(:each_object)
 # 
 #   e.select { |obj| obj.is_a?(Class) }  #=> array of all classes
-def self.new(*args); end
+def self.new(&block); end
+
+##
+# Creates a new Enumerator object, which can be used as an
+# Enumerable.
+# 
+# In the first form, iteration is defined by the given block, in
+# which a "yielder" object, given as block parameter, can be used to
+# yield a value by calling the +yield+ method (aliased as +<<+):
+# 
+#   fib = Enumerator.new do |y|
+#     a = b = 1
+#     loop do
+#       y << a
+#       a, b = b, a + b
+#     end
+#   end
+# 
+#   p fib.take(10) # => [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+# 
+# In the second, deprecated, form, a generated Enumerator iterates over the
+# given object using the given method with the given arguments passed.
+# 
+# Use of this form is discouraged.  Use Kernel#enum_for or Kernel#to_enum
+# instead.
+# 
+#   e = Enumerator.new(ObjectSpace, :each_object)
+#       #-> ObjectSpace.enum_for(:each_object)
+# 
+#   e.select { |obj| obj.is_a?(Class) }  #=> array of all classes
+def self.new(obj, method = :each, *args); end
 
 ##
 # Iterates over the block according to how this Enumerable was constructed.
 # If no block is given, returns self.
-def each(); end
+def each(&block); end
 
 ##
 # Same as Enumerator#with_index(0), i.e. there is no starting offset.
 # 
 # If no block is given, a new Enumerator is returned that includes the index.
-def each_with_index(); end
+def each_with_index(&block); end
+
+##
+# Same as Enumerator#with_index(0), i.e. there is no starting offset.
+# 
+# If no block is given, a new Enumerator is returned that includes the index.
+def each_with_index; end
 
 ##
 # Iterates the given block for each element with an arbitrary object, +obj+,
@@ -15692,7 +27027,31 @@ def each_with_index(); end
 #   # => foo:0
 #   # => foo:1
 #   # => foo:2
-def each_with_object(p1); end
+def with_object(obj, &block); end
+
+##
+# Iterates the given block for each element with an arbitrary object, +obj+,
+# and returns +obj+
+# 
+# If no block is given, returns a new Enumerator.
+# 
+# === Example
+# 
+#   to_three = Enumerator.new do |y|
+#     3.times do |x|
+#       y << x
+#     end
+#   end
+# 
+#   to_three_with_string = to_three.with_object("foo")
+#   to_three_with_string.each do |x,string|
+#     puts "#{string}: #{x}"
+#   end
+# 
+#   # => foo:0
+#   # => foo:1
+#   # => foo:2
+def with_object(obj); end
 
 ##
 # Iterates the given block for each element with an index, which
@@ -15700,7 +27059,15 @@ def each_with_object(p1); end
 # that includes the index, starting from +offset+
 # 
 # +offset+:: the starting index to use
-def with_index(p1=0); end
+def with_index(offset = 0, &block); end
+
+##
+# Iterates the given block for each element with an index, which
+# starts from +offset+.  If no block is given, returns a new Enumerator
+# that includes the index, starting from +offset+
+# 
+# +offset+:: the starting index to use
+def with_index(offset = 0); end
 
 ##
 # Iterates the given block for each element with an arbitrary object, +obj+,
@@ -15724,7 +27091,31 @@ def with_index(p1=0); end
 #   # => foo:0
 #   # => foo:1
 #   # => foo:2
-def with_object(p1); end
+def with_object(obj, &block); end
+
+##
+# Iterates the given block for each element with an arbitrary object, +obj+,
+# and returns +obj+
+# 
+# If no block is given, returns a new Enumerator.
+# 
+# === Example
+# 
+#   to_three = Enumerator.new do |y|
+#     3.times do |x|
+#       y << x
+#     end
+#   end
+# 
+#   to_three_with_string = to_three.with_object("foo")
+#   to_three_with_string.each do |x,string|
+#     puts "#{string}: #{x}"
+#   end
+# 
+#   # => foo:0
+#   # => foo:1
+#   # => foo:2
+def with_object(obj); end
 
 ##
 # Returns the next object as an array in the enumerator, and move the
@@ -15767,7 +27158,7 @@ def with_object(p1); end
 # Note that +next_values+ does not affect other non-external enumeration
 # methods unless underlying iteration method itself has side-effect, e.g.
 # IO#each_line.
-def next_values(); end
+def next_values; end
 
 ##
 # Returns the next object as an array, similar to Enumerator#next_values, but
@@ -15791,7 +27182,7 @@ def next_values(); end
 #   p e.peek_values    #=> [1, 2]
 #   e.next
 #   p e.peek_values    # raises StopIteration
-def peek_values(); end
+def peek_values; end
 
 ##
 # Returns the next object in the enumerator, and move the internal position
@@ -15809,7 +27200,7 @@ def peek_values(); end
 # Note that enumeration sequence by +next+ does not affect other non-external
 # enumeration methods, unless the underlying iteration methods itself has
 # side-effect, e.g. IO#each_line.
-def next(); end
+def next; end
 
 ##
 # Returns the next object in the enumerator, but doesn't move the internal
@@ -15827,7 +27218,7 @@ def next(); end
 #   p e.next   #=> 2
 #   p e.next   #=> 3
 #   p e.next   #raises StopIteration
-def peek(); end
+def peek; end
 
 ##
 # Sets the value to be returned by the next yield inside +e+.
@@ -15852,17 +27243,17 @@ def peek(); end
 #   e.next              # (4)
 #   e.next              # (7)
 #                       # (10)
-def feed(p1); end
+def feed obj; end
 
 ##
 # Rewinds the enumeration sequence by one step.
 # 
 # If the enclosed object responds to a "rewind" method, it is called.
-def rewind(); end
+def rewind; end
 
 ##
 # Creates a printable version of <i>e</i>.
-def inspect(); end
+def inspect; end
 
 end
 
@@ -15904,7 +27295,7 @@ class StopIteration < IndexError
 #   rescue StopIteration => ex
 #     puts ex.result              #=> 100
 #   end
-def result(); end
+def result; end
 
 end
 
@@ -15933,7 +27324,15 @@ include Enumerable
 # <i>aDir</i> as a parameter. The directory is closed at the end of
 # the block, and <code>Dir::open</code> returns the value of the
 # block.
-def self.open(*args); end
+def self.open( string ); end
+
+##
+# With no block, <code>open</code> is a synonym for
+# <code>Dir::new</code>. If a block is present, it is passed
+# <i>aDir</i> as a parameter. The directory is closed at the end of
+# the block, and <code>Dir::open</code> returns the value of the
+# block.
+def self.open( string , &block); end
 
 ##
 # Calls the block once for each entry in the named directory, passing
@@ -15949,7 +27348,23 @@ def self.open(*args); end
 #    Got ..
 #    Got config.h
 #    Got main.rb
-def self.foreach(*args); end
+def self.foreach( dirname , &block); end
+
+##
+# Calls the block once for each entry in the named directory, passing
+# the filename of each entry as a parameter to the block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    Dir.foreach("testdir") {|x| puts "Got #{x}" }
+# 
+# <em>produces:</em>
+# 
+#    Got .
+#    Got ..
+#    Got config.h
+#    Got main.rb
+def self.foreach( dirname ); end
 
 ##
 # Returns an array containing all of the filenames in the given
@@ -15957,29 +27372,29 @@ def self.foreach(*args); end
 # directory doesn't exist.
 # 
 #    Dir.entries("testdir")   #=> [".", "..", "config.h", "main.rb"]
-def self.entries(*args); end
+def self.entries( dirname ); end
 
 ##
 # Returns a new directory object for the named directory.
-def self.new(p1, p2=0{}); end
+def self.new( string ); end
 
 ##
 # Returns the path parameter passed to <em>dir</em>'s constructor.
 # 
 #    d = Dir.new("..")
 #    d.path   #=> ".."
-def path(); end
+def path; end
 
 ##
 # Returns the path parameter passed to <em>dir</em>'s constructor.
 # 
 #    d = Dir.new("..")
 #    d.path   #=> ".."
-def to_path(); end
+def path; end
 
 ##
 # Return a string describing this Dir object.
-def inspect(); end
+def inspect; end
 
 ##
 # Reads the next entry from <em>dir</em> and returns it as a string.
@@ -15989,7 +27404,7 @@ def inspect(); end
 #    d.read   #=> "."
 #    d.read   #=> ".."
 #    d.read   #=> "config.h"
-def read(); end
+def read; end
 
 ##
 # Calls the block once for each entry in this directory, passing the
@@ -16006,7 +27421,24 @@ def read(); end
 #    Got ..
 #    Got config.h
 #    Got main.rb
-def each(); end
+def each(&block); end
+
+##
+# Calls the block once for each entry in this directory, passing the
+# filename of each entry as a parameter to the block.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    d = Dir.new("testdir")
+#    d.each  {|x| puts "Got #{x}" }
+# 
+# <em>produces:</em>
+# 
+#    Got .
+#    Got ..
+#    Got config.h
+#    Got main.rb
+def each; end
 
 ##
 # Repositions <em>dir</em> to the first entry.
@@ -16015,7 +27447,7 @@ def each(); end
 #    d.read     #=> "."
 #    d.rewind   #=> #<Dir:0x401b3fb0>
 #    d.read     #=> "."
-def rewind(); end
+def rewind; end
 
 ##
 # Returns the current position in <em>dir</em>. See also
@@ -16025,7 +27457,17 @@ def rewind(); end
 #    d.tell   #=> 0
 #    d.read   #=> "."
 #    d.tell   #=> 12
-def tell(); end
+def pos; end
+
+##
+# Returns the current position in <em>dir</em>. See also
+# <code>Dir#seek</code>.
+# 
+#    d = Dir.new("testdir")
+#    d.tell   #=> 0
+#    d.read   #=> "."
+#    d.tell   #=> 12
+def tell; end
 
 ##
 # Seeks to a particular location in <em>dir</em>. <i>integer</i>
@@ -16037,7 +27479,7 @@ def tell(); end
 #    d.read                   #=> ".."
 #    d.seek(i)                #=> #<Dir:0x401b3c40>
 #    d.read                   #=> ".."
-def seek(p1); end
+def seek( integer ); end
 
 ##
 # Returns the current position in <em>dir</em>. See also
@@ -16047,7 +27489,17 @@ def seek(p1); end
 #    d.tell   #=> 0
 #    d.read   #=> "."
 #    d.tell   #=> 12
-def pos(); end
+def pos; end
+
+##
+# Returns the current position in <em>dir</em>. See also
+# <code>Dir#seek</code>.
+# 
+#    d = Dir.new("testdir")
+#    d.tell   #=> 0
+#    d.read   #=> "."
+#    d.tell   #=> 12
+def tell; end
 
 ##
 # Synonym for <code>Dir#seek</code>, but returns the position
@@ -16059,7 +27511,7 @@ def pos(); end
 #    d.read                   #=> ".."
 #    d.pos = i                #=> 12
 #    d.read                   #=> ".."
-def pos=(p1); end
+def pos( integer ); end
 
 ##
 # Closes the directory stream. Any further attempts to access
@@ -16067,7 +27519,7 @@ def pos=(p1); end
 # 
 #    d = Dir.new("testdir")
 #    d.close   #=> nil
-def close(); end
+def close; end
 
 ##
 # Changes the current working directory of the process to the given
@@ -16103,7 +27555,43 @@ def close(); end
 #    /usr
 #    /tmp
 #    /var/spool/mail
-def self.chdir(p1=0); end
+def self.chdir(  , string=0); end
+
+##
+# Changes the current working directory of the process to the given
+# string. When called without an argument, changes the directory to
+# the value of the environment variable <code>HOME</code>, or
+# <code>LOGDIR</code>. <code>SystemCallError</code> (probably
+# <code>Errno::ENOENT</code>) if the target directory does not exist.
+# 
+# If a block is given, it is passed the name of the new current
+# directory, and the block is executed with that as the current
+# directory. The original working directory is restored when the block
+# exits. The return value of <code>chdir</code> is the value of the
+# block. <code>chdir</code> blocks can be nested, but in a
+# multi-threaded program an error will be raised if a thread attempts
+# to open a <code>chdir</code> block while another thread has one
+# open.
+# 
+#    Dir.chdir("/var/spool/mail")
+#    puts Dir.pwd
+#    Dir.chdir("/tmp") do
+#      puts Dir.pwd
+#      Dir.chdir("/usr") do
+#        puts Dir.pwd
+#      end
+#      puts Dir.pwd
+#    end
+#    puts Dir.pwd
+# 
+# <em>produces:</em>
+# 
+#    /var/spool/mail
+#    /tmp
+#    /usr
+#    /tmp
+#    /var/spool/mail
+def self.chdir(  , string=0, &block); end
 
 ##
 # Returns the path to the current working directory of this process as
@@ -16111,7 +27599,7 @@ def self.chdir(p1=0); end
 # 
 #    Dir.chdir("/tmp")   #=> 0
 #    Dir.getwd           #=> "/tmp"
-def self.getwd(); end
+def self.getwd; end
 
 ##
 # Returns the path to the current working directory of this process as
@@ -16119,14 +27607,30 @@ def self.getwd(); end
 # 
 #    Dir.chdir("/tmp")   #=> 0
 #    Dir.getwd           #=> "/tmp"
-def self.pwd(); end
+def self.pwd; end
+
+##
+# Returns the path to the current working directory of this process as
+# a string.
+# 
+#    Dir.chdir("/tmp")   #=> 0
+#    Dir.getwd           #=> "/tmp"
+def self.getwd; end
+
+##
+# Returns the path to the current working directory of this process as
+# a string.
+# 
+#    Dir.chdir("/tmp")   #=> 0
+#    Dir.getwd           #=> "/tmp"
+def self.pwd; end
 
 ##
 # Changes this process's idea of the file system root. Only a
 # privileged process may make this call. Not available on all
 # platforms. On Unix systems, see <code>chroot(2)</code> for more
 # information.
-def self.chroot(p1); end
+def self.chroot( string ); end
 
 ##
 # Makes a new directory named by <i>string</i>, with permissions
@@ -16138,27 +27642,62 @@ def self.chroot(p1); end
 # <code>File</code>.
 # 
 #   Dir.mkdir(File.join(Dir.home, ".foo"), 0700) #=> 0
-def self.mkdir(p1, p2=0); end
+def self.mkdir( string  , integer=0); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.rmdir(p1); end
+def self.delete( string ); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.delete(p1); end
+def self.rmdir( string ); end
 
 ##
 # Deletes the named directory. Raises a subclass of
 # <code>SystemCallError</code> if the directory isn't empty.
-def self.unlink(p1); end
+def self.unlink( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.delete( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.rmdir( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.unlink( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.delete( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.rmdir( string ); end
+
+##
+# Deletes the named directory. Raises a subclass of
+# <code>SystemCallError</code> if the directory isn't empty.
+def self.unlink( string ); end
 
 ##
 # Returns the home directory of the current user or the named user
 # if given.
-def self.home(p1=0); end
+def self.home(); end
+
+##
+# Returns the home directory of the current user or the named user
+# if given.
+def self.home("root"); end
 
 ##
 # Returns the filenames found by expanding <i>pattern</i> which is
@@ -16222,13 +27761,83 @@ def self.home(p1=0); end
 # 
 #    librbfiles = File.join("**", "lib", "*.rb")
 #    Dir.glob(librbfiles)                #=> ["lib/song.rb"]
-def self.glob(p1, p2=0); end
+def self.glob( pattern,  , flags=0); end
+
+##
+# Returns the filenames found by expanding <i>pattern</i> which is
+# an +Array+ of the patterns or the pattern +String+, either as an
+# <i>array</i> or as parameters to the block. Note that this pattern
+# is not a regexp (it's closer to a shell glob). See
+# <code>File::fnmatch</code> for the meaning of the <i>flags</i>
+# parameter. Note that case sensitivity depends on your system (so
+# <code>File::FNM_CASEFOLD</code> is ignored), as does the order
+# in which the results are returned.
+# 
+# <code>*</code>::        Matches any file. Can be restricted by
+#                         other values in the glob. <code>*</code>
+#                         will match all files; <code>c*</code> will
+#                         match all files beginning with
+#                         <code>c</code>; <code>*c</code> will match
+#                         all files ending with <code>c</code>; and
+#                         <code>\*c\*</code> will match all files that
+#                         have <code>c</code> in them (including at
+#                         the beginning or end). Equivalent to
+#                         <code>/ .* /x</code> in regexp. Note, this
+#                         will not match Unix-like hidden files (dotfiles).
+#                         In order to include those in the match results,
+#                         you must use something like "{*,.*}".
+# <code>**</code>::       Matches directories recursively.
+# <code>?</code>::        Matches any one character. Equivalent to
+#                         <code>/.{1}/</code> in regexp.
+# <code>[set]</code>::    Matches any one character in +set+.
+#                         Behaves exactly like character sets in
+#                         Regexp, including set negation
+#                         (<code>[^a-z]</code>).
+# <code>{p,q}</code>::    Matches either literal <code>p</code> or
+#                         literal <code>q</code>. Matching literals
+#                         may be more than one character in length.
+#                         More than two literals may be specified.
+#                         Equivalent to pattern alternation in
+#                         regexp.
+# <code>\</code>::        Escapes the next metacharacter.
+#                         Note that this means you cannot use backslash in windows
+#                         as part of a glob, i.e. Dir["c:\\foo*"] will not work
+#                         use Dir["c:/foo*"] instead
+# 
+#    Dir["config.?"]                     #=> ["config.h"]
+#    Dir.glob("config.?")                #=> ["config.h"]
+#    Dir.glob("*.[a-z][a-z]")            #=> ["main.rb"]
+#    Dir.glob("*.[^r]*")                 #=> ["config.h"]
+#    Dir.glob("*.{rb,h}")                #=> ["main.rb", "config.h"]
+#    Dir.glob("*")                       #=> ["config.h", "main.rb"]
+#    Dir.glob("*", File::FNM_DOTMATCH)   #=> [".", "..", "config.h", "main.rb"]
+# 
+#    rbfiles = File.join("**", "*.rb")
+#    Dir.glob(rbfiles)                   #=> ["main.rb",
+#                                        #    "lib/song.rb",
+#                                        #    "lib/song/karaoke.rb"]
+#    libdirs = File.join("**", "lib")
+#    Dir.glob(libdirs)                   #=> ["lib"]
+# 
+#    librbfiles = File.join("**", "lib", "**", "*.rb")
+#    Dir.glob(librbfiles)                #=> ["lib/song.rb",
+#                                        #    "lib/song/karaoke.rb"]
+# 
+#    librbfiles = File.join("**", "lib", "*.rb")
+#    Dir.glob(librbfiles)                #=> ["lib/song.rb"]
+def self.glob( pattern,  , flags=0, &block); end
 
 ##
 # Equivalent to calling
 # <code>Dir.glob(</code><i>array,</i><code>0)</code> and
 # <code>Dir.glob([</code><i>string,...</i><code>],0)</code>.
-def self.[](*args); end
+def self.[]; end
+
+##
+# Equivalent to calling
+# <code>Dir.glob(</code><i>array,</i><code>0)</code> and
+# <code>Dir.glob([</code><i>string,...</i><code>],0)</code>.
+def self.] ]; end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -16236,7 +27845,7 @@ def self.[](*args); end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.exist?(p1); end
+def self.directory?(file_name); end
 
 ##
 # Returns <code>true</code> if the named file is a directory,
@@ -16244,7 +27853,7 @@ def self.exist?(p1); end
 # otherwise.
 # 
 #    File.directory?(".")
-def self.exists?(p1); end
+def self.directory?(file_name); end
 
 end
 
@@ -16255,11 +27864,11 @@ class Encoding < Object
 class UndefinedConversionError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name(); end
+def source_encoding_name; end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name(); end
+def destination_encoding_name; end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -16276,11 +27885,11 @@ def destination_encoding_name(); end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # Returns the one-character string which cause Encoding::UndefinedConversionError.
@@ -16292,7 +27901,7 @@ def destination_encoding(); end
 #    puts $!.error_char.dump   #=> "\xC2\xA0"
 #    p $!.error_char.encoding  #=> #<Encoding:UTF-8>
 #  end
-def error_char(); end
+def error_char; end
 
 end
 
@@ -16303,11 +27912,11 @@ end
 class InvalidByteSequenceError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name(); end
+def source_encoding_name; end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name(); end
+def destination_encoding_name; end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -16324,11 +27933,11 @@ def destination_encoding_name(); end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # Returns the discarded bytes when Encoding::InvalidByteSequenceError occurs.
@@ -16341,11 +27950,11 @@ def destination_encoding(); end
 #    puts $!.error_bytes.dump          #=> "\xA1"
 #    puts $!.readagain_bytes.dump      #=> "\xFF"
 #  end
-def error_bytes(); end
+def error_bytes; end
 
 ##
 # Returns the bytes to be read again when Encoding::InvalidByteSequenceError occurs.
-def readagain_bytes(); end
+def readagain_bytes; end
 
 ##
 # Returns true if the invalid byte sequence error is caused by
@@ -16367,7 +27976,7 @@ def readagain_bytes(); end
 #    p $!      #=> #<Encoding::InvalidByteSequenceError: incomplete "\xA1" on EUC-JP>
 #    p $!.incomplete_input?    #=> true
 #  end
-def incomplete_input?(); end
+def incomplete_input?; end
 
 end
 
@@ -16390,7 +27999,21 @@ class Converter < Data
 #   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
 #   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
 #   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
-def self.asciicompat_encoding(p1); end
+def self.asciicompat_encoding(string); end
+
+##
+# Returns the corresponding ASCII compatible encoding.
+# 
+# Returns nil if the argument is an ASCII compatible encoding.
+# 
+# "corresponding ASCII compatible encoding" is a ASCII compatible encoding which
+# can represents exactly the same characters as the given ASCII incompatible encoding.
+# So, no conversion undefined error occurs when converting between the two encodings.
+# 
+#   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
+#   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
+#   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
+def self.asciicompat_encoding(encoding); end
 
 ##
 # Returns a conversion path.
@@ -16412,7 +28035,29 @@ def self.asciicompat_encoding(p1); end
 #  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
 #  #    "universal_newline",
 #  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
-def self.search_convpath(*args); end
+def self.search_convpath(source_encoding, destination_encoding); end
+
+##
+# Returns a conversion path.
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP")
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    [#<Encoding:UTF-8>, #<Encoding:EUC-JP>]]
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP", universal_newline: true)
+#  or
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP", newline: :universal)
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    [#<Encoding:UTF-8>, #<Encoding:EUC-JP>],
+#  #    "universal_newline"]
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "UTF-32BE", universal_newline: true)
+#  or
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "UTF-32BE", newline: :universal)
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    "universal_newline",
+#  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
+def self.search_convpath(source_encoding, destination_encoding, opt); end
 
 ##
 # possible options elements:
@@ -16514,14 +28159,218 @@ def self.search_convpath(*args); end
 #   p ec.convpath #=> ["universal_newline",
 #                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
 #                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
-def self.new(*args); end
+def self.new(source_encoding, destination_encoding); end
+
+##
+# possible options elements:
+#   hash form:
+#     :invalid => nil            # raise error on invalid byte sequence (default)
+#     :invalid => :replace       # replace invalid byte sequence
+#     :undef => nil              # raise error on undefined conversion (default)
+#     :undef => :replace         # replace undefined conversion
+#     :replace => string         # replacement string ("?" or "\uFFFD" if not specified)
+#     :newline => :universal     # decorator for converting CRLF and CR to LF
+#     :newline => :crlf          # decorator for converting LF to CRLF
+#     :newline => :cr            # decorator for converting LF to CR
+#     :universal_newline => true # decorator for converting CRLF and CR to LF
+#     :crlf_newline => true      # decorator for converting LF to CRLF
+#     :cr_newline => true        # decorator for converting LF to CR
+#     :xml => :text              # escape as XML CharData.
+#     :xml => :attr              # escape as XML AttValue
+#   integer form:
+#     Encoding::Converter::INVALID_REPLACE
+#     Encoding::Converter::UNDEF_REPLACE
+#     Encoding::Converter::UNDEF_HEX_CHARREF
+#     Encoding::Converter::UNIVERSAL_NEWLINE_DECORATOR
+#     Encoding::Converter::CRLF_NEWLINE_DECORATOR
+#     Encoding::Converter::CR_NEWLINE_DECORATOR
+#     Encoding::Converter::XML_TEXT_DECORATOR
+#     Encoding::Converter::XML_ATTR_CONTENT_DECORATOR
+#     Encoding::Converter::XML_ATTR_QUOTE_DECORATOR
+# 
+# Encoding::Converter.new creates an instance of Encoding::Converter.
+# 
+# Source_encoding and destination_encoding should be a string or
+# Encoding object.
+# 
+# opt should be nil, a hash or an integer.
+# 
+# convpath should be an array.
+# convpath may contain
+# - two-element arrays which contain encodings or encoding names, or
+# - strings representing decorator names.
+# 
+# Encoding::Converter.new optionally takes an option.
+# The option should be a hash or an integer.
+# The option hash can contain :invalid => nil, etc.
+# The option integer should be logical-or of constants such as
+# Encoding::Converter::INVALID_REPLACE, etc.
+# 
+# [:invalid => nil]
+#   Raise error on invalid byte sequence.  This is a default behavior.
+# [:invalid => :replace]
+#   Replace invalid byte sequence by replacement string.
+# [:undef => nil]
+#   Raise an error if a character in source_encoding is not defined in destination_encoding.
+#   This is a default behavior.
+# [:undef => :replace]
+#   Replace undefined character in destination_encoding with replacement string.
+# [:replace => string]
+#   Specify the replacement string.
+#   If not specified, "\uFFFD" is used for Unicode encodings and "?" for others.
+# [:universal_newline => true]
+#   Convert CRLF and CR to LF.
+# [:crlf_newline => true]
+#   Convert LF to CRLF.
+# [:cr_newline => true]
+#   Convert LF to CR.
+# [:xml => :text]
+#   Escape as XML CharData.
+#   This form can be used as a HTML 4.0 #PCDATA.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# [:xml => :attr]
+#   Escape as XML AttValue.
+#   The converted result is quoted as "...".
+#   This form can be used as a HTML 4.0 attribute value.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - '"' -> '&quot;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# 
+# Examples:
+#   # UTF-16BE to UTF-8
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8")
+# 
+#   # Usually, decorators such as newline conversion are inserted last.
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8", :universal_newline => true)
+#   p ec.convpath #=> [[#<Encoding:UTF-16BE>, #<Encoding:UTF-8>],
+#                 #    "universal_newline"]
+# 
+#   # But, if the last encoding is ASCII incompatible,
+#   # decorators are inserted before the last conversion.
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE", :crlf_newline => true)
+#   p ec.convpath #=> ["crlf_newline",
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+# 
+#   # Conversion path can be specified directly.
+#   ec = Encoding::Converter.new(["universal_newline", ["EUC-JP", "UTF-8"], ["UTF-8", "UTF-16BE"]])
+#   p ec.convpath #=> ["universal_newline",
+#                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+def self.new(source_encoding, destination_encoding, opt); end
+
+##
+# possible options elements:
+#   hash form:
+#     :invalid => nil            # raise error on invalid byte sequence (default)
+#     :invalid => :replace       # replace invalid byte sequence
+#     :undef => nil              # raise error on undefined conversion (default)
+#     :undef => :replace         # replace undefined conversion
+#     :replace => string         # replacement string ("?" or "\uFFFD" if not specified)
+#     :newline => :universal     # decorator for converting CRLF and CR to LF
+#     :newline => :crlf          # decorator for converting LF to CRLF
+#     :newline => :cr            # decorator for converting LF to CR
+#     :universal_newline => true # decorator for converting CRLF and CR to LF
+#     :crlf_newline => true      # decorator for converting LF to CRLF
+#     :cr_newline => true        # decorator for converting LF to CR
+#     :xml => :text              # escape as XML CharData.
+#     :xml => :attr              # escape as XML AttValue
+#   integer form:
+#     Encoding::Converter::INVALID_REPLACE
+#     Encoding::Converter::UNDEF_REPLACE
+#     Encoding::Converter::UNDEF_HEX_CHARREF
+#     Encoding::Converter::UNIVERSAL_NEWLINE_DECORATOR
+#     Encoding::Converter::CRLF_NEWLINE_DECORATOR
+#     Encoding::Converter::CR_NEWLINE_DECORATOR
+#     Encoding::Converter::XML_TEXT_DECORATOR
+#     Encoding::Converter::XML_ATTR_CONTENT_DECORATOR
+#     Encoding::Converter::XML_ATTR_QUOTE_DECORATOR
+# 
+# Encoding::Converter.new creates an instance of Encoding::Converter.
+# 
+# Source_encoding and destination_encoding should be a string or
+# Encoding object.
+# 
+# opt should be nil, a hash or an integer.
+# 
+# convpath should be an array.
+# convpath may contain
+# - two-element arrays which contain encodings or encoding names, or
+# - strings representing decorator names.
+# 
+# Encoding::Converter.new optionally takes an option.
+# The option should be a hash or an integer.
+# The option hash can contain :invalid => nil, etc.
+# The option integer should be logical-or of constants such as
+# Encoding::Converter::INVALID_REPLACE, etc.
+# 
+# [:invalid => nil]
+#   Raise error on invalid byte sequence.  This is a default behavior.
+# [:invalid => :replace]
+#   Replace invalid byte sequence by replacement string.
+# [:undef => nil]
+#   Raise an error if a character in source_encoding is not defined in destination_encoding.
+#   This is a default behavior.
+# [:undef => :replace]
+#   Replace undefined character in destination_encoding with replacement string.
+# [:replace => string]
+#   Specify the replacement string.
+#   If not specified, "\uFFFD" is used for Unicode encodings and "?" for others.
+# [:universal_newline => true]
+#   Convert CRLF and CR to LF.
+# [:crlf_newline => true]
+#   Convert LF to CRLF.
+# [:cr_newline => true]
+#   Convert LF to CR.
+# [:xml => :text]
+#   Escape as XML CharData.
+#   This form can be used as a HTML 4.0 #PCDATA.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# [:xml => :attr]
+#   Escape as XML AttValue.
+#   The converted result is quoted as "...".
+#   This form can be used as a HTML 4.0 attribute value.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - '"' -> '&quot;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# 
+# Examples:
+#   # UTF-16BE to UTF-8
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8")
+# 
+#   # Usually, decorators such as newline conversion are inserted last.
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8", :universal_newline => true)
+#   p ec.convpath #=> [[#<Encoding:UTF-16BE>, #<Encoding:UTF-8>],
+#                 #    "universal_newline"]
+# 
+#   # But, if the last encoding is ASCII incompatible,
+#   # decorators are inserted before the last conversion.
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE", :crlf_newline => true)
+#   p ec.convpath #=> ["crlf_newline",
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+# 
+#   # Conversion path can be specified directly.
+#   ec = Encoding::Converter.new(["universal_newline", ["EUC-JP", "UTF-8"], ["UTF-8", "UTF-16BE"]])
+#   p ec.convpath #=> ["universal_newline",
+#                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+def self.new(convpath); end
 
 ##
 # Returns a printable version of <i>ec</i>
 # 
 #   ec = Encoding::Converter.new("iso-8859-1", "utf-8")
 #   puts ec.inspect    #=> #<Encoding::Converter: ISO-8859-1 to UTF-8>
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the conversion path of ec.
@@ -16541,15 +28390,15 @@ def inspect(); end
 # In the above example, [#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>] means
 # a converter from ISO-8859-1 to UTF-8.
 # "crlf_newline" means newline converter from LF to CRLF.
-def convpath(); end
+def convpath; end
 
 ##
 # Returns the source encoding as an Encoding object.
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an Encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # possible opt elements:
@@ -16634,7 +28483,262 @@ def destination_encoding(); end
 #   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
 #   ret = ec.primitive_convert(src, dst="", nil, 1)
 #   p [ret, src, dst] #=> [:finished, "", "i"]
-def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
+def primitive_convert(source_buffer, destination_buffer); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset, destination_bytesize); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset, destination_bytesize, opt); end
 
 ##
 # Convert source_string and return destination_string.
@@ -16665,7 +28769,7 @@ def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
 # from these exceptions.
 # When you want to handle these conversion errors,
 # use Encoding::Converter#primitive_convert.
-def convert(p1); end
+def convert(source_string); end
 
 ##
 # Finishes the converter.
@@ -16674,7 +28778,7 @@ def convert(p1); end
 #   ec = Encoding::Converter.new("utf-8", "iso-2022-jp")
 #   p ec.convert("\u3042")     #=> "\e$B$\""
 #   p ec.finish                #=> "\e(B"
-def finish(); end
+def finish; end
 
 ##
 # primitive_errinfo returns important information regarding the last error
@@ -16746,7 +28850,7 @@ def finish(); end
 #   #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "@\x00"]
 #   p src
 #   #=> ""
-def primitive_errinfo(); end
+def primitive_errinfo; end
 
 ##
 # Inserts string into the encoding converter.
@@ -16775,31 +28879,7 @@ def primitive_errinfo(); end
 #  ec.insert_output "?"                # state change required to output "?".
 #  p ec.primitive_convert(src, dst)    #=> :finished
 #  puts "[#{dst.dump}, #{src.dump}]"   #=> ["\e$B$O$!$H\e(B?\e$B!#\e(B".force_encoding("ISO-2022-JP"), ""]
-def insert_output(p1); end
-
-##
-# call-seq
-#   ec.putback                    -> string
-#   ec.putback(max_numbytes)      -> string
-# 
-# Put back the bytes which will be converted.
-# 
-# The bytes are caused by invalid_byte_sequence error.
-# When invalid_byte_sequence error, some bytes are discarded and
-# some bytes are buffered to be converted later.
-# The latter bytes can be put back.
-# It can be observed by
-# Encoding::InvalidByteSequenceError#readagain_bytes and
-# Encoding::Converter#primitive_errinfo.
-# 
-#   ec = Encoding::Converter.new("utf-16le", "iso-8859-1")
-#   src = "\x00\xd8\x61\x00"
-#   dst = ""
-#   p ec.primitive_convert(src, dst)   #=> :invalid_byte_sequence
-#   p ec.primitive_errinfo     #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "a\x00"]
-#   p ec.putback               #=> "a\x00"
-#   p ec.putback               #=> ""          # no more bytes to put back
-def putback(p1=0); end
+def insert_output(string); end
 
 ##
 # Returns an exception object for the last conversion.
@@ -16816,7 +28896,7 @@ def putback(p1=0); end
 #  p ec.last_error      #=> #<Encoding::InvalidByteSequenceError: "\xF1" followed by "a" on UTF-8>
 #  p ec.primitive_convert(src, dst, nil, 1)             #=> :destination_buffer_full
 #  p ec.last_error      #=> nil
-def last_error(); end
+def last_error; end
 
 ##
 # Returns the replacement string.
@@ -16826,7 +28906,7 @@ def last_error(); end
 # 
 #  ec = Encoding::Converter.new("euc-jp", "utf-8")
 #  p ec.replacement    #=> "\uFFFD"
-def replacement(); end
+def replacement; end
 
 ##
 # Sets the replacement string.
@@ -16834,9 +28914,9 @@ def replacement(); end
 #  ec = Encoding::Converter.new("utf-8", "us-ascii", :undef => :replace)
 #  ec.replacement = "<undef>"
 #  p ec.convert("a \u3042 b")      #=> "a <undef> b"
-def replacement=(p1); end
+def replacement = string; end
 
-def ==(p1); end
+def ==; end
 
 end
 
@@ -16850,26 +28930,26 @@ end
 # Returns the name of the encoding.
 # 
 #   Encoding::UTF_8.name      #=> "UTF-8"
-def to_s(); end
+def name; end
 
 ##
 # Returns a string which represents the encoding for programmers.
 # 
 #   Encoding::UTF_8.inspect       #=> "#<Encoding:UTF-8>"
 #   Encoding::ISO_2022_JP.inspect #=> "#<Encoding:ISO-2022-JP (dummy)>"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the name of the encoding.
 # 
 #   Encoding::UTF_8.name      #=> "UTF-8"
-def name(); end
+def name; end
 
 ##
 # Returns the list of name and aliases of the encoding.
 # 
 #   Encoding::WINDOWS_31J.names  #=> ["Windows-31J", "CP932", "csWindows31J"]
-def names(); end
+def names; end
 
 ##
 # Returns true for dummy encodings.
@@ -16879,20 +28959,20 @@ def names(); end
 # 
 #   Encoding::ISO_2022_JP.dummy?       #=> true
 #   Encoding::UTF_8.dummy?             #=> false
-def dummy?(); end
+def dummy?; end
 
 ##
 # Returns whether ASCII-compatible or not.
 # 
 #   Encoding::UTF_8.ascii_compatible?     #=> true
 #   Encoding::UTF_16BE.ascii_compatible?  #=> false
-def ascii_compatible?(); end
+def ascii_compatible?; end
 
 ##
 # Returns a replicated encoding of _enc_ whose name is _name_.
 # The new encoding should have the same byte structure of _enc_.
 # If _name_ is used by another encoding, raise ArgumentError.
-def replicate(p1); end
+def replicate(name); end
 
 ##
 # Returns the list of loaded encodings.
@@ -16907,7 +28987,7 @@ def replicate(p1); end
 #   Encoding.list
 #   #=> [#<Encoding:ASCII-8BIT>, #<Encoding:UTF-8>,
 #         #<Encoding:US-ASCII>, #<Encoding:ISO-2022-JP (dummy)>]
-def self.list(); end
+def self.list; end
 
 ##
 # Returns the list of available encoding names.
@@ -16917,7 +28997,7 @@ def self.list(); end
 #         "ISO-8859-1", "Shift_JIS", "EUC-JP",
 #         "Windows-31J",
 #         "BINARY", "CP932", "eucJP"]
-def self.name_list(); end
+def self.name_list; end
 
 ##
 # Returns the hash of available encoding alias and original encoding name.
@@ -16925,7 +29005,7 @@ def self.name_list(); end
 #   Encoding.aliases
 #   #=> {"BINARY"=>"ASCII-8BIT", "ASCII"=>"US-ASCII", "ANSI_X3.4-1986"=>"US-ASCII",
 #         "SJIS"=>"Shift_JIS", "eucJP"=>"EUC-JP", "CP932"=>"Windows-31J"}
-def self.aliases(); end
+def self.aliases(&block); end
 
 ##
 # Search the encoding with specified <i>name</i>.
@@ -16946,7 +29026,28 @@ def self.aliases(); end
 # Only <code>Encoding.find("internal")</code> however returns nil
 # when no encoding named "internal", in other words, when Ruby has no
 # default internal encoding.
-def self.find(p1); end
+def self.find(string); end
+
+##
+# Search the encoding with specified <i>name</i>.
+# <i>name</i> should be a string or symbol.
+# 
+#   Encoding.find("US-ASCII")  #=> #<Encoding:US-ASCII>
+#   Encoding.find(:Shift_JIS)  #=> #<Encoding:Shift_JIS>
+# 
+# Names which this method accept are encoding names and aliases
+# including following special aliases
+# 
+# "external"::   default external encoding
+# "internal"::   default internal encoding
+# "locale"::     locale encoding
+# "filesystem":: filesystem encoding
+# 
+# An ArgumentError is raised when no encoding with <i>name</i>.
+# Only <code>Encoding.find("internal")</code> however returns nil
+# when no encoding named "internal", in other words, when Ruby has no
+# default internal encoding.
+def self.find(symbol); end
 
 ##
 # Checks the compatibility of two objects.
@@ -16967,7 +29068,7 @@ def self.find(p1); end
 # have an encoding and:
 # * Either encoding is US-ASCII compatible
 # * One of the encodings is a 7-bit encoding
-def self.compatible?(p1, p2); end
+def self.compatible?(obj1, obj2); end
 
 ##
 # Returns default external encoding.
@@ -16991,7 +29092,7 @@ def self.compatible?(p1, p2); end
 # encoding when written.
 # 
 # The default external encoding is initialized by the locale or -E option.
-def self.default_external(); end
+def self.default_external; end
 
 ##
 # Sets default external encoding.  You should not set
@@ -17002,7 +29103,7 @@ def self.default_external(); end
 # 
 # See Encoding::default_external for information on how the default external
 # encoding is used.
-def self.default_external=(p1); end
+def self.default_external = enc; end
 
 ##
 # Returns default internal encoding.  Strings will be transcoded to the
@@ -17031,7 +29132,7 @@ def self.default_external=(p1); end
 # 
 # Encoding::default_internal is initialized by the source file's
 # internal_encoding or -E option.
-def self.default_internal(); end
+def self.default_internal; end
 
 ##
 # Sets default internal encoding or removes default internal encoding when
@@ -17042,7 +29143,7 @@ def self.default_internal(); end
 # 
 # See Encoding::default_internal for information on how the default internal
 # encoding is used.
-def self.default_internal=(p1); end
+def self.default_internal = enc or nil; end
 
 ##
 # Returns the locale charmap name.
@@ -17064,7 +29165,7 @@ def self.default_internal=(p1); end
 # So Encoding.find(Encoding.locale_charmap) may cause an error.
 # If you need some encoding object even for unknown locale,
 # Encoding.find("locale") can be used.
-def self.locale_charmap(); end
+def self.locale_charmap; end
 
 end
 
@@ -17666,8 +29767,13 @@ end
 #         #=> #<MatchData "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa">
 class Regexp < Object
 ##
-# Synonym for <code>Regexp.new</code>
-def self.compile(*args); end
+# Escapes any characters that would have special meaning in a regular
+# expression. Returns a new escaped string, or self if no characters are
+# escaped.  For any string,
+# <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
+# 
+#    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
+def self.escape(str); end
 
 ##
 # Escapes any characters that would have special meaning in a regular
@@ -17676,7 +29782,7 @@ def self.compile(*args); end
 # <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
 # 
 #    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
-def self.quote(p1); end
+def self.quote(str); end
 
 ##
 # Escapes any characters that would have special meaning in a regular
@@ -17685,7 +29791,16 @@ def self.quote(p1); end
 # <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
 # 
 #    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
-def self.escape(p1); end
+def self.escape(str); end
+
+##
+# Escapes any characters that would have special meaning in a regular
+# expression. Returns a new escaped string, or self if no characters are
+# escaped.  For any string,
+# <code>Regexp.new(Regexp.escape(<i>str</i>))=~<i>str</i></code> will be true.
+# 
+#    Regexp.escape('\*?{}.')   #=> \\\*\?\{\}\.
+def self.quote(str); end
 
 ##
 # Return a <code>Regexp</code> object that is the union of the given
@@ -17700,7 +29815,22 @@ def self.escape(p1); end
 #    Regexp.union("skiing", "sledding")   #=> /skiing|sledding/
 #    Regexp.union(["skiing", "sledding"]) #=> /skiing|sledding/
 #    Regexp.union(/dogs/, /cats/i)        #=> /(?-mix:dogs)|(?i-mx:cats)/
-def self.union(*args); end
+def self.union(pat1, pat2, *more); end
+
+##
+# Return a <code>Regexp</code> object that is the union of the given
+# <em>pattern</em>s, i.e., will match any of its parts. The <em>pattern</em>s
+# can be Regexp objects, in which case their options will be preserved, or
+# Strings. If no patterns are given, returns <code>/(?!)/</code>.
+# The behavior is unspecified if any given <em>pattern</em> contains capture.
+# 
+#    Regexp.union                         #=> /(?!)/
+#    Regexp.union("penzance")             #=> /penzance/
+#    Regexp.union("a+b*c")                #=> /a\+b\*c/
+#    Regexp.union("skiing", "sledding")   #=> /skiing|sledding/
+#    Regexp.union(["skiing", "sledding"]) #=> /skiing|sledding/
+#    Regexp.union(/dogs/, /cats/i)        #=> /(?-mix:dogs)|(?i-mx:cats)/
+def self.union(pats_ary); end
 
 ##
 # The first form returns the <code>MatchData</code> object generated by the
@@ -17722,7 +29852,29 @@ def self.union(*args); end
 #    Regexp.last_match       #=> #<MatchData "var = val" lhs:"var" rhs:"val">
 #    Regexp.last_match(:lhs) #=> "var"
 #    Regexp.last_match(:rhs) #=> "val"
-def self.last_match(p1=0); end
+def self.last_match; end
+
+##
+# The first form returns the <code>MatchData</code> object generated by the
+# last successful pattern match. Equivalent to reading the global variable
+# <code>$~</code>. The second form returns the <i>n</i>th field in this
+# <code>MatchData</code> object.
+# <em>n</em> can be a string or symbol to reference a named capture.
+# 
+# Note that the <code>last_match</code> is local to the thread and method scope
+# of the method that did the pattern match.
+# 
+#    /c(.)t/ =~ 'cat'        #=> 0
+#    Regexp.last_match       #=> #<MatchData "cat" 1:"a">
+#    Regexp.last_match(0)    #=> "cat"
+#    Regexp.last_match(1)    #=> "a"
+#    Regexp.last_match(2)    #=> nil
+# 
+#    /(?<lhs>\w+)\s*=\s*(?<rhs>\w+)/ =~ "var = val"
+#    Regexp.last_match       #=> #<MatchData "var = val" lhs:"var" rhs:"val">
+#    Regexp.last_match(:lhs) #=> "var"
+#    Regexp.last_match(:rhs) #=> "val"
+def self.last_match(n); end
 
 ##
 # Try to convert <i>obj</i> into a Regexp, using to_regexp method.
@@ -17736,7 +29888,7 @@ def self.last_match(p1=0); end
 #    Regexp.try_convert(o)            #=> nil
 #    def o.to_regexp() /foo/ end
 #    Regexp.try_convert(o)            #=> /foo/
-def self.try_convert(p1); end
+def self.try_convert(obj); end
 
 ##
 # Constructs a new regular expression from <i>pattern</i>, which can be either
@@ -17753,11 +29905,62 @@ def self.try_convert(p1); end
 #    r2 = Regexp.new('cat', true)               #=> /cat/i
 #    r3 = Regexp.new('dog', Regexp::EXTENDED)   #=> /dog/x
 #    r4 = Regexp.new(r2)                        #=> /cat/i
-def self.new(*args); end
+def self.new(string, , options=0, lang=0); end
+
+##
+# Constructs a new regular expression from <i>pattern</i>, which can be either
+# a <code>String</code> or a <code>Regexp</code> (in which case that regexp's
+# options are propagated, and new options may not be specified (a change as of
+# Ruby 1.8). If <i>options</i> is a <code>Fixnum</code>, it should be one or
+# more of the constants <code>Regexp::EXTENDED</code>,
+# <code>Regexp::IGNORECASE</code>, and <code>Regexp::MULTILINE</code>,
+# <em>or</em>-ed together. Otherwise, if <i>options</i> is not
+# <code>nil</code>, the regexp will be case insensitive.
+# When the <i>lang</i> parameter is `n' or `N' sets the regexp no encoding.
+# 
+#    r1 = Regexp.new('^a-z+:\\s+\w+')           #=> /^a-z+:\s+\w+/
+#    r2 = Regexp.new('cat', true)               #=> /cat/i
+#    r3 = Regexp.new('dog', Regexp::EXTENDED)   #=> /dog/x
+#    r4 = Regexp.new(r2)                        #=> /cat/i
+def self.new(regexp); end
+
+##
+# Constructs a new regular expression from <i>pattern</i>, which can be either
+# a <code>String</code> or a <code>Regexp</code> (in which case that regexp's
+# options are propagated, and new options may not be specified (a change as of
+# Ruby 1.8). If <i>options</i> is a <code>Fixnum</code>, it should be one or
+# more of the constants <code>Regexp::EXTENDED</code>,
+# <code>Regexp::IGNORECASE</code>, and <code>Regexp::MULTILINE</code>,
+# <em>or</em>-ed together. Otherwise, if <i>options</i> is not
+# <code>nil</code>, the regexp will be case insensitive.
+# When the <i>lang</i> parameter is `n' or `N' sets the regexp no encoding.
+# 
+#    r1 = Regexp.new('^a-z+:\\s+\w+')           #=> /^a-z+:\s+\w+/
+#    r2 = Regexp.new('cat', true)               #=> /cat/i
+#    r3 = Regexp.new('dog', Regexp::EXTENDED)   #=> /dog/x
+#    r4 = Regexp.new(r2)                        #=> /cat/i
+def self.compile(string, , options=0, lang=0); end
+
+##
+# Constructs a new regular expression from <i>pattern</i>, which can be either
+# a <code>String</code> or a <code>Regexp</code> (in which case that regexp's
+# options are propagated, and new options may not be specified (a change as of
+# Ruby 1.8). If <i>options</i> is a <code>Fixnum</code>, it should be one or
+# more of the constants <code>Regexp::EXTENDED</code>,
+# <code>Regexp::IGNORECASE</code>, and <code>Regexp::MULTILINE</code>,
+# <em>or</em>-ed together. Otherwise, if <i>options</i> is not
+# <code>nil</code>, the regexp will be case insensitive.
+# When the <i>lang</i> parameter is `n' or `N' sets the regexp no encoding.
+# 
+#    r1 = Regexp.new('^a-z+:\\s+\w+')           #=> /^a-z+:\s+\w+/
+#    r2 = Regexp.new('cat', true)               #=> /cat/i
+#    r3 = Regexp.new('dog', Regexp::EXTENDED)   #=> /dog/x
+#    r4 = Regexp.new(r2)                        #=> /cat/i
+def self.compile(regexp); end
 
 ##
 # Produce a hash based on the text and options of this regular expression.
-def hash(); end
+def hash; end
 
 ##
 # Equality---Two regexps are equal if their patterns are identical, they have
@@ -17768,7 +29971,7 @@ def hash(); end
 #    /abc/  == /abc/i   #=> false
 #    /abc/  == /abc/n   #=> false
 #    /abc/u == /abc/n   #=> false
-def eql?(p1); end
+def eql?; end
 
 ##
 # Equality---Two regexps are equal if their patterns are identical, they have
@@ -17779,7 +29982,29 @@ def eql?(p1); end
 #    /abc/  == /abc/i   #=> false
 #    /abc/  == /abc/n   #=> false
 #    /abc/u == /abc/n   #=> false
-def ==(p1); end
+def eql?(other_rxp); end
+
+##
+# Equality---Two regexps are equal if their patterns are identical, they have
+# the same character set code, and their <code>casefold?</code> values are the
+# same.
+# 
+#    /abc/  == /abc/x   #=> false
+#    /abc/  == /abc/i   #=> false
+#    /abc/  == /abc/n   #=> false
+#    /abc/u == /abc/n   #=> false
+def ==; end
+
+##
+# Equality---Two regexps are equal if their patterns are identical, they have
+# the same character set code, and their <code>casefold?</code> values are the
+# same.
+# 
+#    /abc/  == /abc/x   #=> false
+#    /abc/  == /abc/i   #=> false
+#    /abc/  == /abc/n   #=> false
+#    /abc/u == /abc/n   #=> false
+def eql?(other_rxp); end
 
 ##
 # Match---Matches <i>rxp</i> against <i>str</i>.
@@ -17823,7 +30048,7 @@ def ==(p1); end
 # 
 #   "  x = y  " =~ /(?<lhs>\w+)\s*=\s*(?<rhs>\w+)/
 #   p lhs, rhs # undefined local variable
-def =~(p1); end
+def =~; end
 
 ##
 # Case Equality---Synonym for <code>Regexp#=~</code> used in case statements.
@@ -17838,7 +30063,7 @@ def =~(p1); end
 # <em>produces:</em>
 # 
 #    Upper case
-def ===(p1); end
+def ===; end
 
 ##
 # Match---Matches <i>rxp</i> against the contents of <code>$_</code>.
@@ -17846,7 +30071,7 @@ def ===(p1); end
 # 
 #    $_ = "input data"
 #    ~ /at/   #=> 7
-def ~(); end
+def ~; end
 
 ##
 # Returns a <code>MatchData</code> object describing the match, or
@@ -17870,7 +30095,31 @@ def ~(); end
 #    end
 # 
 # The return value is a value from block execution in this case.
-def match(p1, p2=0); end
+def match(str); end
+
+##
+# Returns a <code>MatchData</code> object describing the match, or
+# <code>nil</code> if there was no match. This is equivalent to retrieving the
+# value of the special variable <code>$~</code> following a normal match.
+# If the second parameter is present, it specifies the position in the string
+# to begin the search.
+# 
+#    /(.)(.)(.)/.match("abc")[2]   #=> "b"
+#    /(.)(.)/.match("abc", 1)[2]   #=> "c"
+# 
+# If a block is given, invoke the block with MatchData if match succeed, so
+# that you can write
+# 
+#    pat.match(str) {|m| ...}
+# 
+# instead of
+# 
+#    if m = pat.match(str)
+#      ...
+#    end
+# 
+# The return value is a value from block execution in this case.
+def match(str,pos); end
 
 ##
 # Returns a string containing the regular expression and its options (using the
@@ -17887,7 +30136,7 @@ def match(p1, p2=0); end
 #     r1 == r2                #=> false
 #     r1.source               #=> "ab+c"
 #     r2.source               #=> "(?ix-m:ab+c)"
-def to_s(); end
+def to_s; end
 
 ##
 # Produce a nicely formatted string-version of _rxp_. Perhaps surprisingly,
@@ -17895,7 +30144,7 @@ def to_s(); end
 # the string than <code>#to_s</code>.
 # 
 #      /ab+c/ix.inspect        #=> "/ab+c/ix"
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the original string of the pattern.
@@ -17905,7 +30154,7 @@ def inspect(); end
 # Note that escape sequences are retained as is.
 # 
 #    /\x20\+/.source  #=> "\\x20\\+"
-def source(); end
+def source; end
 
 ##
 # Returns the value of the case-insensitive flag.
@@ -17913,7 +30162,7 @@ def source(); end
 #     /a/.casefold?           #=> false
 #     /a/i.casefold?          #=> true
 #     /(?i:a)/.casefold?      #=> false
-def casefold?(); end
+def casefold?; end
 
 ##
 # Returns the set of bits corresponding to the options used when creating this
@@ -17933,11 +30182,11 @@ def casefold?(); end
 # 
 #    r = /cat/ix
 #    Regexp.new(r.source, r.options)     #=> /cat/ix
-def options(); end
+def options; end
 
 ##
 # Returns the Encoding object that represents the encoding of obj.
-def encoding(); end
+def encoding; end
 
 ##
 # Returns false if rxp is applicable to
@@ -17963,7 +30212,7 @@ def encoding(); end
 #     r =~ "\u{6666} a"                               #=> 0
 #     r =~ "\xa1\xa2".force_encoding("euc-jp")        #=> ArgumentError
 #     r =~ "abc".force_encoding("euc-jp")             #=> nil
-def fixed_encoding?(); end
+def fixed_encoding?; end
 
 ##
 # Returns a list of names of captures as an array of strings.
@@ -17976,7 +30225,7 @@ def fixed_encoding?(); end
 # 
 #     /(.)(.)/.names
 #     #=> []
-def names(); end
+def names; end
 
 ##
 # Returns a hash representing information about named captures of <i>rxp</i>.
@@ -17995,7 +30244,7 @@ def names(); end
 # 
 #    /(.)(.)/.named_captures
 #    #=> {}
-def named_captures(); end
+def named_captures; end
 
 end
 
@@ -18012,7 +30261,7 @@ class MatchData < Object
 # 
 #     m = /a.*b/.match("abc")
 #     m.regexp #=> /a.*b/
-def regexp(); end
+def regexp; end
 
 ##
 # Returns a list of names of captures as an array of strings.
@@ -18023,7 +30272,7 @@ def regexp(); end
 # 
 #     m = /(?<x>.)(?<y>.)?/.match("a") #=> #<MatchData "a" x:"a" y:nil>
 #     m.names                          #=> ["x", "y"]
-def names(); end
+def names; end
 
 ##
 # Returns the number of elements in the match array.
@@ -18031,7 +30280,7 @@ def names(); end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.length   #=> 5
 #    m.size     #=> 5
-def size(); end
+def length; end
 
 ##
 # Returns the number of elements in the match array.
@@ -18039,7 +30288,23 @@ def size(); end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.length   #=> 5
 #    m.size     #=> 5
-def length(); end
+def size; end
+
+##
+# Returns the number of elements in the match array.
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
+#    m.length   #=> 5
+#    m.size     #=> 5
+def length; end
+
+##
+# Returns the number of elements in the match array.
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
+#    m.length   #=> 5
+#    m.size     #=> 5
+def size; end
 
 ##
 # Returns a two-element array containing the beginning and ending offsets of
@@ -18053,7 +30318,7 @@ def length(); end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.offset(:foo) #=> [0, 1]
 #    p m.offset(:bar) #=> [2, 3]
-def offset(p1); end
+def offset(n); end
 
 ##
 # Returns the offset of the start of the <em>n</em>th element of the match
@@ -18067,7 +30332,7 @@ def offset(p1); end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.begin(:foo)  #=> 0
 #    p m.begin(:bar)  #=> 2
-def begin(p1); end
+def begin(n); end
 
 ##
 # Returns the offset of the character immediately following the end of the
@@ -18081,7 +30346,7 @@ def begin(p1); end
 #    m = /(?<foo>.)(.)(?<bar>.)/.match("hoge")
 #    p m.end(:foo)    #=> 1
 #    p m.end(:bar)    #=> 3
-def end(p1); end
+def end(n); end
 
 ##
 # Returns the array of matches.
@@ -18100,7 +30365,7 @@ def end(p1); end
 #    f1    #=> "H"
 #    f2    #=> "X"
 #    f3    #=> "113"
-def to_a(); end
+def to_a; end
 
 ##
 # Match Reference---<code>MatchData</code> acts as an array, and may be
@@ -18120,7 +30385,67 @@ def to_a(); end
 #    m          #=> #<MatchData "aaab" foo:"aaa">
 #    m["foo"]   #=> "aaa"
 #    m[:foo]    #=> "aaa"
-def [](p1, p2=0); end
+def []; end
+
+##
+# Match Reference---<code>MatchData</code> acts as an array, and may be
+# accessed using the normal array indexing techniques.  <i>mtch</i>[0] is
+# equivalent to the special variable <code>$&</code>, and returns the entire
+# matched string.  <i>mtch</i>[1], <i>mtch</i>[2], and so on return the values
+# of the matched backreferences (portions of the pattern between parentheses).
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
+#    m          #=> #<MatchData "HX1138" 1:"H" 2:"X" 3:"113" 4:"8">
+#    m[0]       #=> "HX1138"
+#    m[1, 2]    #=> ["H", "X"]
+#    m[1..3]    #=> ["H", "X", "113"]
+#    m[-3, 2]   #=> ["X", "113"]
+# 
+#    m = /(?<foo>a+)b/.match("ccaaab")
+#    m          #=> #<MatchData "aaab" foo:"aaa">
+#    m["foo"]   #=> "aaa"
+#    m[:foo]    #=> "aaa"
+def []; end
+
+##
+# Match Reference---<code>MatchData</code> acts as an array, and may be
+# accessed using the normal array indexing techniques.  <i>mtch</i>[0] is
+# equivalent to the special variable <code>$&</code>, and returns the entire
+# matched string.  <i>mtch</i>[1], <i>mtch</i>[2], and so on return the values
+# of the matched backreferences (portions of the pattern between parentheses).
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
+#    m          #=> #<MatchData "HX1138" 1:"H" 2:"X" 3:"113" 4:"8">
+#    m[0]       #=> "HX1138"
+#    m[1, 2]    #=> ["H", "X"]
+#    m[1..3]    #=> ["H", "X", "113"]
+#    m[-3, 2]   #=> ["X", "113"]
+# 
+#    m = /(?<foo>a+)b/.match("ccaaab")
+#    m          #=> #<MatchData "aaab" foo:"aaa">
+#    m["foo"]   #=> "aaa"
+#    m[:foo]    #=> "aaa"
+def []; end
+
+##
+# Match Reference---<code>MatchData</code> acts as an array, and may be
+# accessed using the normal array indexing techniques.  <i>mtch</i>[0] is
+# equivalent to the special variable <code>$&</code>, and returns the entire
+# matched string.  <i>mtch</i>[1], <i>mtch</i>[2], and so on return the values
+# of the matched backreferences (portions of the pattern between parentheses).
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
+#    m          #=> #<MatchData "HX1138" 1:"H" 2:"X" 3:"113" 4:"8">
+#    m[0]       #=> "HX1138"
+#    m[1, 2]    #=> ["H", "X"]
+#    m[1..3]    #=> ["H", "X", "113"]
+#    m[-3, 2]   #=> ["X", "113"]
+# 
+#    m = /(?<foo>a+)b/.match("ccaaab")
+#    m          #=> #<MatchData "aaab" foo:"aaa">
+#    m["foo"]   #=> "aaa"
+#    m[:foo]    #=> "aaa"
+def []; end
 
 ##
 # Returns the array of captures; equivalent to <code>mtch.to_a[1..-1]</code>.
@@ -18130,7 +30455,7 @@ def [](p1, p2=0); end
 #    f2    #=> "X"
 #    f3    #=> "113"
 #    f4    #=> "8"
-def captures(); end
+def captures; end
 
 ##
 # Uses each <i>index</i> to access the matching values, returning an array of
@@ -18139,7 +30464,14 @@ def captures(); end
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138: The Movie")
 #    m.to_a               #=> ["HX1138", "H", "X", "113", "8"]
 #    m.values_at(0, 2, -2)   #=> ["HX1138", "X", "113"]
-def values_at(*args); end
+##
+# Uses each <i>index</i> to access the matching values, returning an array of
+# the corresponding matches.
+# 
+#    m = /(.)(.)(\d+)(\d)/.match("THX1138: The Movie")
+#    m.to_a               #=> ["HX1138", "H", "X", "113", "8"]
+#    m.values_at(0, 2, -2)   #=> ["HX1138", "X", "113"]
+def values_at(*, index=0); end
 
 ##
 # Returns the portion of the original string before the current match.
@@ -18147,7 +30479,7 @@ def values_at(*args); end
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.pre_match   #=> "T"
-def pre_match(); end
+def pre_match; end
 
 ##
 # Returns the portion of the original string after the current match.
@@ -18155,14 +30487,14 @@ def pre_match(); end
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138: The Movie")
 #    m.post_match   #=> ": The Movie"
-def post_match(); end
+def post_match; end
 
 ##
 # Returns the entire matched string.
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.to_s   #=> "HX1138"
-def to_s(); end
+def to_s; end
 
 ##
 # Returns a printable version of <i>mtch</i>.
@@ -18178,29 +30510,29 @@ def to_s(); end
 # 
 #     puts /(?<foo>.)(?<bar>.)(?<baz>.)/.match("hoge").inspect
 #     #=> #<MatchData "hog" foo:"h" bar:"o" baz:"g">
-def inspect(); end
+def inspect; end
 
 ##
 # Returns a frozen copy of the string passed in to <code>match</code>.
 # 
 #    m = /(.)(.)(\d+)(\d)/.match("THX1138.")
 #    m.string   #=> "THX1138."
-def string(); end
+def string; end
 
 ##
 # Produce a hash based on the target string, regexp and matched
 # positions of this matchdata.
-def hash(); end
+def hash; end
 
 ##
 # Equality---Two matchdata are equal if their target strings,
 # patterns, and matched positions are identical.
-def eql?(p1); end
+def eql?; end
 
 ##
 # Equality---Two matchdata are equal if their target strings,
 # patterns, and matched positions are identical.
-def ==(p1); end
+def ==; end
 
 end
 
@@ -18211,23 +30543,35 @@ class Thread < Object
 # Basically the same as <code>Thread::new</code>. However, if class
 # <code>Thread</code> is subclassed, then calling <code>start</code> in that
 # subclass will not invoke the subclass's <code>initialize</code> method.
-def self.start(*args); end
+def self.start(*, args=0, &block); end
 
 ##
 # Basically the same as <code>Thread::new</code>. However, if class
 # <code>Thread</code> is subclassed, then calling <code>start</code> in that
 # subclass will not invoke the subclass's <code>initialize</code> method.
-def self.fork(*args); end
+def self.fork(*, args=0, &block); end
+
+##
+# Basically the same as <code>Thread::new</code>. However, if class
+# <code>Thread</code> is subclassed, then calling <code>start</code> in that
+# subclass will not invoke the subclass's <code>initialize</code> method.
+def self.start(*, args=0, &block); end
+
+##
+# Basically the same as <code>Thread::new</code>. However, if class
+# <code>Thread</code> is subclassed, then calling <code>start</code> in that
+# subclass will not invoke the subclass's <code>initialize</code> method.
+def self.fork(*, args=0, &block); end
 
 ##
 # Returns the main thread.
-def self.main(); end
+def self.main; end
 
 ##
 # Returns the currently executing thread.
 # 
 #    Thread.current   #=> #<Thread:0x401bdf4c run>
-def self.current(); end
+def self.current; end
 
 ##
 # Stops execution of the current thread, putting it into a ``sleep'' state,
@@ -18242,7 +30586,7 @@ def self.current(); end
 # <em>produces:</em>
 # 
 #    abc
-def self.stop(); end
+def self.stop; end
 
 ##
 # Causes the given <em>thread</em> to exit (see <code>Thread::exit</code>).
@@ -18253,19 +30597,19 @@ def self.stop(); end
 #    Thread.kill(a)   #=> #<Thread:0x401b3d30 dead>
 #    count            #=> 93947
 #    a.alive?         #=> false
-def self.kill(p1); end
+def self.kill(thread); end
 
 ##
 # Terminates the currently running thread and schedules another thread to be
 # run. If this thread is already marked to be killed, <code>exit</code>
 # returns the <code>Thread</code>. If this is the main thread, or the last
 # thread, exit the process.
-def self.exit(); end
+def self.exit; end
 
 ##
 # Give the thread scheduler a hint to pass execution to another thread.
 # A running thread may or may not switch, it depends on OS and processor.
-def self.pass(); end
+def self.pass; end
 
 ##
 # Returns an array of <code>Thread</code> objects for all threads that are
@@ -18282,7 +30626,7 @@ def self.pass(); end
 #    #<Thread:0x401b3f38 run>
 #    #<Thread:0x401b3fb0 sleep>
 #    #<Thread:0x401bdf4c run>
-def self.list(); end
+def self.list; end
 
 ##
 # Returns the status of the global ``abort on exception'' condition.  The
@@ -18291,7 +30635,7 @@ def self.list(); end
 # command line option <code>-d</code> was specified) all threads will abort
 # (the process will <code>exit(0)</code>) if an exception is raised in any
 # thread. See also <code>Thread::abort_on_exception=</code>.
-def self.abort_on_exception(); end
+def self.abort_on_exception; end
 
 ##
 # When set to <code>true</code>, all threads will abort if an exception is
@@ -18312,17 +30656,17 @@ def self.abort_on_exception(); end
 #     from prog.rb:2:in `initialize'
 #     from prog.rb:2:in `new'
 #     from prog.rb:2
-def self.abort_on_exception=(p1); end
+def self.abort_on_exception= boolean; end
 
 ##
 # Returns the thread debug level.  Available only if compiled with
 # THREAD_DEBUG=-1.
-def self.DEBUG(); end
+def self.DEBUG; end
 
 ##
 # Sets the thread debug level.  Available only if compiled with
 # THREAD_DEBUG=-1.
-def self.DEBUG=(p1); end
+def self.DEBUG = num; end
 
 ##
 # Raises an exception (see <code>Kernel::raise</code>) from <i>thr</i>. The
@@ -18338,7 +30682,39 @@ def self.DEBUG=(p1); end
 #     from prog.rb:2:in `initialize'
 #     from prog.rb:2:in `new'
 #     from prog.rb:2
-def raise(*args); end
+def raise; end
+
+##
+# Raises an exception (see <code>Kernel::raise</code>) from <i>thr</i>. The
+# caller does not have to be <i>thr</i>.
+# 
+#    Thread.abort_on_exception = true
+#    a = Thread.new { sleep(200) }
+#    a.raise("Gotcha")
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:3: Gotcha (RuntimeError)
+#     from prog.rb:2:in `initialize'
+#     from prog.rb:2:in `new'
+#     from prog.rb:2
+def raise(string); end
+
+##
+# Raises an exception (see <code>Kernel::raise</code>) from <i>thr</i>. The
+# caller does not have to be <i>thr</i>.
+# 
+#    Thread.abort_on_exception = true
+#    a = Thread.new { sleep(200) }
+#    a.raise("Gotcha")
+# 
+# <em>produces:</em>
+# 
+#    prog.rb:3: Gotcha (RuntimeError)
+#     from prog.rb:2:in `initialize'
+#     from prog.rb:2:in `new'
+#     from prog.rb:2
+def raise(exception , string=0, array=0); end
 
 ##
 # The calling thread will suspend execution and run <i>thr</i>. Does not
@@ -18373,7 +30749,42 @@ def raise(*args); end
 #    Waitingtick...
 # 
 #    tick...
-def join(p1=0); end
+def join; end
+
+##
+# The calling thread will suspend execution and run <i>thr</i>. Does not
+# return until <i>thr</i> exits or until <i>limit</i> seconds have passed. If
+# the time limit expires, <code>nil</code> will be returned, otherwise
+# <i>thr</i> is returned.
+# 
+# Any threads not joined will be killed when the main program exits.  If
+# <i>thr</i> had previously raised an exception and the
+# <code>abort_on_exception</code> and <code>$DEBUG</code> flags are not set
+# (so the exception has not yet been processed) it will be processed at this
+# time.
+# 
+#    a = Thread.new { print "a"; sleep(10); print "b"; print "c" }
+#    x = Thread.new { print "x"; Thread.pass; print "y"; print "z" }
+#    x.join # Let x thread finish, a will be killed on exit.
+# 
+# <em>produces:</em>
+# 
+#    axyz
+# 
+# The following example illustrates the <i>limit</i> parameter.
+# 
+#    y = Thread.new { 4.times { sleep 0.1; puts 'tick... ' }}
+#    puts "Waiting" until y.join(0.15)
+# 
+# <em>produces:</em>
+# 
+#    tick...
+#    Waiting
+#    tick...
+#    Waitingtick...
+# 
+#    tick...
+def join(limit); end
 
 ##
 # Waits for <i>thr</i> to complete (via <code>Thread#join</code>) and returns
@@ -18381,28 +30792,70 @@ def join(p1=0); end
 # 
 #    a = Thread.new { 2 + 2 }
 #    a.value   #=> 4
-def value(); end
+def value; end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def kill(); end
+def exit; end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def terminate(); end
+def kill; end
 
 ##
 # Terminates <i>thr</i> and schedules another thread to be run. If this thread
 # is already marked to be killed, <code>exit</code> returns the
 # <code>Thread</code>. If this is the main thread, or the last thread, exits
 # the process.
-def exit(); end
+def terminate; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def exit; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def kill; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def terminate; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def exit; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def kill; end
+
+##
+# Terminates <i>thr</i> and schedules another thread to be run. If this thread
+# is already marked to be killed, <code>exit</code> returns the
+# <code>Thread</code>. If this is the main thread, or the last thread, exits
+# the process.
+def terminate; end
 
 ##
 # Wakes up <i>thr</i>, making it eligible for scheduling.
@@ -18418,7 +30871,7 @@ def exit(); end
 #    a
 #    Got here
 #    c
-def run(); end
+def run; end
 
 ##
 # Marks <i>thr</i> as eligible for scheduling (it may still remain blocked on
@@ -18432,7 +30885,7 @@ def run(); end
 # <em>produces:</em>
 # 
 #    hey!
-def wakeup(); end
+def wakeup; end
 
 ##
 # Attribute Reference---Returns the value of a thread-local variable, using
@@ -18453,12 +30906,12 @@ def wakeup(); end
 #    #<Thread:0x00000002a54220 dead>: A
 #    #<Thread:0x00000002a541a8 dead>: B
 #    #<Thread:0x00000002a54130 dead>: C
-def [](p1); end
+def []; end
 
 ##
 # Attribute Assignment---Sets or creates the value of a thread-local variable,
 # using either a symbol or a string. See also <code>Thread#[]</code>.
-def []=(p1, p2); end
+def []=; end
 
 ##
 # Returns <code>true</code> if the given string (or symbol) exists as a
@@ -18468,7 +30921,7 @@ def []=(p1, p2); end
 #    me[:oliver] = "a"
 #    me.key?(:oliver)    #=> true
 #    me.key?(:stanley)   #=> false
-def key?(p1); end
+def key?(sym); end
 
 ##
 # Returns an an array of the names of the thread-local variables (as Symbols).
@@ -18479,7 +30932,7 @@ def key?(p1); end
 #    end
 #    thr.join   #=> #<Thread:0x401b3f10 dead>
 #    thr.keys   #=> [:dog, :cat]
-def keys(); end
+def keys; end
 
 ##
 # Returns the priority of <i>thr</i>. Default is inherited from the
@@ -18491,7 +30944,7 @@ def keys(); end
 # platform.
 # 
 #    Thread.current.priority   #=> 0
-def priority(); end
+def priority; end
 
 ##
 # Sets the priority of <i>thr</i> to <i>integer</i>. Higher-priority threads
@@ -18514,7 +30967,7 @@ def priority(); end
 #    sleep 1   #=> 1
 #    count1    #=> 622504
 #    count2    #=> 5832
-def priority=(p1); end
+def priority= integer; end
 
 ##
 # Returns the status of <i>thr</i>: ``<code>sleep</code>'' if <i>thr</i> is
@@ -18533,7 +30986,7 @@ def priority=(p1); end
 #    c.status                #=> false
 #    d.status                #=> "aborting"
 #    Thread.current.status   #=> "run"
-def status(); end
+def status; end
 
 ##
 # Returns <code>true</code> if <i>thr</i> is running or sleeping.
@@ -18542,7 +30995,7 @@ def status(); end
 #    thr.join                #=> #<Thread:0x401b3fb0 dead>
 #    Thread.current.alive?   #=> true
 #    thr.alive?              #=> false
-def alive?(); end
+def alive?; end
 
 ##
 # Returns <code>true</code> if <i>thr</i> is dead or sleeping.
@@ -18551,19 +31004,19 @@ def alive?(); end
 #    b = Thread.current
 #    a.stop?   #=> true
 #    b.stop?   #=> false
-def stop?(); end
+def stop?; end
 
 ##
 # Returns the status of the thread-local ``abort on exception'' condition for
 # <i>thr</i>. The default is <code>false</code>. See also
 # <code>Thread::abort_on_exception=</code>.
-def abort_on_exception(); end
+def abort_on_exception; end
 
 ##
 # When set to <code>true</code>, causes all threads (including the main
 # program) to abort if an exception is raised in <i>thr</i>. The process will
 # effectively <code>exit(0)</code>.
-def abort_on_exception=(p1); end
+def abort_on_exception= boolean; end
 
 ##
 # Returns the safe level in effect for <i>thr</i>. Setting thread-local safe
@@ -18572,33 +31025,39 @@ def abort_on_exception=(p1); end
 #    thr = Thread.new { $SAFE = 3; sleep }
 #    Thread.current.safe_level   #=> 0
 #    thr.safe_level              #=> 3
-def safe_level(); end
+def safe_level; end
 
 ##
 # Returns the <code>ThreadGroup</code> which contains <i>thr</i>, or nil if
 # the thread is not a member of any group.
 # 
 #    Thread.main.group   #=> #<ThreadGroup:0x4029d914>
-def group(); end
+def group; end
 
 ##
 # Returns the current back trace of the _thr_.
-def backtrace(); end
+def backtrace; end
 
 ##
 # Dump the name, id, and status of _thr_ to a string.
-def inspect(); end
+def inspect; end
 
 ##
 # Establishes _proc_ on _thr_ as the handler for tracing, or
 # disables tracing if the parameter is +nil+.
 # See +set_trace_func+.
-def set_trace_func(p1); end
+def set_trace_func(proc); end
+
+##
+# Establishes _proc_ on _thr_ as the handler for tracing, or
+# disables tracing if the parameter is +nil+.
+# See +set_trace_func+.
+def set_trace_func(nil); end
 
 ##
 # Adds _proc_ as a handler for tracing.
 # See <code>Thread#set_trace_func</code> and +set_trace_func+.
-def add_trace_func(p1); end
+def add_trace_func(proc); end
 
 end
 
@@ -18679,7 +31138,7 @@ class ARGF < Object
 include Enumerable
 ##
 # Returns "ARGF".
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the +ARGV+ array, which contains the arguments passed to your
@@ -18690,21 +31149,35 @@ def to_s(); end
 #     $ ruby argf.rb -v glark.txt
 # 
 #     ARGF.argv   #=> ["-v", "glark.txt"]
-def argv(); end
+def argv; end
 
 ##
 # Returns an integer representing the numeric file descriptor for
 # the current file. Raises an +ArgumentError+ if there isn't a current file.
 # 
 #    ARGF.fileno    #=> 3
-def fileno(); end
+def fileno; end
 
 ##
 # Returns an integer representing the numeric file descriptor for
 # the current file. Raises an +ArgumentError+ if there isn't a current file.
 # 
 #    ARGF.fileno    #=> 3
-def to_i(); end
+def to_i; end
+
+##
+# Returns an integer representing the numeric file descriptor for
+# the current file. Raises an +ArgumentError+ if there isn't a current file.
+# 
+#    ARGF.fileno    #=> 3
+def fileno; end
+
+##
+# Returns an integer representing the numeric file descriptor for
+# the current file. Raises an +ArgumentError+ if there isn't a current file.
+# 
+#    ARGF.fileno    #=> 3
+def to_i; end
 
 ##
 # Returns an +IO+ object representing the current file. This will be a
@@ -18714,12 +31187,12 @@ def to_i(); end
 # 
 #    ARGF.to_io    #=> #<File:glark.txt>
 #    ARGF.to_io    #=> #<IO:<STDIN>>
-def to_io(); end
+def to_io; end
 
 ##
 # Returns IO instance tied to _ARGF_ for writing if inplace mode is
 # enabled.
-def to_write_io(); end
+def to_write_io; end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18743,7 +31216,7 @@ def to_write_io(); end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def each(*args); end
+def each(sep=$/, &block); end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18767,7 +31240,391 @@ def each(*args); end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def each_line(*args); end
+def each(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(*more); end
 
 ##
 #  Iterates over each byte of each file in +ARGV+.
@@ -18784,7 +31641,58 @@ def each_line(*args); end
 # For example:
 # 
 #     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
-def each_byte(); end
+def bytes(&block); end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def bytes; end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def each_byte(&block); end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def each_byte; end
 
 ##
 # Iterates over each character of each file in +ARGF+.
@@ -18797,7 +31705,46 @@ def each_byte(); end
 # appears.
 # 
 # If no block is given, an enumerator is returned instead.
-def each_char(); end
+def chars(&block); end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def chars; end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_char(&block); end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_char; end
 
 ##
 # Returns an enumerator which iterates over each line (separated by _sep_,
@@ -18821,7 +31768,199 @@ def each_char(); end
 #      puts ARGF.filename if ARGF.lineno == 1
 #      puts "#{ARGF.lineno}: #{line}"
 #    end
-def lines(*args); end
+def each(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def each_line(*more); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(sep=$/,limit, &block); end
+
+##
+# Returns an enumerator which iterates over each line (separated by _sep_,
+# which defaults to your platform's newline character) of each file in
+# +ARGV+. If a block is supplied, each line in turn will be yielded to the
+# block, otherwise an enumerator is returned.
+# The optional _limit_ argument is a +Fixnum+ specifying the maximum
+# length of each line; longer lines will be split according to this limit.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last line of the first file has been returned, the first line of the
+# second file is returned. The +ARGF.filename+ and +ARGF.lineno+ methods can
+# be used to determine the filename and line number, respectively, of the
+# current line.
+# 
+# For example, the following code prints out each line of each named file
+# prefixed with its line number, displaying the filename once per file:
+# 
+#    ARGF.lines do |line|
+#      puts ARGF.filename if ARGF.lineno == 1
+#      puts "#{ARGF.lineno}: #{line}"
+#    end
+def lines(*more); end
 
 ##
 #  Iterates over each byte of each file in +ARGV+.
@@ -18838,7 +31977,58 @@ def lines(*args); end
 # For example:
 # 
 #     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
-def bytes(); end
+def bytes(&block); end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def bytes; end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def each_byte(&block); end
+
+##
+#  Iterates over each byte of each file in +ARGV+.
+#  A byte is returned as a +Fixnum+ in the range 0..255.
+# 
+#  This method allows you to treat the files supplied on the command line as
+#  a single file consisting of the concatenation of each named file. After
+#  the last byte of the first file has been returned, the first byte of the
+#  second file is returned. The +ARGF.filename+ method can be used to
+#  determine the filename of the current byte.
+# 
+#  If no block is given, an enumerator is returned instead.
+# 
+# For example:
+# 
+#     ARGF.bytes.to_a  #=> [35, 32, ... 95, 10]
+def each_byte; end
 
 ##
 # Iterates over each character of each file in +ARGF+.
@@ -18851,7 +32041,46 @@ def bytes(); end
 # appears.
 # 
 # If no block is given, an enumerator is returned instead.
-def chars(); end
+def chars(&block); end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def chars; end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_char(&block); end
+
+##
+# Iterates over each character of each file in +ARGF+.
+# 
+# This method allows you to treat the files supplied on the command line as
+# a single file consisting of the concatenation of each named file. After
+# the last character of the first file has been returned, the first
+# character of the second file is returned. The +ARGF.filename+ method can
+# be used to determine the name of the file in which the current character
+# appears.
+# 
+# If no block is given, an enumerator is returned instead.
+def each_char; end
 
 ##
 #  Reads _length_ bytes from ARGF. The files named on the command line
@@ -18885,7 +32114,7 @@ def chars(); end
 # 
 #  Note that this method behaves like fread() function in C.  If you need the
 #  behavior like read(2) system call, consider +ARGF.readpartial+.
-def read(p1=0, p2=0); end
+def read(length=0, buffer=0); end
 
 ##
 # Reads at most _maxlen_ bytes from the ARGF stream. It blocks only if
@@ -18909,11 +32138,39 @@ def read(p1=0, p2=0); end
 # the byte buffer is not empty, it returns the data in the buffer. Otherwise, if
 # the stream has some content, it returns the data in the stream. If the
 # stream reaches EOF an +EOFError+ is raised.
-def readpartial(*args); end
+def readpartial(maxlen); end
+
+##
+# Reads at most _maxlen_ bytes from the ARGF stream. It blocks only if
+# +ARGF+ has no data immediately available. If the optional _outbuf_
+# argument is present, it must reference a String, which will receive the
+# data. It raises <code>EOFError</code> on end of file.
+# 
+# +readpartial+ is designed for streams such as pipes, sockets, and ttys. It
+# blocks only when no data is immediately available. This means that it
+# blocks only when following all conditions hold:
+# 
+# * The byte buffer in the +IO+ object is empty.
+# * The content of the stream is empty.
+# * The stream has not reached EOF.
+# 
+# When +readpartial+ blocks, it waits for data or EOF. If some data is read,
+# +readpartial+ returns with the data. If EOF is reached, readpartial raises
+# an +EOFError+.
+# 
+# When +readpartial+ doesn't block, it returns or raises immediately.  If
+# the byte buffer is not empty, it returns the data in the buffer. Otherwise, if
+# the stream has some content, it returns the data in the stream. If the
+# stream reaches EOF an +EOFError+ is raised.
+def readpartial(maxlen, outbuf); end
 
 ##
 # Reads at most _maxlen_ bytes from the ARGF stream in non-blocking mode.
-def read_nonblock(*args); end
+def read_nonblock(maxlen); end
+
+##
+# Reads at most _maxlen_ bytes from the ARGF stream in non-blocking mode.
+def read_nonblock(maxlen, outbuf); end
 
 ##
 # Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
@@ -18921,7 +32178,7 @@ def read_nonblock(*args); end
 # 
 #    lines = ARGF.readlines
 #    lines[0]                #=> "This is line one\n"
-def readlines(*args); end
+def readlines(sep=$/); end
 
 ##
 # Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
@@ -18929,7 +32186,87 @@ def readlines(*args); end
 # 
 #    lines = ARGF.readlines
 #    lines[0]                #=> "This is line one\n"
-def to_a(*args); end
+def readlines(limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def readlines(sep, limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(sep=$/); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(sep, limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def readlines(sep=$/); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def readlines(limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def readlines(sep, limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(sep=$/); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(limit); end
+
+##
+# Reads +ARGF+'s current file in its entirety, returning an +Array+ of its
+# lines, one line per element. Lines are assumed to be separated by _sep_.
+# 
+#    lines = ARGF.readlines
+#    lines[0]                #=> "This is line one\n"
+def to_a(sep, limit); end
 
 ##
 # Returns the next line from the current file in +ARGF+.
@@ -18939,7 +32276,27 @@ def to_a(*args); end
 # 
 # The optional  _limit_ argument specifies how many characters of each line
 # to return. By default all characters are returned.
-def gets(*args); end
+def gets(sep=$/); end
+
+##
+# Returns the next line from the current file in +ARGF+.
+# 
+# By default lines are assumed to be separated by +$/+; to use a different
+# character as a separator, supply it as a +String+ for the _sep_ argument.
+# 
+# The optional  _limit_ argument specifies how many characters of each line
+# to return. By default all characters are returned.
+def gets(limit); end
+
+##
+# Returns the next line from the current file in +ARGF+.
+# 
+# By default lines are assumed to be separated by +$/+; to use a different
+# character as a separator, supply it as a +String+ for the _sep_ argument.
+# 
+# The optional  _limit_ argument specifies how many characters of each line
+# to return. By default all characters are returned.
+def gets(sep, limit); end
 
 ##
 # Returns the next line from the current file in +ARGF+.
@@ -18951,7 +32308,31 @@ def gets(*args); end
 # to return. By default all characters are returned.
 # 
 # An +EOFError+ is raised at the end of the file.
-def readline(*args); end
+def readline(sep=$/); end
+
+##
+# Returns the next line from the current file in +ARGF+.
+# 
+# By default lines are assumed to be separated by +$/+; to use a different
+# character as a separator, supply it as a +String+ for the _sep_ argument.
+# 
+# The optional  _limit_ argument specifies how many characters of each line
+# to return. By default all characters are returned.
+# 
+# An +EOFError+ is raised at the end of the file.
+def readline(limit); end
+
+##
+# Returns the next line from the current file in +ARGF+.
+# 
+# By default lines are assumed to be separated by +$/+; to use a different
+# character as a separator, supply it as a +String+ for the _sep_ argument.
+# 
+# The optional  _limit_ argument specifies how many characters of each line
+# to return. By default all characters are returned.
+# 
+# An +EOFError+ is raised at the end of the file.
+def readline(sep, limit); end
 
 ##
 # Reads the next character from +ARGF+ and returns it as a +String+. Returns
@@ -18972,7 +32353,7 @@ def readline(*args); end
 #    ARGF.getc  #=> "\n"
 #    ARGF.getc  #=> nil
 #    ARGF.getc  #=> nil
-def getc(); end
+def getc; end
 
 ##
 # Gets the next 8-bit byte (0..255) from +ARGF+. Returns +nil+ if called at
@@ -18988,7 +32369,7 @@ def getc(); end
 #    ARGF.getbyte #=> 111
 #    ARGF.getbyte #=> 10
 #    ARGF.getbyte #=> nil
-def getbyte(); end
+def getbyte; end
 
 ##
 # Reads the next character from +ARGF+ and returns it as a +String+. Raises
@@ -19004,7 +32385,7 @@ def getbyte(); end
 #    ARGF.readchar  #=> "o"
 #    ARGF.readchar  #=> "\n"
 #    ARGF.readchar  #=> end of file reached (EOFError)
-def readchar(); end
+def readchar; end
 
 ##
 # Reads the next 8-bit byte from ARGF and returns it as a +Fixnum+. Raises
@@ -19020,7 +32401,7 @@ def readchar(); end
 #    ARGF.readbyte  #=> 111
 #    ARGF.readbyte  #=> 10
 #    ARGF.readbyte  #=> end of file reached (EOFError)
-def readbyte(); end
+def readbyte; end
 
 ##
 # Returns the current offset (in bytes) of the current file in +ARGF+.
@@ -19028,12 +32409,20 @@ def readbyte(); end
 #    ARGF.pos    #=> 0
 #    ARGF.gets   #=> "This is line one\n"
 #    ARGF.pos    #=> 17
-def tell(); end
+def tell; end
+
+##
+# Returns the current offset (in bytes) of the current file in +ARGF+.
+# 
+#    ARGF.pos    #=> 0
+#    ARGF.gets   #=> "This is line one\n"
+#    ARGF.pos    #=> 17
+def pos; end
 
 ##
 # Seeks to offset _amount_ (an +Integer+) in the +ARGF+ stream according to
 # the value of _whence_. See +IO#seek+ for further details.
-def seek(*args); end
+def seek(amount, whence=IO::SEEK_SET); end
 
 ##
 # Positions the current file to the beginning of input, resetting
@@ -19043,7 +32432,7 @@ def seek(*args); end
 #    ARGF.rewind     #=> 0
 #    ARGF.lineno     #=> 0
 #    ARGF.readline   #=> "This is line one\n"
-def rewind(); end
+def rewind; end
 
 ##
 # Returns the current offset (in bytes) of the current file in +ARGF+.
@@ -19051,7 +32440,15 @@ def rewind(); end
 #    ARGF.pos    #=> 0
 #    ARGF.gets   #=> "This is line one\n"
 #    ARGF.pos    #=> 17
-def pos(); end
+def tell; end
+
+##
+# Returns the current offset (in bytes) of the current file in +ARGF+.
+# 
+#    ARGF.pos    #=> 0
+#    ARGF.gets   #=> "This is line one\n"
+#    ARGF.pos    #=> 17
+def pos; end
 
 ##
 # Seeks to the position given by _position_ (in bytes) in +ARGF+.
@@ -19060,7 +32457,7 @@ def pos(); end
 # 
 #     ARGF.pos = 17
 #     ARGF.gets   #=> "This is line two\n"
-def pos=(p1); end
+def pos = position; end
 
 ##
 # Returns true if the current file in +ARGF+ is at end of file, i.e. it has
@@ -19074,7 +32471,7 @@ def pos=(p1); end
 #    ARGF.eof?                 #=> false
 #    ARGF.readchar             #=> "\n"
 #    ARGF.eof?                 #=> true
-def eof(); end
+def eof?; end
 
 ##
 # Returns true if the current file in +ARGF+ is at end of file, i.e. it has
@@ -19088,7 +32485,35 @@ def eof(); end
 #    ARGF.eof?                 #=> false
 #    ARGF.readchar             #=> "\n"
 #    ARGF.eof?                 #=> true
-def eof?(); end
+def eof; end
+
+##
+# Returns true if the current file in +ARGF+ is at end of file, i.e. it has
+# no data to read. The stream must be opened for reading or an +IOError+
+# will be raised.
+# 
+#    $ echo "eof" | ruby argf.rb
+# 
+#    ARGF.eof?                 #=> false
+#    3.times { ARGF.readchar }
+#    ARGF.eof?                 #=> false
+#    ARGF.readchar             #=> "\n"
+#    ARGF.eof?                 #=> true
+def eof?; end
+
+##
+# Returns true if the current file in +ARGF+ is at end of file, i.e. it has
+# no data to read. The stream must be opened for reading or an +IOError+
+# will be raised.
+# 
+#    $ echo "eof" | ruby argf.rb
+# 
+#    ARGF.eof?                 #=> false
+#    3.times { ARGF.readchar }
+#    ARGF.eof?                 #=> false
+#    ARGF.readchar             #=> "\n"
+#    ARGF.eof?                 #=> true
+def eof; end
 
 ##
 # Puts +ARGF+ into binary mode. Once a stream is in binary mode, it cannot
@@ -19097,7 +32522,7 @@ def eof?(); end
 # *  Newline conversion is disabled.
 # *  Encoding conversion is disabled.
 # *  Content is treated as ASCII-8BIT.
-def binmode(); end
+def binmode; end
 
 ##
 #  Returns true if +ARGF+ is being read in binary mode; false otherwise. (To
@@ -19108,11 +32533,11 @@ def binmode(); end
 #     ARGF.binmode?  #=> false
 #     ARGF.binmode
 #     ARGF.binmode?  #=> true
-def binmode?(); end
+def binmode?; end
 
 ##
 # Writes _string_ if inplace mode.
-def write(p1); end
+def write(string); end
 
 ##
 # Writes the given object(s) to <em>ios</em>. The stream must be
@@ -19130,7 +32555,25 @@ def write(p1); end
 # <em>produces:</em>
 # 
 #    This is 100 percent.
-def print(*args); end
+def print(); end
+
+##
+# Writes the given object(s) to <em>ios</em>. The stream must be
+# opened for writing. If the output field separator (<code>$,</code>)
+# is not <code>nil</code>, it will be inserted between each object.
+# If the output record separator (<code>$\\</code>)
+# is not <code>nil</code>, it will be appended to the output. If no
+# arguments are given, prints <code>$_</code>. Objects that aren't
+# strings will be converted by calling their <code>to_s</code> method.
+# With no argument, prints the contents of the variable <code>$_</code>.
+# Returns <code>nil</code>.
+# 
+#    $stdout.print("This is ", 100, " percent.\n")
+# 
+# <em>produces:</em>
+# 
+#    This is 100 percent.
+def print(obj, *more); end
 
 ##
 # If <i>obj</i> is <code>Numeric</code>, write the character whose code is
@@ -19145,7 +32588,7 @@ def print(*args); end
 # <em>produces:</em>
 # 
 #    AA
-def putc(p1); end
+def putc(obj); end
 
 ##
 # Writes the given objects to <em>ios</em> as with
@@ -19162,13 +32605,13 @@ def putc(p1); end
 #    is
 #    a
 #    test
-def puts(*args); end
+def puts(obj, *more); end
 
 ##
 # Formats and writes to <em>ios</em>, converting parameters under
 # control of the format string. See <code>Kernel#sprintf</code>
 # for details.
-def printf(*args); end
+def printf(format_string , obj=0); end
 
 ##
 # Returns the current filename. "-" is returned when the current file is
@@ -19187,7 +32630,7 @@ def printf(*args); end
 #    ARGF.filename  #=> "bar"
 #    ARGF.skip
 #    ARGF.filename  #=> "glark"
-def filename(); end
+def filename; end
 
 ##
 # Returns the current filename. "-" is returned when the current file is
@@ -19206,7 +32649,45 @@ def filename(); end
 #    ARGF.filename  #=> "bar"
 #    ARGF.skip
 #    ARGF.filename  #=> "glark"
-def path(); end
+def path; end
+
+##
+# Returns the current filename. "-" is returned when the current file is
+# STDIN.
+# 
+# For example:
+# 
+#    $ echo "foo" > foo
+#    $ echo "bar" > bar
+#    $ echo "glark" > glark
+# 
+#    $ ruby argf.rb foo bar glark
+# 
+#    ARGF.filename  #=> "foo"
+#    ARGF.read(5)   #=> "foo\nb"
+#    ARGF.filename  #=> "bar"
+#    ARGF.skip
+#    ARGF.filename  #=> "glark"
+def filename; end
+
+##
+# Returns the current filename. "-" is returned when the current file is
+# STDIN.
+# 
+# For example:
+# 
+#    $ echo "foo" > foo
+#    $ echo "bar" > bar
+#    $ echo "glark" > glark
+# 
+#    $ ruby argf.rb foo bar glark
+# 
+#    ARGF.filename  #=> "foo"
+#    ARGF.read(5)   #=> "foo\nb"
+#    ARGF.filename  #=> "bar"
+#    ARGF.skip
+#    ARGF.filename  #=> "glark"
+def path; end
 
 ##
 # Returns the current file as an +IO+ or +File+ object. #<IO:<STDIN>> is
@@ -19222,7 +32703,7 @@ def path(); end
 #    ARGF.file      #=> #<File:foo>
 #    ARGF.read(5)   #=> "foo\nb"
 #    ARGF.file      #=> #<File:bar>
-def file(); end
+def file; end
 
 ##
 #  Sets the current file to the next file in ARGV. If there aren't any more
@@ -19234,7 +32715,7 @@ def file(); end
 #     ARGF.filename  #=> "foo"
 #     ARGF.skip
 #     ARGF.filename  #=> "bar"
-def skip(); end
+def skip; end
 
 ##
 #  Closes the current file and skips to the next in the stream. Trying to
@@ -19250,12 +32731,12 @@ def skip(); end
 #     ARGF.filename  #=> "bar"
 #     ARGF.close
 #     ARGF.close     #=> closed stream (IOError)
-def close(); end
+def close; end
 
 ##
 # Returns _true_ if the current file has been closed; _false_ otherwise. Use
 # +ARGF.close+ to actually close the current file.
-def closed?(); end
+def closed?; end
 
 ##
 # Returns the current line number of ARGF as a whole. This value
@@ -19266,7 +32747,7 @@ def closed?(); end
 #     ARGF.lineno   #=> 0
 #     ARGF.readline #=> "This is line 1\n"
 #     ARGF.lineno   #=> 1
-def lineno(); end
+def lineno; end
 
 ##
 # Sets the line number of +ARGF+ as a whole to the given +Integer+.
@@ -19282,13 +32763,13 @@ def lineno(); end
 #     ARGF.lineno      #=> 1
 #     ARGF.lineno = 0  #=> nil
 #     ARGF.lineno      #=> 0
-def lineno=(p1); end
+def lineno = number; end
 
 ##
 # Returns the file extension appended to the names of modified files under
 # inplace-edit mode. This value can be set using +ARGF.inplace_mode=+ or
 # passing the +-i+ switch to the Ruby binary.
-def inplace_mode(); end
+def inplace_mode; end
 
 ##
 #  Sets the filename extension for inplace editing mode to the given String.
@@ -19306,7 +32787,7 @@ def inplace_mode(); end
 # 
 # Each line of _file.txt_ has the first occurrence of "foo" replaced with
 # "bar", then the new line is written out to _file.txt.bak_.
-def inplace_mode=(p1); end
+def inplace_mode = ext; end
 
 ##
 #  Returns the external encoding for files read from +ARGF+ as an +Encoding+
@@ -19319,7 +32800,7 @@ def inplace_mode=(p1); end
 # For example:
 # 
 #     ARGF.external_encoding  #=>  #<Encoding:UTF-8>
-def external_encoding(); end
+def external_encoding; end
 
 ##
 # Returns the internal encoding for strings read from +ARGF+ as an
@@ -19330,7 +32811,7 @@ def external_encoding(); end
 # value is returned. Failing that, if a default external encoding was
 # specified on the command-line, that value is used. If the encoding is
 # unknown, nil is returned.
-def internal_encoding(); end
+def internal_encoding; end
 
 ##
 # If single argument is specified, strings read from ARGF are tagged with
@@ -19355,7 +32836,107 @@ def internal_encoding(); end
 #     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
 #     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
 #                                        # to UTF-8.
-def set_encoding(*args); end
+def set_encoding(ext_enc); end
+
+##
+# If single argument is specified, strings read from ARGF are tagged with
+# the encoding specified.
+# 
+# If two encoding names separated by a colon are given, e.g. "ascii:utf-8",
+# the read string is converted from the first encoding (external encoding)
+# to the second encoding (internal encoding), then tagged with the second
+# encoding.
+# 
+# If two arguments are specified, they must be encoding objects or encoding
+# names. Again, the first specifies the external encoding; the second
+# specifies the internal encoding.
+# 
+# If the external encoding and the internal encoding are specified, the
+# optional +Hash+ argument can be used to adjust the conversion process. The
+# structure of this hash is explained in the +String#encode+ documentation.
+# 
+# For example:
+# 
+#     ARGF.set_encoding('ascii')         # Tag the input as US-ASCII text
+#     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
+#     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
+#                                        # to UTF-8.
+def set_encoding("ext_enc:int_enc"); end
+
+##
+# If single argument is specified, strings read from ARGF are tagged with
+# the encoding specified.
+# 
+# If two encoding names separated by a colon are given, e.g. "ascii:utf-8",
+# the read string is converted from the first encoding (external encoding)
+# to the second encoding (internal encoding), then tagged with the second
+# encoding.
+# 
+# If two arguments are specified, they must be encoding objects or encoding
+# names. Again, the first specifies the external encoding; the second
+# specifies the internal encoding.
+# 
+# If the external encoding and the internal encoding are specified, the
+# optional +Hash+ argument can be used to adjust the conversion process. The
+# structure of this hash is explained in the +String#encode+ documentation.
+# 
+# For example:
+# 
+#     ARGF.set_encoding('ascii')         # Tag the input as US-ASCII text
+#     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
+#     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
+#                                        # to UTF-8.
+def set_encoding(ext_enc, int_enc); end
+
+##
+# If single argument is specified, strings read from ARGF are tagged with
+# the encoding specified.
+# 
+# If two encoding names separated by a colon are given, e.g. "ascii:utf-8",
+# the read string is converted from the first encoding (external encoding)
+# to the second encoding (internal encoding), then tagged with the second
+# encoding.
+# 
+# If two arguments are specified, they must be encoding objects or encoding
+# names. Again, the first specifies the external encoding; the second
+# specifies the internal encoding.
+# 
+# If the external encoding and the internal encoding are specified, the
+# optional +Hash+ argument can be used to adjust the conversion process. The
+# structure of this hash is explained in the +String#encode+ documentation.
+# 
+# For example:
+# 
+#     ARGF.set_encoding('ascii')         # Tag the input as US-ASCII text
+#     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
+#     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
+#                                        # to UTF-8.
+def set_encoding("ext_enc:int_enc", opt); end
+
+##
+# If single argument is specified, strings read from ARGF are tagged with
+# the encoding specified.
+# 
+# If two encoding names separated by a colon are given, e.g. "ascii:utf-8",
+# the read string is converted from the first encoding (external encoding)
+# to the second encoding (internal encoding), then tagged with the second
+# encoding.
+# 
+# If two arguments are specified, they must be encoding objects or encoding
+# names. Again, the first specifies the external encoding; the second
+# specifies the internal encoding.
+# 
+# If the external encoding and the internal encoding are specified, the
+# optional +Hash+ argument can be used to adjust the conversion process. The
+# structure of this hash is explained in the +String#encode+ documentation.
+# 
+# For example:
+# 
+#     ARGF.set_encoding('ascii')         # Tag the input as US-ASCII text
+#     ARGF.set_encoding(Encoding::UTF_8) # Tag the input as UTF-8 text
+#     ARGF.set_encoding('utf-8','ascii') # Transcode the input from US-ASCII
+#                                        # to UTF-8.
+def set_encoding(ext_enc, int_enc, opt); end
 
 end
 
@@ -19377,9 +32958,20 @@ end
 class Time < Object
 include Comparable
 ##
-# Synonym for <code>Time.new</code>. Returns a +Time+ object
-# initialized to the current system time.
-def self.now(); end
+# Creates a new time object with the value given by <i>time</i>,
+# the given number of <i>seconds_with_frac</i>, or
+# <i>seconds</i> and <i>microseconds_with_frac</i> from the Epoch.
+# <i>seconds_with_frac</i> and <i>microseconds_with_frac</i>
+# can be Integer, Float, Rational, or other Numeric.
+# non-portable feature allows the offset to be negative on some systems.
+# 
+#    Time.at(0)            #=> 1969-12-31 18:00:00 -0600
+#    Time.at(Time.at(0))   #=> 1969-12-31 18:00:00 -0600
+#    Time.at(946702800)    #=> 1999-12-31 23:00:00 -0600
+#    Time.at(-284061600)   #=> 1960-12-31 00:00:00 -0600
+#    Time.at(946684800.2).usec #=> 200000
+#    Time.at(946684800, 123456.789).nsec #=> 123456789
+def self.at(time); end
 
 ##
 # Creates a new time object with the value given by <i>time</i>,
@@ -19395,7 +32987,23 @@ def self.now(); end
 #    Time.at(-284061600)   #=> 1960-12-31 00:00:00 -0600
 #    Time.at(946684800.2).usec #=> 200000
 #    Time.at(946684800, 123456.789).nsec #=> 123456789
-def self.at(p1, p2=0); end
+def self.at(seconds_with_frac); end
+
+##
+# Creates a new time object with the value given by <i>time</i>,
+# the given number of <i>seconds_with_frac</i>, or
+# <i>seconds</i> and <i>microseconds_with_frac</i> from the Epoch.
+# <i>seconds_with_frac</i> and <i>microseconds_with_frac</i>
+# can be Integer, Float, Rational, or other Numeric.
+# non-portable feature allows the offset to be negative on some systems.
+# 
+#    Time.at(0)            #=> 1969-12-31 18:00:00 -0600
+#    Time.at(Time.at(0))   #=> 1969-12-31 18:00:00 -0600
+#    Time.at(946702800)    #=> 1999-12-31 23:00:00 -0600
+#    Time.at(-284061600)   #=> 1960-12-31 00:00:00 -0600
+#    Time.at(946684800.2).usec #=> 200000
+#    Time.at(946684800, 123456.789).nsec #=> 123456789
+def self.at(seconds, microseconds_with_frac); end
 
 ##
 # Creates a time based on given values, interpreted as UTC (GMT). The
@@ -19410,7 +33018,7 @@ def self.at(p1, p2=0); end
 # 
 #    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
 #    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
-def self.utc(*args); end
+def self.utc(year); end
 
 ##
 # Creates a time based on given values, interpreted as UTC (GMT). The
@@ -19425,21 +33033,681 @@ def self.utc(*args); end
 # 
 #    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
 #    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
-def self.gm(*args); end
+def self.utc(year, month); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.utc(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Creates a time based on given values, interpreted as UTC (GMT). The
+# year must be specified. Other values default to the minimum value
+# for that field (and may be <code>nil</code> or omitted). Months may
+# be specified by numbers from 1 to 12, or by the three-letter English
+# month names. Hours are specified on a 24-hour clock (0..23). Raises
+# an <code>ArgumentError</code> if any values are out of range. Will
+# also accept ten arguments in the order output by
+# <code>Time#to_a</code>.
+# <i>sec_with_frac</i> and <i>usec_with_frac</i> can have a fractional part.
+# 
+#    Time.utc(2000,"jan",1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+def self.gm(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
 
 ##
 # Same as <code>Time::gm</code>, but interprets the values in the
 # local time zone.
 # 
 #    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
-def self.local(*args); end
+def self.local(year); end
 
 ##
 # Same as <code>Time::gm</code>, but interprets the values in the
 # local time zone.
 # 
 #    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
-def self.mktime(*args); end
+def self.local(year, month); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.local(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min, sec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(year, month, day, hour, min, sec, usec_with_frac); end
+
+##
+# Same as <code>Time::gm</code>, but interprets the values in the
+# local time zone.
+# 
+#    Time.local(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+def self.mktime(sec, min, hour, day, month, year, wday, yday, isdst, tz); end
 
 ##
 # Returns the value of <i>time</i> as an integer number of seconds
@@ -19448,7 +33716,16 @@ def self.mktime(*args); end
 #    t = Time.now
 #    "%10.5f" % t.to_f   #=> "1270968656.89607"
 #    t.to_i              #=> 1270968656
-def to_i(); end
+def to_i; end
+
+##
+# Returns the value of <i>time</i> as an integer number of seconds
+# since the Epoch.
+# 
+#    t = Time.now
+#    "%10.5f" % t.to_f   #=> "1270968656.89607"
+#    t.to_i              #=> 1270968656
+def tv_sec; end
 
 ##
 # Returns the value of <i>time</i> as a floating point number of
@@ -19460,7 +33737,7 @@ def to_i(); end
 # 
 # Note that IEEE 754 double is not accurate enough to represent
 # number of nanoseconds from the Epoch.
-def to_f(); end
+def to_f; end
 
 ##
 # Returns the value of <i>time</i> as a rational number of seconds
@@ -19472,7 +33749,7 @@ def to_f(); end
 # This methods is intended to be used to get an accurate value
 # representing nanoseconds from the Epoch.  You can use this
 # to convert time to another Epoch.
-def to_r(); end
+def to_r; end
 
 ##
 # Comparison---Compares <i>time</i> with <i>other_time</i>.
@@ -19489,17 +33766,17 @@ def to_r(); end
 #    t <=> t2           #=> -1
 #    t2 <=> t           #=> 1
 #    t <=> t            #=> 0
-def <=>(p1); end
+def <=>; end
 
 ##
 # Return <code>true</code> if <i>time</i> and <i>other_time</i> are
 # both <code>Time</code> objects with the same seconds and fractional
 # seconds.
-def eql?(p1); end
+def eql?(other_time); end
 
 ##
 # Return a hash code for this time object.
-def hash(); end
+def hash; end
 
 ##
 # Returns a <code>Time</code> object.
@@ -19537,7 +33814,45 @@ def hash(); end
 #    p((t4-t3)/3600.0)                          #=> 2.466666666666667
 #    p((t6-t5)/3600.0)                          #=> 1.95
 #    p((t8-t7)/3600.0)                          #=> 13.416666666666666
-def self.new(*args); end
+def self.new; end
+
+##
+# Returns a <code>Time</code> object.
+# 
+# It is initialized to the current system time if no argument.
+# <b>Note:</b> The object created will be created using the
+# resolution available on your system clock, and so may include
+# fractional seconds.
+# 
+# If one or more arguments specified, the time is initialized
+# to the specified time.
+# _sec_ may have fraction if it is a rational.
+# 
+# _utc_offset_ is the offset from UTC.
+# It is a string such as "+09:00" or a number of seconds such as 32400.
+# 
+#    a = Time.new      #=> 2007-11-19 07:50:02 -0600
+#    b = Time.new      #=> 2007-11-19 07:50:02 -0600
+#    a == b            #=> false
+#    "%.6f" % a.to_f   #=> "1195480202.282373"
+#    "%.6f" % b.to_f   #=> "1195480202.283415"
+# 
+#    Time.new(2008,6,21, 13,30,0, "+09:00") #=> 2008-06-21 13:30:00 +0900
+# 
+#    # A trip for RubyConf 2007
+#    t1 = Time.new(2007,11,1,15,25,0, "+09:00") # JST (Narita)
+#    t2 = Time.new(2007,11,1,12, 5,0, "-05:00") # CDT (Minneapolis)
+#    t3 = Time.new(2007,11,1,13,25,0, "-05:00") # CDT (Minneapolis)
+#    t4 = Time.new(2007,11,1,16,53,0, "-04:00") # EDT (Charlotte)
+#    t5 = Time.new(2007,11,5, 9,24,0, "-05:00") # EST (Charlotte)
+#    t6 = Time.new(2007,11,5,11,21,0, "-05:00") # EST (Detroit)
+#    t7 = Time.new(2007,11,5,13,45,0, "-05:00") # EST (Detroit)
+#    t8 = Time.new(2007,11,6,17,10,0, "+09:00") # JST (Narita)
+#    p((t2-t1)/3600.0)                          #=> 10.666666666666666
+#    p((t4-t3)/3600.0)                          #=> 2.466666666666667
+#    p((t6-t5)/3600.0)                          #=> 1.95
+#    p((t8-t7)/3600.0)                          #=> 13.416666666666666
+def self.new(year, month=nil, day=nil, hour=nil, min=nil, sec=nil, utc_offset=nil); end
 
 ##
 # Converts <i>time</i> to local time (using the local time zone in
@@ -19553,7 +33868,23 @@ def self.new(*args); end
 # 
 #    t.localtime("+09:00")                   #=> 2000-01-02 05:15:01 +0900
 #    t.utc?                                  #=> false
-def localtime(p1=0); end
+def localtime; end
+
+##
+# Converts <i>time</i> to local time (using the local time zone in
+# effect for this process) modifying the receiver.
+# 
+# If _utc_offset_ is given, it is used instead of the local time.
+# 
+#    t = Time.utc(2000, "jan", 1, 20, 15, 1) #=> 2000-01-01 20:15:01 UTC
+#    t.utc?                                  #=> true
+# 
+#    t.localtime                             #=> 2000-01-01 14:15:01 -0600
+#    t.utc?                                  #=> false
+# 
+#    t.localtime("+09:00")                   #=> 2000-01-02 05:15:01 +0900
+#    t.utc?                                  #=> false
+def localtime(utc_offset); end
 
 ##
 # Converts <i>time</i> to UTC (GMT), modifying the receiver.
@@ -19567,7 +33898,7 @@ def localtime(p1=0); end
 #    t.utc?         #=> false
 #    t.utc          #=> 2007-11-19 14:18:51 UTC
 #    t.utc?         #=> true
-def gmtime(); end
+def gmtime; end
 
 ##
 # Converts <i>time</i> to UTC (GMT), modifying the receiver.
@@ -19581,7 +33912,35 @@ def gmtime(); end
 #    t.utc?         #=> false
 #    t.utc          #=> 2007-11-19 14:18:51 UTC
 #    t.utc?         #=> true
-def utc(); end
+def utc; end
+
+##
+# Converts <i>time</i> to UTC (GMT), modifying the receiver.
+# 
+#    t = Time.now   #=> 2007-11-19 08:18:31 -0600
+#    t.gmt?         #=> false
+#    t.gmtime       #=> 2007-11-19 14:18:31 UTC
+#    t.gmt?         #=> true
+# 
+#    t = Time.now   #=> 2007-11-19 08:18:51 -0600
+#    t.utc?         #=> false
+#    t.utc          #=> 2007-11-19 14:18:51 UTC
+#    t.utc?         #=> true
+def gmtime; end
+
+##
+# Converts <i>time</i> to UTC (GMT), modifying the receiver.
+# 
+#    t = Time.now   #=> 2007-11-19 08:18:31 -0600
+#    t.gmt?         #=> false
+#    t.gmtime       #=> 2007-11-19 14:18:31 UTC
+#    t.gmt?         #=> true
+# 
+#    t = Time.now   #=> 2007-11-19 08:18:51 -0600
+#    t.utc?         #=> false
+#    t.utc          #=> 2007-11-19 14:18:51 UTC
+#    t.utc?         #=> true
+def utc; end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19599,7 +33958,25 @@ def utc(); end
 #    j = t.getlocal("+09:00")        #=> 2000-01-02 05:15:01 +0900
 #    j.utc?                          #=> false
 #    t == j                          #=> true
-def getlocal(p1=0); end
+def getlocal; end
+
+##
+# Returns a new <code>new_time</code> object representing <i>time</i> in
+# local time (using the local time zone in effect for this process).
+# 
+# If _utc_offset_ is given, it is used instead of the local time.
+# 
+#    t = Time.utc(2000,1,1,20,15,1)  #=> 2000-01-01 20:15:01 UTC
+#    t.utc?                          #=> true
+# 
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.utc?                          #=> false
+#    t == l                          #=> true
+# 
+#    j = t.getlocal("+09:00")        #=> 2000-01-02 05:15:01 +0900
+#    j.utc?                          #=> false
+#    t == j                          #=> true
+def getlocal(utc_offset); end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19610,7 +33987,7 @@ def getlocal(p1=0); end
 #    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
 #    y.gmt?                             #=> true
 #    t == y                             #=> true
-def getgm(); end
+def getgm; end
 
 ##
 # Returns a new <code>new_time</code> object representing <i>time</i> in
@@ -19621,19 +33998,53 @@ def getgm(); end
 #    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
 #    y.gmt?                             #=> true
 #    t == y                             #=> true
-def getutc(); end
+def getutc; end
+
+##
+# Returns a new <code>new_time</code> object representing <i>time</i> in
+# UTC.
+# 
+#    t = Time.local(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+#    t.gmt?                             #=> false
+#    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
+#    y.gmt?                             #=> true
+#    t == y                             #=> true
+def getgm; end
+
+##
+# Returns a new <code>new_time</code> object representing <i>time</i> in
+# UTC.
+# 
+#    t = Time.local(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 -0600
+#    t.gmt?                             #=> false
+#    y = t.getgm                        #=> 2000-01-02 02:15:01 UTC
+#    y.gmt?                             #=> true
+#    t == y                             #=> true
+def getutc; end
 
 ##
 # Returns a canonical string representation of <i>time</i>.
 # 
 #    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
-def ctime(); end
+def asctime; end
 
 ##
 # Returns a canonical string representation of <i>time</i>.
 # 
 #    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
-def asctime(); end
+def ctime; end
+
+##
+# Returns a canonical string representation of <i>time</i>.
+# 
+#    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
+def asctime; end
+
+##
+# Returns a canonical string representation of <i>time</i>.
+# 
+#    Time.now.asctime   #=> "Wed Apr  9 08:56:03 2003"
+def ctime; end
 
 ##
 # Returns a string representing <i>time</i>. Equivalent to calling
@@ -19645,7 +34056,7 @@ def asctime(); end
 # 
 #    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
 #    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
-def to_s(); end
+def inspect; end
 
 ##
 # Returns a string representing <i>time</i>. Equivalent to calling
@@ -19657,7 +34068,31 @@ def to_s(); end
 # 
 #    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
 #    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
-def inspect(); end
+def to_s; end
+
+##
+# Returns a string representing <i>time</i>. Equivalent to calling
+# <code>Time#strftime</code> with a format string of
+# ``<code>%Y-%m-%d</code> <code>%H:%M:%S</code> <code>%z</code>''
+# for a local time and
+# ``<code>%Y-%m-%d</code> <code>%H:%M:%S</code> <code>UTC</code>''
+# for a UTC time.
+# 
+#    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
+#    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
+def inspect; end
+
+##
+# Returns a string representing <i>time</i>. Equivalent to calling
+# <code>Time#strftime</code> with a format string of
+# ``<code>%Y-%m-%d</code> <code>%H:%M:%S</code> <code>%z</code>''
+# for a local time and
+# ``<code>%Y-%m-%d</code> <code>%H:%M:%S</code> <code>UTC</code>''
+# for a UTC time.
+# 
+#    Time.now.to_s       #=> "2007-10-05 16:09:51 +0900"
+#    Time.now.utc.to_s   #=> "2007-10-05 07:09:51 UTC"
+def to_s; end
 
 ##
 # Returns a ten-element <i>array</i> of values for <i>time</i>:
@@ -19669,7 +34104,7 @@ def inspect(); end
 # 
 #    t = Time.now     #=> 2007-11-19 08:36:01 -0600
 #    now = t.to_a     #=> [1, 36, 8, 19, 11, 2007, 1, 323, false, "CST"]
-def to_a(); end
+def to_a; end
 
 ##
 # Addition---Adds some number of seconds (possibly fractional) to
@@ -19677,7 +34112,7 @@ def to_a(); end
 # 
 #    t = Time.now         #=> 2007-11-19 08:22:21 -0600
 #    t + (60 * 60 * 24)   #=> 2007-11-20 08:22:21 -0600
-def +(p1); end
+def +; end
 
 ##
 # Difference---Returns a new time that represents the difference
@@ -19688,7 +34123,18 @@ def +(p1); end
 #    t2 = t + 2592000   #=> 2007-12-19 08:23:10 -0600
 #    t2 - t             #=> 2592000.0
 #    t2 - 2592000       #=> 2007-11-19 08:23:10 -0600
-def -(p1); end
+def -; end
+
+##
+# Difference---Returns a new time that represents the difference
+# between two times, or subtracts the given number of seconds in
+# <i>numeric</i> from <i>time</i>.
+# 
+#    t = Time.now       #=> 2007-11-19 08:23:10 -0600
+#    t2 = t + 2592000   #=> 2007-12-19 08:23:10 -0600
+#    t2 - t             #=> 2592000.0
+#    t2 - 2592000       #=> 2007-11-19 08:23:10 -0600
+def -; end
 
 ##
 # Return a new time object, one second later than <code>time</code>.
@@ -19696,7 +34142,7 @@ def -(p1); end
 # 
 #     t = Time.now       #=> 2007-11-19 08:23:57 -0600
 #     t.succ             #=> 2007-11-19 08:23:58 -0600
-def succ(); end
+def succ; end
 
 ##
 # Rounds sub seconds to a given precision in decimal digits (0 digits by default).
@@ -19730,7 +34176,7 @@ def succ(); end
 # 
 #     t = Time.utc(1999,12,31, 23,59,59)
 #     p (t + 0.123456789).round(4).iso8601(6)  #=> "1999-12-31T23:59:59.123500Z"
-def round(p1=0); end
+def round(ndigits=0); end
 
 ##
 # Returns the second of the minute (0..60)<em>[Yes, seconds really can
@@ -19740,21 +34186,21 @@ def round(p1=0); end
 # 
 #    t = Time.now   #=> 2007-11-19 08:25:02 -0600
 #    t.sec          #=> 2
-def sec(); end
+def sec; end
 
 ##
 # Returns the minute of the hour (0..59) for <i>time</i>.
 # 
 #    t = Time.now   #=> 2007-11-19 08:25:51 -0600
 #    t.min          #=> 25
-def min(); end
+def min; end
 
 ##
 # Returns the hour of the day (0..23) for <i>time</i>.
 # 
 #    t = Time.now   #=> 2007-11-19 08:26:20 -0600
 #    t.hour         #=> 8
-def hour(); end
+def hour; end
 
 ##
 # Returns the day of the month (1..n) for <i>time</i>.
@@ -19762,7 +34208,7 @@ def hour(); end
 #    t = Time.now   #=> 2007-11-19 08:27:03 -0600
 #    t.day          #=> 19
 #    t.mday         #=> 19
-def mday(); end
+def day; end
 
 ##
 # Returns the day of the month (1..n) for <i>time</i>.
@@ -19770,7 +34216,23 @@ def mday(); end
 #    t = Time.now   #=> 2007-11-19 08:27:03 -0600
 #    t.day          #=> 19
 #    t.mday         #=> 19
-def day(); end
+def mday; end
+
+##
+# Returns the day of the month (1..n) for <i>time</i>.
+# 
+#    t = Time.now   #=> 2007-11-19 08:27:03 -0600
+#    t.day          #=> 19
+#    t.mday         #=> 19
+def day; end
+
+##
+# Returns the day of the month (1..n) for <i>time</i>.
+# 
+#    t = Time.now   #=> 2007-11-19 08:27:03 -0600
+#    t.day          #=> 19
+#    t.mday         #=> 19
+def mday; end
 
 ##
 # Returns the month of the year (1..12) for <i>time</i>.
@@ -19778,7 +34240,7 @@ def day(); end
 #    t = Time.now   #=> 2007-11-19 08:27:30 -0600
 #    t.mon          #=> 11
 #    t.month        #=> 11
-def mon(); end
+def mon; end
 
 ##
 # Returns the month of the year (1..12) for <i>time</i>.
@@ -19786,14 +34248,30 @@ def mon(); end
 #    t = Time.now   #=> 2007-11-19 08:27:30 -0600
 #    t.mon          #=> 11
 #    t.month        #=> 11
-def month(); end
+def month; end
+
+##
+# Returns the month of the year (1..12) for <i>time</i>.
+# 
+#    t = Time.now   #=> 2007-11-19 08:27:30 -0600
+#    t.mon          #=> 11
+#    t.month        #=> 11
+def mon; end
+
+##
+# Returns the month of the year (1..12) for <i>time</i>.
+# 
+#    t = Time.now   #=> 2007-11-19 08:27:30 -0600
+#    t.mon          #=> 11
+#    t.month        #=> 11
+def month; end
 
 ##
 # Returns the year for <i>time</i> (including the century).
 # 
 #    t = Time.now   #=> 2007-11-19 08:27:51 -0600
 #    t.year         #=> 2007
-def year(); end
+def year; end
 
 ##
 # Returns an integer representing the day of the week, 0..6, with
@@ -19808,14 +34286,14 @@ def year(); end
 #    t.thursday?    #=> false
 #    t.friday?      #=> false
 #    t.saturday?    #=> false
-def wday(); end
+def wday; end
 
 ##
 # Returns an integer representing the day of the year, 1..366.
 # 
 #    t = Time.now   #=> 2007-11-19 08:32:31 -0600
 #    t.yday         #=> 323
-def yday(); end
+def yday; end
 
 ##
 # Returns <code>true</code> if <i>time</i> occurs during Daylight
@@ -19836,7 +34314,7 @@ def yday(); end
 #    Time.local(2000, 7, 1).zone    #=> "JST"
 #    Time.local(2000, 7, 1).isdst   #=> false
 #    Time.local(2000, 7, 1).dst?    #=> false
-def isdst(); end
+def isdst; end
 
 ##
 # Returns <code>true</code> if <i>time</i> occurs during Daylight
@@ -19857,7 +34335,49 @@ def isdst(); end
 #    Time.local(2000, 7, 1).zone    #=> "JST"
 #    Time.local(2000, 7, 1).isdst   #=> false
 #    Time.local(2000, 7, 1).dst?    #=> false
-def dst?(); end
+def dst?; end
+
+##
+# Returns <code>true</code> if <i>time</i> occurs during Daylight
+# Saving Time in its time zone.
+# 
+#  # CST6CDT:
+#    Time.local(2000, 1, 1).zone    #=> "CST"
+#    Time.local(2000, 1, 1).isdst   #=> false
+#    Time.local(2000, 1, 1).dst?    #=> false
+#    Time.local(2000, 7, 1).zone    #=> "CDT"
+#    Time.local(2000, 7, 1).isdst   #=> true
+#    Time.local(2000, 7, 1).dst?    #=> true
+# 
+#  # Asia/Tokyo:
+#    Time.local(2000, 1, 1).zone    #=> "JST"
+#    Time.local(2000, 1, 1).isdst   #=> false
+#    Time.local(2000, 1, 1).dst?    #=> false
+#    Time.local(2000, 7, 1).zone    #=> "JST"
+#    Time.local(2000, 7, 1).isdst   #=> false
+#    Time.local(2000, 7, 1).dst?    #=> false
+def isdst; end
+
+##
+# Returns <code>true</code> if <i>time</i> occurs during Daylight
+# Saving Time in its time zone.
+# 
+#  # CST6CDT:
+#    Time.local(2000, 1, 1).zone    #=> "CST"
+#    Time.local(2000, 1, 1).isdst   #=> false
+#    Time.local(2000, 1, 1).dst?    #=> false
+#    Time.local(2000, 7, 1).zone    #=> "CDT"
+#    Time.local(2000, 7, 1).isdst   #=> true
+#    Time.local(2000, 7, 1).dst?    #=> true
+# 
+#  # Asia/Tokyo:
+#    Time.local(2000, 1, 1).zone    #=> "JST"
+#    Time.local(2000, 1, 1).isdst   #=> false
+#    Time.local(2000, 1, 1).dst?    #=> false
+#    Time.local(2000, 7, 1).zone    #=> "JST"
+#    Time.local(2000, 7, 1).isdst   #=> false
+#    Time.local(2000, 7, 1).dst?    #=> false
+def dst?; end
 
 ##
 # Returns the name of the time zone used for <i>time</i>. As of Ruby
@@ -19867,7 +34387,7 @@ def dst?(); end
 #    t.zone   #=> "UTC"
 #    t = Time.local(2000, "jan", 1, 20, 15, 1)
 #    t.zone   #=> "CST"
-def zone(); end
+def zone; end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19877,7 +34397,7 @@ def zone(); end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def gmtoff(); end
+def gmt_offset; end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19887,7 +34407,7 @@ def gmtoff(); end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def gmt_offset(); end
+def gmtoff; end
 
 ##
 # Returns the offset in seconds between the timezone of <i>time</i>
@@ -19897,7 +34417,67 @@ def gmt_offset(); end
 #    t.gmt_offset                    #=> 0
 #    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
 #    l.gmt_offset                    #=> -21600
-def utc_offset(); end
+def utc_offset; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def gmt_offset; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def gmtoff; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def utc_offset; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def gmt_offset; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def gmtoff; end
+
+##
+# Returns the offset in seconds between the timezone of <i>time</i>
+# and UTC.
+# 
+#    t = Time.gm(2000,1,1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.gmt_offset                    #=> 0
+#    l = t.getlocal                  #=> 2000-01-01 14:15:01 -0600
+#    l.gmt_offset                    #=> -21600
+def utc_offset; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents a time in UTC
@@ -19912,7 +34492,7 @@ def utc_offset(); end
 #    t.gmt?                              #=> false
 #    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
 #    t.gmt?                              #=> true
-def utc?(); end
+def utc?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents a time in UTC
@@ -19927,56 +34507,86 @@ def utc?(); end
 #    t.gmt?                              #=> false
 #    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
 #    t.gmt?                              #=> true
-def gmt?(); end
+def gmt?; end
+
+##
+# Returns <code>true</code> if <i>time</i> represents a time in UTC
+# (GMT).
+# 
+#    t = Time.now                        #=> 2007-11-19 08:15:23 -0600
+#    t.utc?                              #=> false
+#    t = Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.utc?                              #=> true
+# 
+#    t = Time.now                        #=> 2007-11-19 08:16:03 -0600
+#    t.gmt?                              #=> false
+#    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
+#    t.gmt?                              #=> true
+def utc?; end
+
+##
+# Returns <code>true</code> if <i>time</i> represents a time in UTC
+# (GMT).
+# 
+#    t = Time.now                        #=> 2007-11-19 08:15:23 -0600
+#    t.utc?                              #=> false
+#    t = Time.gm(2000,"jan",1,20,15,1)   #=> 2000-01-01 20:15:01 UTC
+#    t.utc?                              #=> true
+# 
+#    t = Time.now                        #=> 2007-11-19 08:16:03 -0600
+#    t.gmt?                              #=> false
+#    t = Time.gm(2000,1,1,20,15,1)       #=> 2000-01-01 20:15:01 UTC
+#    t.gmt?                              #=> true
+def gmt?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Sunday.
 # 
 #    t = Time.local(1990, 4, 1)       #=> 1990-04-01 00:00:00 -0600
 #    t.sunday?                        #=> true
-def sunday?(); end
+def sunday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Monday.
 # 
 #    t = Time.local(2003, 8, 4)       #=> 2003-08-04 00:00:00 -0500
 #    p t.monday?                      #=> true
-def monday?(); end
+def monday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Tuesday.
 # 
 #    t = Time.local(1991, 2, 19)      #=> 1991-02-19 00:00:00 -0600
 #    p t.tuesday?                     #=> true
-def tuesday?(); end
+def tuesday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Wednesday.
 # 
 #    t = Time.local(1993, 2, 24)      #=> 1993-02-24 00:00:00 -0600
 #    p t.wednesday?                   #=> true
-def wednesday?(); end
+def wednesday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Thursday.
 # 
 #    t = Time.local(1995, 12, 21)     #=> 1995-12-21 00:00:00 -0600
 #    p t.thursday?                    #=> true
-def thursday?(); end
+def thursday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Friday.
 # 
 #    t = Time.local(1987, 12, 18)     #=> 1987-12-18 00:00:00 -0600
 #    t.friday?                        #=> true
-def friday?(); end
+def friday?; end
 
 ##
 # Returns <code>true</code> if <i>time</i> represents Saturday.
 # 
 #    t = Time.local(2006, 6, 10)      #=> 2006-06-10 00:00:00 -0500
 #    t.saturday?                      #=> true
-def saturday?(); end
+def saturday?; end
 
 ##
 # Returns the value of <i>time</i> as an integer number of seconds
@@ -19985,7 +34595,16 @@ def saturday?(); end
 #    t = Time.now
 #    "%10.5f" % t.to_f   #=> "1270968656.89607"
 #    t.to_i              #=> 1270968656
-def tv_sec(); end
+def to_i; end
+
+##
+# Returns the value of <i>time</i> as an integer number of seconds
+# since the Epoch.
+# 
+#    t = Time.now
+#    "%10.5f" % t.to_f   #=> "1270968656.89607"
+#    t.to_i              #=> 1270968656
+def tv_sec; end
 
 ##
 # Returns just the number of microseconds for <i>time</i>.
@@ -19993,7 +34612,7 @@ def tv_sec(); end
 #    t = Time.now        #=> 2007-11-19 08:03:26 -0600
 #    "%10.6f" % t.to_f   #=> "1195481006.775195"
 #    t.usec              #=> 775195
-def tv_usec(); end
+def usec; end
 
 ##
 # Returns just the number of microseconds for <i>time</i>.
@@ -20001,7 +34620,23 @@ def tv_usec(); end
 #    t = Time.now        #=> 2007-11-19 08:03:26 -0600
 #    "%10.6f" % t.to_f   #=> "1195481006.775195"
 #    t.usec              #=> 775195
-def usec(); end
+def tv_usec; end
+
+##
+# Returns just the number of microseconds for <i>time</i>.
+# 
+#    t = Time.now        #=> 2007-11-19 08:03:26 -0600
+#    "%10.6f" % t.to_f   #=> "1195481006.775195"
+#    t.usec              #=> 775195
+def usec; end
+
+##
+# Returns just the number of microseconds for <i>time</i>.
+# 
+#    t = Time.now        #=> 2007-11-19 08:03:26 -0600
+#    "%10.6f" % t.to_f   #=> "1195481006.775195"
+#    t.usec              #=> 775195
+def tv_usec; end
 
 ##
 # Returns just the number of nanoseconds for <i>time</i>.
@@ -20014,7 +34649,7 @@ def usec(); end
 # IEEE 754 double is not accurate enough to represent
 # nanoseconds from the Epoch.
 # The accurate value is returned by nsec.
-def tv_nsec(); end
+def nsec; end
 
 ##
 # Returns just the number of nanoseconds for <i>time</i>.
@@ -20027,7 +34662,33 @@ def tv_nsec(); end
 # IEEE 754 double is not accurate enough to represent
 # nanoseconds from the Epoch.
 # The accurate value is returned by nsec.
-def nsec(); end
+def tv_nsec; end
+
+##
+# Returns just the number of nanoseconds for <i>time</i>.
+# 
+#    t = Time.now        #=> 2007-11-17 15:18:03 +0900
+#    "%10.9f" % t.to_f   #=> "1195280283.536151409"
+#    t.nsec              #=> 536151406
+# 
+# The lowest digit of to_f and nsec is different because
+# IEEE 754 double is not accurate enough to represent
+# nanoseconds from the Epoch.
+# The accurate value is returned by nsec.
+def nsec; end
+
+##
+# Returns just the number of nanoseconds for <i>time</i>.
+# 
+#    t = Time.now        #=> 2007-11-17 15:18:03 +0900
+#    "%10.9f" % t.to_f   #=> "1195280283.536151409"
+#    t.nsec              #=> 536151406
+# 
+# The lowest digit of to_f and nsec is different because
+# IEEE 754 double is not accurate enough to represent
+# nanoseconds from the Epoch.
+# The accurate value is returned by nsec.
+def tv_nsec; end
 
 ##
 # Returns just the fraction for <i>time</i>.
@@ -20042,7 +34703,7 @@ def nsec(); end
 # IEEE 754 double is not accurate enough to represent
 # the rational.
 # The accurate value is returned by subsec.
-def subsec(); end
+def subsec; end
 
 ##
 # Formats <i>time</i> according to the directives in the given format
@@ -20210,23 +34871,15 @@ def subsec(); end
 #   %Y-%jT%RZ        => 2007-323T08:37Z           Ordinal date and UTC of day (extended)
 #   %GW%V%uT%H%M%z   => 2007W471T0837-0600        Week date and local time and difference from UTC (basic)
 #   %G-W%V-%uT%R%:z  => 2007-W47-1T08:37-06:00    Week date and local time and difference from UTC (extended)
-def strftime(p1); end
+def strftime( string ); end
 
 ##
 # Dump _time_ for marshaling.
-def _dump(p1=0); end
+def _dump; end
 
 ##
 # Unmarshal a dumped +Time+ object.
-def self._load(p1); end
-
-##
-# undocumented
-def marshal_dump(); end
-
-##
-# undocumented
-def marshal_load(p1); end
+def self._load(string); end
 
 end
 
@@ -20246,11 +34899,16 @@ class SignalException < Exception
 ##
 # Construct a new SignalException object.  +sig_name+ should be a known
 # signal name.
-def self.new(*args); end
+def self.new(sig_name); end
+
+##
+# Construct a new SignalException object.  +sig_name+ should be a known
+# signal name.
+def self.new(sig_number , name=0); end
 
 ##
 # Returns a signal number.
-def signo(); end
+def signo; end
 
 end
 
@@ -20282,7 +34940,7 @@ include Enumerable
 # Constructs a range using the given <i>start</i> and <i>end</i>. If the third
 # parameter is omitted or is <code>false</code>, the <i>range</i> will include
 # the end object; otherwise, it will be excluded.
-def self.new(p1, p2, p3=0); end
+def self.new(start, end, exclusive=false); end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a Range, has equivalent
@@ -20292,7 +34950,7 @@ def self.new(p1, p2, p3=0); end
 #   (0..2) == (0..2)            #=> true
 #   (0..2) == Range.new(0,2)    #=> true
 #   (0..2) == (0...2)           #=> false
-def ==(p1); end
+def ==; end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20309,7 +34967,7 @@ def ==(p1); end
 # <em>produces:</em>
 # 
 #    high
-def ===(p1); end
+def ===; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a Range, has equivalent
@@ -20319,13 +34977,13 @@ def ===(p1); end
 #   (0..2).eql?(0..2)            #=> true
 #   (0..2).eql?(Range.new(0,2))  #=> true
 #   (0..2).eql?(0...2)           #=> false
-def eql?(p1); end
+def eql?(obj); end
 
 ##
 # Generate a hash value such that two ranges with the same start and
 # end points, and the same value for the "exclude end" flag, generate
 # the same hash value.
-def hash(); end
+def hash; end
 
 ##
 # Iterates over the elements <i>rng</i>, passing each in turn to the
@@ -20342,7 +35000,24 @@ def hash(); end
 # <em>produces:</em>
 # 
 #    10 11 12 13 14 15
-def each(); end
+def each(&block); end
+
+##
+# Iterates over the elements <i>rng</i>, passing each in turn to the
+# block. You can only iterate if the start object of the range
+# supports the +succ+ method (which means that you can't iterate over
+# ranges of +Float+ objects).
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    (10..15).each do |n|
+#       print n, ' '
+#    end
+# 
+# <em>produces:</em>
+# 
+#    10 11 12 13 14 15
+def each; end
 
 ##
 # Iterates over <i>rng</i>, passing each <i>n</i>th element to the block. If
@@ -20368,52 +35043,98 @@ def each(); end
 #     4 xxxx
 #     7 xxxxxxx
 #    10 xxxxxxxxxx
-def step(p1=0); end
+def step(n=1, &block); end
+
+##
+# Iterates over <i>rng</i>, passing each <i>n</i>th element to the block. If
+# the range contains numbers, <i>n</i> is added for each iteration.  Otherwise
+# <code>step</code> invokes <code>succ</code> to iterate through range
+# elements. The following code uses class <code>Xs</code>, which is defined
+# in the class-level documentation.
+# 
+# If no block is given, an enumerator is returned instead.
+# 
+#    range = Xs.new(1)..Xs.new(10)
+#    range.step(2) {|x| puts x}
+#    range.step(3) {|x| puts x}
+# 
+# <em>produces:</em>
+# 
+#     1 x
+#     3 xxx
+#     5 xxxxx
+#     7 xxxxxxx
+#     9 xxxxxxxxx
+#     1 x
+#     4 xxxx
+#     7 xxxxxxx
+#    10 xxxxxxxxxx
+def step(n=1); end
 
 ##
 # Returns the first object in <i>rng</i>.
-def begin(); end
+def begin; end
 
 ##
 # Returns the object that defines the end of <i>rng</i>.
 # 
 #    (1..10).end    #=> 10
 #    (1...10).end   #=> 10
-def end(); end
+def end; end
 
 ##
 # Returns the first object in <i>rng</i>, or the first +n+ elements.
-def first(p1); end
+def first; end
+
+##
+# Returns the first object in <i>rng</i>, or the first +n+ elements.
+def first(n); end
 
 ##
 # Returns the last object in <i>rng</i>, or the last +n+ elements.
-def last(*args); end
+def last; end
+
+##
+# Returns the last object in <i>rng</i>, or the last +n+ elements.
+def last(n); end
 
 ##
 # Returns the minimum value in <i>rng</i>. The second uses
 # the block to compare values.  Returns nil if the first
 # value in range is larger than the last value.
-def min(); end
+def min; end
+
+##
+# Returns the minimum value in <i>rng</i>. The second uses
+# the block to compare values.  Returns nil if the first
+# value in range is larger than the last value.
+def min(&block); end
 
 ##
 # Returns the maximum value in <i>rng</i>. The second uses
 # the block to compare values.  Returns nil if the first
 # value in range is larger than the last value.
-def max(); end
+def max; end
+
+##
+# Returns the maximum value in <i>rng</i>. The second uses
+# the block to compare values.  Returns nil if the first
+# value in range is larger than the last value.
+def max(&block); end
 
 ##
 # Convert this range object to a printable form.
-def to_s(); end
+def to_s; end
 
 ##
 # Convert this range object to a printable form (using
 # <code>inspect</code> to convert the start and end
 # objects).
-def inspect(); end
+def inspect; end
 
 ##
 # Returns <code>true</code> if <i>rng</i> excludes its end value.
-def exclude_end?(); end
+def exclude_end?; end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20422,7 +35143,7 @@ def exclude_end?(); end
 # 
 #    ("a".."z").include?("g")  # -> true
 #    ("a".."z").include?("A")  # -> false
-def member?(p1); end
+def member?(val); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is an element of
@@ -20431,7 +35152,25 @@ def member?(p1); end
 # 
 #    ("a".."z").include?("g")  # -> true
 #    ("a".."z").include?("A")  # -> false
-def include?(p1); end
+def include?(val); end
+
+##
+# Returns <code>true</code> if <i>obj</i> is an element of
+# <i>rng</i>, <code>false</code> otherwise.  If beg and end are
+# numeric, comparison is done according magnitude of values.
+# 
+#    ("a".."z").include?("g")  # -> true
+#    ("a".."z").include?("A")  # -> false
+def member?(val); end
+
+##
+# Returns <code>true</code> if <i>obj</i> is an element of
+# <i>rng</i>, <code>false</code> otherwise.  If beg and end are
+# numeric, comparison is done according magnitude of values.
+# 
+#    ("a".."z").include?("g")  # -> true
+#    ("a".."z").include?("A")  # -> false
+def include?(val); end
 
 ##
 # Returns <code>true</code> if <i>obj</i> is between beg and end,
@@ -20440,7 +35179,7 @@ def include?(p1); end
 # 
 #    ("a".."z").cover?("c")    #=> true
 #    ("a".."z").cover?("5")    #=> false
-def cover?(p1); end
+def cover?(val); end
 
 end
 
@@ -20498,53 +35237,63 @@ class Fixnum < Integer
 #    12345.to_s(10)   #=> "12345"
 #    12345.to_s(16)   #=> "3039"
 #    12345.to_s(36)   #=> "9ix"
-def to_s(p1=0); end
+def to_s(base=10); end
 
 ##
 # Negates <code>fix</code> (which might return a Bignum).
-def -@(); end
+def -@; end
 
 ##
 # Performs addition: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def +(p1); end
+def +; end
 
 ##
 # Performs subtraction: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def -(p1); end
+def -; end
 
 ##
 # Performs multiplication: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def *(p1); end
+def *; end
 
 ##
 # Performs division: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def /(p1); end
+def /; end
 
 ##
 # Performs integer division: returns integer value.
-def div(p1); end
+def div(numeric); end
 
 ##
 # Returns <code>fix</code> modulo <code>other</code>.
 # See <code>numeric.divmod</code> for more information.
-def %(p1); end
+def %; end
 
 ##
 # Returns <code>fix</code> modulo <code>other</code>.
 # See <code>numeric.divmod</code> for more information.
-def modulo(p1); end
+def modulo(other); end
+
+##
+# Returns <code>fix</code> modulo <code>other</code>.
+# See <code>numeric.divmod</code> for more information.
+def modulo; end
+
+##
+# Returns <code>fix</code> modulo <code>other</code>.
+# See <code>numeric.divmod</code> for more information.
+def modulo(other); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod(p1); end
+def divmod(numeric); end
 
 ##
 # Returns the floating point result of dividing <i>fix</i> by
@@ -20552,7 +35301,7 @@ def divmod(p1); end
 # 
 #    654321.fdiv(13731)      #=> 47.6528293642124
 #    654321.fdiv(13731.24)   #=> 47.6519964693647
-def fdiv(p1); end
+def fdiv(numeric); end
 
 ##
 # Raises <code>fix</code> to the <code>numeric</code> power, which may
@@ -20561,21 +35310,35 @@ def fdiv(p1); end
 #   2 ** 3      #=> 8
 #   2 ** -1     #=> 0.5
 #   2 ** 0.5    #=> 1.4142135623731
-def **(p1); end
+def **; end
 
 ##
 # Returns the absolute value of <i>fix</i>.
 # 
 #    -12345.abs   #=> 12345
 #    12345.abs    #=> 12345
-def abs(); end
+def abs; end
 
 ##
 # Returns the absolute value of <i>fix</i>.
 # 
 #    -12345.abs   #=> 12345
 #    12345.abs    #=> 12345
-def magnitude(); end
+def magnitude; end
+
+##
+# Returns the absolute value of <i>fix</i>.
+# 
+#    -12345.abs   #=> 12345
+#    12345.abs    #=> 12345
+def abs; end
+
+##
+# Returns the absolute value of <i>fix</i>.
+# 
+#    -12345.abs   #=> 12345
+#    12345.abs    #=> 12345
+def magnitude; end
 
 ##
 # Return <code>true</code> if <code>fix</code> equals <code>other</code>
@@ -20583,7 +35346,7 @@ def magnitude(); end
 # 
 #   1 == 2      #=> false
 #   1 == 1.0    #=> true
-def ==(p1); end
+def ==; end
 
 ##
 # Return <code>true</code> if <code>fix</code> equals <code>other</code>
@@ -20591,50 +35354,50 @@ def ==(p1); end
 # 
 #   1 == 2      #=> false
 #   1 == 1.0    #=> true
-def ===(p1); end
+def ===; end
 
 ##
 # Comparison---Returns -1, 0, +1 or nil depending on whether
 # <i>fix</i> is less than, equal to, or greater than
 # <i>numeric</i>. This is the basis for the tests in
 # <code>Comparable</code>.
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # greater than that of <code>real</code>.
-def >(p1); end
+def >; end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # greater than or equal to that of <code>real</code>.
-def >=(p1); end
+def >=; end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # less than that of <code>real</code>.
-def <(p1); end
+def <; end
 
 ##
 # Returns <code>true</code> if the value of <code>fix</code> is
 # less than or equal to that of <code>real</code>.
-def <=(p1); end
+def <=; end
 
 ##
 # One's complement: returns a number where each bit is flipped.
-def ~(); end
+def ~; end
 
 ##
 # Bitwise AND.
-def &(p1); end
+def &; end
 
 ##
 # Bitwise OR.
-def |(p1); end
+def |; end
 
 ##
 # Bitwise EXCLUSIVE OR.
-def ^(p1); end
+def ^; end
 
 ##
 # Bit Reference---Returns the <em>n</em>th bit in the binary
@@ -20647,19 +35410,19 @@ def ^(p1); end
 # <em>produces:</em>
 # 
 #    0000000000000000011001100101010
-def [](p1); end
+def []; end
 
 ##
 # Shifts _fix_ left _count_ positions (right if _count_ is negative).
-def <<(p1); end
+def <<; end
 
 ##
 # Shifts _fix_ right _count_ positions (left if _count_ is negative).
-def >>(p1); end
+def >>; end
 
 ##
 # Converts <i>fix</i> to a <code>Float</code>.
-def to_f(); end
+def to_f; end
 
 ##
 # Returns the number of <em>bytes</em> in the machine representation
@@ -20668,26 +35431,33 @@ def to_f(); end
 #    1.size            #=> 4
 #    -1.size           #=> 4
 #    2147483647.size   #=> 4
-def size(); end
+def size; end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is zero.
-def zero?(); end
+def zero?; end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is an odd number.
-def odd?(); end
+def odd?; end
 
 ##
 # Returns <code>true</code> if <i>fix</i> is an even number.
-def even?(); end
+def even?; end
 
 ##
 # Returns the <code>Integer</code> equal to <i>int</i> + 1.
 # 
 #    1.next      #=> 2
 #    (-1).next   #=> 0
-def succ(); end
+def next; end
+
+##
+# Returns the <code>Integer</code> equal to <i>int</i> + 1.
+# 
+#    1.next      #=> 2
+#    (-1).next   #=> 0
+def succ; end
 
 end
 
@@ -20702,12 +35472,12 @@ end
 class TrueClass < Object
 ##
 # The string representation of <code>true</code> is "true".
-def to_s(); end
+def to_s; end
 
 ##
 # And---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>, <code>true</code> otherwise.
-def &(p1); end
+def &; end
 
 ##
 # Or---Returns <code>true</code>. As <i>anObject</i> is an argument to
@@ -20720,13 +35490,13 @@ def &(p1); end
 # <em>produces:</em>
 # 
 #    or
-def |(p1); end
+def |; end
 
 ##
 # Exclusive Or---Returns <code>true</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>, <code>false</code>
 # otherwise.
-def ^(p1); end
+def ^; end
 
 end
 
@@ -20738,24 +35508,41 @@ end
 class FalseClass < Object
 ##
 # 'nuf said...
-def to_s(); end
+def to_s; end
 
 ##
 # And---Returns <code>false</code>. <i>obj</i> is always
 # evaluated as it is the argument to a method call---there is no
 # short-circuit evaluation in this case.
-def &(p1); end
+def &; end
+
+##
+# And---Returns <code>false</code>. <i>obj</i> is always
+# evaluated as it is the argument to a method call---there is no
+# short-circuit evaluation in this case.
+def &; end
 
 ##
 # Or---Returns <code>false</code> if <i>obj</i> is
 # <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
-def |(p1); end
+def |; end
+
+##
+# Or---Returns <code>false</code> if <i>obj</i> is
+# <code>nil</code> or <code>false</code>; <code>true</code> otherwise.
+def |; end
 
 ##
 # Exclusive Or---If <i>obj</i> is <code>nil</code> or
 # <code>false</code>, returns <code>false</code>; otherwise, returns
 # <code>true</code>.
-def ^(p1); end
+def ^; end
+
+##
+# Exclusive Or---If <i>obj</i> is <code>nil</code> or
+# <code>false</code>, returns <code>false</code>; otherwise, returns
+# <code>true</code>.
+def ^; end
 
 end
 
@@ -20765,11 +35552,11 @@ end
 class UndefinedConversionError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name(); end
+def source_encoding_name; end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name(); end
+def destination_encoding_name; end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -20786,11 +35573,11 @@ def destination_encoding_name(); end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # Returns the one-character string which cause Encoding::UndefinedConversionError.
@@ -20802,7 +35589,7 @@ def destination_encoding(); end
 #    puts $!.error_char.dump   #=> "\xC2\xA0"
 #    p $!.error_char.encoding  #=> #<Encoding:UTF-8>
 #  end
-def error_char(); end
+def error_char; end
 
 end
 
@@ -20813,11 +35600,11 @@ end
 class InvalidByteSequenceError < rb_eEncodingError
 ##
 # Returns the source encoding name as a string.
-def source_encoding_name(); end
+def source_encoding_name; end
 
 ##
 # Returns the destination encoding name as a string.
-def destination_encoding_name(); end
+def destination_encoding_name; end
 
 ##
 # Returns the source encoding as an encoding object.
@@ -20834,11 +35621,11 @@ def destination_encoding_name(); end
 #    p $!.source_encoding_name         #=> "UTF-8"
 #    p $!.destination_encoding_name    #=> "EUC-JP"
 #  end
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # Returns the discarded bytes when Encoding::InvalidByteSequenceError occurs.
@@ -20851,11 +35638,11 @@ def destination_encoding(); end
 #    puts $!.error_bytes.dump          #=> "\xA1"
 #    puts $!.readagain_bytes.dump      #=> "\xFF"
 #  end
-def error_bytes(); end
+def error_bytes; end
 
 ##
 # Returns the bytes to be read again when Encoding::InvalidByteSequenceError occurs.
-def readagain_bytes(); end
+def readagain_bytes; end
 
 ##
 # Returns true if the invalid byte sequence error is caused by
@@ -20877,7 +35664,7 @@ def readagain_bytes(); end
 #    p $!      #=> #<Encoding::InvalidByteSequenceError: incomplete "\xA1" on EUC-JP>
 #    p $!.incomplete_input?    #=> true
 #  end
-def incomplete_input?(); end
+def incomplete_input?; end
 
 end
 
@@ -20900,7 +35687,21 @@ class Converter < Data
 #   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
 #   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
 #   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
-def self.asciicompat_encoding(p1); end
+def self.asciicompat_encoding(string); end
+
+##
+# Returns the corresponding ASCII compatible encoding.
+# 
+# Returns nil if the argument is an ASCII compatible encoding.
+# 
+# "corresponding ASCII compatible encoding" is a ASCII compatible encoding which
+# can represents exactly the same characters as the given ASCII incompatible encoding.
+# So, no conversion undefined error occurs when converting between the two encodings.
+# 
+#   Encoding::Converter.asciicompat_encoding("ISO-2022-JP") #=> #<Encoding:stateless-ISO-2022-JP>
+#   Encoding::Converter.asciicompat_encoding("UTF-16BE") #=> #<Encoding:UTF-8>
+#   Encoding::Converter.asciicompat_encoding("UTF-8") #=> nil
+def self.asciicompat_encoding(encoding); end
 
 ##
 # Returns a conversion path.
@@ -20922,7 +35723,29 @@ def self.asciicompat_encoding(p1); end
 #  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
 #  #    "universal_newline",
 #  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
-def self.search_convpath(*args); end
+def self.search_convpath(source_encoding, destination_encoding); end
+
+##
+# Returns a conversion path.
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP")
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    [#<Encoding:UTF-8>, #<Encoding:EUC-JP>]]
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP", universal_newline: true)
+#  or
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "EUC-JP", newline: :universal)
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    [#<Encoding:UTF-8>, #<Encoding:EUC-JP>],
+#  #    "universal_newline"]
+# 
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "UTF-32BE", universal_newline: true)
+#  or
+#  p Encoding::Converter.search_convpath("ISO-8859-1", "UTF-32BE", newline: :universal)
+#  #=> [[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>],
+#  #    "universal_newline",
+#  #    [#<Encoding:UTF-8>, #<Encoding:UTF-32BE>]]
+def self.search_convpath(source_encoding, destination_encoding, opt); end
 
 ##
 # possible options elements:
@@ -21024,14 +35847,218 @@ def self.search_convpath(*args); end
 #   p ec.convpath #=> ["universal_newline",
 #                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
 #                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
-def self.new(*args); end
+def self.new(source_encoding, destination_encoding); end
+
+##
+# possible options elements:
+#   hash form:
+#     :invalid => nil            # raise error on invalid byte sequence (default)
+#     :invalid => :replace       # replace invalid byte sequence
+#     :undef => nil              # raise error on undefined conversion (default)
+#     :undef => :replace         # replace undefined conversion
+#     :replace => string         # replacement string ("?" or "\uFFFD" if not specified)
+#     :newline => :universal     # decorator for converting CRLF and CR to LF
+#     :newline => :crlf          # decorator for converting LF to CRLF
+#     :newline => :cr            # decorator for converting LF to CR
+#     :universal_newline => true # decorator for converting CRLF and CR to LF
+#     :crlf_newline => true      # decorator for converting LF to CRLF
+#     :cr_newline => true        # decorator for converting LF to CR
+#     :xml => :text              # escape as XML CharData.
+#     :xml => :attr              # escape as XML AttValue
+#   integer form:
+#     Encoding::Converter::INVALID_REPLACE
+#     Encoding::Converter::UNDEF_REPLACE
+#     Encoding::Converter::UNDEF_HEX_CHARREF
+#     Encoding::Converter::UNIVERSAL_NEWLINE_DECORATOR
+#     Encoding::Converter::CRLF_NEWLINE_DECORATOR
+#     Encoding::Converter::CR_NEWLINE_DECORATOR
+#     Encoding::Converter::XML_TEXT_DECORATOR
+#     Encoding::Converter::XML_ATTR_CONTENT_DECORATOR
+#     Encoding::Converter::XML_ATTR_QUOTE_DECORATOR
+# 
+# Encoding::Converter.new creates an instance of Encoding::Converter.
+# 
+# Source_encoding and destination_encoding should be a string or
+# Encoding object.
+# 
+# opt should be nil, a hash or an integer.
+# 
+# convpath should be an array.
+# convpath may contain
+# - two-element arrays which contain encodings or encoding names, or
+# - strings representing decorator names.
+# 
+# Encoding::Converter.new optionally takes an option.
+# The option should be a hash or an integer.
+# The option hash can contain :invalid => nil, etc.
+# The option integer should be logical-or of constants such as
+# Encoding::Converter::INVALID_REPLACE, etc.
+# 
+# [:invalid => nil]
+#   Raise error on invalid byte sequence.  This is a default behavior.
+# [:invalid => :replace]
+#   Replace invalid byte sequence by replacement string.
+# [:undef => nil]
+#   Raise an error if a character in source_encoding is not defined in destination_encoding.
+#   This is a default behavior.
+# [:undef => :replace]
+#   Replace undefined character in destination_encoding with replacement string.
+# [:replace => string]
+#   Specify the replacement string.
+#   If not specified, "\uFFFD" is used for Unicode encodings and "?" for others.
+# [:universal_newline => true]
+#   Convert CRLF and CR to LF.
+# [:crlf_newline => true]
+#   Convert LF to CRLF.
+# [:cr_newline => true]
+#   Convert LF to CR.
+# [:xml => :text]
+#   Escape as XML CharData.
+#   This form can be used as a HTML 4.0 #PCDATA.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# [:xml => :attr]
+#   Escape as XML AttValue.
+#   The converted result is quoted as "...".
+#   This form can be used as a HTML 4.0 attribute value.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - '"' -> '&quot;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# 
+# Examples:
+#   # UTF-16BE to UTF-8
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8")
+# 
+#   # Usually, decorators such as newline conversion are inserted last.
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8", :universal_newline => true)
+#   p ec.convpath #=> [[#<Encoding:UTF-16BE>, #<Encoding:UTF-8>],
+#                 #    "universal_newline"]
+# 
+#   # But, if the last encoding is ASCII incompatible,
+#   # decorators are inserted before the last conversion.
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE", :crlf_newline => true)
+#   p ec.convpath #=> ["crlf_newline",
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+# 
+#   # Conversion path can be specified directly.
+#   ec = Encoding::Converter.new(["universal_newline", ["EUC-JP", "UTF-8"], ["UTF-8", "UTF-16BE"]])
+#   p ec.convpath #=> ["universal_newline",
+#                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+def self.new(source_encoding, destination_encoding, opt); end
+
+##
+# possible options elements:
+#   hash form:
+#     :invalid => nil            # raise error on invalid byte sequence (default)
+#     :invalid => :replace       # replace invalid byte sequence
+#     :undef => nil              # raise error on undefined conversion (default)
+#     :undef => :replace         # replace undefined conversion
+#     :replace => string         # replacement string ("?" or "\uFFFD" if not specified)
+#     :newline => :universal     # decorator for converting CRLF and CR to LF
+#     :newline => :crlf          # decorator for converting LF to CRLF
+#     :newline => :cr            # decorator for converting LF to CR
+#     :universal_newline => true # decorator for converting CRLF and CR to LF
+#     :crlf_newline => true      # decorator for converting LF to CRLF
+#     :cr_newline => true        # decorator for converting LF to CR
+#     :xml => :text              # escape as XML CharData.
+#     :xml => :attr              # escape as XML AttValue
+#   integer form:
+#     Encoding::Converter::INVALID_REPLACE
+#     Encoding::Converter::UNDEF_REPLACE
+#     Encoding::Converter::UNDEF_HEX_CHARREF
+#     Encoding::Converter::UNIVERSAL_NEWLINE_DECORATOR
+#     Encoding::Converter::CRLF_NEWLINE_DECORATOR
+#     Encoding::Converter::CR_NEWLINE_DECORATOR
+#     Encoding::Converter::XML_TEXT_DECORATOR
+#     Encoding::Converter::XML_ATTR_CONTENT_DECORATOR
+#     Encoding::Converter::XML_ATTR_QUOTE_DECORATOR
+# 
+# Encoding::Converter.new creates an instance of Encoding::Converter.
+# 
+# Source_encoding and destination_encoding should be a string or
+# Encoding object.
+# 
+# opt should be nil, a hash or an integer.
+# 
+# convpath should be an array.
+# convpath may contain
+# - two-element arrays which contain encodings or encoding names, or
+# - strings representing decorator names.
+# 
+# Encoding::Converter.new optionally takes an option.
+# The option should be a hash or an integer.
+# The option hash can contain :invalid => nil, etc.
+# The option integer should be logical-or of constants such as
+# Encoding::Converter::INVALID_REPLACE, etc.
+# 
+# [:invalid => nil]
+#   Raise error on invalid byte sequence.  This is a default behavior.
+# [:invalid => :replace]
+#   Replace invalid byte sequence by replacement string.
+# [:undef => nil]
+#   Raise an error if a character in source_encoding is not defined in destination_encoding.
+#   This is a default behavior.
+# [:undef => :replace]
+#   Replace undefined character in destination_encoding with replacement string.
+# [:replace => string]
+#   Specify the replacement string.
+#   If not specified, "\uFFFD" is used for Unicode encodings and "?" for others.
+# [:universal_newline => true]
+#   Convert CRLF and CR to LF.
+# [:crlf_newline => true]
+#   Convert LF to CRLF.
+# [:cr_newline => true]
+#   Convert LF to CR.
+# [:xml => :text]
+#   Escape as XML CharData.
+#   This form can be used as a HTML 4.0 #PCDATA.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# [:xml => :attr]
+#   Escape as XML AttValue.
+#   The converted result is quoted as "...".
+#   This form can be used as a HTML 4.0 attribute value.
+#   - '&' -> '&amp;'
+#   - '<' -> '&lt;'
+#   - '>' -> '&gt;'
+#   - '"' -> '&quot;'
+#   - undefined characters in destination_encoding -> hexadecimal CharRef such as &#xHH;
+# 
+# Examples:
+#   # UTF-16BE to UTF-8
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8")
+# 
+#   # Usually, decorators such as newline conversion are inserted last.
+#   ec = Encoding::Converter.new("UTF-16BE", "UTF-8", :universal_newline => true)
+#   p ec.convpath #=> [[#<Encoding:UTF-16BE>, #<Encoding:UTF-8>],
+#                 #    "universal_newline"]
+# 
+#   # But, if the last encoding is ASCII incompatible,
+#   # decorators are inserted before the last conversion.
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE", :crlf_newline => true)
+#   p ec.convpath #=> ["crlf_newline",
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+# 
+#   # Conversion path can be specified directly.
+#   ec = Encoding::Converter.new(["universal_newline", ["EUC-JP", "UTF-8"], ["UTF-8", "UTF-16BE"]])
+#   p ec.convpath #=> ["universal_newline",
+#                 #    [#<Encoding:EUC-JP>, #<Encoding:UTF-8>],
+#                 #    [#<Encoding:UTF-8>, #<Encoding:UTF-16BE>]]
+def self.new(convpath); end
 
 ##
 # Returns a printable version of <i>ec</i>
 # 
 #   ec = Encoding::Converter.new("iso-8859-1", "utf-8")
 #   puts ec.inspect    #=> #<Encoding::Converter: ISO-8859-1 to UTF-8>
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the conversion path of ec.
@@ -21051,15 +36078,15 @@ def inspect(); end
 # In the above example, [#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>] means
 # a converter from ISO-8859-1 to UTF-8.
 # "crlf_newline" means newline converter from LF to CRLF.
-def convpath(); end
+def convpath; end
 
 ##
 # Returns the source encoding as an Encoding object.
-def source_encoding(); end
+def source_encoding; end
 
 ##
 # Returns the destination encoding as an Encoding object.
-def destination_encoding(); end
+def destination_encoding; end
 
 ##
 # possible opt elements:
@@ -21144,7 +36171,262 @@ def destination_encoding(); end
 #   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
 #   ret = ec.primitive_convert(src, dst="", nil, 1)
 #   p [ret, src, dst] #=> [:finished, "", "i"]
-def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
+def primitive_convert(source_buffer, destination_buffer); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset, destination_bytesize); end
+
+##
+# possible opt elements:
+#   hash form:
+#     :partial_input => true           # source buffer may be part of larger source
+#     :after_output => true            # stop conversion after output before input
+#   integer form:
+#     Encoding::Converter::PARTIAL_INPUT
+#     Encoding::Converter::AFTER_OUTPUT
+# 
+# possible results:
+#    :invalid_byte_sequence
+#    :incomplete_input
+#    :undefined_conversion
+#    :after_output
+#    :destination_buffer_full
+#    :source_buffer_empty
+#    :finished
+# 
+# primitive_convert converts source_buffer into destination_buffer.
+# 
+# source_buffer should be a string or nil.
+# nil means a empty string.
+# 
+# destination_buffer should be a string.
+# 
+# destination_byteoffset should be an integer or nil.
+# nil means the end of destination_buffer.
+# If it is omitted, nil is assumed.
+# 
+# destination_bytesize should be an integer or nil.
+# nil means unlimited.
+# If it is omitted, nil is assumed.
+# 
+# opt should be nil, a hash or an integer.
+# nil means no flags.
+# If it is omitted, nil is assumed.
+# 
+# primitive_convert converts the content of source_buffer from beginning
+# and store the result into destination_buffer.
+# 
+# destination_byteoffset and destination_bytesize specify the region which
+# the converted result is stored.
+# destination_byteoffset specifies the start position in destination_buffer in bytes.
+# If destination_byteoffset is nil,
+# destination_buffer.bytesize is used for appending the result.
+# destination_bytesize specifies maximum number of bytes.
+# If destination_bytesize is nil,
+# destination size is unlimited.
+# After conversion, destination_buffer is resized to
+# destination_byteoffset + actually produced number of bytes.
+# Also destination_buffer's encoding is set to destination_encoding.
+# 
+# primitive_convert drops the converted part of source_buffer.
+# the dropped part is converted in destination_buffer or
+# buffered in Encoding::Converter object.
+# 
+# primitive_convert stops conversion when one of following condition met.
+# - invalid byte sequence found in source buffer (:invalid_byte_sequence)
+# - unexpected end of source buffer (:incomplete_input)
+#   this occur only when :partial_input is not specified.
+# - character not representable in output encoding (:undefined_conversion)
+# - after some output is generated, before input is done (:after_output)
+#   this occur only when :after_output is specified.
+# - destination buffer is full (:destination_buffer_full)
+#   this occur only when destination_bytesize is non-nil.
+# - source buffer is empty (:source_buffer_empty)
+#   this occur only when :partial_input is specified.
+# - conversion is finished (:finished)
+# 
+# example:
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 100)
+#   p [ret, src, dst] #=> [:finished, "", "\x00p\x00i"]
+# 
+#   ec = Encoding::Converter.new("UTF-8", "UTF-16BE")
+#   ret = ec.primitive_convert(src="pi", dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "i", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "p"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:destination_buffer_full, "", "\x00"]
+#   ret = ec.primitive_convert(src, dst="", nil, 1)
+#   p [ret, src, dst] #=> [:finished, "", "i"]
+def primitive_convert(source_buffer, destination_buffer, destination_byteoffset, destination_bytesize, opt); end
 
 ##
 # Convert source_string and return destination_string.
@@ -21175,7 +36457,7 @@ def primitive_convert(p1, p2, p3=0, p4=0, p5=0, p6=0{}); end
 # from these exceptions.
 # When you want to handle these conversion errors,
 # use Encoding::Converter#primitive_convert.
-def convert(p1); end
+def convert(source_string); end
 
 ##
 # Finishes the converter.
@@ -21184,7 +36466,7 @@ def convert(p1); end
 #   ec = Encoding::Converter.new("utf-8", "iso-2022-jp")
 #   p ec.convert("\u3042")     #=> "\e$B$\""
 #   p ec.finish                #=> "\e(B"
-def finish(); end
+def finish; end
 
 ##
 # primitive_errinfo returns important information regarding the last error
@@ -21256,7 +36538,7 @@ def finish(); end
 #   #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "@\x00"]
 #   p src
 #   #=> ""
-def primitive_errinfo(); end
+def primitive_errinfo; end
 
 ##
 # Inserts string into the encoding converter.
@@ -21285,31 +36567,7 @@ def primitive_errinfo(); end
 #  ec.insert_output "?"                # state change required to output "?".
 #  p ec.primitive_convert(src, dst)    #=> :finished
 #  puts "[#{dst.dump}, #{src.dump}]"   #=> ["\e$B$O$!$H\e(B?\e$B!#\e(B".force_encoding("ISO-2022-JP"), ""]
-def insert_output(p1); end
-
-##
-# call-seq
-#   ec.putback                    -> string
-#   ec.putback(max_numbytes)      -> string
-# 
-# Put back the bytes which will be converted.
-# 
-# The bytes are caused by invalid_byte_sequence error.
-# When invalid_byte_sequence error, some bytes are discarded and
-# some bytes are buffered to be converted later.
-# The latter bytes can be put back.
-# It can be observed by
-# Encoding::InvalidByteSequenceError#readagain_bytes and
-# Encoding::Converter#primitive_errinfo.
-# 
-#   ec = Encoding::Converter.new("utf-16le", "iso-8859-1")
-#   src = "\x00\xd8\x61\x00"
-#   dst = ""
-#   p ec.primitive_convert(src, dst)   #=> :invalid_byte_sequence
-#   p ec.primitive_errinfo     #=> [:invalid_byte_sequence, "UTF-16LE", "UTF-8", "\x00\xD8", "a\x00"]
-#   p ec.putback               #=> "a\x00"
-#   p ec.putback               #=> ""          # no more bytes to put back
-def putback(p1=0); end
+def insert_output(string); end
 
 ##
 # Returns an exception object for the last conversion.
@@ -21326,7 +36584,7 @@ def putback(p1=0); end
 #  p ec.last_error      #=> #<Encoding::InvalidByteSequenceError: "\xF1" followed by "a" on UTF-8>
 #  p ec.primitive_convert(src, dst, nil, 1)             #=> :destination_buffer_full
 #  p ec.last_error      #=> nil
-def last_error(); end
+def last_error; end
 
 ##
 # Returns the replacement string.
@@ -21336,7 +36594,7 @@ def last_error(); end
 # 
 #  ec = Encoding::Converter.new("euc-jp", "utf-8")
 #  p ec.replacement    #=> "\uFFFD"
-def replacement(); end
+def replacement; end
 
 ##
 # Sets the replacement string.
@@ -21344,9 +36602,9 @@ def replacement(); end
 #  ec = Encoding::Converter.new("utf-8", "us-ascii", :undef => :replace)
 #  ec.replacement = "<undef>"
 #  p ec.convert("a \u3042 b")      #=> "a <undef> b"
-def replacement=(p1); end
+def replacement = string; end
 
-def ==(p1); end
+def ==; end
 
 end
 
@@ -21390,58 +36648,64 @@ class Bignum < Integer
 #    12345654321.to_s(8)      #=> "133766736061"
 #    12345654321.to_s(16)     #=> "2dfdbbc31"
 #    78546939656932.to_s(36)  #=> "rubyrules"
-def to_s(p1=0); end
-
-##
-# MISSING: documentation
-def coerce(p1); end
+def to_s(base=10); end
 
 ##
 # Unary minus (returns an integer whose value is 0-big)
-def -@(); end
+def -@; end
 
 ##
 # Adds big and other, returning the result.
-def +(p1); end
+def +; end
 
 ##
 # Subtracts other from big, returning the result.
-def -(p1); end
+def -; end
 
 ##
 # Multiplies big and other, returning the result.
-def *(p1); end
+def *; end
 
 ##
 # Performs division: the class of the resulting object depends on
 # the class of <code>numeric</code> and on the magnitude of the
 # result.
-def /(p1); end
+def /; end
 
 ##
 # Returns big modulo other. See Numeric.divmod for more
 # information.
-def %(p1); end
+def %; end
+
+##
+# Returns big modulo other. See Numeric.divmod for more
+# information.
+def modulo(other); end
 
 ##
 # Performs integer division: returns integer value.
-def div(p1); end
+def div(other); end
 
 ##
 # See <code>Numeric#divmod</code>.
-def divmod(p1); end
+def divmod(numeric); end
 
 ##
 # Returns big modulo other. See Numeric.divmod for more
 # information.
-def modulo(p1); end
+def modulo; end
+
+##
+# Returns big modulo other. See Numeric.divmod for more
+# information.
+def modulo(other); end
 
 ##
 # Returns the remainder after dividing <i>big</i> by <i>numeric</i>.
 # 
 #    -1234567890987654321.remainder(13731)      #=> -6966
 #    -1234567890987654321.remainder(13731.24)   #=> -9906.22531493148
-def remainder(p1); end
+def remainder(numeric); end
 
 ##
 # Returns the floating point result of dividing <i>big</i> by
@@ -21449,7 +36713,7 @@ def remainder(p1); end
 # 
 #    -1234567890987654321.fdiv(13731)      #=> -89910996357705.5
 #    -1234567890987654321.fdiv(13731.24)   #=> -89909424858035.7
-def fdiv(p1); end
+def fdiv(numeric); end
 
 ##
 # Raises _big_ to the _exponent_ power (which may be an integer, float,
@@ -21459,19 +36723,19 @@ def fdiv(p1); end
 #   123456789 ** 2      #=> 15241578750190521
 #   123456789 ** 1.2    #=> 5126464716.09932
 #   123456789 ** -2     #=> 6.5610001194102e-17
-def **(p1); end
+def **; end
 
 ##
 # Performs bitwise +and+ between _big_ and _numeric_.
-def &(p1); end
+def &; end
 
 ##
 # Performs bitwise +or+ between _big_ and _numeric_.
-def |(p1); end
+def |; end
 
 ##
 # Performs bitwise +exclusive or+ between _big_ and _numeric_.
-def ^(p1); end
+def ^; end
 
 ##
 # Inverts the bits in big. As Bignums are conceptually infinite
@@ -21480,15 +36744,15 @@ def ^(p1); end
 # as two periods to the left of the digits.
 # 
 #   sprintf("%X", ~0x1122334455)    #=> "..FEEDDCCBBAA"
-def ~(); end
+def ~; end
 
 ##
 # Shifts big left _numeric_ positions (right if _numeric_ is negative).
-def <<(p1); end
+def <<; end
 
 ##
 # Shifts big right _numeric_ positions (left if _numeric_ is negative).
-def >>(p1); end
+def >>; end
 
 ##
 # Bit Reference---Returns the <em>n</em>th bit in the (assumed) binary
@@ -21503,13 +36767,13 @@ def >>(p1); end
 # <em>produces:</em>
 # 
 #    000101110110100000111000011110010100111100010111001
-def [](p1); end
+def []; end
 
 ##
 # Comparison---Returns -1, 0, or +1 depending on whether <i>big</i> is
 # less than, equal to, or greater than <i>numeric</i>. This is the
 # basis for the tests in <code>Comparable</code>.
-def <=>(p1); end
+def <=>; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -21517,27 +36781,27 @@ def <=>(p1); end
 # requires <i>obj</i> to be a <code>Bignum</code>.
 # 
 #    68719476736 == 68719476736.0   #=> true
-def ==(p1); end
+def ==; end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # greater than that of <code>real</code>.
-def >(p1); end
+def >; end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # greater than or equal to that of <code>real</code>.
-def >=(p1); end
+def >=; end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # less than that of <code>real</code>.
-def <(p1); end
+def <; end
 
 ##
 # Returns <code>true</code> if the value of <code>big</code> is
 # less than or equal to that of <code>real</code>.
-def <=(p1); end
+def <=; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> has the same value
@@ -21545,7 +36809,7 @@ def <=(p1); end
 # requires <i>obj</i> to be a <code>Bignum</code>.
 # 
 #    68719476736 == 68719476736.0   #=> true
-def ===(p1); end
+def ===; end
 
 ##
 # Returns <code>true</code> only if <i>obj</i> is a
@@ -21553,28 +36817,28 @@ def ===(p1); end
 # with <code>Bignum#==</code>, which performs type conversions.
 # 
 #    68719476736.eql?(68719476736.0)   #=> false
-def eql?(p1); end
+def eql?(obj); end
 
 ##
 # Compute a hash based on the value of _big_.
-def hash(); end
+def hash; end
 
 ##
 # Converts <i>big</i> to a <code>Float</code>. If <i>big</i> doesn't
 # fit in a <code>Float</code>, the result is infinity.
-def to_f(); end
+def to_f; end
 
 ##
 # Returns the absolute value of <i>big</i>.
 # 
 #    -1234567890987654321.abs   #=> 1234567890987654321
-def abs(); end
+def abs; end
 
 ##
 # Returns the absolute value of <i>big</i>.
 # 
 #    -1234567890987654321.abs   #=> 1234567890987654321
-def magnitude(); end
+def abs; end
 
 ##
 # Returns the number of bytes in the machine representation of
@@ -21583,15 +36847,15 @@ def magnitude(); end
 #    (256**10 - 1).size   #=> 12
 #    (256**20 - 1).size   #=> 20
 #    (256**40 - 1).size   #=> 40
-def size(); end
+def size; end
 
 ##
 # Returns <code>true</code> if <i>big</i> is an odd number.
-def odd?(); end
+def odd?; end
 
 ##
 # Returns <code>true</code> if <i>big</i> is an even number.
-def even?(); end
+def even?; end
 
 end
 
@@ -21609,7 +36873,7 @@ class ThreadGroup < Object
 # this group.
 # 
 #    ThreadGroup::Default.list   #=> [#<Thread:0x401bdf4c run>]
-def list(); end
+def list; end
 
 ##
 # Prevents threads from being added to or removed from the receiving
@@ -21624,12 +36888,12 @@ def list(); end
 # <em>produces:</em>
 # 
 #    ThreadError: can't move from the enclosed thread group
-def enclose(); end
+def enclose; end
 
 ##
 # Returns <code>true</code> if <em>thgrp</em> is enclosed. See also
 # ThreadGroup#enclose.
-def enclosed?(); end
+def enclosed?; end
 
 ##
 # Adds the given <em>thread</em> to this group, removing it from any other
@@ -21652,7 +36916,7 @@ def enclosed?(); end
 #    t2 is #<Thread:0x401b3c18>
 #    Initial group now #<Thread:0x401b3c18>#<Thread:0x401bdf4c>
 #    tg group now #<Thread:0x401b3c90>
-def add(p1); end
+def add(thread); end
 
 end
 
@@ -21679,32 +36943,32 @@ end
 class Mutex < Object
 ##
 # Creates a new Mutex
-def self.new(); end
+def self.new; end
 
 ##
 # Returns +true+ if this lock is currently held by some thread.
-def locked?(); end
+def locked?; end
 
 ##
 # Attempts to obtain the lock and returns immediately. Returns +true+ if the
 # lock was granted.
-def try_lock(); end
+def try_lock; end
 
 ##
 # Attempts to grab the lock and waits if it isn't available.
 # Raises +ThreadError+ if +mutex+ was locked by the current thread.
-def lock(); end
+def lock; end
 
 ##
 # Releases the lock.
 # Raises +ThreadError+ if +mutex+ wasn't locked by the current thread.
-def unlock(); end
+def unlock; end
 
 ##
 # Releases the lock and sleeps +timeout+ seconds if it is given and
 # non-nil or forever.  Raises +ThreadError+ if +mutex+ wasn't locked by
 # the current thread.
-def sleep(p1=0); end
+def sleep(timeout = nil); end
 
 end
 
@@ -21736,41 +37000,41 @@ class Exception < Object
 # return the receiver. Otherwise, create a new
 # exception object of the same class as the receiver, but with a
 # message equal to <code>string.to_str</code>.
-def self.exception(*args); end
+def self.exception(string); end
 
 ##
 # With no argument, or if the argument is the same as the receiver,
 # return the receiver. Otherwise, create a new
 # exception object of the same class as the receiver, but with a
 # message equal to <code>string.to_str</code>.
-def exception(*args); end
+def exception(string); end
 
 ##
 # Construct a new Exception object, optionally passing in
 # a message.
-def self.new(p1=0); end
+def self.new(msg = nil); end
 
 ##
 # Equality---If <i>obj</i> is not an <code>Exception</code>, returns
 # <code>false</code>. Otherwise, returns <code>true</code> if <i>exc</i> and
 # <i>obj</i> share same class, messages, and backtrace.
-def ==(p1); end
+def ==; end
 
 ##
 # Returns exception's message (or the name of the exception if
 # no message is set).
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the result of invoking <code>exception.to_s</code>.
 # Normally this returns the exception's message or name. By
 # supplying a to_str method, exceptions are agreeing to
 # be used where Strings are expected.
-def message(); end
+def message; end
 
 ##
 # Return this exception's class name an message
-def inspect(); end
+def inspect; end
 
 ##
 # Returns any backtrace associated with the exception. The backtrace
@@ -21796,13 +37060,13 @@ def inspect(); end
 #    prog.rb:2:in `a'
 #    prog.rb:6:in `b'
 #    prog.rb:10
-def backtrace(); end
+def backtrace; end
 
 ##
 # Sets the backtrace information associated with <i>exc</i>. The
 # argument must be an array of <code>String</code> objects in the
 # format described in <code>Exception#backtrace</code>.
-def set_backtrace(p1); end
+def set_backtrace(array); end
 
 end
 
@@ -21811,15 +37075,15 @@ end
 class SystemExit < Exception
 ##
 # Create a new +SystemExit+ exception with the given status.
-def self.new(*args); end
+def self.new(status=0); end
 
 ##
 # Return the status value associated with this system exit.
-def status(); end
+def status; end
 
 ##
 # Returns +true+ if exiting successful, +false+ if not.
-def success?(); end
+def success?; end
 
 end
 
@@ -21981,15 +37245,15 @@ end
 # Construct a new NameError exception. If given the <i>name</i>
 # parameter may subsequently be examined using the <code>NameError.name</code>
 # method.
-def self.new(*args); end
+def self.new(msg , name=0); end
 
 ##
 # Return the name associated with this NameError exception.
-def name(); end
+def name; end
 
 ##
 # Produce a nicely-formatted string representing the +NameError+.
-def to_s(); end
+def to_s; end
 
 end
 
@@ -22008,12 +37272,12 @@ class NoMethodError < NameError
 # called with the given arguments. The name may be accessed using
 # the <code>#name</code> method on the resulting object, and the
 # arguments using the <code>#args</code> method.
-def self.new(*args); end
+def self.new(msg, name , args=0); end
 
 ##
 # Return the arguments passed in as the third parameter to
 # the constructor.
-def args(); end
+def args; end
 
 end
 
@@ -22083,16 +37347,16 @@ class SystemCallError < StandardError
 # constructs a generic <code>SystemCallError</code> object. The
 # error number is subsequently available via the <code>errno</code>
 # method.
-def self.new(p1, p2=0); end
+def self.new(msg, errno); end
 
 ##
 # Return this SystemCallError's error number.
-def errno(); end
+def errno; end
 
 ##
 # Return +true+ if the receiver is a generic +SystemCallError+, or
 # if the error numbers +self+ and _other_ are the same.
-def self.===(p1); end
+def self.===; end
 
 end
 
@@ -22169,7 +37433,7 @@ class Fiber < Object
 # processing at this point when <code>resume</code> is called next.
 # Any arguments passed to the next <code>resume</code> will be the
 # value that this <code>Fiber.yield</code> expression evaluates to.
-def self.yield(*args); end
+def self.yield(args, *more); end
 
 ##
 # Resumes the fiber from the point at which the last <code>Fiber.yield</code>
@@ -22182,7 +37446,7 @@ def self.yield(*args); end
 # to the next <code>Fiber.yield</code> statement inside the fiber's block
 # or to the block value if it runs to completion without any
 # <code>Fiber.yield</code>
-def resume(*args); end
+def resume(args, *more); end
 
 ##
 # Transfer control to another fiber, resuming it from where it last
@@ -22198,14 +37462,14 @@ def resume(*args); end
 # You cannot resume a fiber that transferred control to another one.
 # This will cause a double resume error. You need to transfer control
 # back to this fiber before it can yield and resume.
-def transfer(*args); end
+def transfer(args, *more); end
 
 ##
 # Returns true if the fiber can still be resumed (or transferred
 # to). After finishing execution of the fiber block this method will
 # always return false. You need to <code>require 'fiber'</code>
 # before using this method.
-def alive?(); end
+def alive?; end
 
 ##
 # Returns the current fiber. You need to <code>require 'fiber'</code>
@@ -22283,7 +37547,7 @@ class Continuation < Object
 #    callcc {|cont|  cont.call }           #=> nil
 #    callcc {|cont|  cont.call 1 }         #=> 1
 #    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
-def call(*args); end
+def call(args, *more); end
 
 ##
 # Invokes the continuation. The program continues from the end of the
@@ -22295,7 +37559,31 @@ def call(*args); end
 #    callcc {|cont|  cont.call }           #=> nil
 #    callcc {|cont|  cont.call 1 }         #=> 1
 #    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
-def [](*args); end
+def ]; end
+
+##
+# Invokes the continuation. The program continues from the end of the
+# <code>callcc</code> block. If no arguments are given, the original
+# <code>callcc</code> returns <code>nil</code>. If one argument is
+# given, <code>callcc</code> returns it. Otherwise, an array
+# containing <i>args</i> is returned.
+# 
+#    callcc {|cont|  cont.call }           #=> nil
+#    callcc {|cont|  cont.call 1 }         #=> 1
+#    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
+def call(args, *more); end
+
+##
+# Invokes the continuation. The program continues from the end of the
+# <code>callcc</code> block. If no arguments are given, the original
+# <code>callcc</code> returns <code>nil</code>. If one argument is
+# given, <code>callcc</code> returns it. Otherwise, an array
+# containing <i>args</i> is returned.
+# 
+#    callcc {|cont|  cont.call }           #=> nil
+#    callcc {|cont|  cont.call 1 }         #=> 1
+#    callcc {|cont|  cont.call 1, 2, 3 }   #=> [1, 2, 3]
+def ]; end
 
 end
 
@@ -22333,11 +37621,19 @@ end
 class Complex < Numeric
 ##
 # Returns a complex object which denotes the given rectangular form.
-def self.rectangular(p1, p2=0); end
+def self.rect(real, imag=0); end
 
 ##
 # Returns a complex object which denotes the given rectangular form.
-def self.rect(p1, p2=0); end
+def self.rectangular(real, imag=0); end
+
+##
+# Returns a complex object which denotes the given rectangular form.
+def self.rect(real, imag=0); end
+
+##
+# Returns a complex object which denotes the given rectangular form.
+def self.rectangular(real, imag=0); end
 
 ##
 # Returns a complex object which denotes the given polar form.
@@ -22346,35 +37642,43 @@ def self.rect(p1, p2=0); end
 #   Complex.polar(3, Math::PI/2)  #=> (1.836909530733566e-16+3.0i)
 #   Complex.polar(3, Math::PI)    #=> (-3.0+3.673819061467132e-16i)
 #   Complex.polar(3, -Math::PI/2) #=> (1.836909530733566e-16-3.0i)
-def self.polar(p1, p2=0); end
+def self.polar(abs, arg=0); end
 
 ##
 # Returns the real part.
-def real(); end
+def real; end
 
 ##
 # Returns the imaginary part.
-def imaginary(); end
+def imag; end
 
 ##
 # Returns the imaginary part.
-def imag(); end
+def imaginary; end
+
+##
+# Returns the imaginary part.
+def imag; end
+
+##
+# Returns the imaginary part.
+def imaginary; end
 
 ##
 # Returns negation of the value.
-def -@(); end
+def -@; end
 
 ##
 # Performs addition.
-def +(p1); end
+def +; end
 
 ##
 # Performs subtraction.
-def -(p1); end
+def -; end
 
 ##
 # Performs multiplication.
-def *(p1); end
+def *; end
 
 ##
 # Performs division.
@@ -22383,7 +37687,7 @@ def *(p1); end
 # 
 #     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
 #     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
-def /(p1); end
+def /; end
 
 ##
 # Performs division.
@@ -22392,7 +37696,25 @@ def /(p1); end
 # 
 #     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
 #     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
-def quo(p1); end
+def quo(numeric); end
+
+##
+# Performs division.
+# 
+# For example:
+# 
+#     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
+#     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
+def quo; end
+
+##
+# Performs division.
+# 
+# For example:
+# 
+#     Complex(10.0) / 3  #=> (3.3333333333333335+(0/1)*i)
+#     Complex(10)   / 3  #=> ((10/3)+(0/1)*i)  # not (3+0i)
+def quo(numeric); end
 
 ##
 # Performs division as each part is a float, never returns a float.
@@ -22400,7 +37722,7 @@ def quo(p1); end
 # For example:
 # 
 #     Complex(11,22).fdiv(3)  #=> (3.6666666666666665+7.333333333333333i)
-def fdiv(p1); end
+def fdiv(numeric); end
 
 ##
 # Performs exponentiation.
@@ -22409,69 +37731,133 @@ def fdiv(p1); end
 # 
 #     Complex('i') ** 2             #=> (-1+0i)
 #     Complex(-8) ** Rational(1,3)  #=> (1.0000000000000002+1.7320508075688772i)
-def **(p1); end
+def **; end
 
 ##
 # Returns true if cmp equals object numerically.
-def ==(p1); end
+def ==; end
 
 ##
 # Returns the absolute part of its polar form.
-def abs(); end
+def abs; end
 
 ##
 # Returns the absolute part of its polar form.
-def magnitude(); end
+def magnitude; end
+
+##
+# Returns the absolute part of its polar form.
+def abs; end
+
+##
+# Returns the absolute part of its polar form.
+def magnitude; end
 
 ##
 # Returns square of the absolute value.
-def abs2(); end
+def abs2; end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def arg(); end
+def arg; end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def angle(); end
+def angle; end
 
 ##
 # Returns the angle part of its polar form.
 # 
 #   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
-def phase(); end
+def phase; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def arg; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def angle; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def phase; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def arg; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def angle; end
+
+##
+# Returns the angle part of its polar form.
+# 
+#   Complex.polar(3, Math::PI/2).arg #=> 1.5707963267948966
+def phase; end
 
 ##
 # Returns an array; [cmp.real, cmp.imag].
-def rectangular(); end
+def rect; end
 
 ##
 # Returns an array; [cmp.real, cmp.imag].
-def rect(); end
+def rectangular; end
+
+##
+# Returns an array; [cmp.real, cmp.imag].
+def rect; end
+
+##
+# Returns an array; [cmp.real, cmp.imag].
+def rectangular; end
 
 ##
 # Returns an array; [cmp.abs, cmp.arg].
-def polar(); end
+def polar; end
 
 ##
 # Returns the complex conjugate.
-def conjugate(); end
+def conj; end
 
 ##
 # Returns the complex conjugate.
-def conj(); end
+def conjugate; end
 
 ##
 # Returns the complex conjugate.
-def ~(); end
+def conj; end
+
+##
+# Returns the complex conjugate.
+def conjugate; end
+
+##
+# Returns the complex conjugate.
+def conj; end
+
+##
+# Returns the complex conjugate.
+def conjugate; end
 
 ##
 # Returns false.
-def real?(); end
+def real?; end
 
 ##
 # Returns the numerator.
@@ -22489,39 +37875,39 @@ def real?(); end
 #    Complex(Rational(n.real, d), Rational(n.imag, d))
 #                             #=> ((1/2)+(2/3)*i)
 # See denominator.
-def numerator(); end
+def numerator; end
 
 ##
 # Returns the denominator (lcm of both denominator - real and imag).
 # 
 # See numerator.
-def denominator(); end
+def denominator; end
 
 ##
 # Returns the value as a string.
-def to_s(); end
+def to_s; end
 
 ##
 # Returns the value as a string for inspection.
-def inspect(); end
+def inspect; end
 
 ##
 # Returns the value as an integer if possible.
-def to_i(); end
+def to_i; end
 
 ##
 # Returns the value as a float if possible.
-def to_f(); end
+def to_f; end
 
 ##
 # If the imaginary part is exactly 0, returns the real part as a Rational,
 # otherwise a RangeError is raised.
-def to_r(); end
+def to_r; end
 
 ##
 # If the imaginary part is exactly 0, returns the real part as a Rational,
 # otherwise a RangeError is raised.
-def rationalize(p1=0); end
+def rationalize(eps=0); end
 
 end
 

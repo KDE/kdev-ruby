@@ -119,21 +119,67 @@ class File
   end
 
   ##
-  # Print the given +hash+ of methods that we can retrieve by
-  # calling RDoc::TopLevel#methods_hash.
-  def print_methods(hash)
-    hash.each do |o|
-      next if o.empty?
-      o = o.last
-      print_comment o.comment
-      if o.singleton
-        print "def self.#{o.name}"
+  # From the given +method+ and the given string +str+ ,
+  # print everything we can guess from it.
+  def print_method_string(method, str)
+    print_comment method.comment
+
+    # Extract block
+    str = str.gsub(/\{(.+)\}/, '')
+    block = !$1.nil? ? '&block' : nil
+    str = str.gsub(/(\[\s*\])/, '')
+    block = nil if !$1.nil?
+
+    # +per_se+ is the signature itself, and +ret+ the expected return type
+    per_se, ret = str.split('->').map(&:strip)
+    return if per_se.nil?
+
+    # Extract name and arguments of the method
+    name, args = per_se.split('(')
+    name = name.split('.')
+    name = if (name.size > 1)
+      name.last
+    else
+      method.name
+    end
+
+    # Write the method name
+    if method.singleton
+      print "def self.#{name}"
+    else
+      print "def #{name}"
+    end
+
+    # Write the method arguments
+    if args.nil?
+      print block.nil? ? "; end\n\n" : "(#{block}); end\n\n"
+    else
+      # Separate between normal parameters and optional parameters ...
+      args = args.chop.gsub(/\[(.+)\]/, '')
+      opts = $1.scan(/\w+/) unless $1.nil?
+
+      # ... and join them again but now with the proper format.
+      res = ''
+      if args.empty?
+        res = opts.join('=0, ') + '=0' unless opts.nil?
       else
-        print "def #{o.name}"
+        res = args
+        res += ', ' + opts.join('=0, ') + '=0' unless opts.nil?
       end
-      # Method arguments
-      print o.params.gsub(/((\w*) \= (\w*))/) { "#{$2}=0" }
-      puts "; end\n\n"
+      res.gsub!(/\.\.\./, '*more') # arg1, ...  =>  arg1, *more
+      print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
+    end
+  end
+
+  ##
+  # Print all the methods contained inside the given +hash+.
+  def print_methods(hash)
+    hash.each do |m|
+      method = m.last
+      call_seq = method.call_seq
+      unless call_seq.nil?
+        call_seq.split(/\n\s*/).each { |k| print_method_string method, k }
+      end
     end
   end
 end
@@ -160,6 +206,13 @@ doc.parse_files ruby_dir
 
 # Print everything into the +ruby_out+ file.
 output = File.open ruby_out, 'w'
+ruby_version = File.open("#{ruby_dir}/version.h", &:readline)
+ruby_version.match(/\"(.+)\"/)
+output.puts <<HEADER
+##
+# Ruby Version: #{$1}
+# This file is generated, all changes made in this file will be lost!\n\n
+HEADER
 output.print_modules RDoc::TopLevel.modules_hash
 output.print_classes RDoc::TopLevel.classes_hash
 
