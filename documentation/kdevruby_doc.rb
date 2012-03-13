@@ -142,6 +142,7 @@ class File
     else
       method.name
     end
+    name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
 
     # Write the method name
     if method.singleton
@@ -163,9 +164,10 @@ class File
       if args.empty?
         res = opts.join('=0, ') + '=0' unless opts.nil?
       else
-        res = args
+        res = args.gsub(/nil/, 'null')
         res += ', ' + opts.join('=0, ') + '=0' unless opts.nil?
       end
+      res = strip_reserved(res)
       res.gsub!(/\.\.\./, '*more') # arg1, ...  =>  arg1, *more
       print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
     end
@@ -181,6 +183,12 @@ class File
         call_seq.split(/\n\s*/).each { |k| print_method_string method, k }
       end
     end
+  end
+
+  ##
+  # Clean the given string +str+ from reserved words.
+  def strip_reserved(str)
+    str.gsub(/module/, 'modul').gsub(/class/, 'klass')
   end
 end
 
