@@ -128,6 +128,16 @@ private:
      */
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
+    /**
+     * @internal Setup the actions defined by this plugin.
+     */
+    void setupActions();
+
+    /**
+     * @internal Setup IQuickOpen so it registers Rails data providers.
+     */
+    void setupQuickOpen();
+
 public slots:
     /// The slot for the Create New Class dialog.
     void createNewClass();
