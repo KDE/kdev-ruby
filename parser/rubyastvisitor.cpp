@@ -422,14 +422,17 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
      * The method call body resides in the left child. Check if this
      * is either a require, an include/extend or just a normal method call.
      */
-    const QByteArray & name = QByteArray(mc->tree->l->name);
-    if (name == "require")
-        visitRequire(mc);
-    else if (name == "include")
-        visitInclude(mc);
-    else if (name == "extend")
-        visitExtend(mc);
-    else
+    if (mc->tree->l != NULL) {
+      const QByteArray & name = QByteArray(mc->tree->l->name);
+      if (name == "require")
+          visitRequire(mc);
+      else if (name == "include")
+          visitInclude(mc);
+      else if (name == "extend")
+          visitExtend(mc);
+      else
+          visitMethodCall(mc);
+    } else
         visitMethodCall(mc);
 }
 
