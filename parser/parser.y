@@ -1539,6 +1539,7 @@ static void init_parser(struct parser_t * p)
   p->lpar_beg = 0;
   p->paren_nest = 0;
   p->error_index = 0;
+  p->def_seen = 0;
   p->sp = 0;
   p->line = 1;
   p->column = 0;
@@ -1553,6 +1554,7 @@ static void init_parser(struct parser_t * p)
   p->errors[0].valid = 0;
   p->errors[1].valid = 0;
   p->last_comment.comment = NULL;
+  p->last_comment.line = -1;
   p->comment_index = 0;
 }
 
