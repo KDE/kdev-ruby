@@ -1267,7 +1267,9 @@ symbol: tSYMBEG sym
   {
     $$ = ALLOC_N(token_symbol, NULL, NULL);
     copy_end($$, $2);
-    $$->name = $2->name;
+    if ($2->name != NULL)
+      $$->name = strdup($2->name);
+    free_ast($2);
   }
 ;
 

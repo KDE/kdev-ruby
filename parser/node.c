@@ -149,8 +149,8 @@ void free_ast(struct node * n)
   free_ast(n->r);
   free_ast(n->cond);
   free_ast(n->ensure);
-/*   if (n->name != NULL) TODO
-     free(n->name); */
+   if (n->name != NULL)
+     free(n->name);
   if (n->comment != NULL)
     free(n->comment);
   free(n);
