@@ -278,7 +278,9 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
         visitNode(child);
         child->tree = aux->next;
     }
-    child->tree = n->next;
+
+    /* Vist method call block */
+    child->tree = n->cond;
     visitBlock(child);
     delete child;
 }
