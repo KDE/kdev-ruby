@@ -207,7 +207,7 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 %type <n> mlhs mlhs_head mlhs_basic mlhs_item mlhs_node mlhs_post mlhs_inner
 %type <n> fsym variable symbol operation operation2 operation3 other_vars
 %type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg
-%type <n> brace_block cmd_brace_block f_bad_arg sym
+%type <n> brace_block cmd_brace_block f_bad_arg sym opt_brace_block
 
 /* precedence table */
 %nonassoc tLOWEST
@@ -403,9 +403,8 @@ command: operation command_args       %prec tLOWEST
   }
   | operation command_args cmd_brace_block
   {
-    $$ = alloc_node(token_method_call, $1, $2);
+    $$ = alloc_cond(token_method_call, $3, $1, $2);
     copy_wc_range($$, $1, $2);
-    $$ = update_list($$, $3);
   }
   | primary '.' operation2 command_args     %prec tLOWEST
   {
@@ -416,9 +415,8 @@ command: operation command_args       %prec tLOWEST
   | primary '.' operation2 command_args cmd_brace_block
   {
     struct node *aux = update_list($1, $3);
-    $$ = alloc_node(token_method_call, aux, $4);
+    $$ = alloc_cond(token_method_call, $5, aux, $4);
     ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
-    $$ = update_list($$, $5);
   }
   | primary tCOLON2 operation2 command_args %prec tLOWEST
   {
@@ -429,9 +427,8 @@ command: operation command_args       %prec tLOWEST
   | primary tCOLON2 operation2 command_args cmd_brace_block
   {
     struct node *aux = update_list($1, $3);
-    $$ = alloc_node(token_method_call, aux, $4);
+    $$ = alloc_cond(token_method_call, $5, aux, $4);
     ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
-    $$ = update_list($$, $5);
   }
   | tSUPER call_args
   {
@@ -826,12 +823,10 @@ primary: literal
   | tKWNOT '(' rparen { $$ = ALLOC_N(token_kw_not, NULL, NULL);}
   | operation brace_block
   {
-    struct node * aux = alloc_node(token_method_call, $1, NULL);
-    $$ = update_list(aux, $2);
+    $$ = alloc_cond(token_method_call, $2, $1, NULL);
     copy_range($$, $1, $2);
   }
-  | method_call
-  | method_call brace_block { $$ = update_list($1, $2); }
+  | method_call opt_brace_block { $$ = $1; $$->cond = $2; }
   | tLAMBDA lambda { $$ = $2; }
   | tIF expr then compstmt if_tail tEND
   {
@@ -1160,6 +1155,10 @@ method_call: operation paren_args
     $$ = ALLOC_N(token_array_value, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
+;
+
+opt_brace_block: none
+  | brace_block
 ;
 
 brace_block: '{' opt_block_param compstmt '}'
