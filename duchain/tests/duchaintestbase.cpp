@@ -18,5 +18,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "duchaintestbase.h"
 
+// KDevelop
+#include <tests/autotestshell.h>
+#include <tests/testcore.h>
+#include <language/duchain/duchain.h>
+#include <language/codegen/coderepresentation.h>
+
+// Ruby
+#include <duchain/tests/duchaintestbase.h>
+
+
+using namespace KDevelop;
+namespace Ruby
+{
+
+void DUChainTestBase::initTestCase()
+{
+  AutoTestShell::init();
+  TestCore::initialize(Core::NoUi);
+
+  DUChain::self()->disablePersistentStorage();
+  KDevelop::CodeRepresentation::setDiskChangesForbidden(true);
+}
+
+void DUChainTestBase::cleanupTestCase()
+{
+    TestCore::shutdown();
+}
+
+}

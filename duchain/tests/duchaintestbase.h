@@ -24,12 +24,19 @@
 
 
 #include <QtCore/QObject>
+#include <duchain/duchainexport.h>
 
 
 namespace Ruby
 {
-class DUChainTestBase : public QObject
+
+class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
 {
+    Q_OBJECT
+
+public slots:
+    void initTestCase();
+    void cleanupTestCase();
 };
 
 }

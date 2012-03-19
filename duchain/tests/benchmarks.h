@@ -29,18 +29,29 @@ class QIODevice;
 
 namespace Ruby
 {
-
+/**
+ * Benchmark some parts of this plugin.
+ */
 class Benchmarks : public DUChainTestBase
 {
     Q_OBJECT
 
 public:
+    /**
+     * Constructor.
+     */
     Benchmarks();
 
 private:
+    /**
+     * @returns the builtins file as a QIODevice opened in ReadOnly mode.
+     */
     QIODevice * getBuiltinsFile();
 
-public slots:
+private slots:
+    /**
+     * Benchmarks the parser.
+     */
     void parser();
 };
 
