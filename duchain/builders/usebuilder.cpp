@@ -18,11 +18,13 @@
  */
 
 
+// KDE
+#include <KLocale>
+
+// Ruby
 #include <duchain/builders/usebuilder.h>
-#include <rubydefs.h> // TODO: remove this ;)
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
-#include <KLocale>
 
 
 namespace Ruby

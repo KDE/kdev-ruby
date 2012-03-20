@@ -19,7 +19,7 @@
 
 
 #include <parser/rubyastvisitor.h>
-#include <rubydefs.h> //TODO: Should be removed in the future
+#include <rubydefs.h>
 
 /*
  * TODO: Write in each visitor method a comment that describes the format
