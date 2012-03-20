@@ -131,7 +131,8 @@ class File
     block = nil if !$1.nil?
 
     # +per_se+ is the signature itself, and +ret+ the expected return type
-    per_se, ret = str.split('->').map(&:strip)
+    arrow = str.include?('=>') ? '=>' : '->'
+    per_se, ret = str.split(arrow).map(&:strip)
     return if per_se.nil?
 
     # Extract name and arguments of the method
@@ -142,7 +143,7 @@ class File
     else
       method.name
     end
-    name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
+    name = filter_name name
 
     # Write the method name
     if method.singleton
@@ -168,8 +169,14 @@ class File
         res += ', ' + opts.join('=0, ') + '=0' unless opts.nil?
       end
       res = strip_reserved(res)
-      res.gsub!(/\.\.\./, '*more') # arg1, ...  =>  arg1, *more
-      print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
+      res = fix_typos(res)
+      if res.include?('arg*more')
+        print "(#{block}); end\n\n"
+      elsif res =~ /\+|\*/
+        print "; end\n\n"
+      else
+        print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
+      end
     end
   end
 
@@ -183,6 +190,29 @@ class File
         call_seq.split(/\n\s*/).each { |k| print_method_string method, k }
       end
     end
+  end
+
+  private
+
+  ##
+  # Filter some issues on the +name+ of this method.
+  def filter_name(name)
+    name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
+    name.gsub!('enc or nil', 'enc_or_nil')
+    name = '[]' if name == ']' or name == ' ] ]' or name == '] ]' or name == ' ]'
+    name
+  end
+
+  ##
+  # Given the string +res+ , fix typos from documentation by hand.
+  def fix_typos(res)
+    res.gsub!(/,\s*,/, ',')
+    res.gsub!('"ext_enc:int_enc"', 'enc')
+    res.gsub!('"root"', 'root')
+    res.gsub!(/\w*: \w*/, 'random')
+    res.gsub!(/\.\.\.?/, '*more') # arg1, ...  =>  arg1, *more
+    res.gsub!(/\+|\*/, '*more')
+    res
   end
 
   ##
