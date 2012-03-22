@@ -29,3 +29,5 @@ target_link_libraries( kdev4rubyduchain
 )
 
 install(TARGETS kdev4rubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+add_subdirectory(tests)

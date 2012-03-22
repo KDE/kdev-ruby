@@ -1,6 +1,7 @@
 project(ruby)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
+enable_testing()
 
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform REQUIRED)
@@ -51,5 +52,3 @@ install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kdevrubysupport.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES kdevrubysupport.rc DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport)
 install(DIRECTORY documentation DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport)
-
-include(CTest)
