@@ -172,18 +172,18 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     /* Check the parameters */
     DUContext *params = openContext(node, rg, DUContext::Function, name);
     RubyAstVisitor::visitMethodArguments(node);
-    m_importedParentContexts.append(params);
     closeContext();
+    m_importedParentContexts.append(params);
 
     /* And now take care of the method body */
     node->tree = aux->l;
     if (node->tree) {
         DUContext *body = openContext(node, DUContext::Other, name);
-            if (compilingContexts()) {
-                DUChainWriteLocker lock(DUChain::lock());
-                body->addImportedParentContext(params);
-                body->setInSymbolTable(false);
-            }
+        if (compilingContexts()) {
+            DUChainWriteLocker lock(DUChain::lock());
+            body->addImportedParentContext(params);
+            body->setInSymbolTable(false);
+        }
         RubyAstVisitor::visitBody(node);
         closeContext();
     }

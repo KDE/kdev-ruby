@@ -177,12 +177,14 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
 
     /* TODO: handle default, star and block parameters */
 
-    // create variable declaration for argument
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = m_editor->findRange(node->tree);
-    openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
-    currentDeclaration()->setKind(Declaration::Instance);
-    currentDeclaration()->setType(type);
+    {
+      // create variable declaration for argument
+      DUChainWriteLocker lock(DUChain::lock());
+      RangeInRevision range = m_editor->findRange(node->tree);
+      openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
+      currentDeclaration()->setKind(Declaration::Instance);
+      currentDeclaration()->setType(type);
+    }
     DeclarationBuilderBase::visitParameter(node);
     closeDeclaration();
 }
@@ -233,6 +235,7 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
 
     /* Let's check if this variable is already declared */
     QList<Declaration *> decs = ctx->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
+
     // TODO: Not sure if this is properly working...
     if (!decs.isEmpty()) {
         QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
@@ -270,30 +273,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     dec->setType(type);
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
-}
-
-void DeclarationBuilder::openClassDeclaration(RubyAst *node, bool isClass)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    StructureType::Ptr type = StructureType::Ptr(new StructureType());
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
-    eventuallyAssignInternalContext();
-
-    if (isClass) {
-        decl->setKind(KDevelop::Declaration::Type);
-        decl->setClassType(ClassDeclarationData::Class);
-    } else {
-        decl->setKind(KDevelop::Declaration::Type);
-        decl->setClassType(ClassDeclarationData::Interface);
-    }
-    decl->clearBaseClasses();
-    type->setDeclaration(decl);
-    decl->setType(type);
-    openType(type);
-    openContextForClassDefinition(node);
-    decl->setInternalContext(currentContext());
 }
 
 void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
