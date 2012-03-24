@@ -29,7 +29,6 @@
 #include <duchain/tests/benchmarks.h>
 #include <duchain/helpers.h>
 #include <parser/rubyparser.h>
-#include <rubydefs.h>
 
 QTEST_MAIN(Ruby::Benchmarks)
 
@@ -53,13 +52,12 @@ QIODevice * Benchmarks::getBuiltinsFile()
 
 void Benchmarks::parser()
 {
-    QIODevice *builtins = getBuiltinsFile();
+    const QByteArray & contents = getBuiltinsFile()->readAll();
     QBENCHMARK {
         RubyParser parser;
-        parser.setContents(builtins->readAll());
+        parser.setContents(contents);
         parser.parse();
     }
-    delete builtins;
 }
 
 }
