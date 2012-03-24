@@ -600,6 +600,8 @@ fname: base
     $$->startLine = $$->endLine = parser->line;
     $$->endCol = parser->column - 1;
     $$->startCol = $$->endCol - parser->name_length;
+    parser->expr_seen = 1;
+    parser->dot_seen = 0;
   }
   | reswords { $$ = ALLOC_N(token_object, NULL, NULL); }
 ;
