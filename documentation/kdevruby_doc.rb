@@ -111,7 +111,11 @@ class File
         o.ancestors.each { |a| puts "include #{a.name}" }
       else
         base = (o.superclass.is_a? String) ? o.superclass : o.superclass.name
-        puts "class #{o.name} < #{base}"
+        if o.name == o.name.downcase
+          puts "class #{o.name.capitalize} < #{base}"
+        else
+          puts "class #{o.name} < #{base}"
+        end
         (o.ancestors - [o.superclass]).each { |a| puts "include #{a.name}" }
       end
       print_classes o.classes_hash
@@ -177,6 +181,8 @@ class File
       elsif res =~ /\+|\*/
         print "; end\n\n"
       else
+        res.gsub!('  , string=0', 'string=0')
+        res.gsub!(/filename=$/, "filename=''")
         print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
       end
     end
@@ -220,7 +226,7 @@ class File
   ##
   # Clean the given string +str+ from reserved words.
   def strip_reserved(str)
-    str.gsub(/module/, 'modul').gsub(/class/, 'klass')
+    str.gsub(/module/, 'modul').gsub(/class/, 'klass').gsub(/end/, '_end')
   end
 end
 
