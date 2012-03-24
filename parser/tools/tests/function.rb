@@ -85,3 +85,8 @@ end
 
 def `(p1)
 end
+
+def self.[]; end
+
+class A
+end
