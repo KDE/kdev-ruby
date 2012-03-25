@@ -1103,10 +1103,7 @@ do_block: tDO_BLOCK opt_block_param compstmt tEND
   }
 ;
 
-block_call: command do_block
-  {
-    $$ = update_list($1, $2);
-  }
+block_call: command do_block    { $1->cond = $2; $$ = $1; }
   | block_call '.' operation2 opt_paren_args
   {
     struct node *aux = update_list($1, $3);
