@@ -20,7 +20,6 @@
 
 
 // Qt + KDE
-#include <QtCore/QIODevice>
 #include <QtTest/QtTest>
 #include <KFilterDev>
 #include <KMimeType>

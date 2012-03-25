@@ -1567,9 +1567,8 @@ static void free_parser(struct parser_t * p)
 
   for (index = 0; index < p->sp; index++)
     free(p->stack[index]);
-  /* TODO */
-/*   if (p->pos_stack != NULL) */
-/*     free(p->pos_stack); */
+  if (p->pos_stack != NULL)
+    free(p->pos_stack);
   free(p->blob);
   free(p->name);
   if (p->last_comment.comment != NULL)
@@ -2000,9 +1999,8 @@ static void store_comment(struct parser_t *parser, char *comment)
 {
   if (parser->last_comment.comment != NULL)
     free(parser->last_comment.comment);
-  parser->last_comment.comment = strdup(comment);
+  parser->last_comment.comment = comment;
   parser->last_comment.line = parser->line;
-  free(comment);
 }
 
 static int is_indented_comment(char *c)
