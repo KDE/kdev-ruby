@@ -829,7 +829,12 @@ primary: literal
     copy_range($$, $1, $2);
   }
   | method_call opt_brace_block { $$ = $1; $$->cond = $2; }
-  | tLAMBDA lambda { $$ = $2; }
+  | tLAMBDA lambda
+  {
+    $$ = alloc_cond(token_method_call, $2, NULL, NULL);
+    pop_start(parser, $$);
+    copy_end($$, $2);
+  }
   | tIF expr then compstmt if_tail tEND
   {
     $$ = ALLOC_C(token_if, $2, $4, $5);
@@ -2495,6 +2500,8 @@ static int parser_yylex(struct parser_t * parser)
       t = tOP_ASGN;
     } else if (*(c + 1) == '>') {
       curs++;
+      tokp.startLine = tokp.endLine = parser->line;
+      tokp.startCol = parser->column;
       t = tLAMBDA;
     } else {
       t = '-';

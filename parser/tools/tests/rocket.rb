@@ -25,7 +25,7 @@ Proc.send :include, TestRocket
 +-> { raise }
 --> { true }
 ~-> { "this is a pending test" }
-!-> { "use this for descriptive output and to separate your test parts" } 
+!-> { "use this for descriptive output and to separate your test parts" }
 # END: TestRocket code
 
 class MagicString < String
