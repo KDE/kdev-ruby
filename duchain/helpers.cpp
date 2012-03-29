@@ -76,7 +76,6 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
                 decls = context->findDeclarations(id.last(), range.end);
         }
     }
-
     return (decls.length()) ? decls.last() : NULL;
 }
 

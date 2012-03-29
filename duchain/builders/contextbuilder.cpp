@@ -164,6 +164,7 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
+    DUChainWriteLocker lock(DUChain::lock());
     QualifiedIdentifier name = identifierForNode(new NameAst(node));
     Node *aux = node->tree;
     node->tree = node->tree->r;
@@ -173,12 +174,12 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     DUContext *params = openContext(node, rg, DUContext::Function, name);
     RubyAstVisitor::visitMethodArguments(node);
     closeContext();
-    m_importedParentContexts.append(params);
 
     /* And now take care of the method body */
     node->tree = aux->l;
     if (node->tree) {
-        DUContext *body = openContext(node, DUContext::Other, name);
+        RangeInRevision range = editorFindRange(node, node);
+        DUContext *body = openContext(node, range, DUContext::Other, name);
         if (compilingContexts()) {
             DUChainWriteLocker lock(DUChain::lock());
             body->addImportedParentContext(params);

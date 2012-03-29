@@ -154,12 +154,16 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = identifierForNode(new NameAst(node));
+
+    setComment(getComment(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
 
     openType(type);
     decl->setInSymbolTable(false);
+    lock.unlock();
     DeclarationBuilderBase::visitMethodStatement(node);
+    lock.lock();
     closeType();
     closeDeclaration();
 
@@ -176,7 +180,6 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     AbstractType::Ptr type(new ObjectType());
 
     /* TODO: handle default, star and block parameters */
-
     {
       // create variable declaration for argument
       DUChainWriteLocker lock(DUChain::lock());
@@ -201,7 +204,7 @@ void DeclarationBuilder::visitBlockVariable(RubyAst *node)
     currentDeclaration()->setKind(Declaration::Instance);
     currentDeclaration()->setType(type);
     DeclarationBuilderBase::visitBlockVariable(node);
-    closeDeclaration();    
+    closeDeclaration();
 }
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
