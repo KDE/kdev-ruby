@@ -55,6 +55,6 @@ private slots:
     void parser();
 };
 
-}
+} // End of namespace Ruby
 
 #endif /* BENCHMARKS_H */

@@ -27,11 +27,38 @@
 
 // Ruby
 #include <duchain/tests/duchaintestbase.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/builders/declarationbuilder.h>
+#include <parser/rubyparser.h>
+#include <parser/rubyast.h>
+#include <rubydefs.h>
 
 
 using namespace KDevelop;
 namespace Ruby
 {
+
+TopDUContext *DUChainTestBase::parse(const QByteArray &code)
+{
+    static int testNumber = 0;
+    QString url = QString("file:///internal/%1").arg(testNumber++);
+
+    RubyParser *parser = new RubyParser();
+    parser->setContents(code);
+    parser->setCurrentDocument(KUrl(url));
+    RubyAst *ast = parser->parse();
+
+    if (ast == NULL || ast->tree == NULL) {
+        debug() << "Parse failed!";
+        return NULL;
+    }
+    EditorIntegrator editor;
+    editor.setParseSession(parser);
+    DeclarationBuilder declarationBuilder;
+    TopDUContext *top = declarationBuilder.build(IndexedString(url), ast);
+
+    return top;
+}
 
 void DUChainTestBase::initTestCase()
 {

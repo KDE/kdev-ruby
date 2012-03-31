@@ -59,6 +59,6 @@ void Benchmarks::parser()
     }
 }
 
-}
+} // End of namespace Ruby
 
 #include "benchmarks.moc"

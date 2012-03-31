@@ -19,48 +19,28 @@
  */
 
 
-#ifndef DUCHAINTESTBASE_H
-#define DUCHAINTESTBASE_H
+#ifndef TESTDUCHAIN_H
+#define TESTDUCHAIN_H
 
 
-// Qt + KDevelop
-#include <QtCore/QObject>
-#include <language/duchain/duchain.h>
-#include <language/duchain/duchainlock.h>
-
-// Ruby
-#include <duchain/duchainexport.h>
+#include <duchain/tests/duchaintestbase.h>
 
 
 namespace Ruby
 {
 
-/**
- * Manage pointer to TopDUContexts and release them properly, even if a test
- * fails. Shamelessly copied from the PHP plugin :)
- */
-struct DUChainReleaser {
-    DUChainReleaser(KDevelop::TopDUContext *top) : m_top(top) {}
-    ~DUChainReleaser()
-    {
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        KDevelop::DUChain::self()->removeDocumentChain(m_top);
-    }
-    KDevelop::TopDUContext *m_top;
-};
-
-class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
+class TestDUChain : public DUChainTestBase
 {
     Q_OBJECT
 
-protected:
-    KDevelop::TopDUContext * parse(const QByteArray &code);
+public:
+    TestDUChain();
 
-public slots:
-    void initTestCase();
-    void cleanupTestCase();
+private slots:
+    void simpleAssignment();
 };
 
 } // End of namespace Ruby
 
-#endif /* DUCHAINTESTBASE_H */
+
+#endif /* TESTDUCHAIN_H */

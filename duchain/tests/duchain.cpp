@@ -19,48 +19,34 @@
  */
 
 
-#ifndef DUCHAINTESTBASE_H
-#define DUCHAINTESTBASE_H
-
-
-// Qt + KDevelop
-#include <QtCore/QObject>
+#include <QtTest/QtTest>
 #include <language/duchain/duchain.h>
-#include <language/duchain/duchainlock.h>
+#include <language/duchain/declaration.h>
+#include <language/duchain/types/integraltype.h>
+#include <duchain/tests/duchain.h>
 
-// Ruby
-#include <duchain/duchainexport.h>
 
+QTEST_MAIN(Ruby::TestDUChain)
 
+using namespace KDevelop;
 namespace Ruby
 {
 
-/**
- * Manage pointer to TopDUContexts and release them properly, even if a test
- * fails. Shamelessly copied from the PHP plugin :)
- */
-struct DUChainReleaser {
-    DUChainReleaser(KDevelop::TopDUContext *top) : m_top(top) {}
-    ~DUChainReleaser()
-    {
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
-        KDevelop::DUChain::self()->removeDocumentChain(m_top);
-    }
-    KDevelop::TopDUContext *m_top;
-};
-
-class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
+TestDUChain::TestDUChain()
 {
-    Q_OBJECT
+    /* There's nothing to do here */
+}
 
-protected:
-    KDevelop::TopDUContext * parse(const QByteArray &code);
+void TestDUChain::simpleAssignment()
+{
+    QByteArray code("a = 1");
+    TopDUContext *top = parse(code);
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-public slots:
-    void initTestCase();
-    void cleanupTestCase();
-};
+    QVERIFY(top->localDeclarations().at(0)->type<IntegralType>()->dataType() == IntegralType::TypeInt);
+}
 
 } // End of namespace Ruby
 
-#endif /* DUCHAINTESTBASE_H */
+#include "duchain.moc"
