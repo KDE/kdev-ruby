@@ -59,8 +59,6 @@ public:
     void visitCode(RubyAst *node);
 
 protected:
-    // TODO: The methods below lack of documentation right now :(
-
     virtual void visitVariable(RubyAst *node);
     virtual void visitBody(RubyAst *node);
     virtual void visitBinary(RubyAst *node);
