@@ -104,6 +104,15 @@ void RubyAstVisitor::visitArray(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitArrayValue(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    child->tree = node->tree->r;
+    visitStatements(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitHash(RubyAst *node)
 {
     RubyAst *child = new RubyAst(node->tree->l, node->context);
@@ -255,6 +264,16 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitSingletonClass(RubyAst *node)
+{
+    Node *n = node->tree;
+    RubyAst *child = new RubyAst(n->l, node->context);
+    visitBody(child);
+    child->tree = n->r;
+    visitNode(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitModuleStatement(RubyAst *node)
 {
     Node *n = node->tree;
@@ -321,6 +340,19 @@ void RubyAstVisitor::visitRequire(RubyAst *node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitHeredoc(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitDefined(RubyAst *node)
+{
+    Node *n = node->tree;
+    RubyAst *child = new RubyAst(n->l, node->context);
+    visitNode(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
@@ -333,15 +365,17 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_yield: visitYieldStatement(node); break;
         case token_alias: visitAliasStatement(node); break;
         case token_undef: visitUndefStatement(node); break;
-        case token_if: case token_unless: visitIfStatement(node); break;
+        case token_if: case token_unless: case token_ternary:
+          visitIfStatement(node);
+          break;
         case token_begin: visitBeginStatement(node); break;
         case token_up_begin:
         case token_up_end: visitUpBeginEndStatement(node); break;
         case token_case: visitCaseStatement(node); break;
         case token_while: case token_until: visitWhileStatement(node); break;
         case token_for: visitForStatement(node); break;
-        case token_class:
-        case token_singleton_class: visitClassStatement(node); break;
+        case token_class: visitClassStatement(node); break;
+        case token_singleton_class: visitSingletonClass(node); break;
         case token_module: visitModuleStatement(node); break;
         case token_function: visitMethodStatement(node); break;
         case token_method_call: checkMethodCall(node); break;
@@ -350,6 +384,9 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_object: visitVariable(node); break;
         case token_hash: visitHash(node); break;
         case token_array: visitArray(node); break;
+        case token_array_value: visitArrayValue(node); break;
+        case token_heredoc: visitHeredoc(node); break;
+        case token_defined: visitDefined(node); break;
         case token_unary_plus: case token_unary_minus: case token_neg:
         case token_not:
             visitUnary(node);
@@ -359,7 +396,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_lesser:  case token_leq:
         case token_plus: case token_minus: case token_mul: case token_div:
         case token_mod: case token_lshift: case token_rshift: case token_dot2:
-        case token_dot3:
+        case token_dot3: case token_pow:
             visitBinary(node);
             break;
         case token_or: case token_and: case token_kw_and:
@@ -367,8 +404,9 @@ void RubyAstVisitor::visitNode(RubyAst *node)
             visitBoolean(node);
             break;
         case token_numeric: case token_symbol: case token_string:
-        case token_regexp: case token_heredoc: case token_key:
-        case token_break: case token_next: case token_redo: case token_retry:
+        case token_regexp: case token_key: case token_break:
+        case token_next: case token_redo: case token_retry:
+        case token__end__:
             return;
     }
 }

@@ -67,6 +67,7 @@ protected:
     virtual void visitBoolean(RubyAst *node);
     virtual void visitUnary(RubyAst *node);
     virtual void visitArray(RubyAst *node);
+    virtual void visitArrayValue(RubyAst *node);
     virtual void visitHash(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
     virtual void visitUndefStatement(RubyAst *node);
@@ -82,7 +83,8 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitMethodArguments(RubyAst *node);
     virtual void visitParameter(RubyAst *node);
-    virtual void visitClassStatement(RubyAst *node); // TODO: And singleton?
+    virtual void visitClassStatement(RubyAst *node);
+    virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
@@ -90,6 +92,8 @@ protected:
     virtual void visitRequire(RubyAst *node);
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);
+    virtual void visitHeredoc(RubyAst *node);
+    virtual void visitDefined(RubyAst *node);
 
 private:
     /**
