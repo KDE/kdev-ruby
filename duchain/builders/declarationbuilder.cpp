@@ -230,6 +230,11 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
     setLastType(AbstractType::Ptr(0));
 }
 
+void DeclarationBuilder::visitAssignmentStatement(RubyAst* node)
+{
+    RubyAstVisitor::visitAssignmentStatement(node);
+}
+
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {

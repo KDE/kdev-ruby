@@ -68,6 +68,7 @@ protected:
     virtual void visitVariable(RubyAst *node);
     virtual void visitBlockVariable(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
+    virtual void visitAssignmentStatement(RubyAst *node);
 
 private:
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
