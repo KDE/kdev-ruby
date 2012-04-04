@@ -58,6 +58,14 @@ public:
      */
     void visitCode(RubyAst *node);
 
+    /**
+     * Given a node, it calls the appropiate method in order to successfully
+     * visit this node.
+     *
+     * @param node The given node.
+     */
+    void visitNode(RubyAst *node);
+
 protected:
     virtual void visitVariable(RubyAst *node);
     virtual void visitString(RubyAst *node);
@@ -97,14 +105,6 @@ protected:
     virtual void visitDefined(RubyAst *node);
 
 private:
-    /**
-     * @internal Given a node, it calls the appropiate method in order to
-     * successfully visit this node.
-     *
-     * @param node The given node.
-     */
-    void visitNode(RubyAst *node);
-
     /**
      * @internal Helper method useful to visit a list of statements.
      *

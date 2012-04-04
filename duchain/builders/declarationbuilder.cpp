@@ -31,6 +31,7 @@
 #include <language/duchain/types/unsuretype.h>
 #include <KLocale>
 #include <duchain/helpers.h>
+#include <duchain/expressionvisitor.h>
 
 
 namespace Ruby
@@ -230,9 +231,28 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
     setLastType(AbstractType::Ptr(0));
 }
 
-void DeclarationBuilder::visitAssignmentStatement(RubyAst* node)
+void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 {
+    QList<AbstractType::Ptr> values;
+
     RubyAstVisitor::visitAssignmentStatement(node);
+
+    debug() << "==== Starting with the assignment statement !!!!";
+    DUChainReadLocker lock(DUChain::lock());
+    RubyAst *aux = new RubyAst(node->tree->r, node->context);
+    for (Node *n = aux->tree; n != NULL; n = n->next) {
+        ExpressionVisitor v(currentContext(), m_editor);
+        aux->tree = n;
+        v.visitNode(aux);
+        values << v.lastType();
+    }
+    lock.unlock();
+    //BEGIN debug
+    debug() << "VALUES";
+    foreach (const AbstractType::Ptr ptr, values) {
+        debug() << ptr->toString();
+    }
+    //END
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,

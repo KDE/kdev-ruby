@@ -1,4 +1,5 @@
 set(rubyduchain_SRCS
+    expressionvisitor.cpp
     editorintegrator.cpp
     rubyducontext.cpp
     helpers.cpp
