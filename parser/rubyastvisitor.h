@@ -60,6 +60,9 @@ public:
 
 protected:
     virtual void visitVariable(RubyAst *node);
+    virtual void visitString(RubyAst *node);
+    virtual void visitRegexp(RubyAst *node);
+    virtual void visitNumeric(RubyAst *node);
     virtual void visitBody(RubyAst *node);
     virtual void visitBinary(RubyAst *node);
     virtual void visitBoolean(RubyAst *node);

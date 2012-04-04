@@ -60,6 +60,21 @@ void RubyAstVisitor::visitVariable(RubyAst* node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitNumeric(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitRegexp(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitString(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
 void RubyAstVisitor::visitBody(RubyAst *node)
 {
     /*
@@ -513,8 +528,10 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_kw_not: case token_kw_or:
             visitBoolean(node);
             break;
-        case token_numeric: case token_symbol: case token_string:
-        case token_regexp: case token_key: case token_break:
+        case token_numeric: visitNumeric(node); break;
+        case token_string: visitString(node); break;
+        case token_regexp: visitRegexp(node); break;
+        case token_symbol: case token_key: case token_break:
         case token_next: case token_redo: case token_retry:
         case token__end__:
             return;
