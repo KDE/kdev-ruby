@@ -38,31 +38,23 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
 {
     /* TODO */
     Q_UNUSED(editor)
-    /* TODO */
 }
 
 void ExpressionVisitor::visitString(RubyAst *)
 {
-    debug() << "==== Is a string!!";
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
-    if (obj != AbstractType::Ptr(NULL))
-        debug() << obj->toString();
-    else
-        debug() << "OOPS";
     encounter(obj);
 }
 
 void ExpressionVisitor::visitNumeric(RubyAst *)
 {
     // TODO: what about Float ?
-    debug() << "==== Is a Numeric";
     AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitRegexp(RubyAst *)
 {
-    debug() << "==== Is a Regexp";
     AbstractType::Ptr obj = getBuiltinsType("Regexp", m_ctx);
     encounter(obj);
 }
@@ -71,16 +63,7 @@ TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DU
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
     Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
-    if (!dec)
-        debug() << "EMPTY";
-    else
-        debug() << "** It exists " << dec->toString();
     AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
-    if (!type)
-        debug() << "NO TYPE";
-    else
-        debug() << "HERE WE GO " << type->toString();
-//     debug() << "Builtins: " << type->toString();
     return type;
 }
 

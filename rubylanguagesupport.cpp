@@ -161,7 +161,7 @@ void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::Referen
 
 void LanguageSupport::updateBuiltins()
 {
-    debug() << "make sure that the builtins file is up to date";
+    debug() << "making sure that the builtins file is up to date";
     DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 

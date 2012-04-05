@@ -108,7 +108,14 @@ public:
      */
     KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *ctx);
 
+    /**
+     * @return true if the builtins file is loaded, false otherwise.
+     */
     bool builtinsLoaded() const;
+
+    /**
+     * @return the lock for the builtins file.
+     */
     QReadWriteLock * builtinsLock();
 
 private:
@@ -145,9 +152,11 @@ public slots:
     /// The slot for the Create New Class dialog.
     void createNewClass();
 
+    /// Get notified by background parser when the builtins file is loaded.
     void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
 
 private slots:
+    /// Update the builtins file when the plugin has been loaded.
     void updateBuiltins();
 
 private Q_SLOTS:

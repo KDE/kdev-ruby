@@ -247,12 +247,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         values << v.lastType();
     }
     lock.unlock();
-    //BEGIN debug
-    debug() << "VALUES " << values.length();
-    foreach (const AbstractType::Ptr ptr, values) {
-//         debug() << ptr->toString();
-    }
-    //END
+
+    /* TODO */
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
