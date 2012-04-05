@@ -248,9 +248,9 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     }
     lock.unlock();
     //BEGIN debug
-    debug() << "VALUES";
+    debug() << "VALUES " << values.length();
     foreach (const AbstractType::Ptr ptr, values) {
-        debug() << ptr->toString();
+//         debug() << ptr->toString();
     }
     //END
 }

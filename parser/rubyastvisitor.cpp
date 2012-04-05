@@ -461,11 +461,6 @@ void RubyAstVisitor::visitRequire(RubyAst *node)
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitHeredoc(RubyAst *node)
-{
-    Q_UNUSED(node)
-}
-
 void RubyAstVisitor::visitDefined(RubyAst *node)
 {
     /*
@@ -510,7 +505,6 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_hash: visitHash(node); break;
         case token_array: visitArray(node); break;
         case token_array_value: visitArrayValue(node); break;
-        case token_heredoc: visitHeredoc(node); break;
         case token_defined: visitDefined(node); break;
         case token_unary_plus: case token_unary_minus: case token_neg:
         case token_not:
@@ -530,7 +524,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
             break;
         case token_numeric: visitNumeric(node); break;
         case token_string: visitString(node); break;
-        case token_regexp: visitRegexp(node); break;
+        case token_regexp: case token_heredoc: visitRegexp(node); break;
         case token_symbol: case token_key: case token_break:
         case token_next: case token_redo: case token_retry:
         case token__end__:

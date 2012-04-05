@@ -43,16 +43,17 @@ public:
 
     inline KDevelop::AbstractType::Ptr lastType() const
     {
-        return (m_lastType.isEmpty()) ? KDevelop::AbstractType::Ptr(new ObjectType()) : m_lastType.last();
+        return (m_lastType.isEmpty()) ? KDevelop::AbstractType::Ptr(NULL) : m_lastType.last();
     }
 
 protected:
     virtual void visitString(RubyAst *node);
+    virtual void visitRegexp(RubyAst *node);
+    virtual void visitNumeric(RubyAst *node);
 
 private:
-    TypePtr<ObjectType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
+    TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
     void encounter(KDevelop::AbstractType::Ptr type);
-    void encounter(TypePtr<ObjectType> type);
 
 private:
     KDevelop::DUContext *m_ctx;

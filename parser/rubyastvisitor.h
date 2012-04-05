@@ -101,7 +101,6 @@ protected:
     virtual void visitRequire(RubyAst *node);
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);
-    virtual void visitHeredoc(RubyAst *node);
     virtual void visitDefined(RubyAst *node);
 
 private:

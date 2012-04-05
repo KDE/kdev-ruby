@@ -21,6 +21,7 @@
 
 // KDevelop
 #include <language/duchain/topducontext.h>
+#include <language/duchain/declaration.h>
 
 // Ruby
 #include <rubydefs.h>
@@ -43,35 +44,49 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
 void ExpressionVisitor::visitString(RubyAst *)
 {
     debug() << "==== Is a string!!";
-    ObjectType::Ptr obj = getBuiltinsType("String", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
+    if (obj != AbstractType::Ptr(NULL))
+        debug() << obj->toString();
+    else
+        debug() << "OOPS";
     encounter(obj);
 }
 
-TypePtr<ObjectType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
+void ExpressionVisitor::visitNumeric(RubyAst *)
 {
-    debug() << "TOP CONTEXT AT: " << ctx->topContext()->topContext()->url().byteArray();
+    // TODO: what about Float ?
+    debug() << "==== Is a Numeric";
+    AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitRegexp(RubyAst *)
+{
+    debug() << "==== Is a Regexp";
+    AbstractType::Ptr obj = getBuiltinsType("Regexp", m_ctx);
+    encounter(obj);
+}
+
+TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
+{
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
-    debug() << "GET BUILTINS";
-    if (decls.isEmpty()) {
-        debug() << "IS EMPTY";
-    } else
-        debug() << "getBuiltinsType: " << decls.first();
-    /* TODO */
-    Q_UNUSED(desc)
-    Q_UNUSED(ctx)
-    ObjectType::Ptr type = ObjectType::Ptr(new ObjectType());
+    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
+    if (!dec)
+        debug() << "EMPTY";
+    else
+        debug() << "** It exists " << dec->toString();
+    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
+    if (!type)
+        debug() << "NO TYPE";
+    else
+        debug() << "HERE WE GO " << type->toString();
+//     debug() << "Builtins: " << type->toString();
     return type;
-    /* TODO */
 }
 
 void ExpressionVisitor::encounter(AbstractType::Ptr type)
 {
     m_lastType.push(type);
-}
-
-void ExpressionVisitor::encounter(TypePtr<ObjectType> type)
-{
-    encounter(AbstractType::Ptr::staticCast(type));
 }
 
 } // End of namespace Ruby
