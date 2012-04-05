@@ -78,6 +78,12 @@ void ParseJob::run()
     if (!ruby() || abortRequested())
         return abortJob();
 
+    /* Make sure that the builtins file is already loaded */
+    if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
+        debug() << "waiting for builtins file to finish parsing";
+        QReadLocker(ruby()->builtinsLock());
+    }
+
     KDevelop::UrlParseLock urlLock(document());
     if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Rescheduled)) {
         DUChainReadLocker lock(DUChain::lock());

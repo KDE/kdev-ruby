@@ -108,6 +108,9 @@ public:
      */
     KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *ctx);
 
+    bool builtinsLoaded() const;
+    QReadWriteLock * builtinsLock();
+
 private:
     /**
      * @internal Find or create a launch for a the given @p name.
@@ -142,6 +145,11 @@ public slots:
     /// The slot for the Create New Class dialog.
     void createNewClass();
 
+    void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
+
+private slots:
+    void updateBuiltins();
+
 private Q_SLOTS:
      /// The slot that allows this plugin to run the current Ruby file.
     void runCurrentFile();
@@ -152,6 +160,8 @@ private Q_SLOTS:
 private:
     static LanguageSupport* m_self;
     Ruby::Highlighting *m_highlighting;
+    bool m_builtinsLoaded;
+    QReadWriteLock m_builtinsLock;
 
     RailsSwitchers *m_railsSwitchers;
     RailsDataProvider *m_viewsQuickOpenDataProvider;

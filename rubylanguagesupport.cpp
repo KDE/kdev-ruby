@@ -82,6 +82,9 @@ LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
     , m_rubyFileLaunchConfiguration(NULL)
     , m_rubyCurrentFunctionLaunchConfiguration(NULL)
 {
+    m_builtinsLoaded = false;
+    m_builtinsLock.lockForWrite();
+
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
     setXMLFile("kdevrubysupport.rc");
     m_self = this;
@@ -91,6 +94,8 @@ LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
 
     setupActions();
     setupQuickOpen();
+
+    QTimer::singleShot(0, this, SLOT(updateBuiltins()));
 }
 
 LanguageSupport::~LanguageSupport()
@@ -130,9 +135,34 @@ ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context *ct
     return cm;
 }
 
+bool LanguageSupport::builtinsLoaded() const
+{
+    return m_builtinsLoaded;
+}
+
+QReadWriteLock * LanguageSupport::builtinsLock()
+{
+    return &m_builtinsLock;
+}
+
 void LanguageSupport::createNewClass()
 {
     RubyRefactoring::self().createNewClass(NULL);
+}
+
+void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
+{
+    Q_UNUSED(topContext)
+    debug() << "builtins file is up to date " << url.str();
+    m_builtinsLoaded = true;
+    m_builtinsLock.unlock();
+    DUChainReadLocker lock(DUChain::lock());
+}
+
+void LanguageSupport::updateBuiltins()
+{
+    debug() << "make sure that the builtins file is up to date";
+    DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
 void LanguageSupport::runCurrentFile()
