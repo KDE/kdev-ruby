@@ -248,7 +248,21 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     }
     lock.unlock();
 
-    /* TODO */
+    /* TODO: under construction */
+
+    aux->tree = node->tree->l;
+    int i = 0;
+    AbstractType::Ptr type;
+    for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
+        if (values.at(i)) {
+            DUChainWriteLocker lock(DUChain::lock());
+            type = values.at(i);
+            debug() << "We have to set the following type: " << type->toString();
+            QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+            declareVariable(currentContext(), type, id, aux);
+        }
+    }
+    delete aux;
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
@@ -295,6 +309,7 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
+    debug() << "Set type " << type->toString();
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
 }

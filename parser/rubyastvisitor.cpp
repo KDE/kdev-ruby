@@ -220,12 +220,12 @@ void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
      * l -> the left side of the assignment.
      * r -> the right side of the assignment.
      */
-
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    child->tree = node->tree->r;
-    visitStatements(child);
-    delete child;
+// TODO: maybe it's better to let the DeclarationBuilder do the work here
+//     RubyAst *child = new RubyAst(node->tree->l, node->context);
+//     visitStatements(child);
+//     child->tree = node->tree->r;
+//     visitStatements(child);
+//     delete child;
 }
 
 void RubyAstVisitor::visitIfStatement(RubyAst *node)
