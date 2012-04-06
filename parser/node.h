@@ -112,7 +112,14 @@ enum node_t {
   token_defined,
   token_undef,
   token_array_value,
-  token__end__,         /* 78 */
+  token__end__,
+  token_true,
+  token_false,          /* 80 */
+  token_nil,
+  token_self,
+  token_encoding,
+  token_file,
+  token_line,           /* 85 */
 };
 
 

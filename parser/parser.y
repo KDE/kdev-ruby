@@ -1292,19 +1292,15 @@ variable: base
   | const
   | CVAR   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
   | other_vars
-  {
-    $$ = ALLOC_N(token_object, NULL, NULL);
-    $$->name = parser->aux;
-  }
 ;
 
-other_vars: tNIL { copy_op("nil"); }
-  | tSELF  { copy_op("self"); }
-  | tTRUE  { copy_op("true"); }
-  | tFALSE { copy_op("false"); }
-  | tFILE  { copy_op("__FILE__"); }
-  | tLINE  { copy_op("__LINE__"); }
-  | tENCODING { copy_op("__ENCODING__"); }
+other_vars: tNIL { $$ = ALLOC_N(token_nil, NULL, NULL); }
+  | tSELF  { $$ = ALLOC_N(token_self, NULL, NULL); }
+  | tTRUE  { $$ = ALLOC_N(token_true, NULL, NULL); }
+  | tFALSE { $$ = ALLOC_N(token_false, NULL, NULL); }
+  | tFILE  { $$ = ALLOC_N(token_file, NULL, NULL); }
+  | tLINE  { $$ = ALLOC_N(token_line, NULL, NULL); }
+  | tENCODING { $$ = ALLOC_N(token_encoding, NULL, NULL); }
 ;
 
 backref: tNTH_REF { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
