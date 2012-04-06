@@ -75,9 +75,15 @@ void ExpressionVisitor::visitLine(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitEncoding(RubyAst* )
+void ExpressionVisitor::visitEncoding(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Encoding", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitSelf(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("Object", m_ctx);
     encounter(obj);
 }
 

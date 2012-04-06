@@ -57,6 +57,7 @@ protected:
     virtual void visitLine(RubyAst *node);
     virtual void visitFile(RubyAst *node);
     virtual void visitEncoding(RubyAst *node);
+    virtual void visitSelf(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);

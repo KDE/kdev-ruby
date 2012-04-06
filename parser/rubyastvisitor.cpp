@@ -489,7 +489,12 @@ void RubyAstVisitor::visitLine(RubyAst *node)
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitEncoding(RubyAst* node)
+void RubyAstVisitor::visitEncoding(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitSelf(RubyAst *node)
 {
     Q_UNUSED(node)
 }
