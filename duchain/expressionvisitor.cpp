@@ -40,6 +40,11 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     Q_UNUSED(editor)
 }
 
+void ExpressionVisitor::visitVariable(RubyAst* node)
+{
+    debug() << "HERE !!! " << node->tree->name;
+}
+
 void ExpressionVisitor::visitString(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);

@@ -1287,14 +1287,24 @@ numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
 ;
 
 variable: base
-  | IVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | IVAR   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
   | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
   | const
-  | CVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | other_vars { $$ = ALLOC_N(token_object, NULL, NULL); }
+  | CVAR   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | other_vars
+  {
+    $$ = ALLOC_N(token_object, NULL, NULL);
+    $$->name = parser->aux;
+  }
 ;
 
-other_vars: tNIL | tSELF | tTRUE | tFALSE | tFILE | tLINE | tENCODING
+other_vars: tNIL { copy_op("nil"); }
+  | tSELF  { copy_op("self"); }
+  | tTRUE  { copy_op("true"); }
+  | tFALSE { copy_op("false"); }
+  | tFILE  { copy_op("__FILE__"); }
+  | tLINE  { copy_op("__LINE__"); }
+  | tENCODING { copy_op("__ENCODING__"); }
 ;
 
 backref: tNTH_REF { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
