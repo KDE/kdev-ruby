@@ -102,6 +102,12 @@ protected:
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);
     virtual void visitDefined(RubyAst *node);
+    virtual void visitTrue(RubyAst *node);
+    virtual void visitFalse(RubyAst *node);
+    virtual void visitNil(RubyAst *node);
+    virtual void visitLine(RubyAst *node);
+    virtual void visitFile(RubyAst *node);
+    virtual void visitEncoding(RubyAst *node);
 
 private:
     /**

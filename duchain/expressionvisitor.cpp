@@ -45,6 +45,42 @@ void ExpressionVisitor::visitVariable(RubyAst* node)
     debug() << "HERE !!! " << node->tree->name;
 }
 
+void ExpressionVisitor::visitTrue(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("TrueClass", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitFalse(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("FalseClass", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitNil(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitFile(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitLine(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitEncoding(RubyAst* )
+{
+    AbstractType::Ptr obj = getBuiltinsType("Encoding", m_ctx);
+    encounter(obj);
+}
+
 void ExpressionVisitor::visitString(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);

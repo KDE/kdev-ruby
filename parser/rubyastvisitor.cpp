@@ -216,16 +216,7 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
 
 void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
 {
-    /*
-     * l -> the left side of the assignment.
-     * r -> the right side of the assignment.
-     */
-// TODO: maybe it's better to let the DeclarationBuilder do the work here
-//     RubyAst *child = new RubyAst(node->tree->l, node->context);
-//     visitStatements(child);
-//     child->tree = node->tree->r;
-//     visitStatements(child);
-//     delete child;
+    Q_UNUSED(node)
 }
 
 void RubyAstVisitor::visitIfStatement(RubyAst *node)
@@ -473,6 +464,36 @@ void RubyAstVisitor::visitDefined(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitTrue(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitFalse(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitNil(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitFile(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitLine(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
+void RubyAstVisitor::visitEncoding(RubyAst* node)
+{
+    Q_UNUSED(node)
+}
+
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
@@ -525,6 +546,12 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_numeric: visitNumeric(node); break;
         case token_string: visitString(node); break;
         case token_regexp: case token_heredoc: visitRegexp(node); break;
+        case token_nil: visitNil(node); break;
+        case token_true: visitTrue(node); break;
+        case token_false: visitFalse(node); break;
+        case token_line: visitLine(node); break;
+        case token_file: visitFile(node); break;
+        case token_encoding: visitEncoding(node); break;
         case token_symbol: case token_key: case token_break:
         case token_next: case token_redo: case token_retry:
         case token__end__:

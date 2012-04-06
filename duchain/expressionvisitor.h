@@ -51,6 +51,12 @@ protected:
     virtual void visitRegexp(RubyAst *node);
     virtual void visitNumeric(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
+    virtual void visitTrue(RubyAst *node);
+    virtual void visitFalse(RubyAst *node);
+    virtual void visitNil(RubyAst *node);
+    virtual void visitLine(RubyAst *node);
+    virtual void visitFile(RubyAst *node);
+    virtual void visitEncoding(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
