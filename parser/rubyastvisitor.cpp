@@ -122,6 +122,17 @@ void RubyAstVisitor::visitBoolean(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitRange(RubyAst *node)
+{
+    /* Same as for the visitBinary method  */
+
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitNode(child);
+    child->tree = node->tree->r;
+    visitNode(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitUnary(RubyAst *node)
 {
     /*
@@ -540,9 +551,11 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_nmatch: case token_greater: case  token_geq:
         case token_lesser:  case token_leq:
         case token_plus: case token_minus: case token_mul: case token_div:
-        case token_mod: case token_lshift: case token_rshift: case token_dot2:
-        case token_dot3: case token_pow:
+        case token_mod: case token_lshift: case token_rshift: case token_pow:
             visitBinary(node);
+            break;
+        case token_dot2: case token_dot3:
+            visitRange(node);
             break;
         case token_or: case token_and: case token_kw_and:
         case token_kw_not: case token_kw_or:

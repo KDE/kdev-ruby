@@ -87,6 +87,12 @@ void ExpressionVisitor::visitSelf(RubyAst *)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitRange(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("Range", m_ctx);
+    encounter(obj);
+}
+
 void ExpressionVisitor::visitString(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);

@@ -74,6 +74,7 @@ protected:
     virtual void visitBody(RubyAst *node);
     virtual void visitBinary(RubyAst *node);
     virtual void visitBoolean(RubyAst *node);
+    virtual void visitRange(RubyAst *node);
     virtual void visitUnary(RubyAst *node);
     virtual void visitArray(RubyAst *node);
     virtual void visitArrayValue(RubyAst *node);
