@@ -58,4 +58,5 @@ private slots:
 
 } // End of namespace Ruby
 
+
 #endif /* RUBY_BENCHMARKS_H */

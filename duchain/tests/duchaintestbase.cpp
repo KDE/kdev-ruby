@@ -48,7 +48,6 @@ DUChainTestBase::DUChainTestBase()
 
 TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 {
-    m_finished = false;
     KUrl url = "/tmp/ruby_duchaintest_" + id + ".rb";
     QFile f(url.path());
     f.open(QIODevice::WriteOnly);
@@ -64,17 +63,8 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
         debug() << "Parse failed!";
         return NULL;
     }
-    KDevelop::DUChain::self()->updateContextForUrl(KDevelop::IndexedString(url),
-                                                   static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate),
-                                                   this, 1);
-    QTime t;
-    t.start();
-    while (!m_finished) {
-        Q_ASSERT(t.elapsed() < 60000);
-        QTest::qWait(10);
-    }
-
-    return m_ctx;
+    return DUChain::self()->waitForUpdate(KDevelop::IndexedString(url),
+                                            static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
 }
 
 void DUChainTestBase::initTestCase()
@@ -89,12 +79,6 @@ void DUChainTestBase::initTestCase()
 void DUChainTestBase::cleanupTestCase()
 {
     TestCore::shutdown();
-}
-
-void DUChainTestBase::updateReady(IndexedString /*url*/, ReferencedTopDUContext topContext)
-{
-    m_ctx = topContext;
-    m_finished = true;
 }
 
 }

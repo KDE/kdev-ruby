@@ -70,14 +70,6 @@ protected:
 public slots:
     void initTestCase();
     void cleanupTestCase();
-
-private slots:
-    /// Get notified by background parser when a file has been loaded.
-    void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
-
-private:
-    KDevelop::ReferencedTopDUContext m_ctx;
-    bool m_finished;
 };
 
 } // End of namespace Ruby
