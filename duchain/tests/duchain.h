@@ -37,6 +37,14 @@ public:
     TestDUChain();
 
 private slots:
+    // Builtin classes
+    void fixnum();
+    void range();
+    void stringAndRegexp();
+    void booleanAndNilAndSelf();
+    void lineFileEncoding();
+
+    // Assignments
     void simpleAssignment();
 };
 

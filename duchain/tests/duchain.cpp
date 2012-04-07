@@ -19,12 +19,15 @@
  */
 
 
+// Qt + KDevelop
 #include <QtTest/QtTest>
 #include <language/duchain/duchain.h>
 #include <language/duchain/declaration.h>
 #include <language/duchain/types/integraltype.h>
-#include <duchain/tests/duchain.h>
 #include <language/duchain/types/structuretype.h>
+
+// Ruby
+#include <duchain/tests/duchain.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -38,16 +41,102 @@ TestDUChain::TestDUChain()
     /* There's nothing to do here */
 }
 
-void TestDUChain::simpleAssignment()
+void TestDUChain::booleanAndNilAndSelf()
+{
+    QByteArray code("a = true; b = false; c = nil; d = self");
+    TopDUContext *top = parse(code, "booleanAndNilAndSelf");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /* a = true */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("TrueClass"));
+
+    /* b = false */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("FalseClass"));
+
+    /* c = nil */
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QVERIFY(dec3->type<StructureType>());
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+
+    /* d = self */
+    Declaration *dec4 = top->localDeclarations().at(3);
+    QVERIFY(dec4->type<StructureType>());
+    QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
+}
+
+void TestDUChain::fixnum()
 {
     QByteArray code("a = 1");
-    TopDUContext *top = parse(code, "simple_assignment");
+    TopDUContext *top = parse(code, "fixnum");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     Declaration *dec = top->localDeclarations().at(0);
     QVERIFY(dec->type<StructureType>());
     QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::lineFileEncoding()
+{
+    QByteArray code("a = __LINE__; b = __FILE__; c = __ENCODING__");
+    TopDUContext *top = parse(code, "lineFileEncoding");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /* a = __LINE__ */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    /* b = __FILE__ */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+
+    /* c = __ENCODING__ */
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QVERIFY(dec3->type<StructureType>());
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Encoding"));
+}
+
+void TestDUChain::stringAndRegexp()
+{
+    QByteArray code("a = 'string'; b = //");
+    TopDUContext *top = parse(code, "stringAndRegexp");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /* a = 'string' */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+
+    /* b = // */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+}
+
+void TestDUChain::range()
+{
+    QByteArray code("a = 1..42");
+    TopDUContext *top = parse(code, "range");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Range"));
+}
+
+void TestDUChain::simpleAssignment()
+{
+    /* TODO */
 }
 
 } // End of namespace Ruby
