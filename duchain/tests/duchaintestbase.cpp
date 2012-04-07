@@ -19,7 +19,8 @@
  */
 
 
-// KDevelop
+// Qt + KDevelop
+#include <QtTest/QTest>
 #include <tests/autotestshell.h>
 #include <tests/testcore.h>
 #include <language/duchain/duchain.h>
@@ -38,10 +39,14 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-TopDUContext *DUChainTestBase::parse(const QByteArray &code)
+TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 {
-    static int testNumber = 0;
-    QString url = QString("file:///internal/%1").arg(testNumber++);
+    m_finished = false;
+    KUrl url = "/tmp/ruby_duchaintest_" + id + ".rb";
+    QFile f(url.path());
+    f.open(QIODevice::WriteOnly);
+    f.write(code);
+    f.close();
 
     RubyParser *parser = new RubyParser();
     parser->setContents(code);
@@ -52,12 +57,18 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code)
         debug() << "Parse failed!";
         return NULL;
     }
-    EditorIntegrator editor;
-    editor.setParseSession(parser);
-    DeclarationBuilder declarationBuilder;
-    TopDUContext *top = declarationBuilder.build(IndexedString(url), ast);
+    KDevelop::DUChain::self()->updateContextForUrl(KDevelop::IndexedString(url),
+                                                   static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate),
+                                                   this, 1);
+    QTime t;
+    t.start();
+    while (! m_finished) {
+        debug() << "WAITING";
+        Q_ASSERT(t.elapsed() < 60000);
+        QTest::qWait(10);
+    }
 
-    return top;
+    return m_ctx;
 }
 
 void DUChainTestBase::initTestCase()
@@ -72,6 +83,12 @@ void DUChainTestBase::initTestCase()
 void DUChainTestBase::cleanupTestCase()
 {
     TestCore::shutdown();
+}
+
+void DUChainTestBase::updateReady(IndexedString /*url*/, ReferencedTopDUContext topContext)
+{
+    m_ctx = topContext;
+    m_finished = true;
 }
 
 }

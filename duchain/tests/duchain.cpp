@@ -24,6 +24,7 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/types/integraltype.h>
 #include <duchain/tests/duchain.h>
+#include <language/duchain/types/structuretype.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -40,11 +41,13 @@ TestDUChain::TestDUChain()
 void TestDUChain::simpleAssignment()
 {
     QByteArray code("a = 1");
-    TopDUContext *top = parse(code);
+    TopDUContext *top = parse(code, "simple_assignment");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(top->localDeclarations().at(0)->type<IntegralType>()->dataType() == IntegralType::TypeInt);
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 } // End of namespace Ruby

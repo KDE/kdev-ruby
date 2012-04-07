@@ -55,7 +55,7 @@ void RubyAstVisitor::visitCode(RubyAst *node)
     delete child;
 }
 
-void RubyAstVisitor::visitVariable(RubyAst* node)
+void RubyAstVisitor::visitVariable(RubyAst *node)
 {
     Q_UNUSED(node)
 }

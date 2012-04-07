@@ -49,16 +49,32 @@ struct DUChainReleaser {
     KDevelop::TopDUContext *m_top;
 };
 
+
+/// The base class for all DUChain Test classes./
 class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
 {
     Q_OBJECT
 
 protected:
-    KDevelop::TopDUContext * parse(const QByteArray &code);
+    /**
+     * Parse the given @p code that belongs to the test identified by @p id.
+     *
+     * @returns the KDevelop::TopDUContext for the given code, or NULL if
+     * something failed (i.e. parse error).
+     */
+    KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
 
 public slots:
     void initTestCase();
     void cleanupTestCase();
+
+private slots:
+    /// Get notified by background parser when a file has been loaded.
+    void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
+
+private:
+    KDevelop::ReferencedTopDUContext m_ctx;
+    bool m_finished;
 };
 
 } // End of namespace Ruby
