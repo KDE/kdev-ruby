@@ -19,8 +19,8 @@
  */
 
 
-#ifndef BENCHMARKS_H
-#define BENCHMARKS_H
+#ifndef RUBY_BENCHMARKS_H
+#define RUBY_BENCHMARKS_H
 
 
 #include <duchain/tests/duchaintestbase.h>
@@ -57,4 +57,4 @@ private slots:
 
 } // End of namespace Ruby
 
-#endif /* BENCHMARKS_H */
+#endif /* RUBY_BENCHMARKS_H */

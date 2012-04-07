@@ -19,8 +19,8 @@
  */
 
 
-#ifndef DUCHAINTESTBASE_H
-#define DUCHAINTESTBASE_H
+#ifndef RUBY_DUCHAINTESTBASE_H
+#define RUBY_DUCHAINTESTBASE_H
 
 
 // Qt + KDevelop
@@ -79,4 +79,4 @@ private:
 
 } // End of namespace Ruby
 
-#endif /* DUCHAINTESTBASE_H */
+#endif /* RUBY_DUCHAINTESTBASE_H */

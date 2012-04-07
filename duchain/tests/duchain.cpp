@@ -137,6 +137,7 @@ void TestDUChain::range()
 void TestDUChain::simpleAssignment()
 {
     /* TODO */
+    QVERIFY(true);
 }
 
 } // End of namespace Ruby

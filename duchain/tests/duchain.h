@@ -19,8 +19,8 @@
  */
 
 
-#ifndef TESTDUCHAIN_H
-#define TESTDUCHAIN_H
+#ifndef RUBY_TESTDUCHAIN_H
+#define RUBY_TESTDUCHAIN_H
 
 
 #include <duchain/tests/duchaintestbase.h>
@@ -29,6 +29,7 @@
 namespace Ruby
 {
 
+/// The DUChain test suite.
 class TestDUChain : public DUChainTestBase
 {
     Q_OBJECT
@@ -51,4 +52,4 @@ private slots:
 } // End of namespace Ruby
 
 
-#endif /* TESTDUCHAIN_H */
+#endif /* RUBY_TESTDUCHAIN_H */

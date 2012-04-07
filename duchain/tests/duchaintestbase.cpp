@@ -50,7 +50,7 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 
     RubyParser *parser = new RubyParser();
     parser->setContents(code);
-    parser->setCurrentDocument(KUrl(url));
+    parser->setCurrentDocument(url);
     RubyAst *ast = parser->parse();
 
     if (ast == NULL || ast->tree == NULL) {
