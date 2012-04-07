@@ -570,6 +570,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_line: visitLine(node); break;
         case token_file: visitFile(node); break;
         case token_encoding: visitEncoding(node); break;
+        case token_self: visitSelf(node); break;
         case token_symbol: case token_key: case token_break:
         case token_next: case token_redo: case token_retry:
         case token__end__:

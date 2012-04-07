@@ -28,6 +28,7 @@
 
 // Ruby
 #include <duchain/tests/duchain.h>
+#include <rubydefs.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -41,12 +42,60 @@ TestDUChain::TestDUChain()
     /* There's nothing to do here */
 }
 
+//BEGIN: Builtin classes
+
+void TestDUChain::fixnum()
+{
+    QByteArray code("a = 1");
+    TopDUContext *top = parse(code, "fixnum");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::range()
+{
+    QByteArray code("a = 1..42");
+    TopDUContext *top = parse(code, "range");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Range"));
+}
+
+void TestDUChain::stringAndRegexp()
+{
+    QByteArray code("a = 'string'; b = //");
+    TopDUContext *top = parse(code, "stringAndRegexp");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    /* a = 'string' */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+
+    /* b = // */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+}
+
 void TestDUChain::booleanAndNilAndSelf()
 {
     QByteArray code("a = true; b = false; c = nil; d = self");
     TopDUContext *top = parse(code, "booleanAndNilAndSelf");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 4);
 
     /* a = true */
     Declaration *dec1 = top->localDeclarations().at(0);
@@ -69,24 +118,14 @@ void TestDUChain::booleanAndNilAndSelf()
     QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
-void TestDUChain::fixnum()
-{
-    QByteArray code("a = 1");
-    TopDUContext *top = parse(code, "fixnum");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    Declaration *dec = top->localDeclarations().at(0);
-    QVERIFY(dec->type<StructureType>());
-    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-}
-
 void TestDUChain::lineFileEncoding()
 {
     QByteArray code("a = __LINE__; b = __FILE__; c = __ENCODING__");
     TopDUContext *top = parse(code, "lineFileEncoding");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
 
     /* a = __LINE__ */
     Declaration *dec1 = top->localDeclarations().at(0);
@@ -104,41 +143,17 @@ void TestDUChain::lineFileEncoding()
     QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Encoding"));
 }
 
-void TestDUChain::stringAndRegexp()
-{
-    QByteArray code("a = 'string'; b = //");
-    TopDUContext *top = parse(code, "stringAndRegexp");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+//END: Builtin classes
 
-    /* a = 'string' */
-    Declaration *dec1 = top->localDeclarations().at(0);
-    QVERIFY(dec1->type<StructureType>());
-    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
-
-    /* b = // */
-    Declaration *dec2 = top->localDeclarations().at(1);
-    QVERIFY(dec2->type<StructureType>());
-    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
-}
-
-void TestDUChain::range()
-{
-    QByteArray code("a = 1..42");
-    TopDUContext *top = parse(code, "range");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    Declaration *dec1 = top->localDeclarations().at(0);
-    QVERIFY(dec1->type<StructureType>());
-    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Range"));
-}
+//BEGIN: Assignments
 
 void TestDUChain::simpleAssignment()
 {
     /* TODO */
     QVERIFY(true);
 }
+
+//END: Assignments
 
 } // End of namespace Ruby
 

@@ -55,6 +55,9 @@ class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
 {
     Q_OBJECT
 
+public:
+    DUChainTestBase();
+
 protected:
     /**
      * Parse the given @p code that belongs to the test identified by @p id.
@@ -78,5 +81,6 @@ private:
 };
 
 } // End of namespace Ruby
+
 
 #endif /* RUBY_DUCHAINTESTBASE_H */

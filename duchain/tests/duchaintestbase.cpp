@@ -25,8 +25,10 @@
 #include <tests/testcore.h>
 #include <language/duchain/duchain.h>
 #include <language/codegen/coderepresentation.h>
+#include <kcomponentdata.h>
 
 // Ruby
+#include <duchain/helpers.h>
 #include <duchain/tests/duchaintestbase.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/declarationbuilder.h>
@@ -38,6 +40,11 @@
 using namespace KDevelop;
 namespace Ruby
 {
+
+DUChainTestBase::DUChainTestBase()
+{
+    /* There's nothing to do here */
+}
 
 TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 {
@@ -62,8 +69,7 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
                                                    this, 1);
     QTime t;
     t.start();
-    while (! m_finished) {
-        debug() << "WAITING";
+    while (!m_finished) {
         Q_ASSERT(t.elapsed() < 60000);
         QTest::qWait(10);
     }
@@ -73,11 +79,11 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 
 void DUChainTestBase::initTestCase()
 {
-  AutoTestShell::init();
-  TestCore::initialize(Core::NoUi);
+    AutoTestShell::init();
+    TestCore::initialize(Core::NoUi);
 
-  DUChain::self()->disablePersistentStorage();
-  KDevelop::CodeRepresentation::setDiskChangesForbidden(true);
+    DUChain::self()->disablePersistentStorage();
+    KDevelop::CodeRepresentation::setDiskChangesForbidden(true);
 }
 
 void DUChainTestBase::cleanupTestCase()

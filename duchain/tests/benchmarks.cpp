@@ -76,11 +76,6 @@ void Benchmarks::declarationBuilder()
     QBENCHMARK {
         DeclarationBuilder builder(&editor);
         ReferencedTopDUContext top = builder.build(internalBuiltinsFile(), ast);
-
-        {
-            DUChainWriteLocker lock(DUChain::lock());
-            debug() << top->localDeclarations().size();
-        }
     }
 }
 
