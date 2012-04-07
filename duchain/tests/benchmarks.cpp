@@ -23,10 +23,14 @@
 #include <QtTest/QtTest>
 #include <KFilterDev>
 #include <KMimeType>
+#include <KDebug>
 
 // Ruby
-#include <duchain/tests/benchmarks.h>
+#include <rubydefs.h>
 #include <duchain/helpers.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/builders/declarationbuilder.h>
+#include <duchain/tests/benchmarks.h>
 #include <parser/rubyparser.h>
 
 QTEST_MAIN(Ruby::Benchmarks)
@@ -51,11 +55,32 @@ QIODevice * Benchmarks::getBuiltinsFile()
 
 void Benchmarks::parser()
 {
-    const QByteArray & contents = getBuiltinsFile()->readAll();
+    const QByteArray &contents = getBuiltinsFile()->readAll();
     QBENCHMARK {
         RubyParser parser;
         parser.setContents(contents);
         parser.parse();
+    }
+}
+
+void Benchmarks::declarationBuilder()
+{
+    const QByteArray &contents = getBuiltinsFile()->readAll();
+    RubyParser *parser = new RubyParser();
+    parser->setContents(contents);
+    parser->setCurrentDocument(internalBuiltinsFile().str());
+    RubyAst * ast = parser->parse();
+    EditorIntegrator editor;
+    editor.setParseSession(parser);
+
+    QBENCHMARK {
+        DeclarationBuilder builder(&editor);
+        ReferencedTopDUContext top = builder.build(internalBuiltinsFile(), ast);
+
+        {
+            DUChainWriteLocker lock(DUChain::lock());
+            debug() << top->localDeclarations().size();
+        }
     }
 }
 

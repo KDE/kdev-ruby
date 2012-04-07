@@ -49,10 +49,11 @@ private:
     QIODevice * getBuiltinsFile();
 
 private slots:
-    /**
-     * Benchmarks the parser.
-     */
+    /// Benchmarks the parser.
     void parser();
+
+    /// Benchmarks the DeclarationBuilder class.
+    void declarationBuilder();
 };
 
 } // End of namespace Ruby
