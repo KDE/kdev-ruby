@@ -46,7 +46,14 @@ private slots:
     void lineFileEncoding();
 
     // Assignments
-    void simpleAssignment();
+    void multipleAssignment1();
+    void multipleAssignment2();
+    void multipleAssignmentLeft();
+    void multipleAssignmentRight1();
+    void multipleAssignmentRight2();
+    void multipleAssignmentStar();
+    void multipleAssignmentNamedStar();
+    void multipleAssignmentUnpackArray();
 };
 
 } // End of namespace Ruby

@@ -147,14 +147,102 @@ void TestDUChain::lineFileEncoding()
 
 //BEGIN: Assignments
 
-void TestDUChain::simpleAssignment()
+void TestDUChain::multipleAssignment1()
 {
-    /* TODO */
+    QByteArray code("a, b = 1, 'a'");
+    TopDUContext *top = parse(code, "multipleAssignment1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    /* a */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    /* b */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::multipleAssignment2()
+{
+    QByteArray code("a, b = 1, [1, 2, 3]");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::multipleAssignmentLeft()
+{
+    QByteArray code("a, b, c = 1, 2");
+    TopDUContext *top = parse(code, "multipleAssignmentLeft");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    /* a */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    /* b */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    /* c */
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QVERIFY(dec3->type<StructureType>());
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+}
+
+void TestDUChain::multipleAssignmentRight1()
+{
+    QByteArray code("a = 1, 2, 3");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::multipleAssignmentRight2()
+{
+    QByteArray code("a, = 1, 2, 3");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::multipleAssignmentStar()
+{
+    QByteArray code("a, *, b = 1, 2, 3, 4, 5, 'a'");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::multipleAssignmentNamedStar()
+{
+    QByteArray code("a, *b, c = 1, 2, 3, 4, 5, 'a'");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::multipleAssignmentUnpackArray()
+{
+    QByteArray code("a, b, c = [1, 2]");
+
+    /* TODO: pending */
     QVERIFY(true);
 }
 
 //END: Assignments
 
 } // End of namespace Ruby
+
 
 #include "duchain.moc"
