@@ -32,6 +32,11 @@ namespace Ruby
 {
 class EditorIntegrator;
 
+/*
+ * TODO: it would be nice to have some caching system for builtin declarations
+ * (most notably for classes like NilClass, that are used almost everywhere).
+ */
+
 
 /**
  * TODO: Under construction

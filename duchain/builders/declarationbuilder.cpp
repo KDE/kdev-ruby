@@ -235,8 +235,6 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 {
     QList<AbstractType::Ptr> values;
 
-    RubyAstVisitor::visitAssignmentStatement(node);
-
     debug() << "==== Starting with the assignment statement !!!!";
     DUChainReadLocker lock(DUChain::lock());
     RubyAst *aux = new RubyAst(node->tree->r, node->context);
@@ -252,12 +250,19 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 
     aux->tree = node->tree->l;
     int i = 0;
+    int rsize = values.length();
     AbstractType::Ptr type;
     for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
-        if (values.at(i)) {
+        if (i < rsize) {
             DUChainWriteLocker lock(DUChain::lock());
             type = values.at(i);
             debug() << "We have to set the following type: " << type->toString();
+            QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+            declareVariable(currentContext(), type, id, aux);
+        } else {
+            DUChainWriteLocker lock(DUChain::lock());
+            // TODO: the following shows that we need some caching system at the ExpressionVisitor
+            type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
             QualifiedIdentifier id = identifierForNode(new NameAst(aux));
             declareVariable(currentContext(), type, id, aux);
         }
