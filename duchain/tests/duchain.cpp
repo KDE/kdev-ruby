@@ -143,6 +143,18 @@ void TestDUChain::lineFileEncoding()
     QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Encoding"));
 }
 
+void TestDUChain::symbol()
+{
+    QByteArray code("a = :a");
+    TopDUContext *top = parse(code, "symbol");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Symbol"));
+}
+
 //END: Builtin classes
 
 //BEGIN: Assignments

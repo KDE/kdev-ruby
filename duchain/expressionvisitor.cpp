@@ -112,6 +112,12 @@ void ExpressionVisitor::visitRegexp(RubyAst *)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitSymbol(RubyAst *node)
+{
+    AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
+    encounter(obj);
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));

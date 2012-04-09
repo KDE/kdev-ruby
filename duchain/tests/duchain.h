@@ -44,6 +44,7 @@ private slots:
     void stringAndRegexp();
     void booleanAndNilAndSelf();
     void lineFileEncoding();
+    void symbol();
 
     // Assignments
     void multipleAssignment1();

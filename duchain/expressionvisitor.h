@@ -64,10 +64,11 @@ protected:
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
     virtual void visitRange(RubyAst *node);
+    virtual void visitSymbol(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
-    void encounter(KDevelop::AbstractType::Ptr type);
+    void encounter(KDevelop::AbstractType::Ptr type); // TODO: inline ?
 
 private:
     KDevelop::DUContext *m_ctx;
