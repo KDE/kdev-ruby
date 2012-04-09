@@ -203,17 +203,29 @@ void TestDUChain::multipleAssignmentLeft()
 void TestDUChain::multipleAssignmentRight1()
 {
     QByteArray code("a = 1, 2, 3");
+    TopDUContext *top = parse(code, "multipleAssignmentRight1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    QVERIFY(top->localDeclarations().size() == 1);
+
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::multipleAssignmentRight2()
 {
     QByteArray code("a, = 1, 2, 3");
+    TopDUContext *top = parse(code, "multipleAssignmentRight2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    QVERIFY(top->localDeclarations().size() == 1);
+
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::multipleAssignmentStar()
@@ -232,7 +244,7 @@ void TestDUChain::multipleAssignmentNamedStar()
     QVERIFY(true);
 }
 
-void TestDUChain::multipleAssignmentUnpackArray()
+void TestDUChain::unpackArray()
 {
     QByteArray code("a, b, c = [1, 2]");
 

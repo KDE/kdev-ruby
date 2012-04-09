@@ -53,7 +53,7 @@ private slots:
     void multipleAssignmentRight2();
     void multipleAssignmentStar();
     void multipleAssignmentNamedStar();
-    void multipleAssignmentUnpackArray();
+    void unpackArray();
 };
 
 } // End of namespace Ruby

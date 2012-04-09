@@ -103,7 +103,7 @@ LanguageSupport::~LanguageSupport()
     /* There's nothing to do here! */
 }
 
-LanguageSupport* LanguageSupport::self()
+LanguageSupport * LanguageSupport::self()
 {
     return m_self;
 }
