@@ -65,7 +65,7 @@ protected:
      * @returns the KDevelop::TopDUContext for the given code, or NULL if
      * something failed (i.e. parse error).
      */
-    KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
 
 public slots:
     void initTestCase();

@@ -37,6 +37,10 @@ class TestDUChain : public DUChainTestBase
 public:
     TestDUChain();
 
+protected:
+    /// Re-implemented from DUChainTestBase.
+    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+
 private slots:
     // Builtin classes
     void fixnum();

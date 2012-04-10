@@ -39,6 +39,12 @@ TestUseBuilder::TestUseBuilder()
     /* There's nothing do here! */
 }
 
+TopDUContext * TestUseBuilder::parse(const QByteArray &code, const QString &id)
+{
+    const QString &name = "uses_" + id;
+    return DUChainTestBase::parse(code, name);
+}
+
 void TestUseBuilder::compareUses(Declaration *dec, QList<RangeInRevision> ranges)
 {
     QCOMPARE(dec->uses().keys().count(), 1);

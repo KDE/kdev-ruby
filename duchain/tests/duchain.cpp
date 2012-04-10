@@ -42,6 +42,12 @@ TestDUChain::TestDUChain()
     /* There's nothing to do here */
 }
 
+TopDUContext * TestDUChain::parse(const QByteArray &code, const QString &id)
+{
+    const QString &name = "duchain_" + id;
+    return DUChainTestBase::parse(code, name);
+}
+
 //BEGIN: Builtin classes
 
 void TestDUChain::fixnum()

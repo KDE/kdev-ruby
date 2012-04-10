@@ -37,6 +37,10 @@ class TestUseBuilder : public DUChainTestBase
 public:
     TestUseBuilder();
 
+protected:
+    /// Re-implemented from DUChainTestBase.
+    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+
 private:
     /**
      * Let's compare the uses of the given declaration @p dec with the given

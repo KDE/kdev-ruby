@@ -48,7 +48,7 @@ DUChainTestBase::DUChainTestBase()
 
 TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
 {
-    KUrl url = "/tmp/ruby_duchaintest_" + id + ".rb";
+    KUrl url = "/tmp/kdevruby_" + id + ".rb";
     QFile f(url.path());
     f.open(QIODevice::WriteOnly);
     f.write(code);
