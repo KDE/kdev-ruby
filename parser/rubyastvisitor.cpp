@@ -587,12 +587,10 @@ void RubyAstVisitor::visitNode(RubyAst *node)
 
 void RubyAstVisitor::visitStatements(RubyAst *list)
 {
-    RubyAst *child = new RubyAst(list->tree, list->context);
-    for (Node *n = child->tree; n != NULL; n = n->next) {
-        visitNode(child);
-        child->tree = n->next;
+    for (Node *n = list->tree; n != NULL; n = n->next) {
+        visitNode(list);
+        list->tree = n->next;
     }
-    delete child;
 }
 
 void RubyAstVisitor::visitIfTail(RubyAst *tail)
