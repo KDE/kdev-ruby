@@ -256,6 +256,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         if (i < rsize) {
             DUChainWriteLocker lock(DUChain::lock());
             type = values.at(i);
+            if (type == StructureType::Ptr(0)) // HACK: provisional fix, should be removed in the future
+                type = new ObjectType();
             debug() << "We have to set the following type: " << type->toString();
             QualifiedIdentifier id = identifierForNode(new NameAst(aux));
             declareVariable(currentContext(), type, id, aux);
