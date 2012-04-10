@@ -72,7 +72,9 @@ void RubyAstVisitor::visitRegexp(RubyAst *node)
 
 void RubyAstVisitor::visitString(RubyAst *node)
 {
-    Q_UNUSED(node)
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitStatements(child);
+    delete child;
 }
 
 void RubyAstVisitor::visitSymbol(RubyAst *node)

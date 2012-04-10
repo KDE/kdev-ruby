@@ -31,3 +31,16 @@ target_link_libraries(duchain
     ${KDEVPLATFORM_TESTS_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
 )
+
+set(uses_SRCS
+    uses.cpp
+    duchaintestbase.cpp)
+kde4_add_unit_test(uses ${uses_SRCS})
+target_link_libraries(uses
+    kdev4rubyduchain
+    kdev4rubyparser
+    ${QT_QTTEST_LIBRARY}
+    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
+    ${KDEVPLATFORM_TESTS_LIBRARIES}
+    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+)
