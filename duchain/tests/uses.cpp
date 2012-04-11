@@ -22,6 +22,7 @@
 // Qt + KDevelop
 #include <QtTest/QtTest>
 #include <language/duchain/declaration.h>
+#include <language/duchain/types/structuretype.h>
 
 // Ruby
 #include <duchain/tests/uses.h>
@@ -64,9 +65,15 @@ void TestUseBuilder::stringInterpolation()
     TopDUContext *top = parse(code, "stringInterpolation");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
+
     QList<RangeInRevision> ranges;
     ranges << RangeInRevision(0, 10, 0, 11);
-    compareUses(top->localDeclarations().at(0), ranges);
+    Declaration *dec = top->localDeclarations().at(0);
+    compareUses(dec, ranges);
+
+    /* Make sure that types are not screwed up after building this new use */
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 //END: Interpolation

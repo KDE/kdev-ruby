@@ -19,9 +19,11 @@
 
 
 // KDE
+#include <KDebug>
 #include <KLocale>
 
 // Ruby
+#include <rubydefs.h>
 #include <duchain/builders/usebuilder.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
@@ -35,7 +37,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
 }
 
-void UseBuilder::visitVariable(RubyAst *node)
+void UseBuilder::visitName(RubyAst *node)
 {
     NameAst *name = new NameAst(node);
     const RangeInRevision &range = editorFindRange(node, node);
@@ -59,6 +61,7 @@ void UseBuilder::visitVariable(RubyAst *node)
         return;
     }
 
+    debug() << "New use: " << id << " at " << range;
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
     delete name;
 }

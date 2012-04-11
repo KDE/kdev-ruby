@@ -60,6 +60,11 @@ void RubyAstVisitor::visitVariable(RubyAst *node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitName(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
 void RubyAstVisitor::visitNumeric(RubyAst *node)
 {
     Q_UNUSED(node)
@@ -368,7 +373,7 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
 
     Node *n = node->tree;
     RubyAst *child = new RubyAst(n->cond, node->context);
-    visitVariable(child);
+    visitName(child);
     child->tree = n->l;
     visitBody(child);
     delete child;
@@ -545,7 +550,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_method_call: checkMethodCall(node); break;
         case token_assign:
         case token_op_assign: visitAssignmentStatement(node); break;
-        case token_object: visitVariable(node); break;
+        case token_object: visitName(node); break;
         case token_hash: visitHash(node); break;
         case token_array: visitArray(node); break;
         case token_array_value: visitArrayValue(node); break;

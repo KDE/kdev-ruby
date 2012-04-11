@@ -56,7 +56,7 @@ protected:
      *
      * @param node The given variable.
      */
-    virtual void visitVariable(RubyAst *node);
+    virtual void visitName(RubyAst *node);
 };
 
 } // End of namespace Ruby

@@ -40,7 +40,7 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     Q_UNUSED(editor)
 }
 
-void ExpressionVisitor::visitVariable(RubyAst* node)
+void ExpressionVisitor::visitVariable(RubyAst *node)
 {
     debug() << "HERE !!! " << node->tree->name;
 }
@@ -93,8 +93,10 @@ void ExpressionVisitor::visitRange(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitString(RubyAst *)
+void ExpressionVisitor::visitString(RubyAst *node)
 {
+    debug() << "EXPRESSION";
+    RubyAstVisitor::visitString(node);
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
     encounter(obj);
 }
