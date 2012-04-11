@@ -32,6 +32,7 @@
 #include <KLocale>
 #include <duchain/helpers.h>
 #include <duchain/expressionvisitor.h>
+#include <language/duchain/aliasdeclaration.h>
 
 
 namespace Ruby
@@ -233,7 +234,15 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 
 void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 {
+    /*
+     * TODO: this method is under construction. Some ideas:
+     *  - I'm sure that the loops can be merged.
+     *  - The NilClass declaration has to be cached somehow.
+     */
+
     QList<AbstractType::Ptr> values;
+    QList<DeclarationPointer> declarations;
+    QList<bool> alias;
 
     debug() << "==== Starting with the assignment statement !!!!";
     DUChainReadLocker lock(DUChain::lock());
@@ -243,10 +252,10 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         aux->tree = n;
         v.visitNode(aux);
         values << v.lastType();
+        alias << v.lastAlias();
+        declarations << v.lastDeclaration();
     }
     lock.unlock();
-
-    /* TODO: under construction */
 
     aux->tree = node->tree->l;
     int i = 0;
@@ -254,13 +263,22 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     AbstractType::Ptr type;
     for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
         if (i < rsize) {
-            DUChainWriteLocker lock(DUChain::lock());
-            type = values.at(i);
-            if (type == StructureType::Ptr(0)) // HACK: provisional fix, should be removed in the future
-                type = new ObjectType();
-            debug() << "We have to set the following type: " << type->toString();
-            QualifiedIdentifier id = identifierForNode(new NameAst(aux));
-            declareVariable(currentContext(), type, id, aux);
+            if (alias.at(i)) {
+                DUChainWriteLocker lock(DUChain::lock());
+                RangeInRevision range = getNameRange(aux);
+                QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+                AliasDeclaration *d = openDeclaration<AliasDeclaration>(id, range);
+                d->setAliasedDeclaration(declarations.at(i).data());
+                closeDeclaration();
+            } else {
+                DUChainWriteLocker lock(DUChain::lock());
+                type = values.at(i);
+                if (type == StructureType::Ptr(0)) // HACK: provisional fix, should be removed in the future
+                    type = new ObjectType();
+                debug() << "We have to set the following type: " << type->toString();
+                QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+                declareVariable(currentContext(), type, id, aux);
+            }
         } else {
             DUChainWriteLocker lock(DUChain::lock());
             // TODO: the following shows that we need some caching system at the ExpressionVisitor

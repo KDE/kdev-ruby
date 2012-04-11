@@ -51,6 +51,16 @@ public:
         return (m_lastType.isEmpty()) ? KDevelop::AbstractType::Ptr(NULL) : m_lastType.last();
     }
 
+    inline const bool & lastAlias() const
+    {
+        return m_alias;
+    }
+
+    inline const DeclarationPointer & lastDeclaration() const
+    {
+        return m_lastDeclaration;
+    }
+
 protected:
     virtual void visitString(RubyAst *node);
     virtual void visitRegexp(RubyAst *node);
@@ -65,6 +75,7 @@ protected:
     virtual void visitSelf(RubyAst *node);
     virtual void visitRange(RubyAst *node);
     virtual void visitSymbol(RubyAst *node);
+    virtual void visitName(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
@@ -72,7 +83,10 @@ private:
 
 private:
     KDevelop::DUContext *m_ctx;
+    EditorIntegrator *m_editor;
     QStack<KDevelop::AbstractType::Ptr> m_lastType; // TODO: just a pointer to the last one ?
+    DeclarationPointer m_lastDeclaration;
+    bool m_alias;
 };
 
 }

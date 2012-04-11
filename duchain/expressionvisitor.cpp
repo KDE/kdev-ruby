@@ -22,9 +22,11 @@
 // KDevelop
 #include <language/duchain/topducontext.h>
 #include <language/duchain/declaration.h>
+#include <language/duchain/aliasdeclaration.h>
 
 // Ruby
 #include <rubydefs.h>
+#include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/types/objecttype.h>
 
@@ -34,15 +36,29 @@ namespace Ruby
 {
 
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
-    : m_ctx(ctx)
+    : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
 {
-    /* TODO */
-    Q_UNUSED(editor)
+    /* There's nothing to do here! */
 }
 
 void ExpressionVisitor::visitVariable(RubyAst *node)
 {
     debug() << "HERE !!! " << node->tree->name;
+}
+
+void ExpressionVisitor::visitName(RubyAst *node)
+{
+    QualifiedIdentifier id = QualifiedIdentifier(QString(node->tree->name));
+    const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+    QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
+    if (!decls.isEmpty()) {
+        Declaration *d = decls.last();
+        m_alias = dynamic_cast<AliasDeclaration *>(d);
+        m_lastDeclaration = d;
+        encounter(d->abstractType());
+    } else {
+        debug() << "Declaration NOT FOUND";
+    }
 }
 
 void ExpressionVisitor::visitTrue(RubyAst *)
@@ -114,7 +130,7 @@ void ExpressionVisitor::visitRegexp(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitSymbol(RubyAst *node)
+void ExpressionVisitor::visitSymbol(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
     encounter(obj);
