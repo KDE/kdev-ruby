@@ -270,6 +270,24 @@ void TestDUChain::unpackArray()
     QVERIFY(true);
 }
 
+void TestDUChain::aliasedAssignment()
+{
+    QByteArray code("a = 1..2; b = 1; c, d = a, b");
+    TopDUContext *top = parse(code, "aliasedAssignment");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 4);
+
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QVERIFY(dec3->type<StructureType>());
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Range"));
+
+    Declaration *dec4 = top->localDeclarations().at(3);
+    QVERIFY(dec4->type<StructureType>());
+    QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
 //END: Assignments
 
 } // End of namespace Ruby
