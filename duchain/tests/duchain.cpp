@@ -28,7 +28,6 @@
 
 // Ruby
 #include <duchain/tests/duchain.h>
-#include <rubydefs.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -162,6 +161,30 @@ void TestDUChain::symbol()
 }
 
 //END: Builtin classes
+
+//BEGIN: Simple Statements
+
+void TestDUChain::alias()
+{
+    QByteArray code("def foo; end; alias asd foo; alias asd foo");
+    TopDUContext *top = parse(code, "alias1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    /* def foo; end */
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->isFunctionDeclaration());
+    QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("foo"));
+
+    /* alias asd foo */
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->isFunctionDeclaration());
+    QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("asd"));
+}
+
+//END: Simple Statements
 
 //BEGIN: Assignments
 

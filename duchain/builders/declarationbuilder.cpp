@@ -160,6 +160,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     setComment(getComment(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    debug() << "METHOD: " << decl->qualifiedIdentifier();
 
     openType(type);
     decl->setInSymbolTable(false);
@@ -288,6 +289,33 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         }
     }
     delete aux;
+}
+
+void DeclarationBuilder::visitAliasStatement(RubyAst *node)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    QualifiedIdentifier id = QualifiedIdentifier(QString(node->tree->r->name));
+    debug() << "LOOK AFTER: " << id;
+    foreach (Declaration *dec, currentContext()->localDeclarations()) {
+        debug() << dec->toString();
+    }
+    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    if (!decls.isEmpty()) {
+        Declaration *d = decls.last();
+        if (d->isFunctionDeclaration()) { // TODO: || global variable
+            DUChainWriteLocker wlock(DUChain::lock());
+            node->tree = node->tree->l;
+            RangeInRevision range = getNameRange(node);
+            QualifiedIdentifier id = identifierForNode(new NameAst(node));
+            AliasDeclaration *ad = openDeclaration<AliasDeclaration>(id, range);
+            ad->setAliasedDeclaration(d);
+            closeDeclaration();
+        } else {
+            debug() << "ALIAS: this is not a function or a global variable";
+        }
+    } else {
+        debug() << "ALIAS: declaration not found";
+    }
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,

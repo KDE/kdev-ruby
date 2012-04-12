@@ -50,6 +50,9 @@ private slots:
     void lineFileEncoding();
     void symbol();
 
+    // Simple Statements
+    void alias();
+
     // Assignments
     void multipleAssignment1();
     void multipleAssignment2();

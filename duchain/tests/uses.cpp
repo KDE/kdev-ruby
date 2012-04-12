@@ -46,6 +46,13 @@ TopDUContext * TestUseBuilder::parse(const QByteArray &code, const QString &id)
     return DUChainTestBase::parse(code, name);
 }
 
+void TestUseBuilder::compareUses(Declaration *dec, RangeInRevision range)
+{
+    QList<RangeInRevision> ranges;
+    ranges << range;
+    compareUses(dec, ranges);
+}
+
 void TestUseBuilder::compareUses(Declaration *dec, QList<RangeInRevision> ranges)
 {
     QCOMPARE(dec->uses().keys().count(), 1);
@@ -66,10 +73,8 @@ void TestUseBuilder::stringInterpolation()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QList<RangeInRevision> ranges;
-    ranges << RangeInRevision(0, 10, 0, 11);
     Declaration *dec = top->localDeclarations().at(0);
-    compareUses(dec, ranges);
+    compareUses(dec, RangeInRevision(0, 10, 0, 11));
 
     /* Make sure that types are not screwed up after building this new use */
     QVERIFY(dec->type<StructureType>());
@@ -77,6 +82,23 @@ void TestUseBuilder::stringInterpolation()
 }
 
 //END: Interpolation
+
+//BEGIN: Simple Statements
+
+void TestUseBuilder::alias()
+{
+    //               0          1        2
+    //               0123456789012345678901234567
+    QByteArray code("def foo; end; alias asd foo");
+    TopDUContext *top = parse(code, "alias");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(1);
+    compareUses(dec, RangeInRevision(0, 24, 0, 27));
+}
+
+//END: Simple Statements
 
 } // End of namespace Ruby
 

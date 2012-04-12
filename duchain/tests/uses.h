@@ -43,6 +43,10 @@ protected:
 
 private:
     /**
+     */
+    void compareUses(KDevelop::Declaration *dec, KDevelop::RangeInRevision range);
+
+    /**
      * Let's compare the uses of the given declaration @p dec with the given
      * @p ranges that we expect these uses are enclosed to.
      */
@@ -51,6 +55,9 @@ private:
 private slots:
     // Interpolation
     void stringInterpolation();
+
+    // Simple statements
+    void alias();
 };
 
 }
