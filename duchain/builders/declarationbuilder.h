@@ -74,6 +74,9 @@ protected:
 private:
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
                         const KDevelop::QualifiedIdentifier& id, RubyAst *node);
+    void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
+                                const KDevelop::RangeInRevision &range,
+                                KDevelop::Declaration *decl);
     void appendProblem(Node* node, const QString &msg);
     KDevelop::RangeInRevision getNameRange(RubyAst *node);
     KDevelop::DocumentRange getDocumentRange(Node* node);

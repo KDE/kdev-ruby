@@ -160,7 +160,6 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     setComment(getComment(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-    debug() << "METHOD: " << decl->qualifiedIdentifier();
 
     openType(type);
     decl->setInSymbolTable(false);
@@ -303,9 +302,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
             node->tree = node->tree->l;
             const RangeInRevision & range = editorFindRange(node, node);
             QualifiedIdentifier id = identifierForNode(new NameAst(node));
-            AliasDeclaration *ad = openDeclaration<AliasDeclaration>(id, range);
-            ad->setAliasedDeclaration(decl);
-            closeDeclaration();
+            aliasMethodDeclaration(id, range, decl);
         } else {
             debug() << "ALIAS: this is not a function or a global variable";
         }
@@ -361,6 +358,26 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     debug() << "Set type " << type->toString();
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
+}
+
+void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
+                                                const RangeInRevision &range,
+                                                Declaration *decl)
+{
+    FunctionDeclaration *d = dynamic_cast<FunctionDeclaration *>(decl);
+    setComment(d->comment());
+    FunctionDeclaration *alias = openDeclaration<FunctionDeclaration>(id, range);
+    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    openType(type);
+    alias->setInSymbolTable(false);
+    closeType();
+    closeDeclaration();
+
+    if (!type->returnType()) {
+        /* TODO: return the type of the last statement instead */
+        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    }
+    alias->setType(type);
 }
 
 void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
