@@ -298,16 +298,18 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
     KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
 
     if (decl) {
-        if (decl->isFunctionDeclaration()) { // TODO: || global variable
+        // TODO: check the case of global variable
+        if (decl->isFunctionDeclaration()) {
             node->tree = node->tree->l;
             const RangeInRevision & range = editorFindRange(node, node);
             QualifiedIdentifier id = identifierForNode(new NameAst(node));
             aliasMethodDeclaration(id, range, decl);
-        } else {
-            debug() << "ALIAS: this is not a function or a global variable";
-        }
+        } else
+            appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
     } else {
-        debug() << "ALIAS: declaration not found";
+        // TODO: if the right side is a global variable, declare it, append
+        // problem otherwise
+        appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
     }
 }
 

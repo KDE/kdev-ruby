@@ -171,8 +171,6 @@ void TestDUChain::alias()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(top->localDeclarations().size() == 2);
-
     /* def foo; end */
     Declaration *dec1 = top->localDeclarations().at(0);
     QVERIFY(dec1->isFunctionDeclaration());

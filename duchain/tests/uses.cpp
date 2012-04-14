@@ -94,7 +94,7 @@ void TestUseBuilder::alias()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    Declaration *dec = top->localDeclarations().at(1);
+    Declaration *dec = top->localDeclarations().at(0);
     compareUses(dec, RangeInRevision(0, 24, 0, 27));
 }
 
