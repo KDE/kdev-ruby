@@ -293,22 +293,18 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 
 void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 {
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainWriteLocker lock(DUChain::lock());
     QualifiedIdentifier id = QualifiedIdentifier(QString(node->tree->r->name));
-    debug() << "LOOK AFTER: " << id;
-    foreach (Declaration *dec, currentContext()->localDeclarations()) {
-        debug() << dec->toString();
-    }
-    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
-    if (!decls.isEmpty()) {
-        Declaration *d = decls.last();
-        if (d->isFunctionDeclaration()) { // TODO: || global variable
-            DUChainWriteLocker wlock(DUChain::lock());
+    const RangeInRevision &range = editorFindRange(node, node);
+    KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+
+    if (decl) {
+        if (decl->isFunctionDeclaration()) { // TODO: || global variable
             node->tree = node->tree->l;
-            RangeInRevision range = getNameRange(node);
+            const RangeInRevision & range = editorFindRange(node, node);
             QualifiedIdentifier id = identifierForNode(new NameAst(node));
             AliasDeclaration *ad = openDeclaration<AliasDeclaration>(id, range);
-            ad->setAliasedDeclaration(d);
+            ad->setAliasedDeclaration(decl);
             closeDeclaration();
         } else {
             debug() << "ALIAS: this is not a function or a global variable";
