@@ -118,6 +118,11 @@ public:
      */
     QReadWriteLock * builtinsLock();
 
+    /**
+     * Setup the actions defined by this plugin.
+     */
+    virtual void createActionsForMainWindow(Sublime::MainWindow* window, QString& xmlFile,
+                                            KActionCollection& actions);
 private:
     /**
      * @internal Find or create a launch for a the given @p name.
@@ -137,11 +142,6 @@ private:
      * used by the runCurrentTestFunction() slot.
      */
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
-
-    /**
-     * @internal Setup the actions defined by this plugin.
-     */
-    void setupActions();
 
     /**
      * @internal Setup IQuickOpen so it registers Rails data providers.

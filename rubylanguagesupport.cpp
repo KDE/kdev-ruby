@@ -96,7 +96,6 @@ LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
-    setupActions();
     setupQuickOpen();
 
     QTimer::singleShot(0, this, SLOT(updateBuiltins()));
@@ -271,40 +270,42 @@ KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration
     return config;
 }
 
-void LanguageSupport::setupActions()
+void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow* /*window*/, QString& _xmlFile,
+                                                 KActionCollection& actions)
 {
-    KActionCollection* actions = actionCollection();
-    KAction *action = actions->addAction("ruby_switch_to_controller");
+    _xmlFile = xmlFile();
+
+    KAction *action = actions.addAction("ruby_switch_to_controller");
     action->setText(i18n("Switch To Controller"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_1);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToController()));
 
-    action = actions->addAction("ruby_switch_to_model");
+    action = actions.addAction("ruby_switch_to_model");
     action->setText(i18n("Switch To Model"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_2);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToModel()));
 
-    action = actions->addAction("ruby_switch_to_view");
+    action = actions.addAction("ruby_switch_to_view");
     action->setText(i18n("Switch To View"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_3);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToView()));
 
-    action = actions->addAction("ruby_switch_to_test");
+    action = actions.addAction("ruby_switch_to_test");
     action->setText(i18n("Switch To Test"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
 
-    action = actions->addAction("ruby_run_current_file");
+    action = actions.addAction("ruby_run_current_file");
     action->setText(i18n("Run Current File"));
     action->setShortcut(Qt::META | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentFile()));
 
-    action = actions->addAction("ruby_run_current_test_function");
+    action = actions.addAction("ruby_run_current_test_function");
     action->setText(i18n("Run Current Test Function"));
     action->setShortcut(Qt::META | Qt::SHIFT | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
 
-    action = actions->addAction("ruby_new_class");
+    action = actions.addAction("ruby_new_class");
     action->setText(i18n("Create New Ruby Class"));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(createNewClass()));
 }
