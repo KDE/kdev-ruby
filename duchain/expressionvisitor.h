@@ -48,7 +48,7 @@ public:
 
     inline KDevelop::AbstractType::Ptr lastType() const
     {
-        return (m_lastType.isEmpty()) ? KDevelop::AbstractType::Ptr(NULL) : m_lastType.last();
+        return m_lastType;
     }
 
     inline const bool & lastAlias() const
@@ -84,7 +84,7 @@ private:
 private:
     KDevelop::DUContext *m_ctx;
     EditorIntegrator *m_editor;
-    QStack<KDevelop::AbstractType::Ptr> m_lastType; // TODO: just a pointer to the last one ?
+    AbstractType::Ptr m_lastType;
     DeclarationPointer m_lastDeclaration;
     bool m_alias;
 };

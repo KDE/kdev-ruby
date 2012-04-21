@@ -38,7 +38,7 @@ namespace Ruby
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
 {
-    /* There's nothing to do here! */
+    m_lastType = AbstractType::Ptr(NULL);
 }
 
 void ExpressionVisitor::visitVariable(RubyAst *node)
@@ -146,7 +146,7 @@ TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DU
 
 void ExpressionVisitor::encounter(AbstractType::Ptr type)
 {
-    m_lastType.push(type);
+    m_lastType = type;
 }
 
 } // End of namespace Ruby
