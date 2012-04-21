@@ -144,9 +144,4 @@ TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DU
     return type;
 }
 
-void ExpressionVisitor::encounter(AbstractType::Ptr type)
-{
-    m_lastType = type;
-}
-
 } // End of namespace Ruby

@@ -79,7 +79,10 @@ protected:
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
-    void encounter(KDevelop::AbstractType::Ptr type); // TODO: inline ?
+    inline void encounter(KDevelop::AbstractType::Ptr type)
+    {
+        m_lastType = type;
+    }
 
 private:
     KDevelop::DUContext *m_ctx;
