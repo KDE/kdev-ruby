@@ -78,13 +78,13 @@ LanguageSupport * LanguageSupport::m_self = 0;
 LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
     : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
     , KDevelop::ILanguageSupport()
-    , m_railsSwitchers(new Ruby::RailsSwitchers(this))
-    , m_rubyFileLaunchConfiguration(0)
-    , m_rubyCurrentFunctionLaunchConfiguration(0)
     , m_highlighting(0)
     , m_builtinsLoaded(false)
+    , m_railsSwitchers(new Ruby::RailsSwitchers(this))
     , m_viewsQuickOpenDataProvider(0)
     , m_testsQuickOpenDataProvider(0)
+    , m_rubyFileLaunchConfiguration(0)
+    , m_rubyCurrentFunctionLaunchConfiguration(0)
 {
     m_builtinsLoaded = false;
     m_builtinsLock.lockForWrite();
