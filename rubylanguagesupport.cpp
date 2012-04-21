@@ -73,14 +73,18 @@ K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby",
 namespace Ruby
 {
 
-LanguageSupport * LanguageSupport::m_self = NULL;
+LanguageSupport * LanguageSupport::m_self = 0;
 
 LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
     : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
     , KDevelop::ILanguageSupport()
     , m_railsSwitchers(new Ruby::RailsSwitchers(this))
-    , m_rubyFileLaunchConfiguration(NULL)
-    , m_rubyCurrentFunctionLaunchConfiguration(NULL)
+    , m_rubyFileLaunchConfiguration(0)
+    , m_rubyCurrentFunctionLaunchConfiguration(0)
+    , m_highlighting(0)
+    , m_builtinsLoaded(false)
+    , m_viewsQuickOpenDataProvider(0)
+    , m_testsQuickOpenDataProvider(0)
 {
     m_builtinsLoaded = false;
     m_builtinsLock.lockForWrite();
@@ -92,7 +96,6 @@ LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
-    setupActions();
     setupQuickOpen();
 
     QTimer::singleShot(0, this, SLOT(updateBuiltins()));
@@ -147,7 +150,7 @@ QReadWriteLock * LanguageSupport::builtinsLock()
 
 void LanguageSupport::createNewClass()
 {
-    RubyRefactoring::self().createNewClass(NULL);
+    RubyRefactoring::self().createNewClass(0);
 }
 
 void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
@@ -156,7 +159,6 @@ void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::Referen
     debug() << "builtins file is up to date " << url.str();
     m_builtinsLoaded = true;
     m_builtinsLock.unlock();
-    DUChainReadLocker lock(DUChain::lock());
 }
 
 void LanguageSupport::updateBuiltins()
@@ -268,52 +270,54 @@ KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration
     return config;
 }
 
-void LanguageSupport::setupActions()
+void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow* /*window*/, QString& _xmlFile,
+                                                 KActionCollection& actions)
 {
-    KActionCollection* actions = actionCollection();
-    KAction *action = actions->addAction("ruby_switch_to_controller");
+    _xmlFile = xmlFile();
+
+    KAction *action = actions.addAction("ruby_switch_to_controller");
     action->setText(i18n("Switch To Controller"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_1);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToController()));
 
-    action = actions->addAction("ruby_switch_to_model");
+    action = actions.addAction("ruby_switch_to_model");
     action->setText(i18n("Switch To Model"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_2);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToModel()));
 
-    action = actions->addAction("ruby_switch_to_view");
+    action = actions.addAction("ruby_switch_to_view");
     action->setText(i18n("Switch To View"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_3);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToView()));
 
-    action = actions->addAction("ruby_switch_to_test");
+    action = actions.addAction("ruby_switch_to_test");
     action->setText(i18n("Switch To Test"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
 
-    action = actions->addAction("ruby_run_current_file");
+    action = actions.addAction("ruby_run_current_file");
     action->setText(i18n("Run Current File"));
     action->setShortcut(Qt::META | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentFile()));
 
-    action = actions->addAction("ruby_run_current_test_function");
+    action = actions.addAction("ruby_run_current_test_function");
     action->setText(i18n("Run Current Test Function"));
     action->setShortcut(Qt::META | Qt::SHIFT | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
 
-    action = actions->addAction("ruby_new_class");
+    action = actions.addAction("ruby_new_class");
     action->setText(i18n("Create New Ruby Class"));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(createNewClass()));
 }
 
 void LanguageSupport::setupQuickOpen()
 {
-    m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
-    m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
-
     KDevelop::IQuickOpen* quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
+        m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
+
+        m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
     }
 }
