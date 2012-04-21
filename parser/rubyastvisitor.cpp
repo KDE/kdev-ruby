@@ -239,7 +239,16 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
 
 void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
 {
-    Q_UNUSED(node)
+    /*
+     * l -> the left side of the assignment.
+     * r -> the right side of the assignment.
+     */
+
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    visitStatements(child);
+    child->tree = node->tree->r;
+    visitStatements(child);
+    delete child;
 }
 
 void RubyAstVisitor::visitIfStatement(RubyAst *node)
