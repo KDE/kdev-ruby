@@ -19,7 +19,8 @@
  */
 
 
-// KDE
+// Qt + KDE
+#include <QtCore/QProcess>
 #include <KStandardDirs>
 
 // KDevelop
@@ -29,6 +30,7 @@
 
 // Ruby
 #include <duchain/helpers.h>
+#include <rubydefs.h>
 
 
 namespace Ruby
@@ -77,6 +79,38 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
         }
     }
     return (decls.length()) ? decls.last() : NULL;
+}
+
+KUrl getRequiredFile(RubyAst *node, const IndexedString &url, bool local)
+{
+    QList<KUrl> searchPaths;
+
+    // TODO: by now take a look at the current directory if this is not a string
+    // TODO: instead of the current directory, pick the project root directory
+    if (local || node->tree->kind != token_string)
+        searchPaths << url.toUrl().directory();
+    else
+        searchPaths << getSearchPaths(url.toUrl());
+
+    return KUrl();
+}
+
+QList<KUrl> getSearchPaths()
+{
+    // TODO: Cache, cache, cache !!!
+    QList<KUrl> paths;
+
+    QStringList code;
+    code << "ruby" << "-e" << "puts $:";
+    QProcess ruby;
+    ruby.start("/usr/bin/env", code);
+    ruby.waitForFinished();
+    QList<QByteArray> rpaths = ruby.readAllStandardOutput().split('\n');
+    rpaths.removeAll("");
+    foreach (const QString &s, rpaths)
+        paths << s;
+
+    return paths;
 }
 
 } // End of namespace Ruby

@@ -74,6 +74,16 @@ namespace Ruby
                                                            const RangeInRevision &range,
                                                            DUContextPointer context);
 
+    /**
+     * TODO
+     */
+    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(RubyAst *node, const IndexedString &url, bool local = false);
+
+    /**
+     * TODO
+     */
+    KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
+
 } // End of namespace Ruby
 
 

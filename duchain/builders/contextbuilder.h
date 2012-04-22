@@ -75,6 +75,7 @@ protected:
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
+    virtual void visitRequire(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
 

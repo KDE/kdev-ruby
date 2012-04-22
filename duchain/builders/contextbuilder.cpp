@@ -155,7 +155,6 @@ void ContextBuilder::visitModuleStatement(RubyAst *node)
     visitBody(node);
 }
 
-// TODO : what about singleton classes?
 void ContextBuilder::visitClassStatement(RubyAst *node)
 {
     node->tree = node->tree->l;
@@ -188,6 +187,13 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
         RubyAstVisitor::visitBody(node);
         closeContext();
     }
+}
+
+void ContextBuilder::visitRequire(RubyAst *node)
+{
+    RubyAstVisitor::visitRequire(node);
+    node->tree = node->tree->r;
+    KUrl path = getRequiredFile(node, m_editor->url());
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
