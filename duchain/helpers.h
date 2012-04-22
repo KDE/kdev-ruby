@@ -76,12 +76,18 @@ namespace Ruby
                                                            DUContextPointer context);
 
     /**
-     * TODO
+     * Get the url of the file specified by a require statement.
+     *
+     * @param node The node containing the file to be required.
+     * @param editor The EditorIntegrator from the current builder.
+     * @param local Set to true if the required file is relative to the current
+     * document (used for the require_relative statement).
+     * @return a KUrl containing the path to the required file.
      */
     KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(RubyAst *node, const EditorIntegrator *editor, bool local = false);
 
     /**
-     * TODO
+     * @return the list of urls available from ruby through $:
      */
     KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
 

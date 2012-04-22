@@ -94,7 +94,8 @@ public:
     RubyParser *parseSession();
 
     /**
-     * TODO
+     * @return a QString that represents the value of the token
+     * (not the node's name).
      */
     QString tokenToString(Node *node) const;
 

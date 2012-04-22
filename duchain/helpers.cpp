@@ -30,7 +30,6 @@
 
 // Ruby
 #include <duchain/helpers.h>
-#include <rubydefs.h>
 #include <duchain/editorintegrator.h>
 
 
@@ -93,10 +92,21 @@ KUrl getRequiredFile(RubyAst *node, const EditorIntegrator *editor, bool local)
         searchPaths << editor->url().toUrl().directory();
     } else {
         name = editor->tokenToString(node->tree);
+        name.replace("'", ""); // remove surrounding '
+        name += ".rb";
         searchPaths << getSearchPaths();
     }
 
-    debug() << "FILE NAME: " << name;
+    foreach (const KUrl &path, searchPaths) {
+        QString url = path.path(KUrl::AddTrailingSlash) + name;
+        QFile script(url);
+        QFileInfo info(url);
+        if (script.exists() && !info.isDir()) {
+            KUrl res(url);
+            res.cleanPath();
+            return res;
+        }
+    }
 
     return KUrl();
 }
