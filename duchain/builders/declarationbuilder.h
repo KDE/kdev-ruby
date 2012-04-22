@@ -79,7 +79,6 @@ private:
                                 KDevelop::Declaration *decl);
     void appendProblem(Node* node, const QString &msg);
     KDevelop::RangeInRevision getNameRange(RubyAst *node);
-    KDevelop::DocumentRange getDocumentRange(Node* node);
 
 private:
     EditorIntegrator *m_editor;

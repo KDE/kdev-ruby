@@ -60,9 +60,9 @@ ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyA
     return DeclarationBuilderBase::build(url, node, updateContext);
 }
 
-void DeclarationBuilder::startVisiting(RubyAst* node)
+void DeclarationBuilder::startVisiting(RubyAst *node)
 {
-    m_hasUnresolvedImports = false;
+    m_unresolvedImports.clear();
     DeclarationBuilderBase::startVisiting(node);
 }
 
@@ -384,27 +384,20 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
 
 void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
 {
-    DUChainWriteLocker lock(DUChain::lock());
     KDevelop::Problem *p = new KDevelop::Problem();
-
     p->setFinalLocation(getDocumentRange(node));
     p->setSource(KDevelop::ProblemData::SemanticAnalysis);
     p->setDescription(msg);
     p->setSeverity(KDevelop::ProblemData::Error);
-    topContext()->addProblem(ProblemPointer(p));
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        topContext()->addProblem(ProblemPointer(p));
+    }
 }
 
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node)
 {
     return m_editor->findRange(rb_name_node(node->tree));
-}
-
-DocumentRange DeclarationBuilder::getDocumentRange(Node *node)
-{
-    IndexedString ind(m_editor->url());
-    SimpleRange range(node->startLine - 1, node->startCol,
-                      node->endLine - 1, node->endCol);
-    return DocumentRange(ind, range);
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

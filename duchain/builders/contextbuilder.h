@@ -53,7 +53,13 @@ public:
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
     
-    bool hasUnresolvedImports() const;
+    inline bool hasUnresolvedImports() const
+    {
+        return !m_unresolvedImports.isEmpty();
+    }
+
+    QList<KUrl> m_unresolvedImports;
+    int m_priority;
 
 protected:
     EditorIntegrator * editor() const;
@@ -78,10 +84,12 @@ protected:
     virtual void visitRequire(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
+    KDevelop::DocumentRange getDocumentRange(Node *node);
 
-    bool m_mapAst; // AbstractUseBuilder requires this :S
+protected:
+
+    bool m_mapAst;
     bool m_reportErrors;
-    bool m_hasUnresolvedImports;
     EditorIntegrator *m_editor;
     KDevelop::ReferencedTopDUContext m_topContext;
     KDevelop::TopDUContextPointer m_builtinsContext;

@@ -144,8 +144,8 @@ void ParseJob::run()
         EditorIntegrator editor;
         editor.setParseSession(m_parser);
         DeclarationBuilder builder(&editor);
+        builder.m_priority = parsePriority(); // TODO: clean this
         m_duContext = builder.build(editor.url(), ast, m_duContext);
-        bool needsReparse = builder.hasUnresolvedImports();
         setDuChain(m_duContext);
 
         if (abortRequested())
@@ -156,14 +156,32 @@ void ParseJob::run()
         {
             UseBuilder useBuilder(&editor);
             useBuilder.buildUses(ast);
-            //TODO: Handle useBuilder unresolved identifiers
         }
 
         if (abortRequested())
             return abortJob();
 
+        bool needsReparse = builder.hasUnresolvedImports();
         if (needsReparse) {
-            //TODO
+            // TODO: review this ! Right now this is shamelessly taken from the Python plugin.
+
+            // check whether one of the imports is queued for parsing, this is to avoid deadlocks
+            bool dependencyInQueue = false;
+            foreach ( const KUrl& url, builder.m_unresolvedImports ) {
+                dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
+                if ( dependencyInQueue ) {
+                    break;
+                }
+            }
+            // we check whether this document already has been re-scheduled once and abort if that is the case
+            // this prevents infinite loops in case something goes wrong (optimally, shouldn't reach here if
+            // the document was already rescheduled, but there's many cases where this might still happen)
+            if ( ! ( minimumFeatures() & Rescheduled ) && dependencyInQueue ) {
+                DUChainWriteLocker lock(DUChain::lock());
+                KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document().toUrl(),
+                                     static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled), parsePriority(),
+                                     0, ParseJob::FullSequentialProcessing);
+            }
         }
 
         if (abortRequested())

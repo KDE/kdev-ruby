@@ -24,6 +24,7 @@
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/icompletionsettings.h>
+#include <language/backgroundparser/backgroundparser.h>
 #include <duchain/builders/contextbuilder.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/rubyducontext.h>
@@ -37,7 +38,7 @@ namespace Ruby
 {
 
 ContextBuilder::ContextBuilder() 
-    : m_reportErrors(true), m_hasUnresolvedImports(false)
+    : m_reportErrors(true)
 {
     /* There's nothing to do here! */
 }
@@ -63,11 +64,6 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
     } else
         debug() << "Compiling";
     return ContextBuilderBase::build(url, node, updateContext);
-}
-
-bool ContextBuilder::hasUnresolvedImports() const
-{
-    return m_hasUnresolvedImports;
 }
 
 void ContextBuilder::setEditor(EditorIntegrator *editor)
@@ -105,7 +101,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             internal = DUChain::self()->chainForDocument(doc_url);
         }
         if (!internal) {
-            m_hasUnresolvedImports = true;
+            m_unresolvedImports.append(doc_url.toUrl());
             DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
         } else {
             debug() << "Adding kernel context";
@@ -194,7 +190,41 @@ void ContextBuilder::visitRequire(RubyAst *node)
     RubyAstVisitor::visitRequire(node);
     node->tree = node->tree->r;
     KUrl path = getRequiredFile(node, m_editor);
-    debug() << "Look what I've found: " << path;
+
+    if (path.isEmpty()) {
+        KDevelop::Problem *p = new KDevelop::Problem();
+        p->setFinalLocation(getDocumentRange(node->tree));
+        p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+        p->setDescription("LoadError: cannot load such file");
+        p->setSeverity(KDevelop::ProblemData::Warning);
+        {
+            DUChainWriteLocker wlock(DUChain::lock());
+            topContext()->addProblem(ProblemPointer(p));
+        }
+        return;
+    }
+
+    DUChainWriteLocker lock(DUChain::lock());
+    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(IndexedString(path));
+    lock.unlock();
+
+    if (!ctx) {
+        /*
+         * Schedule the required file for parsing, and schedule the current one
+         * for reparsing after that is done.
+         */
+        m_unresolvedImports.append(path);
+        if (KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(path)) {
+            KDevelop::ICore::self()->languageController()->backgroundParser()->removeDocument(path);
+        }
+        KDevelop::ICore::self()->languageController()->backgroundParser()
+                                    ->addDocument(path, TopDUContext::ForceUpdate, m_priority - 1,
+                                                    0, ParseJob::FullSequentialProcessing);
+        return;
+    } else {
+        lock.lock();
+        currentContext()->addImportedParentContext(ctx);
+    }
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
@@ -231,6 +261,14 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     currentContext()->setLocalScopeIdentifier(className);
     wlock.unlock();
     addImportedContexts();
+}
+
+DocumentRange ContextBuilder::getDocumentRange(Node *node)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange range(node->startLine - 1, node->startCol,
+                      node->endLine - 1, node->endCol);
+    return DocumentRange(ind, range);
 }
 
 }
