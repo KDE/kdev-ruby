@@ -33,6 +33,7 @@
 
 namespace Ruby
 {
+    class EditorIntegrator;
     using namespace KDevelop;
 
     /**
@@ -77,7 +78,7 @@ namespace Ruby
     /**
      * TODO
      */
-    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(RubyAst *node, const IndexedString &url, bool local = false);
+    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(RubyAst *node, const EditorIntegrator *editor, bool local = false);
 
     /**
      * TODO

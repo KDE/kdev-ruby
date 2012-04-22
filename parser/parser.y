@@ -78,6 +78,7 @@ struct flags_t {
 struct pos_t {
   int startLine, endLine;
   int startCol, endCol;
+  unsigned long long offset;
 };
 
 /* A comment has a text and a line */
@@ -946,7 +947,7 @@ if_tail: opt_else
   | tELSIF expr then compstmt if_tail
   {
     $$ = ALLOC_C(token_if, $2, $4, $5);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol, 0 };
 
     pop_pos(parser, $$);
     push_pos(parser, tp);
@@ -959,7 +960,7 @@ opt_else: none
   | tELSE compstmt
   {
     $$ = ALLOC_N(token_if, $2, NULL);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol, 0 };
 
     pop_pos(parser, $$);
     push_pos(parser, tp);
@@ -1189,7 +1190,7 @@ case_body: tWHEN { parser->expr_seen = 0; } args then compstmt cases
   {
     /* The following statements fixes some issues around positions. */
     $$ = ALLOC_N(token_object, NULL, NULL);
-    struct pos_t t = {$$->startLine, $$->endLine, $$->startCol, $$->endCol};
+    struct pos_t t = {$$->startLine, $$->endLine, $$->startCol, $$->endCol, 0};
     $$ = ALLOC_C(token_when, $3, $5, $6);
     push_pos(parser, t);
     if ($5 != NULL)
@@ -1203,7 +1204,7 @@ cases: opt_else | case_body
 opt_rescue: tRESCUE rescue_arg then compstmt opt_rescue
   {
      $$ = ALLOC_N(token_rescue, $2, $4);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol, 0 };
 
     pop_pos(parser, $$);
     push_pos(parser, tp);
@@ -1238,7 +1239,7 @@ opt_ensure: none
   | tENSURE compstmt
   {
     $$ = ALLOC_N(token_ensure, $2, NULL);
-    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol };
+    struct pos_t tp = { $$->startLine, $$->endLine, $$->startCol, $$->endCol, 0 };
 
     pop_pos(parser, $$);
     push_pos(parser, tp);
@@ -1679,7 +1680,7 @@ static int push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
 {
   char *c = *ch;
   int diff = *curs - p->cursor - oax + 2;
-  struct pos_t tp = { p->line, p->line, p->column + diff, -1 };
+  struct pos_t tp = { p->line, p->line, p->column + diff, -1, 0 };
   int possible_error = *curs + 1;
   char buffer[BSIZE];
   char * ptr = buffer;
@@ -1846,6 +1847,7 @@ static void push_pos(struct parser_t * parser, struct pos_t tokp)
     scale += STACK_SIZE;
     parser->pos_stack = (struct pos_t *) realloc (parser->pos_stack, scale * sizeof(struct pos_t));
   }
+  tokp.offset = parser->cursor;
   parser->pos_stack[parser->pos_size + scale - 1] = tokp;
 }
 
@@ -1860,6 +1862,7 @@ static void pop_pos(struct parser_t * parser, struct node * n)
     n->startCol = tokp.startCol;
     n->endLine = tokp.endLine;
     n->endCol = tokp.endCol;
+    n->offset = tokp.offset;
   }
   parser->pos_size--;
   if (parser->pos_size == 0 && parser->stack_scale > 0) {
@@ -2148,7 +2151,7 @@ static int parser_yylex(struct parser_t * parser)
   char * c;
   int curs, len;
   unsigned char space_seen = 0;
-  struct pos_t tokp = {-1, -1, -1, -1};
+  struct pos_t tokp = {-1, -1, -1, -1, 0};
 
   curs = parser->cursor;
   len = parser->length;

@@ -74,3 +74,7 @@ RubyParser* EditorIntegrator::parseSession()
     return m_session;
 }
 
+QString EditorIntegrator::tokenToString(Node *node) const
+{
+    return m_session->symbol(node);
+}

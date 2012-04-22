@@ -155,6 +155,7 @@ struct node {
   char * comment;
 
 /* Node's position */
+  unsigned long long offset;
   int startLine, endLine;
   int startCol, endCol;
 

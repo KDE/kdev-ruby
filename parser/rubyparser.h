@@ -96,6 +96,12 @@ public:
         Q_UNUSED(use);
     }
 
+    /**
+     * @return a QString that represents the value of the node
+     * (not the node's name).
+     */
+    QString symbol(Node *node) const;
+
 private:
     /**
      * @internal called when there are errors in the current
@@ -111,7 +117,7 @@ public:
 
 private:
     IndexedString m_currentDocument;
-    const char *m_contents;
+    QByteArray m_contents;
 };
 
 

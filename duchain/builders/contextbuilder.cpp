@@ -193,7 +193,7 @@ void ContextBuilder::visitRequire(RubyAst *node)
 {
     RubyAstVisitor::visitRequire(node);
     node->tree = node->tree->r;
-    KUrl path = getRequiredFile(node, m_editor->url());
+    KUrl path = getRequiredFile(node, m_editor);
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)

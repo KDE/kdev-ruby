@@ -93,6 +93,11 @@ public:
      */
     RubyParser *parseSession();
 
+    /**
+     * TODO
+     */
+    QString tokenToString(Node *node) const;
+
 private:
     /**
      * The parse session for this EditorIntegrator.

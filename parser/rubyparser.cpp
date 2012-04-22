@@ -38,7 +38,7 @@ RubyParser::~RubyParser()
 
 void RubyParser::setContents(const QByteArray &contents)
 {
-    m_contents = contents.data();
+    m_contents = contents;
 }
 
 void RubyParser::setCurrentDocument(const KUrl &fileName)
@@ -54,7 +54,7 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     /* Let's call the parser ;) */
-    RAst *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
+    RAst *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents.data());
     RubyAst *ra = new RubyAst(res->tree);
     if (res->errors[0].valid) {
         appendProblem(res->errors[0]);
@@ -74,6 +74,12 @@ void RubyParser::freeAst(RubyAst *ast)
 {
     if (ast != NULL)
         free_ast(ast->tree);
+}
+
+QString RubyParser::symbol(Node *node) const
+{
+    int len = node->endCol - node->startCol;
+    return m_contents.mid(node->offset - len, len);
 }
 
 void RubyParser::appendProblem(struct error_t givenError)

@@ -46,6 +46,7 @@ struct node * alloc_node(int kind, struct node * l, struct node * r)
   n->ensure = NULL;
   n->l = l;
   n->r = r;
+  n->offset = 0;
   n->startLine = n->endLine = -1;
   n->startCol = n->endCol = -1;
   return n;
