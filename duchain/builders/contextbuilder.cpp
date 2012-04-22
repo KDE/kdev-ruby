@@ -188,12 +188,65 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
 void ContextBuilder::visitRequire(RubyAst *node)
 {
     RubyAstVisitor::visitRequire(node);
-    node->tree = node->tree->r;
-    KUrl path = getRequiredFile(node, m_editor);
+    require(node->tree->r, false);
+}
 
+void ContextBuilder::visitRequireRelative(RubyAst *node)
+{
+    RubyAstVisitor::visitRequireRelative(node);
+    require(node->tree->r, true);
+}
+
+void ContextBuilder::openContextForClassDefinition(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range = editorFindRange(node, node);
+    KDevelop::QualifiedIdentifier className(getName(node));
+
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
+    wlock.unlock();
+    addImportedContexts();
+}
+
+DocumentRange ContextBuilder::getDocumentRange(Node *node)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange range(node->startLine - 1, node->startCol,
+                      node->endLine - 1, node->endCol);
+    return DocumentRange(ind, range);
+}
+
+RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
+{
+    if (!node->tree)
+        return RangeInRevision();
+
+    RubyAst *last = new RubyAst(node->tree->last, node->context);
+    if (!node->tree->last)
+        last->tree = node->tree;
+    RangeInRevision range = editorFindRange(node, last);
+    delete last;
+
+    return range;
+}
+
+void ContextBuilder::addImportedContexts()
+{
+    if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        foreach (KDevelop::DUContext *imported, m_importedParentContexts)
+            currentContext()->addImportedParentContext(imported);
+        m_importedParentContexts.clear();
+    }
+}
+
+void ContextBuilder::require(Node *node, bool local)
+{
+    KUrl path = getRequiredFile(node, m_editor, local);
     if (path.isEmpty()) {
         KDevelop::Problem *p = new KDevelop::Problem();
-        p->setFinalLocation(getDocumentRange(node->tree));
+        p->setFinalLocation(getDocumentRange(node));
         p->setSource(KDevelop::ProblemData::SemanticAnalysis);
         p->setDescription("LoadError: cannot load such file");
         p->setSeverity(KDevelop::ProblemData::Warning);
@@ -225,50 +278,6 @@ void ContextBuilder::visitRequire(RubyAst *node)
         lock.lock();
         currentContext()->addImportedParentContext(ctx);
     }
-}
-
-RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
-{
-    if (!node->tree)
-        return RangeInRevision();
-
-    RubyAst *last = new RubyAst(node->tree->last, node->context);
-    if (!node->tree->last)
-        last->tree = node->tree;
-    RangeInRevision range = editorFindRange(node, last);
-    delete last;
-
-    return range;
-}
-
-void ContextBuilder::addImportedContexts()
-{
-    if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        foreach (KDevelop::DUContext *imported, m_importedParentContexts)
-            currentContext()->addImportedParentContext(imported);
-        m_importedParentContexts.clear();
-    }
-}
-
-void ContextBuilder::openContextForClassDefinition(RubyAst *node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    RangeInRevision range = editorFindRange(node, node);
-    KDevelop::QualifiedIdentifier className(getName(node));
-
-    openContext(node, range, DUContext::Class, className);
-    currentContext()->setLocalScopeIdentifier(className);
-    wlock.unlock();
-    addImportedContexts();
-}
-
-DocumentRange ContextBuilder::getDocumentRange(Node *node)
-{
-    IndexedString ind(m_editor->url());
-    SimpleRange range(node->startLine - 1, node->startCol,
-                      node->endLine - 1, node->endCol);
-    return DocumentRange(ind, range);
 }
 
 }

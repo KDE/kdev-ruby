@@ -81,20 +81,24 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
     return (decls.length()) ? decls.last() : NULL;
 }
 
-KUrl getRequiredFile(RubyAst *node, const EditorIntegrator *editor, bool local)
+KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
     QList<KUrl> searchPaths;
     QString name("");
 
     // TODO: by now take a look at the current directory if this is not a string
     // TODO: instead of the current directory, pick the project root directory
-    if (local || node->tree->kind != token_string) {
+    if (node->kind != token_string) {
         searchPaths << editor->url().toUrl().directory();
     } else {
-        name = editor->tokenToString(node->tree);
+        name = editor->tokenToString(node);
         name.replace("'", ""); // remove surrounding '
-        name += ".rb";
-        searchPaths << getSearchPaths();
+        if (!name.endsWith(".rb"))
+            name += ".rb";
+        if (local)
+            searchPaths << editor->url().toUrl().directory();
+        else
+            searchPaths << getSearchPaths();
     }
 
     foreach (const KUrl &path, searchPaths) {

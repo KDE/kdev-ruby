@@ -84,7 +84,7 @@ namespace Ruby
      * document (used for the require_relative statement).
      * @return a KUrl containing the path to the required file.
      */
-    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(RubyAst *node, const EditorIntegrator *editor, bool local = false);
+    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
     /**
      * @return the list of urls available from ruby through $:

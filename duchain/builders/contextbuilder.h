@@ -82,6 +82,7 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitRequire(RubyAst *node);
+    virtual void visitRequireRelative(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
     KDevelop::DocumentRange getDocumentRange(Node *node);
@@ -97,6 +98,7 @@ protected:
 private:
     RangeInRevision rangeForMethodArguments(RubyAst *node);
     void addImportedContexts();
+    void require(Node *node, bool local);
 
 private:
     QList<KDevelop::DUContext *> m_importedParentContexts;

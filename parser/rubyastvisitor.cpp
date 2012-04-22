@@ -484,6 +484,11 @@ void RubyAstVisitor::visitRequire(RubyAst *node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitRequireRelative(RubyAst *node)
+{
+    Q_UNUSED(node)
+}
+
 void RubyAstVisitor::visitDefined(RubyAst *node)
 {
     /*
@@ -656,6 +661,8 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
           visitInclude(mc);
       else if (name == "extend")
           visitExtend(mc);
+      else if (name == "require_relative")
+          visitRequireRelative(mc);
       else
           visitMethodCall(mc);
     } else
