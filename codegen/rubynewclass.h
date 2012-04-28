@@ -52,10 +52,10 @@ private:
     KDevelop::ProjectBaseItem *m_parentItem;
 };
 
-class RubyNewClassWizard : public KDevelop::CreateClassWizard
+class RubyNewClassAssistant : public KDevelop::CreateClassAssistant
 {
 public:
-    RubyNewClassWizard(QWidget *parent, RubyNewClass *gen, KUrl baseUrl = KUrl());
+    RubyNewClassAssistant(QWidget *parent, RubyNewClass *gen, KUrl baseUrl = KUrl());
 
     virtual KDevelop::ClassIdentifierPage * newIdentifierPage();
     virtual KDevelop::OverridesPage * newOverridesPage();
@@ -77,7 +77,7 @@ class RubyOverridesPage : public KDevelop::OverridesPage
   Q_OBJECT
 
 public:
-    RubyOverridesPage(KDevelop::ClassGenerator *gen, QWizard *parent);
+    RubyOverridesPage(KDevelop::ClassGenerator *gen, QWidget *parent);
 
     virtual void populateOverrideTree(const QList<KDevelop::DeclarationPointer> & baseList);
 };

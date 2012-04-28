@@ -58,24 +58,24 @@ const KDevelop::ProjectBaseItem * RubyNewClass::parentItem() const
     return m_parentItem;
 }
 
-RubyNewClassWizard::RubyNewClassWizard(QWidget *parent, RubyNewClass *gen, KUrl baseUrl)
-    : KDevelop::CreateClassWizard(parent, gen, baseUrl)
+RubyNewClassAssistant::RubyNewClassAssistant(QWidget *parent, RubyNewClass *gen, KUrl baseUrl)
+    : KDevelop::CreateClassAssistant(parent, gen, baseUrl)
 {
     setup();
 }
 
-KDevelop::ClassIdentifierPage* RubyNewClassWizard::newIdentifierPage()
+KDevelop::ClassIdentifierPage* RubyNewClassAssistant::newIdentifierPage()
 {
     /* TODO: Under construction */
     return new KDevelop::ClassIdentifierPage(this);
 }
 
-KDevelop::OverridesPage* RubyNewClassWizard::newOverridesPage()
+KDevelop::OverridesPage* RubyNewClassAssistant::newOverridesPage()
 {
     return new RubyOverridesPage(generator(), this);
 }
 
-RubyOverridesPage::RubyOverridesPage(KDevelop::ClassGenerator *gen, QWizard *parent)
+RubyOverridesPage::RubyOverridesPage(KDevelop::ClassGenerator *gen, QWidget *parent)
     : KDevelop::OverridesPage(gen, parent)
 {
     /* There's nothing to do here */

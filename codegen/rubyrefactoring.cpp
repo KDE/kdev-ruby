@@ -75,7 +75,7 @@ void RubyRefactoring::createNewClass(KDevelop::ProjectBaseItem *item)
         // TODO: get url from current selection
     }
     RubyNewClass newClass(item);
-    RubyNewClassWizard newClassWizard(qApp->activeWindow(), &newClass, u);
+    RubyNewClassAssistant newClassWizard(qApp->activeWindow(), &newClass, u);
     newClassWizard.exec();
 }
 
