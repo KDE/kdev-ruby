@@ -76,6 +76,8 @@ protected:
     virtual void visitRange(RubyAst *node);
     virtual void visitSymbol(RubyAst *node);
     virtual void visitName(RubyAst *node);
+    virtual void visitArray(RubyAst *node);
+    virtual void visitHash(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);

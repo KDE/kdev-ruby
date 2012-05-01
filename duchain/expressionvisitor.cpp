@@ -136,6 +136,26 @@ void ExpressionVisitor::visitSymbol(RubyAst *)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitArray(RubyAst* node)
+{
+    RubyAstVisitor::visitArray(node);
+    AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
+
+    // TODO: add the content type just like the python plugin does
+
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitHash(RubyAst* node)
+{
+    RubyAstVisitor::visitHash(node);
+    AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
+
+    // TODO: add the content type just like the python plugin does
+
+    encounter(obj);
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
