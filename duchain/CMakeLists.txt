@@ -10,6 +10,7 @@ set(rubyduchain_SRCS
     builders/typebuilder.cpp
 
     types/objecttype.cpp
+    types/variablelengthcontainer.cpp
 
     navigation/declarationnavigationcontext.cpp
     navigation/navigationwidget.cpp
