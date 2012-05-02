@@ -89,7 +89,7 @@ private:
     {
         m_lastType = type;
     }
-    VariableLengthContainer::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node);
+    VariableLengthContainer::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
 
 private:
     KDevelop::DUContext *m_ctx;

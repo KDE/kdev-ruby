@@ -155,7 +155,7 @@ void ExpressionVisitor::visitHash(RubyAst *node)
 {
     RubyAstVisitor::visitHash(node);
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
-    VariableLengthContainer::Ptr ptr = getContainer(obj, node);
+    VariableLengthContainer::Ptr ptr = getContainer(obj, node, true);
     encounter<VariableLengthContainer>(ptr);
 }
 
@@ -172,14 +172,14 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
     encounter(AbstractType::Ptr::staticCast(type));
 }
 
-VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node)
+VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
     VariableLengthContainer::Ptr vc = ptr.cast<VariableLengthContainer>();
     if (vc) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
         for (Node *n = ast->tree; n != NULL; n = n->next) {
-            ev.visitNode(ast);
+            (hasKey) ? ev.visitBinary(ast) : ev.visitNode(ast);
             vc->addContentType(ev.lastType());
             ast->tree = n->next;
         }
