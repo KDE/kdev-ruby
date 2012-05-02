@@ -20,6 +20,7 @@
  */
 
 
+#include <language/duchain/types/typeregister.h>
 #include <duchain/types/variablelengthcontainer.h>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchain.h>
@@ -40,7 +41,7 @@ VariableLengthContainer::VariableLengthContainer()
 }
 
 VariableLengthContainer::VariableLengthContainer(const VariableLengthContainer &rhs)
-    : StructureType(createData<VariableLengthContainer>(*rhs.d_func()))
+    : StructureType(copyData<VariableLengthContainer>(*rhs.d_func()))
 {
     /* There's nothing to do here */
 }

@@ -28,6 +28,7 @@
 #include <duchain/editorintegrator.h>
 #include <rubydefs.h>
 #include <duchain/types/objecttype.h>
+#include <duchain/types/variablelengthcontainer.h>
 #include <language/duchain/types/unsuretype.h>
 #include <KLocale>
 #include <duchain/helpers.h>

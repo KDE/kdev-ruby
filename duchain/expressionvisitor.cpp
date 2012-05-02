@@ -41,6 +41,13 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     m_lastType = AbstractType::Ptr(NULL);
 }
 
+ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
+    : m_ctx(parent->m_ctx), m_editor(parent->m_editor),
+        m_lastDeclaration(NULL), m_alias(false)
+{
+    m_lastType = AbstractType::Ptr(NULL);
+}
+
 void ExpressionVisitor::visitVariable(RubyAst *node)
 {
     debug() << "HERE !!! " << node->tree->name;
@@ -136,24 +143,20 @@ void ExpressionVisitor::visitSymbol(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitArray(RubyAst* node)
+void ExpressionVisitor::visitArray(RubyAst *node)
 {
     RubyAstVisitor::visitArray(node);
     AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
-
-    // TODO: add the content type just like the python plugin does
-
-    encounter(obj);
+    VariableLengthContainer::Ptr ptr = getContainer(obj, node);
+    encounter<VariableLengthContainer>(ptr);
 }
 
-void ExpressionVisitor::visitHash(RubyAst* node)
+void ExpressionVisitor::visitHash(RubyAst *node)
 {
     RubyAstVisitor::visitHash(node);
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
-
-    // TODO: add the content type just like the python plugin does
-
-    encounter(obj);
+    VariableLengthContainer::Ptr ptr = getContainer(obj, node);
+    encounter<VariableLengthContainer>(ptr);
 }
 
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
@@ -162,6 +165,28 @@ TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DU
     Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
     AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
     return type;
+}
+
+template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
+{
+    encounter(AbstractType::Ptr::staticCast(type));
+}
+
+VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node)
+{
+    VariableLengthContainer::Ptr vc = ptr.cast<VariableLengthContainer>();
+    if (vc) {
+        ExpressionVisitor ev(this);
+        RubyAst *ast = new RubyAst(node->tree->l, node->context);
+        for (Node *n = ast->tree; n != NULL; n = n->next) {
+            ev.visitNode(ast);
+            vc->addContentType(ev.lastType());
+            ast->tree = n->next;
+        }
+        delete ast;
+    } else
+        kWarning() << "Something went wrong! Fix code...";
+    return vc;
 }
 
 } // End of namespace Ruby

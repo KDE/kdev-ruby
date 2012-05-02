@@ -88,7 +88,7 @@ public:
      *
      * @param data internal data.
      */
-    ObjectType(ObjectTypeData& data);
+    ObjectType(ObjectTypeData &data);
 
     /**
      * Re-implemented from KDevelop::StructureType.

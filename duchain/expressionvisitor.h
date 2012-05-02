@@ -26,10 +26,12 @@
 #include <duchain/duchainexport.h>
 #include <parser/rubyastvisitor.h>
 #include <duchain/types/objecttype.h>
+#include <duchain/types/variablelengthcontainer.h>
 
 
 namespace Ruby
 {
+
 class EditorIntegrator;
 
 /*
@@ -45,6 +47,7 @@ class KDEVRUBYDUCHAIN_EXPORT ExpressionVisitor : public RubyAstVisitor
 {
 public:
     ExpressionVisitor(KDevelop::DUContext *ctx, EditorIntegrator *editor = NULL);
+    ExpressionVisitor(ExpressionVisitor *parent);
 
     inline KDevelop::AbstractType::Ptr lastType() const
     {
@@ -81,10 +84,12 @@ protected:
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
+    template<typename T> void encounter(TypePtr<T> type);
     inline void encounter(KDevelop::AbstractType::Ptr type)
     {
         m_lastType = type;
     }
+    VariableLengthContainer::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node);
 
 private:
     KDevelop::DUContext *m_ctx;
