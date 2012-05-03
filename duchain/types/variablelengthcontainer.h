@@ -25,7 +25,7 @@
  * and it's designed & implemented by Sven Brauch. It appears that it's also
  * useful for the Ruby plugin. Moreover, it's probably an interesting idea
  * for future language support plugins. Maybe this type should go
- * directly to KDevPlatform so everyone benefits from it.
+ * directly to KDevPlatform so everyone benefits from it ?¿
  */
 
 
@@ -48,7 +48,7 @@ namespace Ruby
  *
  * Private data structure for VariableLengthContainer.
  */
-class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainerData : public StructureTypeData
+class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainerData : public KDevelop::StructureTypeData
 {
 public:
     /// Constructor
@@ -88,7 +88,7 @@ public:
  * Describes a container that has a variable length and a second type,
  * which is the type of its contents (i.e. "List of Integers").
  */
-class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainer : public StructureType
+class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainer : public KDevelop::StructureType
 {
 public:
     /// Constructor.
@@ -109,14 +109,19 @@ public:
     void addContentType(AbstractType::Ptr typeToAdd);
     const IndexedType & contentType() const;
 
+    /// Create a clone of this type.
     virtual AbstractType * clone() const;
+
+    /// The hash-value for this type.
     virtual uint hash() const;
+
+    /// Check if the given type equals to this one.
     virtual bool equals(const AbstractType *rhs) const;
+
+    /// @returns this type as a string.
     virtual QString toString() const;
-    // "toString"s only the container type, not the content; used in declarationnavigationcontext to create
-    // seperate links for the content and container type
-    // by keeping toString seperate, it is possible to have a pretty type in unsure types etc. without additional
-    // efforts being necessary
+
+    /// @returns the container's type as a string.
     QString containerToString() const;
 
     enum { Identity = 41 /** The id of this Type. */ };
