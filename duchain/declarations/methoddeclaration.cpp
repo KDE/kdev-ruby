@@ -19,44 +19,43 @@
 
 
 #include <duchain/declarations/methoddeclaration.h>
+#include <language/duchain/duchainregister.h>
 
 
 namespace Ruby
 {
+REGISTER_DUCHAIN_ITEM(MethodDeclaration);
+
 
 MethodDeclaration::MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::FunctionDeclaration(range, ctx), m_isClassMethod(false)
+    : KDevelop::FunctionDeclaration(*new MethodDeclarationData)
 {
-
+    setRange(range);
+    d_func_dynamic()->setClassId(this);
+    if (ctx)
+        setContext(ctx);
 }
 
-MethodDeclaration::MethodDeclaration(const KDevelop::FunctionDeclaration &rhs)
-    : KDevelop::FunctionDeclaration(rhs), m_isClassMethod(false)
+MethodDeclaration::MethodDeclaration(const MethodDeclaration &rhs)
+    : KDevelop::FunctionDeclaration(*new MethodDeclarationData(*rhs.d_func()))
 {
-
+    /* There's nothing to do here */
 }
 
-MethodDeclaration::MethodDeclaration(KDevelop::FunctionDeclarationData &data)
-    : KDevelop::FunctionDeclaration(data), m_isClassMethod(false)
+MethodDeclaration::MethodDeclaration(MethodDeclarationData &data)
+    : KDevelop::FunctionDeclaration(data)
 {
-
-}
-
-MethodDeclaration::MethodDeclaration(KDevelop::FunctionDeclarationData &data, const KDevelop::RangeInRevision &range)
-    : KDevelop::FunctionDeclaration(data, range), m_isClassMethod(false)
-{
-
+    /* There's nothing to do here */
 }
 
 bool MethodDeclaration::isClassMethod() const
 {
-    return m_isClassMethod;
+    return d_func()->classMethod;
 }
 
 void MethodDeclaration::setClassMethod(const bool isClass)
 {
-    m_isClassMethod = isClass;
+    d_func_dynamic()->classMethod = isClass;
 }
 
-}
-
+} // End of namespace Ruby
