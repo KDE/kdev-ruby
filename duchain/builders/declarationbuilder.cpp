@@ -263,6 +263,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     int rsize = values.length();
     AbstractType::Ptr type;
     for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
+        aux->tree = n;
         if (i < rsize) {
             if (alias.at(i)) {
                 DUChainWriteLocker wlock(DUChain::lock());
