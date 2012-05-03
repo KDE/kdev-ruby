@@ -28,6 +28,7 @@
 // Ruby
 #include <duchain/helpers.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/navigation/declarationnavigationcontext.h>
 
 
@@ -81,6 +82,9 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
 
 QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
 {
+    const MethodDeclaration *md = dynamic_cast<const MethodDeclaration *>(decl.data());
+    if (md)
+        return (md->isClassMethod()) ? "Class method" : "Instance method";
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 
