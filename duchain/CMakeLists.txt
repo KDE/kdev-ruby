@@ -17,7 +17,7 @@ set(rubyduchain_SRCS
     navigation/includenavigationcontext.cpp
 
     declarations/classdeclaration.cpp
-    declarations/functiondeclaration.cpp
+    declarations/methoddeclaration.cpp
     declarations/variabledeclaration.cpp
 )
 

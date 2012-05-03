@@ -18,35 +18,37 @@
  */
 
 
-#include "functiondeclaration.h"
+#ifndef RUBY_FUNCTIONDECLARATION_H
+#define RUBY_FUNCTIONDECLARATION_H
+
+/*
+ * WARNING: This files is under development.
+ */
+
+#include <language/duchain/functiondeclaration.h>
+#include <duchain/duchainexport.h>
 
 
 namespace Ruby
 {
 
-RubyFunctionDeclaration::RubyFunctionDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::FunctionDeclaration(range, ctx)
+class KDEVRUBYDUCHAIN_EXPORT MethodDeclaration : public KDevelop::FunctionDeclaration
 {
+public:
+    MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    MethodDeclaration(const FunctionDeclaration &rhs);
+    MethodDeclaration(KDevelop::FunctionDeclarationData &data);
+    MethodDeclaration(KDevelop::FunctionDeclarationData &data, const KDevelop::RangeInRevision &range);
 
-}
+    void setClassMethod(const bool isClass);
+    bool isClassMethod() const;
 
-RubyFunctionDeclaration::RubyFunctionDeclaration(const KDevelop::FunctionDeclaration &rhs)
-    : KDevelop::FunctionDeclaration(rhs)
-{
+private:
+    bool m_isClassMethod;
+};
 
-}
+} // End of namespace Ruby
 
-RubyFunctionDeclaration::RubyFunctionDeclaration(KDevelop::FunctionDeclarationData &data)
-    : KDevelop::FunctionDeclaration(data)
-{
 
-}
-
-RubyFunctionDeclaration::RubyFunctionDeclaration(KDevelop::FunctionDeclarationData &data, const KDevelop::RangeInRevision &range)
-    : KDevelop::FunctionDeclaration(data, range)
-{
-
-}
-
-}
+#endif // FUNCTIONDECLARATION_H
 

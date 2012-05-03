@@ -25,6 +25,7 @@
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
 #include <duchain/declarations/variabledeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/editorintegrator.h>
 #include <rubydefs.h>
 #include <duchain/types/objecttype.h>
@@ -159,7 +160,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     QualifiedIdentifier id = getIdentifier(node);
 
     setComment(getComment(node));
-    FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
+    MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
 
     openType(type);

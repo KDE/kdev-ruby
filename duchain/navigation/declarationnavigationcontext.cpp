@@ -81,10 +81,6 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
 
 QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
 {
-    /*
-     * TODO: It should show if this declaration has some special meaning
-     * for the Ruby interpreter. Right now it does nothing :(
-     */
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 
