@@ -160,7 +160,7 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
-    QualifiedIdentifier name = identifierForNode(new NameAst(node));
+    QualifiedIdentifier name = getIdentifier(node);
     Node *aux = node->tree;
     node->tree = node->tree->r;
     RangeInRevision rg = rangeForMethodArguments(node);
@@ -215,6 +215,13 @@ DocumentRange ContextBuilder::getDocumentRange(Node *node)
     SimpleRange range(node->startLine - 1, node->startCol,
                       node->endLine - 1, node->endCol);
     return DocumentRange(ind, range);
+}
+
+const QualifiedIdentifier ContextBuilder::getIdentifier(const RubyAst *ast)
+{
+    NameAst nameAst(ast);
+    QualifiedIdentifier name = identifierForNode(&nameAst);
+    return name;
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)

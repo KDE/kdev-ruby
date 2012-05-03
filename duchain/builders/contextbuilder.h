@@ -87,6 +87,8 @@ protected:
     void openContextForClassDefinition(RubyAst *node);
     KDevelop::DocumentRange getDocumentRange(Node *node);
 
+    const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
+
 protected:
 
     bool m_mapAst;

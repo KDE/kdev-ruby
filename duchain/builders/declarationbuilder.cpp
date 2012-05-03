@@ -71,7 +71,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    QualifiedIdentifier id = getIdentifier(node);
 
     /* First of all, open the declaration and set the comment */
     setComment(getComment(node));
@@ -87,7 +87,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     if (node->tree) {
-        QualifiedIdentifier baseId = identifierForNode(new NameAst(node));
+        QualifiedIdentifier baseId = getIdentifier(node);
         KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
         if (!baseDecl) {
             appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
@@ -127,7 +127,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 {
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    QualifiedIdentifier id = getIdentifier(node);
 
     setComment(getComment(node));
     /* TODO: should this get a ModuleDeclaration or so? */
@@ -156,7 +156,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    QualifiedIdentifier id = getIdentifier(node);
 
     setComment(getComment(node));
     FunctionDeclaration *decl = openDeclaration<FunctionDeclaration>(id, range);
@@ -187,7 +187,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
       // create variable declaration for argument
       DUChainWriteLocker lock(DUChain::lock());
       RangeInRevision range = m_editor->findRange(node->tree);
-      openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
+      openDefinition<VariableDeclaration>(getIdentifier(node), range);
       currentDeclaration()->setKind(Declaration::Instance);
       currentDeclaration()->setType(type);
     }
@@ -203,7 +203,7 @@ void DeclarationBuilder::visitBlockVariable(RubyAst *node)
     // create variable declaration for argument
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = m_editor->findRange(node->tree);
-    openDefinition<VariableDeclaration>(identifierForNode(new NameAst(node)), range);
+    openDefinition<VariableDeclaration>(getIdentifier(node), range);
     currentDeclaration()->setKind(Declaration::Instance);
     currentDeclaration()->setType(type);
     DeclarationBuilderBase::visitBlockVariable(node);
@@ -212,7 +212,7 @@ void DeclarationBuilder::visitBlockVariable(RubyAst *node)
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
-    QualifiedIdentifier id = identifierForNode(new NameAst(node));
+    QualifiedIdentifier id = getIdentifier(node);
     AbstractType::Ptr type(new ObjectType());
     declareVariable(currentContext(), type, id, node);
 }
@@ -265,26 +265,26 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
         if (i < rsize) {
             if (alias.at(i)) {
-                DUChainWriteLocker lock(DUChain::lock());
+                DUChainWriteLocker wlock(DUChain::lock());
                 RangeInRevision range = getNameRange(aux);
-                QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+                QualifiedIdentifier id = getIdentifier(aux);
                 AliasDeclaration *d = openDeclaration<AliasDeclaration>(id, range);
                 d->setAliasedDeclaration(declarations.at(i).data());
                 closeDeclaration();
             } else {
-                DUChainWriteLocker lock(DUChain::lock());
+                DUChainWriteLocker wlock(DUChain::lock());
                 type = values.at(i);
                 if (!type) // HACK: provisional fix, should be removed in the future
                     type = new ObjectType();
                 debug() << "We have to set the following type: " << type->toString();
-                QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+                QualifiedIdentifier id = getIdentifier(aux);
                 declareVariable(currentContext(), type, id, aux);
             }
         } else {
-            DUChainWriteLocker lock(DUChain::lock());
+            DUChainWriteLocker wlock(DUChain::lock());
             // TODO: the following shows that we need some caching system at the ExpressionVisitor
             type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
-            QualifiedIdentifier id = identifierForNode(new NameAst(aux));
+            QualifiedIdentifier id = getIdentifier(aux);
             declareVariable(currentContext(), type, id, aux);
         }
     }
@@ -303,7 +303,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         if (decl->isFunctionDeclaration()) {
             node->tree = node->tree->l;
             const RangeInRevision & range = editorFindRange(node, node);
-            QualifiedIdentifier id = identifierForNode(new NameAst(node));
+            QualifiedIdentifier id = getIdentifier(node);
             aliasMethodDeclaration(id, range, decl);
         } else
             appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
