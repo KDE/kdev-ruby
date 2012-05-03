@@ -63,6 +63,12 @@ private slots:
     void multipleAssignmentNamedStar();
     void unpackArray();
     void aliasedAssignment();
+
+    // Variable Length Container
+    void assignFromArrayItem1();
+    void assignFromArrayItem2();
+    void assignFromHashItem();
+    void assignToArrayItem();
 };
 
 } // End of namespace Ruby

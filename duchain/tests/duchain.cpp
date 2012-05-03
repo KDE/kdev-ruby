@@ -311,6 +311,42 @@ void TestDUChain::aliasedAssignment()
 
 //END: Assignments
 
+//BEGIN: Variable Length Container
+
+void TestDUChain::assignFromArrayItem1()
+{
+    QByteArray code("a = [1, 2, 3]; b = a[0]");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::assignFromArrayItem2()
+{
+    QByteArray code("a = [1, '2']; b = a[0]");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::assignFromHashItem()
+{
+    QByteArray code("a = { :a => 'a', b: 1 }; b = a[:a]");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::assignToArrayItem()
+{
+    QByteArray code("a = [1, nil]; a[1] = 2");
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+//END: Variable Length Container
+
 } // End of namespace Ruby
 
 
