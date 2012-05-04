@@ -296,29 +296,31 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 
 void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock(DUChain::lock());
     RubyAst *right = new RubyAst(node->tree->r, node->context);
     QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
+    DUChainReadLocker lock(DUChain::lock());
     const RangeInRevision &range = editorFindRange(right, right);
     KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+    lock.unlock();
 
     if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
+        DUChainWriteLocker wlock(DUChain::lock());
         // If the global variable on the right is not declared, declare it as nil
         if (!decl) {
             // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
-            debug() << id.toString();
-            AbstractType::Ptr type = type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
             decl = openDefinition<VariableDeclaration>(id, range);
             decl->setKind(Declaration::Instance);
             decl->setType(type);
             eventuallyAssignInternalContext();
-            DeclarationBuilderBase::closeDeclaration();  
+            DeclarationBuilderBase::closeDeclaration();
         }
         node->tree = node->tree->l;
         QualifiedIdentifier aid = getIdentifier(node);
         AbstractType::Ptr type = decl->abstractType();
         declareVariable(currentContext(), type, aid, node);
     } else if (decl && decl->isFunctionDeclaration()) {
+        DUChainWriteLocker wlock(DUChain::lock());
         node->tree = node->tree->l;
         const RangeInRevision & arange = editorFindRange(node, node);
         QualifiedIdentifier aid = getIdentifier(node);

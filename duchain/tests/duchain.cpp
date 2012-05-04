@@ -168,7 +168,7 @@ void TestDUChain::symbol()
 void TestDUChain::alias()
 {
     QByteArray code("def foo; end; alias asd foo; alias asd foo");
-    TopDUContext *top = parse(code, "alias1");
+    TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -181,6 +181,42 @@ void TestDUChain::alias()
     Declaration *dec2 = top->localDeclarations().at(1);
     QVERIFY(dec2->isFunctionDeclaration());
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("asd"));
+}
+
+void TestDUChain::aliasGlobal1()
+{
+    QByteArray code("$a = 0; alias $b $a");
+    TopDUContext *top = parse(code, "aliasGlobal1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    Declaration *dec2 = top->localDeclarations().at(1);
+
+    QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("$a"));
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+    QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("$b"));
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::aliasGlobal2()
+{
+    QByteArray code("alias $b $a");
+    TopDUContext *top = parse(code, "aliasGlobal2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    Declaration *dec2 = top->localDeclarations().at(1);
+
+    QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("$b"));
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+    QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("$a"));
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
 }
 
 //END: Simple Statements

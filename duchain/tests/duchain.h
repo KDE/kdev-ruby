@@ -52,6 +52,8 @@ private slots:
 
     // Simple Statements
     void alias();
+    void aliasGlobal1();
+    void aliasGlobal2();
 
     // Assignments
     void multipleAssignment1();
