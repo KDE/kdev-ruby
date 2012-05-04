@@ -297,24 +297,34 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
-    QualifiedIdentifier id = QualifiedIdentifier(QString(node->tree->r->name));
-    const RangeInRevision &range = editorFindRange(node, node);
+    RubyAst *right = new RubyAst(node->tree->r, node->context);
+    QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
+    const RangeInRevision &range = editorFindRange(right, right);
     KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
 
-    if (decl) {
-        // TODO: check the case of global variable
-        if (decl->isFunctionDeclaration()) {
-            node->tree = node->tree->l;
-            const RangeInRevision & range = editorFindRange(node, node);
-            QualifiedIdentifier id = getIdentifier(node);
-            aliasMethodDeclaration(id, range, decl);
-        } else
-            appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
-    } else {
-        // TODO: if the right side is a global variable, declare it, append
-        // problem otherwise
+    if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
+        // If the global variable on the right is not declared, declare it as nil
+        if (!decl) {
+            // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
+            debug() << id.toString();
+            AbstractType::Ptr type = type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            decl = openDefinition<VariableDeclaration>(id, range);
+            decl->setKind(Declaration::Instance);
+            decl->setType(type);
+            eventuallyAssignInternalContext();
+            DeclarationBuilderBase::closeDeclaration();  
+        }
+        node->tree = node->tree->l;
+        QualifiedIdentifier aid = getIdentifier(node);
+        AbstractType::Ptr type = decl->abstractType();
+        declareVariable(currentContext(), type, aid, node);
+    } else if (decl && decl->isFunctionDeclaration()) {
+        node->tree = node->tree->l;
+        const RangeInRevision & arange = editorFindRange(node, node);
+        QualifiedIdentifier aid = getIdentifier(node);
+        aliasMethodDeclaration(aid, arange, decl);
+    } else
         appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
-    }
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,

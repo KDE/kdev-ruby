@@ -247,6 +247,7 @@ void free_errors(struct error_t * errors);
  * Auxiliar macros.
  */
 
+#define is_global_var(n) (n->flags == 1)
 #define is_class_method(n) (n->cond->r != NULL)
 
 
