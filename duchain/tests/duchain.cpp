@@ -27,6 +27,7 @@
 #include <language/duchain/types/structuretype.h>
 
 // Ruby
+#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/tests/duchain.h>
 
 
@@ -346,6 +347,34 @@ void TestDUChain::assignToArrayItem()
 }
 
 //END: Variable Length Container
+
+//BEGIN: Declarations
+
+void TestDUChain::methodDeclaration()
+{
+    QByteArray code("class Klass; def foo(a, b); end; def asd; end; ");
+    code += "def self.selfish; end; def Klass.selfish; end; end";
+    TopDUContext *top = parse(code, "methodDeclaration");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+    QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
+
+    // Instance methods
+    MethodDeclaration *d1 = dynamic_cast<MethodDeclaration *>(decs.first());
+    QVERIFY(!d1->isClassMethod());
+
+    MethodDeclaration *d2 = dynamic_cast<MethodDeclaration *>(decs.at(1));
+    QVERIFY(!d2->isClassMethod());
+
+    // Class methods
+    MethodDeclaration *d3 = dynamic_cast<MethodDeclaration *>(decs.at(2));
+    QVERIFY(d3->isClassMethod());
+
+    MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
+    QVERIFY(d4->isClassMethod());
+}
+
+//END: Declarations
 
 } // End of namespace Ruby
 

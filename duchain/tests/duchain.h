@@ -69,6 +69,9 @@ private slots:
     void assignFromArrayItem2();
     void assignFromHashItem();
     void assignToArrayItem();
+
+    // Declarations
+    void methodDeclaration();
 };
 
 } // End of namespace Ruby
