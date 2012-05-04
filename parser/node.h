@@ -151,6 +151,7 @@ typedef struct {
 struct node {
 /* Node info */
   int kind;
+  short flags;
   char * name;
   char * comment;
 
@@ -240,6 +241,13 @@ void print_node(struct node * n);
 void print_errors(struct error_t * errors);
 void free_ast(struct node * n);
 void free_errors(struct error_t * errors);
+
+
+/*
+ * Auxiliar macros.
+ */
+
+#define is_class_method(n) (n->cond->r != NULL)
 
 
 #ifdef __cplusplus

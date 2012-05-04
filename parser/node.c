@@ -38,6 +38,7 @@ struct node * alloc_node(int kind, struct node * l, struct node * r)
     exit(0);
   }
   n->kind = kind;
+  n->flags = 0;
   n->name = NULL;
   n->comment = NULL;
   n->next = NULL;

@@ -924,6 +924,7 @@ primary: literal
     $$ = alloc_node(token_object, $2, $4);
     copy_range($$, $2, $4);
     $$ = ALLOC_C(token_function, $$, $7, $6);
+    $$->flags = 1; /* Class method */
     pop_comment(parser, $$);
     pop_start(parser, $$);
     parser->in_def--;

@@ -161,6 +161,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     setComment(getComment(node));
     MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
+    decl->setClassMethod(is_class_method(node->tree));
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
 
     openType(type);
