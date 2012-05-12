@@ -28,7 +28,9 @@
 #include <rubydefs.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
-#include <duchain/types/objecttype.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/classdeclaration.h>
+#include <duchain/helpers.h>
 
 
 using namespace KDevelop;
@@ -158,6 +160,27 @@ void ExpressionVisitor::visitHash(RubyAst *node)
     encounter<VariableLengthContainer>(ptr);
 }
 
+void ExpressionVisitor::visitMethodCall(RubyAst *node)
+{
+    RubyAstVisitor::visitMethodCall(node);
+    // TODO: visit parameters ?
+
+    Declaration *decl = findDeclarationForCall(node, m_ctx);
+    if (decl) {
+        AbstractType::Ptr type;
+        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(decl);
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
+        if (md) {
+            // TODO
+        } else if (cd) {
+            type = cd->abstractType();
+            encounter(type);
+        } else
+            debug() << "Found declaration is not callable";
+    } else
+        debug() << "Declaration not found";
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
@@ -186,6 +209,48 @@ VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr p
     } else
         kWarning() << "Something went wrong! Fix code...";
     return vc;
+}
+
+Declaration * ExpressionVisitor::findDeclarationForCall(RubyAst *ast, DUContext *ctx)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    DUContext *lastCtx = ctx;
+    QList<Declaration *> stack, aux;
+    RubyAst *left = new RubyAst(ast->tree->l, ast->context);
+
+    for (Node *n = ast->tree->l; n != NULL; n = n->next) {
+        left->tree = n;
+        QualifiedIdentifier id = getIdentifier(left);
+        aux = lastCtx->findDeclarations(id.last());
+        aux << findInternalDeclaration(lastCtx, id.last()); // TODO: clean this
+        if (!aux.empty() && aux.last()) {
+            stack << aux.last();
+            if (aux.last()->internalContext())
+                lastCtx = aux.last()->internalContext();
+        } else
+            debug() << "Something went wrong : " << getIdentifier(left).toString();
+    }
+
+    // TODO: should be handled in a more formal way
+    if (stack.size() > 1 && stack.last()->identifier().toString() == "new")
+        return stack.at(stack.size() - 2);
+    return stack.last();
+}
+
+const QualifiedIdentifier ExpressionVisitor::getIdentifier(const RubyAst *ast)
+{
+    NameAst nameAst(ast);
+    QualifiedIdentifier name = QualifiedIdentifier(nameAst.value);
+    return name;
+}
+
+Declaration * ExpressionVisitor::findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    foreach (Declaration *d, ctx->localDeclarations())
+        if (d->identifier() == id)
+            return d;
+    return NULL;
 }
 
 } // End of namespace Ruby

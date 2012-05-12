@@ -412,6 +412,21 @@ void TestDUChain::methodDeclaration()
 
 //END: Declarations
 
+//BEGIN: Method Calls
+
+void TestDUChain::callingtoNew()
+{
+    QByteArray code("class Klass; end; obj = Klass.new");
+    TopDUContext *top = parse(code, "methodDeclaration");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *obj = top->localDeclarations().at(1);
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+}
+
+//END: Method Calls
+
 } // End of namespace Ruby
 
 

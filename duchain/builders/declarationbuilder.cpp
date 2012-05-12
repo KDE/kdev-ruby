@@ -329,6 +329,16 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
 }
 
+void DeclarationBuilder::visitMethodCall(RubyAst *node)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    ExpressionVisitor v(currentContext(), m_editor);
+    v.visitNode(node);
+    lock.unlock();
+
+    // TODO
+}
+
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {

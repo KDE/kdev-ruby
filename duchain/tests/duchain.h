@@ -74,6 +74,9 @@ private slots:
 
     // Declarations
     void methodDeclaration();
+
+    // Method Calls
+    void callingtoNew();
 };
 
 } // End of namespace Ruby

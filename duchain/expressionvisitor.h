@@ -81,6 +81,7 @@ protected:
     virtual void visitName(RubyAst *node);
     virtual void visitArray(RubyAst *node);
     virtual void visitHash(RubyAst *node);
+    virtual void visitMethodCall(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
@@ -90,6 +91,9 @@ private:
         m_lastType = type;
     }
     VariableLengthContainer::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
+    Declaration * findDeclarationForCall(RubyAst *ast, DUContext *ctx);
+    Declaration * findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id);
+    const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
 
 private:
     KDevelop::DUContext *m_ctx;
