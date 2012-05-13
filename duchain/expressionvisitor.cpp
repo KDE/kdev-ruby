@@ -57,7 +57,9 @@ void ExpressionVisitor::visitVariable(RubyAst *node)
 
 void ExpressionVisitor::visitName(RubyAst *node)
 {
-    QualifiedIdentifier id = QualifiedIdentifier(QString(node->tree->name));
+    if (!node->tree) // TODO: clean, it shouldn't happen, but it does :(
+        return;
+    QualifiedIdentifier id = getIdentifier(node);
     const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
     QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
     if (!decls.isEmpty()) {
@@ -234,7 +236,7 @@ Declaration * ExpressionVisitor::findDeclarationForCall(RubyAst *ast, DUContext 
     // TODO: should be handled in a more formal way
     if (stack.size() > 1 && stack.last()->identifier().toString() == "new")
         return stack.at(stack.size() - 2);
-    return stack.last();
+    return (!stack.isEmpty()) ? stack.last() : NULL;
 }
 
 const QualifiedIdentifier ExpressionVisitor::getIdentifier(const RubyAst *ast)
