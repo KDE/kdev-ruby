@@ -50,16 +50,20 @@ TopDUContext * TestDUChain::parse(const QByteArray &code, const QString &id)
 
 //BEGIN: Builtin classes
 
-void TestDUChain::fixnum()
+void TestDUChain::numeric()
 {
-    QByteArray code("a = 1");
-    TopDUContext *top = parse(code, "fixnum");
+    QByteArray code("a = 1; b = 1.2");
+    TopDUContext *top = parse(code, "numeric");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    Declaration *dec = top->localDeclarations().at(0);
-    QVERIFY(dec->type<StructureType>());
-    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QVERIFY(dec2->type<StructureType>());
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
 }
 
 void TestDUChain::range()

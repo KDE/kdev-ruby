@@ -190,7 +190,7 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
 %token <n> tALIAS tDEFINED upBEGIN upEND tHEREDOC tTRUE tFALSE tNIL tENCODING
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA STRING
-%token <n> REGEXP IVAR CVAR NUMERIC tNTH_REF tBACKTICK tpEND tSYMBEG tHERE_PAR
+%token <n> REGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG tHERE_PAR
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
 %token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
 
@@ -1288,6 +1288,7 @@ sym: fname
 ;
 
 numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
+  | FLOAT { $$ = ALLOC_N(token_numeric, NULL, NULL); $$->flags = 1; }
 ;
 
 variable: base
@@ -2242,7 +2243,7 @@ static int parser_yylex(struct parser_t * parser)
     }
     parser->expr_seen =  1;
     parser->dot_seen = 0;
-    t = NUMERIC;
+    t = (has_point) ? FLOAT : NUMERIC;
   } else if (*c == '$') {
     int inc = 1;
     curs++;

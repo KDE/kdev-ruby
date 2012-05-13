@@ -248,6 +248,7 @@ void free_errors(struct error_t * errors);
  */
 
 #define is_global_var(n) (n->flags == 1)
+#define is_float(n) (n->flags == 1)
 #define is_class_method(n) (n->cond->r != NULL)
 
 

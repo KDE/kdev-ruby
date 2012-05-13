@@ -127,10 +127,10 @@ void ExpressionVisitor::visitString(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitNumeric(RubyAst *)
+void ExpressionVisitor::visitNumeric(RubyAst *node)
 {
-    // TODO: what about Float ?
-    AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
+    const char * type = is_float(node->tree) ? "Float" : "Fixnum";
+    AbstractType::Ptr obj = getBuiltinsType(type, m_ctx);
     encounter(obj);
 }
 

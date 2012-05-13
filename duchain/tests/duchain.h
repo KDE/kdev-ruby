@@ -43,7 +43,7 @@ protected:
 
 private slots:
     // Builtin classes
-    void fixnum();
+    void numeric();
     void range();
     void stringAndRegexp();
     void booleanAndNilAndSelf();
