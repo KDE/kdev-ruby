@@ -80,6 +80,8 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
     decl->setClassType(ClassDeclarationData::Class);
+    lastClassModule = decl;
+    insideClassModule = true;
 
     /*
      * Now let's check for the base class. Ruby does not support multiple
@@ -122,6 +124,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
     closeType();
     closeDeclaration();
+    insideClassModule = false;
 }
 
 void DeclarationBuilder::visitModuleStatement(RubyAst* node)
@@ -136,6 +139,8 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
     decl->setClassType(ClassDeclarationData::Interface);
+    lastClassModule = decl;
+    insideClassModule = true;
 
     StructureType::Ptr type = StructureType::Ptr(new StructureType());
     type->setDeclaration(decl);
@@ -151,6 +156,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 
     closeType();
     closeDeclaration();
+    insideClassModule = false;
 }
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
@@ -339,6 +345,48 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     // TODO
 }
 
+void DeclarationBuilder::visitInclude(RubyAst *node)
+{
+    RubyAst *module = new RubyAst(node->tree->r, node->context);
+    Declaration *decl = getModuleDeclaration(module);
+
+    if (decl) {
+        QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
+        foreach (MethodDeclaration *md, iMethods) {
+            if (!md->isClassMethod()) {
+                Declaration *raw = dynamic_cast<Declaration *>(md);
+                {
+                    DUChainWriteLocker wlock(DUChain::lock());
+                    // TODO: instead of aliasing, register the include
+                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
+                }
+            }
+        }
+    }
+    delete module;
+}
+
+void DeclarationBuilder::visitExtend(RubyAst *node)
+{
+    RubyAst *module = new RubyAst(node->tree->r, node->context);
+    Declaration *decl = getModuleDeclaration(module);
+
+    if (decl) {
+        QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
+        foreach (MethodDeclaration *md, iMethods) {
+            if (md->isClassMethod()) {
+                Declaration *raw = dynamic_cast<Declaration *>(md);
+                {
+                    DUChainWriteLocker wlock(DUChain::lock());
+                    // TODO: instead of aliasing, register the exclude
+                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
+                }
+            }
+        }
+    }
+    delete module;
+}
+
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {
@@ -392,9 +440,9 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
                                                 const RangeInRevision &range,
                                                 Declaration *decl)
 {
-    FunctionDeclaration *d = dynamic_cast<FunctionDeclaration *>(decl);
+    MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
     setComment(d->comment());
-    FunctionDeclaration *alias = openDeclaration<FunctionDeclaration>(id, range);
+    MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     openType(type);
     alias->setInSymbolTable(false);
@@ -421,9 +469,43 @@ void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
     }
 }
 
-KDevelop::RangeInRevision DeclarationBuilder::getNameRange(RubyAst *node)
+KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
 {
     return m_editor->findRange(rb_name_node(node->tree));
+}
+
+Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
+{
+    /*
+     * NOTE: this is a convenient method that allows us to retrieve the declaration of
+     * a module from an include/extend expression. This is just because the implementation
+     * of the ExpressionVisitor::visitMethodCall is still a bit clunky. Therefore,
+     * this method will eventually be gone.
+     */
+    DUChainReadLocker rlock(DUChain::lock());
+    RubyAst *aux = new RubyAst(module->tree, module->context);
+    DUContext *lastCtx = module->context;
+    Declaration *lastDecl = NULL;
+
+    if (aux->tree->kind == token_method_call)
+        aux->tree = aux->tree->l;
+    for (Node *n = aux->tree; n != NULL; n = n->next) {
+        QualifiedIdentifier id = getIdentifier(aux);
+        QList<Declaration *> list = lastCtx->findDeclarations(id.last());
+        if (!list.empty()) {
+            ClassDeclaration *d = dynamic_cast<ClassDeclaration *>(list.last());
+            if (!d || d->classType() != ClassDeclarationData::Interface) {
+                appendProblem(n, i18n("TypeError: wrong argument type (expected Module)"));
+                return NULL;
+            } else {
+                lastCtx = d->internalContext();
+                lastDecl = d;
+            }
+        }
+        aux->tree = n->next;
+    }
+    delete aux;
+    return lastDecl;
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

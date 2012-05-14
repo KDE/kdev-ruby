@@ -431,6 +431,55 @@ void TestDUChain::callingtoNew()
 
 //END: Method Calls
 
+//BEGIN: Include & Extend
+#include <rubydefs.h>
+void TestDUChain::include1()
+{
+    /*
+     * The class Klass includes the module AA::BB that has the instance
+     * method foo.
+     */
+    QByteArray code("module AA; module BB; def foo; end; def self.selfish; end;");
+    code += "end; end; class Klass; include AA::BB; end";
+    TopDUContext *top = parse(code, "include1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
+    QVERIFY(obj->internalContext()->localDeclarations(obj->topContext()).size() == 1);
+}
+
+void TestDUChain::include2()
+{
+    /*
+     * The module AA::CC includes the module AA::BB, that has the instance
+     * method foo. Finally, the class Klass includes the module AA::CC.
+     */
+    QByteArray code("module AA; module BB; def foo; end; end; module CC; ");
+    code += "include ::AA::BB; end; end; class Klass; include AA::CC; end";
+    TopDUContext *top = parse(code, "include2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+void TestDUChain::extend1()
+{
+    /* Same as include1 but with extend and a class method */
+    QByteArray code("module AA; module BB; def foo; end; def self.selfish; end;");
+    code += "end; end; class Klass; extend AA::BB; end";
+    TopDUContext *top = parse(code, "extend1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /* TODO: pending */
+    QVERIFY(true);
+}
+
+//END: Include & Extend
+
 } // End of namespace Ruby
 
 

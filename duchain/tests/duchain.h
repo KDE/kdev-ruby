@@ -77,6 +77,11 @@ private slots:
 
     // Method Calls
     void callingtoNew();
+
+    // Include & Extend
+    void include1();
+    void include2();
+    void extend1();
 };
 
 } // End of namespace Ruby

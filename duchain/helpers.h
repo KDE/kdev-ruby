@@ -33,8 +33,10 @@
 
 namespace Ruby
 {
-    class EditorIntegrator;
-    using namespace KDevelop;
+
+class MethodDeclaration;
+class EditorIntegrator;
+using namespace KDevelop;
 
     /**
      * Get the url of the Ruby builtins file.
@@ -90,6 +92,11 @@ namespace Ruby
      * @return the list of urls available from ruby through $:
      */
     KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
+
+    /**
+     * TODO
+     */
+    KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
 } // End of namespace Ruby
 
