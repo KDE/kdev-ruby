@@ -25,6 +25,7 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/types/integraltype.h>
 #include <language/duchain/types/structuretype.h>
+#include <language/duchain/duchainutils.h>
 
 // Ruby
 #include <duchain/declarations/methoddeclaration.h>
@@ -427,6 +428,36 @@ void TestDUChain::callingtoNew()
 
     Declaration *obj = top->localDeclarations().at(1);
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+}
+
+void TestDUChain::setMethodArgumentTypes1()
+{
+    QByteArray code("def foo(a, b); end; foo 1, 2");
+    TopDUContext *top = parse(code, "setMethodArgumentTypes1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
+    QVERIFY(md);
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
+    QVERIFY(args.size() == 2);
+    foreach (const Declaration *d, args)
+        QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::setMethodArgumentTypes2()
+{
+    QByteArray code("def foo(a, b); end; c = 1.2; foo c, 2");
+    TopDUContext *top = parse(code, "setMethodArgumentTypes1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
+    QVERIFY(md);
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
+    QVERIFY(args.size() == 2);
+    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 //END: Method Calls

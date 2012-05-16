@@ -77,6 +77,8 @@ private slots:
 
     // Method Calls
     void callingtoNew();
+    void setMethodArgumentTypes1();
+    void setMethodArgumentTypes2();
 
     // Include & Extend
     void include1();
