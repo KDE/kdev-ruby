@@ -35,6 +35,7 @@
 #include <duchain/helpers.h>
 #include <duchain/expressionvisitor.h>
 #include <language/duchain/aliasdeclaration.h>
+#include <language/duchain/duchainutils.h>
 
 
 namespace Ruby
@@ -340,9 +341,28 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     DUChainReadLocker lock(DUChain::lock());
     ExpressionVisitor v(currentContext(), m_editor);
     v.visitNode(node);
-    lock.unlock();
 
-    // TODO
+    /* And now let's take a look at the method arguments */
+    DeclarationPointer lastMethod = v.lastDeclaration();
+    if (lastMethod) {
+        DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
+        FunctionType::Ptr mtype = lastMethod->type<FunctionType>();
+        if (argCtx && mtype) {
+            RubyAst *aux = new RubyAst(node->tree->r, node->context);
+            QVector<Declaration *> args = argCtx->localDeclarations();
+            int i = 0;
+            lock.unlock();
+            DUChainWriteLocker wlock(DUChain::lock());
+            for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
+                aux->tree = n;
+                ExpressionVisitor av(currentContext(), m_editor);
+                av.visitNode(aux);
+                args.at(i)->setType(av.lastType());
+                /* TODO: mix types */
+            }
+            wlock.unlock();
+        }
+    }
 }
 
 void DeclarationBuilder::visitInclude(RubyAst *node)

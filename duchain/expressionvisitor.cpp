@@ -172,6 +172,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
         AbstractType::Ptr type;
         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(decl);
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
+        m_lastDeclaration = decl;
         if (md) {
             // TODO
         } else if (cd) {
