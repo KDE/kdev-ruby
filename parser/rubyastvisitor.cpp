@@ -425,21 +425,21 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
      * cond -> an optional Ruby block.
      */
 
-    Node *aux, *n = node->tree;
     RubyAst *child = new RubyAst(node->tree->l, node->context);
-    for (aux = n->l; aux != NULL; aux = aux->next) {
+    for (Node *aux = child->tree; aux != NULL; aux = aux->next) {
         visitNode(child);
         child->tree = aux->next;
     }
 
     /* Visit the method arguments */
-    for (aux = n->r; aux != NULL; aux = aux->next) {
+    child->tree = node->tree->r;
+    for (Node *aux = child->tree; aux != NULL; aux = aux->next) {
         visitNode(child);
         child->tree = aux->next;
     }
 
     /* Vist method call block */
-    child->tree = n->cond;
+    child->tree = node->tree->cond;
     visitBlock(child);
     delete child;
 }
