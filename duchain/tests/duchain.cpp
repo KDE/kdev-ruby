@@ -166,6 +166,18 @@ void TestDUChain::symbol()
     QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Symbol"));
 }
 
+void TestDUChain::lambda()
+{
+    QByteArray code("a = ->(a) { puts a }");
+    TopDUContext *top = parse(code, "lambda");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
 //END: Builtin classes
 
 //BEGIN: Simple Statements
@@ -463,7 +475,7 @@ void TestDUChain::setMethodArgumentTypes2()
 //END: Method Calls
 
 //BEGIN: Include & Extend
-#include <rubydefs.h>
+
 void TestDUChain::include1()
 {
     /*

@@ -49,6 +49,7 @@ private slots:
     void booleanAndNilAndSelf();
     void lineFileEncoding();
     void symbol();
+    void lambda();
 
     // Simple Statements
     void alias();
