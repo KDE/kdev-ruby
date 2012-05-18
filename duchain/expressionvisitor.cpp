@@ -184,6 +184,13 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
         debug() << "Declaration not found";
 }
 
+void ExpressionVisitor::visitLambda(RubyAst *node)
+{
+    RubyAstVisitor::visitLambda(node);
+    AbstractType::Ptr obj = getBuiltinsType("Proc", m_ctx);
+    encounter(obj);
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));

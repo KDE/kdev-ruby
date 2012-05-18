@@ -82,6 +82,7 @@ protected:
     virtual void visitArray(RubyAst *node);
     virtual void visitHash(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
+    virtual void visitLambda(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);

@@ -444,6 +444,13 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
     delete child;
 }
 
+void RubyAstVisitor::visitLambda(RubyAst *node)
+{
+    RubyAst *child = new RubyAst(node->tree->cond, node->context);
+    visitBlock(child);
+    delete child;
+}
+
 void RubyAstVisitor::visitBlock(RubyAst *node)
 {
     /*
@@ -652,6 +659,8 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
     /*
      * The method call body resides in the left child. Check if this
      * is either a require, an include/extend or just a normal method call.
+     * If the left child is NULL, this is not a method call but a lambda
+     * expression.
      */
     if (mc->tree->l != NULL) {
       const QByteArray & name = QByteArray(mc->tree->l->name);
@@ -666,7 +675,7 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
       else
           visitMethodCall(mc);
     } else
-        visitMethodCall(mc);
+        visitLambda(mc);
 }
 
 } // End of namespace Ruby

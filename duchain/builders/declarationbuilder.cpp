@@ -407,6 +407,11 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
     delete module;
 }
 
+void DeclarationBuilder::visitLambda(RubyAst *node)
+{
+    Ruby::RubyAstVisitor::visitLambda(node);
+}
+
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {
