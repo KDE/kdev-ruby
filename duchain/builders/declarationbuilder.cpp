@@ -173,11 +173,11 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     openType(type);
     decl->setInSymbolTable(false);
-    lock.unlock();
+//     lock.unlock();
     DeclarationBuilderBase::visitMethodStatement(node);
-    lock.lock();
-    closeType();
+//     lock.lock();
     closeDeclaration();
+    closeType();
 
     if (!type->returnType()) {
         /* TODO: return the type of the last statement instead */
@@ -188,25 +188,24 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
 {
-    AbstractFunctionDeclaration *funcDecl = dynamic_cast<AbstractFunctionDeclaration*>(currentDeclaration());
+    FunctionDeclaration *mDecl = dynamic_cast<FunctionDeclaration *>(currentDeclaration());
     ExpressionVisitor ev(currentContext(), m_editor);
-    ev.visitNode(node);
+    ev.visitParameter(node);
     AbstractType::Ptr type = ev.lastType();
 
     /* Just grab the left side if this is an optional parameter */
-    if (node->tree->l)
-        node->tree = node->tree->l;
-
-    {
-      // create variable declaration for argument
-      DUChainWriteLocker lock(DUChain::lock());
-      RangeInRevision range = m_editor->findRange(node->tree);
-      openDefinition<VariableDeclaration>(getIdentifier(node), range);
-      currentDeclaration()->setKind(Declaration::Instance);
-      currentDeclaration()->setType(type);
+    if (node->tree->l) {
+        Node *aux = node->tree->l;
+        node->tree = node->tree->r;
+        mDecl->addDefaultParameter(IndexedString(getIdentifier(node).toString()));
+        node->tree = aux;
     }
-    DeclarationBuilderBase::visitParameter(node);
-    closeDeclaration();
+
+    /* Finally, declare the parameter */
+    {
+      DUChainWriteLocker lock(DUChain::lock());
+      declareVariable(currentContext(), type, getIdentifier(node), node);
+    }
 }
 
 void DeclarationBuilder::visitBlockVariable(RubyAst *node)
@@ -553,12 +552,6 @@ void DeclarationBuilder::closeDeclaration()
     }
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
-}
-
-void DeclarationBuilder::updateCurrentType()
-{
-    DUChainWriteLocker lock(DUChain::lock());
-    currentDeclaration()->setAbstractType(currentAbstractType());
 }
 
 }
