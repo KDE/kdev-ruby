@@ -189,9 +189,14 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 void DeclarationBuilder::visitParameter(RubyAst *node)
 {
     AbstractFunctionDeclaration *funcDecl = dynamic_cast<AbstractFunctionDeclaration*>(currentDeclaration());
-    AbstractType::Ptr type(new ObjectType());
+    ExpressionVisitor ev(currentContext(), m_editor);
+    ev.visitNode(node);
+    AbstractType::Ptr type = ev.lastType();
 
-    /* TODO: handle default, star and block parameters */
+    /* Just grab the left side if this is an optional parameter */
+    if (node->tree->l)
+        node->tree = node->tree->l;
+
     {
       // create variable declaration for argument
       DUChainWriteLocker lock(DUChain::lock());

@@ -1401,14 +1401,14 @@ f_optarg: f_opt
 restarg_mark: '*' | tSTAR
 ;
 
-f_rest_arg: restarg_mark base { $$ = $2; }
-  | restarg_mark { $$ = alloc_node(token_object, NULL, NULL); }
+f_rest_arg: restarg_mark base { $$ = $2; $$->flags = 1; }
+  | restarg_mark { $$ = alloc_node(token_object, NULL, NULL); $$->flags = 1; }
 ;
 
 blkarg_mark: '&' | tAMPER
 ;
 
-f_block_arg: blkarg_mark base { $$ = $2; }
+f_block_arg: blkarg_mark base { $$ = $2; $$->flags = 2; }
 ;
 
 opt_f_block_arg : ',' f_block_arg { $$ = $2; }

@@ -191,6 +191,27 @@ void ExpressionVisitor::visitLambda(RubyAst *node)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitParameter(RubyAst *node)
+{
+    AbstractType::Ptr obj;
+
+    if (is_block_arg(node->tree)) {
+        obj = getBuiltinsType("Proc", m_ctx);
+    } else if (is_rest_arg(node->tree)) {
+        obj = getBuiltinsType("Array", m_ctx);
+        obj.cast<VariableLengthContainer>();
+    } else if (node->tree->r != NULL) {
+        ExpressionVisitor da(this);
+        Node *n = node->tree;
+        node->tree = node->tree->r;
+        da.visitNode(node);
+        node->tree = n;
+        obj = da.lastType();
+    } else
+        obj = new ObjectType();
+    encounter(obj);
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
