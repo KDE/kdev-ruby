@@ -27,6 +27,8 @@
 #include <language/duchain/identifier.h>
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
+#include <language/duchain/types/unsuretype.h>
+#include <language/duchain/types/integraltype.h>
 
 // Ruby
 #include <duchain/helpers.h>
@@ -149,6 +151,53 @@ QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl)
             res << md;
     }
     return res;
+}
+
+bool isUsefulType(AbstractType::Ptr type)
+{
+    if (!type)
+        return false;
+    if (type->whichType() != AbstractType::TypeIntegral)
+        return true;
+    QList<uint> skipTypes;
+    skipTypes << IntegralType::TypeMixed << IntegralType::TypeNone << IntegralType::TypeNull;
+    if (!skipTypes.contains(type.cast<IntegralType>()->dataType()))
+        return true;
+    return false;
+}
+
+AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
+{
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(type);
+    UnsureType::Ptr newUnsure = UnsureType::Ptr::dynamicCast(newType);
+    UnsureType::Ptr res;
+
+    if (unsure && newUnsure) {
+        int len = newUnsure->typesSize();
+        for (int i = 0; i < len; i++)
+            unsure->addType(newUnsure->types()[i]);
+        res = unsure;
+    } else if (unsure) {
+        if (isUsefulType(newType))
+            unsure->addType(newType->indexed());
+        res = unsure;
+    } else if (newUnsure) {
+        UnsureType::Ptr cloned = UnsureType::Ptr(static_cast<UnsureType *>(newUnsure->clone()));
+        if (isUsefulType(type))
+            cloned->addType(type->indexed());
+        res = cloned;
+    } else {
+        unsure = UnsureType::Ptr(new UnsureType());
+        if (isUsefulType(type))
+            unsure->addType(type->indexed());
+        if (isUsefulType(newType))
+            unsure->addType(newType->indexed());
+        res = unsure;
+    }
+
+    if (res->typesSize() == 1)
+        return res->types()[0].abstractType();
+    return AbstractType::Ptr::staticCast(res);
 }
 
 } // End of namespace Ruby

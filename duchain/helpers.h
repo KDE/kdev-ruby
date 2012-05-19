@@ -99,6 +99,12 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
+    /// TODO
+    KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(AbstractType::Ptr type);
+
+    /// TODO
+    KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
+
 } // End of namespace Ruby
 
 

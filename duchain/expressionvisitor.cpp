@@ -23,6 +23,7 @@
 #include <language/duchain/topducontext.h>
 #include <language/duchain/declaration.h>
 #include <language/duchain/aliasdeclaration.h>
+#include <language/duchain/types/integraltype.h>
 
 // Ruby
 #include <rubydefs.h>
@@ -208,7 +209,7 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
         node->tree = n;
         obj = da.lastType();
     } else
-        obj = new ObjectType();
+        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
     encounter(obj);
 }
 

@@ -361,8 +361,12 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
                 aux->tree = n;
                 ExpressionVisitor av(currentContext(), m_editor);
                 av.visitNode(aux);
-                args.at(i)->setType(av.lastType());
-                /* TODO: mix types */
+                AbstractType::Ptr merged = mergeTypes(args.at(i)->abstractType(),
+                                                      av.lastType().cast<AbstractType>());
+//                 mtype->removeArgument(i);
+//                 mtype->addArgument(merged, i);
+//                 lastMethod->setAbstractType(mtype.cast<AbstractType>());
+                args.at(i)->setType(merged);
             }
             wlock.unlock();
         }
@@ -460,7 +464,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
-    debug() << "Set type " << type->toString();
     eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
 }
