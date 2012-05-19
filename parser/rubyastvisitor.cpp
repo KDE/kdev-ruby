@@ -77,6 +77,10 @@ void RubyAstVisitor::visitRegexp(RubyAst *node)
 
 void RubyAstVisitor::visitString(RubyAst *node)
 {
+    /*
+     * l -> list of variables contained inside the string (by using #{var}).
+     */
+
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     visitStatements(child);
     delete child;
@@ -446,6 +450,10 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
 
 void RubyAstVisitor::visitLambda(RubyAst *node)
 {
+    /*
+     * cond -> the block of this lambda expression.
+     */
+
     RubyAst *child = new RubyAst(node->tree->cond, node->context);
     visitBlock(child);
     delete child;

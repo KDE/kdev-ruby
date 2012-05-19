@@ -24,9 +24,9 @@
 
 // Ruby
 #include <rubydefs.h>
-#include <duchain/builders/usebuilder.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
+#include <duchain/builders/usebuilder.h>
 
 
 namespace Ruby

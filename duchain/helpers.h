@@ -94,7 +94,8 @@ using namespace KDevelop;
     KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
 
     /**
-     * TODO
+     * @returns the declared methods inside the given declaration @p decl,
+     * which is a class or a module.
      */
     KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 

@@ -396,8 +396,8 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
     Declaration *decl = getModuleDeclaration(module);
 
     if (decl) {
-        QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
-        foreach (MethodDeclaration *md, iMethods) {
+        QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
+        foreach (MethodDeclaration *md, eMethods) {
             if (md->isClassMethod()) {
                 Declaration *raw = dynamic_cast<Declaration *>(md);
                 {
