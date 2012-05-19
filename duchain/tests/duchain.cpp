@@ -25,6 +25,7 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/types/integraltype.h>
 #include <language/duchain/types/structuretype.h>
+#include <language/duchain/types/unsuretype.h>
 #include <language/duchain/duchainutils.h>
 
 // Ruby
@@ -469,6 +470,22 @@ void TestDUChain::setMethodArgumentTypes2()
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
     QVERIFY(args.size() == 2);
     QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::setUnsureArgument()
+{
+    QByteArray code("def foo(a, b); end; foo 1, 2; foo 'asd', 2");
+    TopDUContext *top = parse(code, "setUnsureArgument");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
+    QVERIFY(md);
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
+    QVERIFY(args.size() == 2);
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.first()->indexedType().abstractType());
+    QCOMPARE(unsure->toString(), QString("unsure (Fixnum, String)"));
     QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 

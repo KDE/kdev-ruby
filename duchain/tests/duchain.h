@@ -80,6 +80,7 @@ private slots:
     void callingtoNew();
     void setMethodArgumentTypes1();
     void setMethodArgumentTypes2();
+    void setUnsureArgument();
 
     // Include & Extend
     void include1();
