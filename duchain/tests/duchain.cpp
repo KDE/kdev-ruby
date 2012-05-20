@@ -246,21 +246,6 @@ void TestDUChain::aliasGlobal2()
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
 }
 
-void TestDUChain::multipleReturns()
-{
-    QByteArray code("def foo(a, b); return nil if a.nil?; return 'a'; end");
-    TopDUContext *top = parse(code, "multipleReturns");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    Declaration *decl = top->localDeclarations().first();
-    FunctionType::Ptr ft = decl->type<FunctionType>();
-    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
-    QList<QString> list;
-    list << "String" << "NilClass";
-    testUnsureTypes(ut, list);
-}
-
 //END: Simple Statements
 
 //BEGIN: Assignments
@@ -453,6 +438,53 @@ void TestDUChain::methodDeclaration()
 }
 
 //END: Declarations
+
+//BEGIN: Returning Values
+
+void TestDUChain::multipleReturns()
+{
+    QByteArray code("def foo(a, b); return nil if a.nil?; return 'a'; end");
+    TopDUContext *top = parse(code, "multipleReturns");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *decl = top->localDeclarations().first();
+    FunctionType::Ptr ft = decl->type<FunctionType>();
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
+    QList<QString> list;
+    list << "String" << "NilClass";
+    testUnsureTypes(ut, list);
+}
+
+void TestDUChain::implicitReturn()
+{
+    QByteArray code("def foo; 'a'; end");
+    TopDUContext *top = parse(code, "implicitReturn");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *decl = top->localDeclarations().first();
+    FunctionType::Ptr ft = decl->type<FunctionType>();
+    StructureType::Ptr st = StructureType::Ptr::dynamicCast(ft->returnType());
+    QCOMPARE(st->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::mixedExplicitAndImplicitReturn()
+{
+    QByteArray code("def foo(a); return nil if a.nil?; 'a'; end");
+    TopDUContext *top = parse(code, "mixedExplicitAndImplicitReturn");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *decl = top->localDeclarations().first();
+    FunctionType::Ptr ft = decl->type<FunctionType>();
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
+    QList<QString> list;
+    list << "String" << "NilClass";
+    testUnsureTypes(ut, list);
+}
+
+//END: Returning Values
 
 //BEGIN: Method Calls
 

@@ -173,15 +173,23 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     openType(type);
     decl->setInSymbolTable(false);
-//     lock.unlock();
     DeclarationBuilderBase::visitMethodStatement(node);
-//     lock.lock();
     closeDeclaration();
     closeType();
 
-    if (!type->returnType()) {
-        /* TODO: return the type of the last statement instead */
-        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
+    /*
+     * In Ruby, a method returns the last expression if no return expression
+     * has been fired. Thus, the type of the last expression has to be mixed
+     * into the return type of this method.
+     */
+    if (node->tree->l) {
+        node->tree = get_last_expr(node->tree->l);
+        if (node->tree->kind != token_return) {
+            ExpressionVisitor ev(currentContext(), m_editor);
+            ev.visitNode(node);
+            if (ev.lastType())
+                type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
+        }
     }
     decl->setType(type);
 }

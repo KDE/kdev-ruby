@@ -66,7 +66,6 @@ private slots:
     void alias();
     void aliasGlobal1();
     void aliasGlobal2();
-    void multipleReturns();
 
     // Assignments
     void multipleAssignment1();
@@ -87,6 +86,11 @@ private slots:
 
     // Declarations
     void methodDeclaration();
+
+    // Returning values
+    void multipleReturns();
+    void implicitReturn();
+    void mixedExplicitAndImplicitReturn();
 
     // Method Calls
     void callingtoNew();

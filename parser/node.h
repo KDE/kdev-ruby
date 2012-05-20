@@ -247,6 +247,7 @@ void free_errors(struct error_t * errors);
  * Auxiliar macros.
  */
 
+#define get_last_expr(n) ((n->last) ? n->last : n)
 #define is_valid(n) (n->startLine >= 0)
 #define is_global_var(n) (n->flags == 1)
 #define is_float(n) (n->flags == 1)
