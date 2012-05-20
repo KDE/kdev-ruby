@@ -196,7 +196,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
 {
-    FunctionDeclaration *mDecl = dynamic_cast<FunctionDeclaration *>(currentDeclaration());
+    MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(currentDeclaration());
     ExpressionVisitor ev(currentContext(), m_editor);
     ev.visitParameter(node);
     AbstractType::Ptr type = ev.lastType();
@@ -205,14 +205,16 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     if (node->tree->l) {
         Node *aux = node->tree->l;
         node->tree = node->tree->r;
-        mDecl->addDefaultParameter(IndexedString(getIdentifier(node).toString()));
+        // TODO: for some reason, it assumes that *all* the parameters have this same default value :S
+        mDecl->addDefaultParameter(IndexedString(m_editor->tokenToString(node->tree)));
         node->tree = aux;
     }
 
     /* Finally, declare the parameter */
-    {
-      DUChainWriteLocker lock(DUChain::lock());
-      declareVariable(currentContext(), type, getIdentifier(node), node);
+    FunctionType::Ptr mType = currentType<FunctionType>();
+    if (mType) {
+        mType->addArgument(type);
+        declareVariable(currentContext(), type, getIdentifier(node), node);
     }
 }
 
@@ -373,9 +375,6 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
                 av.visitNode(aux);
                 AbstractType::Ptr merged = mergeTypes(args.at(i)->abstractType(),
                                                       av.lastType().cast<AbstractType>());
-//                 mtype->removeArgument(i);
-//                 mtype->addArgument(merged, i);
-//                 lastMethod->setAbstractType(mtype.cast<AbstractType>());
                 args.at(i)->setType(merged);
             }
             wlock.unlock();
