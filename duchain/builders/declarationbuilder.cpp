@@ -234,14 +234,16 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 {
     RubyAstVisitor::visitReturnStatement(node);
     if (node->tree->l != NULL) {
+        node->tree = node->tree->l;
         if (!hasCurrentType()) {
-            appendProblem(node->tree->l, "Return statement not within"
-                                         " function declaration");
+            appendProblem(node->tree, "Return statement not within function declaration");
             return;
         }
         TypePtr<FunctionType> t = currentType<FunctionType>();
-        AbstractType::Ptr encountered(new ObjectType()); // TODO: Should be the last type
-        t->setReturnType(encountered);
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        AbstractType::Ptr type = mergeTypes(ev.lastType(), t->returnType());
+        t->setReturnType(type);
     }
     setLastType(AbstractType::Ptr(0));
 }

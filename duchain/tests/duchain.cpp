@@ -26,6 +26,7 @@
 #include <language/duchain/types/integraltype.h>
 #include <language/duchain/types/structuretype.h>
 #include <language/duchain/types/unsuretype.h>
+#include <language/duchain/types/functiontype.h>
 #include <language/duchain/duchainutils.h>
 
 // Ruby
@@ -48,6 +49,14 @@ TopDUContext * TestDUChain::parse(const QByteArray &code, const QString &id)
 {
     const QString &name = "duchain_" + id;
     return DUChainTestBase::parse(code, name);
+}
+
+void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, QList<QString> list)
+{
+    for (uint i = 0; i < type->typesSize(); i++) {
+        QualifiedIdentifier qi = type->types()[i].type<StructureType>()->qualifiedIdentifier();
+        QCOMPARE(qi, QualifiedIdentifier(list.at(i)));
+    }
 }
 
 //BEGIN: Builtin classes
@@ -235,6 +244,21 @@ void TestDUChain::aliasGlobal2()
     QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("$a"));
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+}
+
+void TestDUChain::multipleReturns()
+{
+    QByteArray code("def foo(a, b); return nil if a.nil?; return 'a'; end");
+    TopDUContext *top = parse(code, "multipleReturns");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *decl = top->localDeclarations().first();
+    FunctionType::Ptr ft = decl->type<FunctionType>();
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
+    QList<QString> list;
+    list << "String" << "NilClass";
+    testUnsureTypes(ut, list);
 }
 
 //END: Simple Statements
@@ -435,7 +459,7 @@ void TestDUChain::methodDeclaration()
 void TestDUChain::callingtoNew()
 {
     QByteArray code("class Klass; end; obj = Klass.new");
-    TopDUContext *top = parse(code, "methodDeclaration");
+    TopDUContext *top = parse(code, "callingToNew");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -461,7 +485,7 @@ void TestDUChain::setMethodArgumentTypes1()
 void TestDUChain::setMethodArgumentTypes2()
 {
     QByteArray code("def foo(a, b); end; c = 1.2; foo c, 2");
-    TopDUContext *top = parse(code, "setMethodArgumentTypes1");
+    TopDUContext *top = parse(code, "setMethodArgumentTypes2");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -485,7 +509,9 @@ void TestDUChain::setUnsureArgument()
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
     QVERIFY(args.size() == 2);
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.first()->indexedType().abstractType());
-    QCOMPARE(unsure->toString(), QString("unsure (Fixnum, String)"));
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
     QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 

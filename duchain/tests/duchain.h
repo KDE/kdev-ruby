@@ -25,6 +25,9 @@
 
 #include <duchain/tests/duchaintestbase.h>
 
+namespace KDevelop {
+    class UnsureType;
+}
 
 namespace Ruby
 {
@@ -35,11 +38,19 @@ class TestDUChain : public DUChainTestBase
     Q_OBJECT
 
 public:
+    /// Constructor.
     TestDUChain();
 
 protected:
     /// Re-implemented from DUChainTestBase.
     virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+
+private:
+    /**
+     * Given an unsure @p type, compare its possible types with the given
+     * @p list of class identifiers. Note that the order *does* matter.
+     */
+    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, QList<QString> list);
 
 private slots:
     // Builtin classes
@@ -55,6 +66,7 @@ private slots:
     void alias();
     void aliasGlobal1();
     void aliasGlobal2();
+    void multipleReturns();
 
     // Assignments
     void multipleAssignment1();
