@@ -43,7 +43,7 @@ namespace Ruby
 class EditorIntegrator;
 typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
 
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, public RubyAstVisitor
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public RubyAstVisitor
 {
 public:
     ContextBuilder();

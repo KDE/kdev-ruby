@@ -99,10 +99,15 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
-    /// TODO
+    /**
+     * @returns true if the given @p type is useful, and false otherwise.
+     */
     KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(AbstractType::Ptr type);
 
-    /// TODO
+    /**
+     * @returns a new type which is a merge of the two given types @p type
+     * and @p newType.
+     */
     KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
 
 } // End of namespace Ruby
