@@ -25,16 +25,17 @@
 #define RUBYEDITORINTEGRATOR_H
 
 
+// KDevelop
 #include <language/duchain/indexedstring.h>
 #include <language/editor/rangeinrevision.h>
+
+// Ruby
 #include <duchain/duchainexport.h>
-#include <parser/node.h>
 #include <parser/rubyparser.h>
 
 
 namespace Ruby
 {
-
 
 /**
  * @class EditorIntegrator
@@ -57,7 +58,7 @@ public:
      * @param node the node to localize.
      * @param edge the edge this method has to look at.
      */
-    KDevelop::CursorInRevision findPosition(Node * node, Edge edge = BackEdge) const;
+    KDevelop::CursorInRevision findPosition(Node *node, Edge edge = BackEdge) const;
 
     /**
      * Find the range between the given nodes.
@@ -65,14 +66,14 @@ public:
      * @param from the former node.
      * @param to the latter node.
      */
-    KDevelop::RangeInRevision findRange(Node * from, Node * to);
+    KDevelop::RangeInRevision findRange(Node *from, Node *to) const;
 
     /**
      * Get the range of the given node.
      *
      * @param node the node to get its range.
      */
-    KDevelop::RangeInRevision findRange(Node * node);
+    KDevelop::RangeInRevision findRange(Node * node) const;
 
     /**
      * Set the parse session (parser) for this EditorIntegrator.
@@ -91,7 +92,7 @@ public:
     /**
      * @return Get the parse session for this EditorIntegrator.
      */
-    RubyParser *parseSession();
+    RubyParser *parseSession() const;
 
     /**
      * @return a QString that represents the value of the token
@@ -106,8 +107,7 @@ private:
     RubyParser *m_session;
 };
 
-}
+} // End of namespace Ruby
 
 
 #endif // RUBYEDITORINTEGRATOR_H
-

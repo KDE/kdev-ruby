@@ -194,7 +194,7 @@ void TestDUChain::lambda()
 
 void TestDUChain::alias()
 {
-    QByteArray code("def foo; end; alias asd foo; alias asd foo");
+    QByteArray code("def foo; 'a' end; alias asd foo");
     TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
@@ -208,6 +208,11 @@ void TestDUChain::alias()
     Declaration *dec2 = top->localDeclarations().at(1);
     QVERIFY(dec2->isFunctionDeclaration());
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("asd"));
+
+    /* The return type of asd is also a String */
+    AbstractType::Ptr rt = dec2->type<FunctionType>()->returnType();
+    StructureType::Ptr structT = rt.cast<StructureType>();
+    QCOMPARE(structT->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 
 void TestDUChain::aliasGlobal1()

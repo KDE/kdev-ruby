@@ -484,17 +484,9 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
     MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
     setComment(d->comment());
     MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
-    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-    openType(type);
-    alias->setInSymbolTable(false);
-    closeType();
-    closeDeclaration();
-
-    if (!type->returnType()) {
-        /* TODO: return the type of the last statement instead */
-        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
-    }
+    FunctionType::Ptr type = FunctionType::Ptr(decl->type<FunctionType>());
     alias->setType(type);
+    closeDeclaration();
 }
 
 void DeclarationBuilder::appendProblem(Node *node, const QString &msg)

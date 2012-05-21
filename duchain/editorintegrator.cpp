@@ -24,9 +24,8 @@
 #include <duchain/editorintegrator.h>
 
 
-using namespace KTextEditor;
-using namespace Ruby;
-
+namespace Ruby
+{
 
 EditorIntegrator::EditorIntegrator()
 {
@@ -43,7 +42,7 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge)
         return KDevelop::CursorInRevision(node->startLine - 1, node->startCol);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to) const
 {
     KDevelop::CursorInRevision c_from = findPosition(from, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(to, BackEdge);
@@ -51,7 +50,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to)
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node)
+KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node) const
 {
     KDevelop::CursorInRevision c_from = findPosition(node, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(node, BackEdge);
@@ -69,7 +68,7 @@ void EditorIntegrator::setParseSession(RubyParser *session)
     m_session = session;
 }
 
-RubyParser* EditorIntegrator::parseSession()
+RubyParser * EditorIntegrator::parseSession() const
 {
     return m_session;
 }
@@ -78,3 +77,5 @@ QString EditorIntegrator::tokenToString(Node *node) const
 {
     return m_session->symbol(node);
 }
+
+} // End of namespace Ruby
