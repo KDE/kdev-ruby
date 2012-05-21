@@ -378,6 +378,25 @@ void TestDUChain::aliasedAssignment()
     QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
+void TestDUChain::hashAssignment()
+{
+    QByteArray code("a = { :a => 1, :b => 'b' }; b = a[:b]");
+    TopDUContext *top = parse(code, "hashAssignment");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Hash"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec2->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+}
+
 //END: Assignments
 
 //BEGIN: Variable Length Container

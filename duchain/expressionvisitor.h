@@ -82,6 +82,7 @@ protected:
     virtual void visitName(RubyAst *node);
     virtual void visitArray(RubyAst *node);
     virtual void visitHash(RubyAst *node);
+    virtual void visitArrayValue(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
 

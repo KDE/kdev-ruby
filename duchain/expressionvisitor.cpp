@@ -163,6 +163,22 @@ void ExpressionVisitor::visitHash(RubyAst *node)
     encounter<VariableLengthContainer>(ptr);
 }
 
+void ExpressionVisitor::visitArrayValue(RubyAst *node)
+{
+    RubyAstVisitor::visitArrayValue(node);
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    QualifiedIdentifier id = getIdentifier(child);
+    const CursorInRevision cursor = m_editor->findPosition(child->tree, EditorIntegrator::FrontEdge);
+    QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
+    if (!decls.isEmpty()) {
+        Declaration *d = decls.first();
+        VariableLengthContainer::Ptr vc = d->abstractType().cast<VariableLengthContainer>();
+        if (vc)
+            encounter(vc->contentType().type<AbstractType>());
+    }
+    delete child;
+}
+
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
     RubyAstVisitor::visitMethodCall(node);
@@ -228,8 +244,7 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 
 VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
-    VariableLengthContainer *variablePtr = static_cast<VariableLengthContainer *>(ptr.unsafeData());
-    TypePtr<VariableLengthContainer> vc(variablePtr);
+    VariableLengthContainer::Ptr vc = ptr.cast<VariableLengthContainer>();
     if (vc) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);

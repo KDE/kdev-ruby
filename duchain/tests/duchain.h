@@ -77,6 +77,7 @@ private slots:
     void multipleAssignmentNamedStar();
     void unpackArray();
     void aliasedAssignment();
+    void hashAssignment();
 
     // Variable Length Container
     void assignFromArrayItem1();
