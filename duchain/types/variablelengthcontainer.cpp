@@ -38,19 +38,19 @@ namespace Ruby
 REGISTER_TYPE(VariableLengthContainer);
 
 VariableLengthContainer::VariableLengthContainer()
-    : StructureType(createData<VariableLengthContainer>())
+    : KDevelop::StructureType(createData<VariableLengthContainer>())
 {
     /* There's nothing to do here */
 }
 
 VariableLengthContainer::VariableLengthContainer(const VariableLengthContainer &rhs)
-    : StructureType(copyData<VariableLengthContainer>(*rhs.d_func()))
+    : KDevelop::StructureType(copyData<VariableLengthContainer>(*rhs.d_func()))
 {
     /* There's nothing to do here */
 }
 
 VariableLengthContainer::VariableLengthContainer(StructureTypeData &data)
-    : StructureType(data)
+    : KDevelop::StructureType(data)
 {
     /* There's nothing to do here */
 }

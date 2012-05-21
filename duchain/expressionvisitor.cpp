@@ -228,7 +228,8 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 
 VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
-    TypePtr<VariableLengthContainer> vc = ptr.cast<VariableLengthContainer>(); // BUG: this is always returning NULL, why ?
+    VariableLengthContainer *variablePtr = static_cast<VariableLengthContainer *>(ptr.unsafeData());
+    TypePtr<VariableLengthContainer> vc(variablePtr);
     if (vc) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
