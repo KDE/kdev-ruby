@@ -687,4 +687,3 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
 }
 
 } // End of namespace Ruby
-

@@ -66,4 +66,3 @@ void UseBuilder::visitName(RubyAst *node)
 }
 
 } // End of namespace Ruby
-

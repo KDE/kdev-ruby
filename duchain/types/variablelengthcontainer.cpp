@@ -1,7 +1,6 @@
 /*
  * This file is part of KDevelop
  * Copyright (C) 2011 Sven Brauch <svenbrauch@googlemail.com>
- * Copyright 2012  Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -20,11 +19,15 @@
  */
 
 
-#include <language/duchain/types/typeregister.h>
-#include <duchain/types/variablelengthcontainer.h>
-#include <language/duchain/duchainlock.h>
-#include <language/duchain/duchain.h>
+// KDE + KDevelop
 #include <KLocalizedString>
+#include <language/duchain/duchain.h>
+#include <language/duchain/duchainlock.h>
+#include <language/duchain/types/typeregister.h>
+
+// Ruby
+#include <duchain/helpers.h>
+#include <duchain/types/variablelengthcontainer.h>
 
 
 using namespace KDevelop;
@@ -54,8 +57,8 @@ VariableLengthContainer::VariableLengthContainer(StructureTypeData &data)
 
 void VariableLengthContainer::addContentType(AbstractType::Ptr typeToAdd)
 {
-    // TODO: merge types as in python
-    d_func_dynamic()->m_contentType = typeToAdd->indexed();
+    AbstractType::Ptr type = mergeTypes(contentType().abstractType(), typeToAdd);
+    d_func_dynamic()->m_contentType = type->indexed();
 }
 
 const IndexedType & VariableLengthContainer::contentType() const

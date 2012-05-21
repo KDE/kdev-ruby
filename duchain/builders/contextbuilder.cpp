@@ -21,16 +21,17 @@
  */
 
 
+// KDevelop
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
-#include <interfaces/icompletionsettings.h>
 #include <language/backgroundparser/backgroundparser.h>
-#include <duchain/builders/contextbuilder.h>
-#include <duchain/editorintegrator.h>
-#include <duchain/rubyducontext.h>
-#include <duchain/helpers.h>
-#include <KStandardDirs>
+
+// Ruby
 #include <rubydefs.h>
+#include <duchain/helpers.h>
+#include <duchain/rubyducontext.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/builders/contextbuilder.h>
 
 
 using namespace KDevelop;
@@ -286,5 +287,4 @@ void ContextBuilder::require(Node *node, bool local)
     }
 }
 
-}
-
+} // End of namespace Ruby

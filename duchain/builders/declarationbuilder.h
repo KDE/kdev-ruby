@@ -25,27 +25,20 @@
 #define DECLARATIONBUILDER_H
 
 
-/*
- * TODO: This class is under construction.
- */
-
-
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/builders/typebuilder.h>
-#include <parser/rubyast.h>
-#include <duchain/declarations/classdeclaration.h>
 
-
-namespace KDevelop {
-    class Declaration;
-}
 
 namespace Ruby
 {
-class EditorIntegrator;
 
 typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
+/**
+ * @class DeclarationBuilder
+ *
+ * The DeclarationBuilder iterates a RubyAst to build declarations.
+ */
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
@@ -94,4 +87,3 @@ private:
 
 
 #endif // DECLARATIONBUILDER_H
-

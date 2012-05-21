@@ -1,7 +1,6 @@
 /*
  * This file is part of KDevelop
  * Copyright (C) 2011 Sven Brauch <svenbrauch@googlemail.com>
- * Copyright 2012  Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -34,8 +33,8 @@
 #define RUBY_VARIABLELENGTHCONTAINER_H
 
 
-#include <duchain/duchainexport.h>
 #include <language/duchain/types/structuretype.h>
+#include <duchain/duchainexport.h>
 
 
 using namespace KDevelop;
@@ -53,7 +52,7 @@ class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainerData : public KDevelop::Stru
 public:
     /// Constructor
     VariableLengthContainerData()
-        : StructureTypeData(), m_contentType(0)
+        : KDevelop::StructureTypeData(), m_contentType(0)
     {
         /* There's nothing to do here */
     }
@@ -63,7 +62,7 @@ public:
      * @param rhs data to copy.
      */
     VariableLengthContainerData(const VariableLengthContainerData &rhs)
-        : StructureTypeData(rhs), m_contentType(rhs.m_contentType)
+        : KDevelop::StructureTypeData(rhs), m_contentType(rhs.m_contentType)
     {
         /* There's nothing to do here */
     }
@@ -73,7 +72,7 @@ public:
      * @param rhs data to copy.
      */
     VariableLengthContainerData(const StructureTypeData &rhs)
-        : StructureTypeData(rhs), m_contentType(0)
+        : KDevelop:: StructureTypeData(rhs), m_contentType(0)
     {
         /* There's nothing to do here */
     };
@@ -91,6 +90,8 @@ public:
 class KDEVRUBYDUCHAIN_EXPORT VariableLengthContainer : public KDevelop::StructureType
 {
 public:
+    typedef TypePtr<VariableLengthContainer> Ptr;
+
     /// Constructor.
     VariableLengthContainer();
 
@@ -106,7 +107,10 @@ public:
      */
     VariableLengthContainer(StructureTypeData &data);
 
+    /// Add the given type @p typeToAdd to the contents.
     void addContentType(AbstractType::Ptr typeToAdd);
+
+    /// @returns the content type.
     const IndexedType & contentType() const;
 
     /// Create a clone of this type.
@@ -126,7 +130,6 @@ public:
 
     enum { Identity = 41 /** The id of this Type. */ };
 
-    typedef TypePtr<VariableLengthContainer> Ptr;
     typedef VariableLengthContainerData Data;
     typedef KDevelop::StructureType BaseType;
 

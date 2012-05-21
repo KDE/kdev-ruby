@@ -21,28 +21,31 @@
  */
 
 
-#include <duchain/builders/declarationbuilder.h>
+// KDE
+#include <KLocale>
+
+// KDevelop
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
-#include <duchain/declarations/variabledeclaration.h>
-#include <duchain/declarations/methoddeclaration.h>
-#include <duchain/editorintegrator.h>
-#include <rubydefs.h>
-#include <duchain/types/objecttype.h>
-#include <duchain/types/variablelengthcontainer.h>
 #include <language/duchain/types/unsuretype.h>
-#include <KLocale>
-#include <duchain/helpers.h>
-#include <duchain/expressionvisitor.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/duchainutils.h>
+
+// Ruby
+#include <rubydefs.h>
+#include <duchain/helpers.h>
+#include <duchain/expressionvisitor.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/builders/declarationbuilder.h>
+#include <duchain/declarations/variabledeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/classdeclaration.h>
 
 
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder()
-    : DeclarationBuilderBase()
+DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
 {
     /* There's nothing to do here! */
 }
@@ -484,8 +487,7 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
     MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
     setComment(d->comment());
     MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
-    FunctionType::Ptr type = FunctionType::Ptr(decl->type<FunctionType>());
-    alias->setType(type);
+    alias->setType(decl->type<FunctionType>());
     closeDeclaration();
 }
 
@@ -558,4 +560,4 @@ void DeclarationBuilder::closeDeclaration()
     DeclarationBuilderBase::closeDeclaration();
 }
 
-}
+} // End of namespace Ruby

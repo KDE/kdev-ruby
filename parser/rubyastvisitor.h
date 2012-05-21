@@ -152,4 +152,3 @@ private:
 
 
 #endif // RUBYASTVISITOR_H
-

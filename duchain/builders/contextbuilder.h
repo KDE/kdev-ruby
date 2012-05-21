@@ -25,15 +25,11 @@
 #define CONTEXTBUILDER_H
 
 
-/*
- * TODO: This file is still under construction.
- */
-
-
+// KDevelop
 #include <language/duchain/builders/abstractcontextbuilder.h>
-#include <language/duchain/topducontext.h>
+
+// Ruby
 #include <duchain/duchainexport.h>
-#include <parser/rubyast.h>
 #include <parser/rubyastvisitor.h>
 
 
@@ -43,6 +39,12 @@ namespace Ruby
 class EditorIntegrator;
 typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
 
+/**
+ * @class ContextBuilder
+ *
+ * The ContextBuilder is a convenient class to handle contexts on the AST.
+ * The other builders have this class as a base class.
+ */
 class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public RubyAstVisitor
 {
 public:
@@ -50,7 +52,7 @@ public:
     virtual ~ContextBuilder();
 
     void setEditor(EditorIntegrator *editor);
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, RubyAst *node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
     
     inline bool hasUnresolvedImports() const
@@ -110,4 +112,3 @@ private:
 
 
 #endif // CONTEXTBUILDER_H
-
