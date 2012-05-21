@@ -24,14 +24,16 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/types/integraltype.h>
+#include <language/duchain/types/arraytype.h>
 
 // Ruby
 #include <rubydefs.h>
+#include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
-#include <duchain/helpers.h>
+#include <duchain/types/classtype.h>
 
 
 using namespace KDevelop;
@@ -151,16 +153,16 @@ void ExpressionVisitor::visitArray(RubyAst *node)
 {
     RubyAstVisitor::visitArray(node);
     AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
-    VariableLengthContainer::Ptr ptr = getContainer(obj, node);
-    encounter<VariableLengthContainer>(ptr);
+    ClassType::Ptr ptr = getContainer(obj, node);
+    encounter<ClassType>(ptr);
 }
 
 void ExpressionVisitor::visitHash(RubyAst *node)
 {
     RubyAstVisitor::visitHash(node);
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
-    VariableLengthContainer::Ptr ptr = getContainer(obj, node, true);
-    encounter<VariableLengthContainer>(ptr);
+    ClassType::Ptr ptr = getContainer(obj, node, true);
+    encounter<ClassType>(ptr);
 }
 
 void ExpressionVisitor::visitArrayValue(RubyAst *node)
@@ -172,7 +174,7 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
     QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
     if (!decls.isEmpty()) {
         Declaration *d = decls.first();
-        VariableLengthContainer::Ptr vc = d->abstractType().cast<VariableLengthContainer>();
+        ClassType::Ptr vc = d->abstractType().cast<ClassType>();
         if (vc)
             encounter(vc->contentType().type<AbstractType>());
     }
@@ -216,7 +218,7 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
         obj = getBuiltinsType("Proc", m_ctx);
     } else if (is_rest_arg(node->tree)) {
         obj = getBuiltinsType("Array", m_ctx);
-        obj.cast<VariableLengthContainer>();
+        obj.cast<ClassType>();
     } else if (node->tree->r != NULL) {
         ExpressionVisitor da(this);
         Node *n = node->tree;
@@ -242,21 +244,21 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
     encounter(AbstractType::Ptr::staticCast(type));
 }
 
-VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
+ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
-    VariableLengthContainer::Ptr vc = ptr.cast<VariableLengthContainer>();
-    if (vc) {
+    ClassType::Ptr ct = ptr.cast<ClassType>();
+    if (ct) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
         for (Node *n = ast->tree; n != NULL; n = n->next) {
             (hasKey) ? ev.visitBinary(ast) : ev.visitNode(ast);
-            vc->addContentType(ev.lastType());
+            ct->addContentType(ev.lastType());
             ast->tree = n->next;
         }
         delete ast;
     } else
         kWarning() << "Something went wrong! Fix code...";
-    return vc;
+    return ct;
 }
 
 Declaration * ExpressionVisitor::findDeclarationForCall(RubyAst *ast, DUContext *ctx)

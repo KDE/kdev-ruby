@@ -1,6 +1,6 @@
 /*
  * This file is part of KDevelop
- * Copyright (C) 2011 Sven Brauch <svenbrauch@googlemail.com>
+ * Copyright 2012  Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -27,7 +27,7 @@
 
 // Ruby
 #include <duchain/helpers.h>
-#include <duchain/types/variablelengthcontainer.h>
+#include <duchain/types/classtype.h>
 
 
 using namespace KDevelop;
@@ -35,73 +35,60 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-REGISTER_TYPE(VariableLengthContainer);
+REGISTER_TYPE(ClassType);
 
-VariableLengthContainer::VariableLengthContainer()
-    : KDevelop::StructureType(createData<VariableLengthContainer>())
+ClassType::ClassType()
+    : KDevelop::StructureType(createData<ClassType>())
 {
     /* There's nothing to do here */
 }
 
-VariableLengthContainer::VariableLengthContainer(const VariableLengthContainer &rhs)
-    : KDevelop::StructureType(copyData<VariableLengthContainer>(*rhs.d_func()))
+ClassType::ClassType(const ClassType &rhs)
+    : KDevelop::StructureType(copyData<ClassType>(*rhs.d_func()))
 {
     /* There's nothing to do here */
 }
 
-VariableLengthContainer::VariableLengthContainer(StructureTypeData &data)
+ClassType::ClassType(ClassTypeData &data)
     : KDevelop::StructureType(data)
 {
     /* There's nothing to do here */
 }
 
-void VariableLengthContainer::addContentType(AbstractType::Ptr typeToAdd)
+void ClassType::addContentType(AbstractType::Ptr typeToAdd)
 {
     AbstractType::Ptr type = mergeTypes(contentType().abstractType(), typeToAdd);
     d_func_dynamic()->m_contentType = type->indexed();
 }
 
-const IndexedType & VariableLengthContainer::contentType() const
+const IndexedType & ClassType::contentType() const
 {
     return d_func()->m_contentType;
 }
 
-AbstractType* VariableLengthContainer::clone() const
+AbstractType* ClassType::clone() const
 {
-    VariableLengthContainer *n = new VariableLengthContainer(*this);
+    ClassType *n = new ClassType(*this);
     DUChainReadLocker lock(DUChain::lock());
     return n;
 }
 
-uint VariableLengthContainer::hash() const
+uint ClassType::hash() const
 {
-    uint shash = contentType().abstractType() ? contentType().abstractType()->hash() : 0;
-    return (KDevelop::StructureType::hash() << 3) + shash;
+    return StructureType::hash() << 4;
 }
 
-bool VariableLengthContainer::equals(const AbstractType *rhs) const
-{
-    if (this == rhs)
-        return true;
-    if (!KDevelop::StructureType::equals(rhs))
-        return false;
-
-    const VariableLengthContainer *c = dynamic_cast<const VariableLengthContainer *>(rhs);
-    if (!c || c->contentType() != d_func()->m_contentType)
-        return false;
-    return true;
-}
-
-QString VariableLengthContainer::toString() const
+QString ClassType::toString() const
 {
     QString prefix = KDevelop::StructureType::toString();
     AbstractType::Ptr content = contentType().abstractType();
     return content ? i18n("%1 of %2", prefix, content->toString()) : prefix;
 }
 
-QString VariableLengthContainer::containerToString() const
+QString ClassType::containerToString() const
 {
     return KDevelop::StructureType::toString();
 }
 
 } // End of namespace Ruby
+

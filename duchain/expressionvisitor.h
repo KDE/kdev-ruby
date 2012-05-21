@@ -26,7 +26,7 @@
 #include <duchain/duchainexport.h>
 #include <parser/rubyastvisitor.h>
 #include <duchain/types/objecttype.h>
-#include <duchain/types/variablelengthcontainer.h>
+#include <duchain/types/classtype.h>
 
 
 namespace Ruby
@@ -93,7 +93,7 @@ private:
     {
         m_lastType = type;
     }
-    VariableLengthContainer::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
+    ClassType::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
     Declaration * findDeclarationForCall(RubyAst *ast, DUContext *ctx);
     Declaration * findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id);
     const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);

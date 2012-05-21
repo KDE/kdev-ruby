@@ -40,6 +40,7 @@
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/types/classtype.h>
 
 
 namespace Ruby
@@ -114,7 +115,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     node->tree = aux;
 
     /*  Setup types and go for the class body */
-    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    StructureType::Ptr type = StructureType::Ptr(new ClassType());
     type->setDeclaration(decl);
     decl->setType(type);
     openType(type);
