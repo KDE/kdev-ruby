@@ -420,17 +420,53 @@ void TestDUChain::emptyStar()
 
 void TestDUChain::unpackArray1()
 {
-    QByteArray code("a, b, c = [1, 2]");
+    QByteArray code("a, b = [1, 2]");
+    TopDUContext *top = parse(code, "unpackArray1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::unpackArray2()
 {
-    QByteArray code("a = [1, 2]; b, c, d = a");
+    QByteArray code("a = [1, 2, 3]; b, c, d = a");
+    TopDUContext *top = parse(code, "unpackArray2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(true);
+    QVERIFY(top->localDeclarations().size() == 4);
+
+    Declaration *dec1 = top->localDeclarations().at(1);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec2 = top->localDeclarations().at(2);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec3 = top->localDeclarations().at(3);
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::unpackArray3()
+{
+    QByteArray code("a, b = [1, 2], 1");
+    TopDUContext *top = parse(code, "unpackArray3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::aliasedAssignment()

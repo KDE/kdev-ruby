@@ -80,6 +80,7 @@ private slots:
     void emptyStar();
     void unpackArray1();
     void unpackArray2();
+    void unpackArray3();
     void aliasedAssignment();
     void hashAssignment();
 

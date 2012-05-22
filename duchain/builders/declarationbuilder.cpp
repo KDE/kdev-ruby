@@ -283,11 +283,29 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     }
     lock.unlock();
 
-    aux->tree = node->tree->l;
-    int i = 0;
     int rsize = values.length();
+    if (rsize == 1) {
+        int rest = nodeListSize(node->tree->l);
+        ClassType::Ptr ct = values.first().cast<ClassType>();
+        if (rest > 1 && ct && ct->contentType()) {
+            lock.lock();
+            QualifiedIdentifier qi = ct.unsafeData()->declaration(m_topContext)->qualifiedIdentifier();
+            lock.unlock();
+            if (qi == QualifiedIdentifier("Array")) {
+                for (Node *n = node->tree->l; n != NULL; n = n->next) {
+                    aux->tree = n;
+                    QualifiedIdentifier id = getIdentifier(aux);
+                    declareVariable(currentContext(), ct->contentType().abstractType(), id, aux);
+                }
+                delete aux;
+                return;
+            }
+        }
+    }
+
+    int i = 0;
     AbstractType::Ptr type;
-    for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
+    for (Node *n = node->tree->l; n != NULL; n = n->next, i++) {
         aux->tree = n;
         if (has_star(n)) {
             int rest = nodeListSize(n) - 1;
@@ -298,7 +316,6 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             i--;
             if (!is_just_a_star(n)) {
                 QualifiedIdentifier id = getIdentifier(aux);
-                debug() << newType->toString();
                 declareVariable(currentContext(), newType.cast<AbstractType>(), id, aux);
             }
         } else if (i < rsize) {
