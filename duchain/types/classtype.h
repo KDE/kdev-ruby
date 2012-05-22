@@ -30,6 +30,11 @@
 namespace Ruby
 {
 
+/**
+ * @class ClassTypeData
+ *
+ * The data class for the ClassType class.
+ */
 class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
@@ -56,6 +61,14 @@ public:
     KDevelop::IndexedType m_contentType;
 };
 
+/**
+ * @class ClassType
+ *
+ * This is the type to be used when declaring classes in this plugin. It's
+ * similar to the Python's VariableLengthContainer in that in Ruby, every class
+ * can potentially become a container. The contained type can be accessed
+ * through the methods addContentType(newType) and contentType().
+ */
 class KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
 {
 public:

@@ -195,6 +195,10 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
                 type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
         }
     }
+    if (!type->returnType()) {
+        /* TODO: again, the NilClass should be cached ... */
+        type->setReturnType(topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType());
+    }
     decl->setType(type);
 }
 
