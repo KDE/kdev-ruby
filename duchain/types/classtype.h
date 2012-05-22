@@ -107,7 +107,7 @@ public:
     /// @returns the container's type as a string.
     QString containerToString() const;
 
-    enum { Identity = 43 /** The id of this Type. */ };
+    enum { Identity = 41 /** The id of this Type. */ };
 
     typedef ClassTypeData Data;
     typedef KDevelop::StructureType BaseType;
