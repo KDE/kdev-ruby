@@ -266,12 +266,6 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 
 void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 {
-    /*
-     * TODO: this method is under construction. Some ideas:
-     *  - I'm sure that the loops can be merged.
-     *  - The NilClass declaration has to be cached somehow.
-     */
-
     QList<AbstractType::Ptr> values;
     QList<DeclarationPointer> declarations;
     QList<bool> alias;

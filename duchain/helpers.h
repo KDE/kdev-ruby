@@ -110,7 +110,7 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
 
-    /// TODO
+    /// @returns the number of nodes that are next to the given @p node.
     KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
 
 } // End of namespace Ruby

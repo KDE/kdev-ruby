@@ -53,11 +53,9 @@ private:
     void compareUses(KDevelop::Declaration *dec, QList<KDevelop::RangeInRevision> ranges);
 
 private slots:
-    // Interpolation
     void stringInterpolation();
-
-    // Simple statements
     void alias();
+    void assignment();
 };
 
 }

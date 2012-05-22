@@ -26,7 +26,6 @@
 
 // Ruby
 #include <duchain/tests/uses.h>
-#include <rubydefs.h>
 
 
 QTEST_MAIN(Ruby::TestUseBuilder)
@@ -62,8 +61,6 @@ void TestUseBuilder::compareUses(Declaration *dec, QList<RangeInRevision> ranges
         QCOMPARE(dec->uses().values().first().at(i), ranges.at(i));
 }
 
-//BEGIN: Interpolation
-
 void TestUseBuilder::stringInterpolation()
 {
     //               0          1
@@ -81,10 +78,6 @@ void TestUseBuilder::stringInterpolation()
     QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-//END: Interpolation
-
-//BEGIN: Simple Statements
-
 void TestUseBuilder::alias()
 {
     //               0          1        2
@@ -98,7 +91,18 @@ void TestUseBuilder::alias()
     compareUses(dec, RangeInRevision(0, 24, 0, 27));
 }
 
-//END: Simple Statements
+void TestUseBuilder::assignment()
+{
+    //               0          1        2         3
+    //               01234567890123456789012345678901234567
+    QByteArray code("b = 0; a, *, c = b, nil, 3, 4, 5, 'asd'");
+    TopDUContext *top = parse(code, "alias");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    compareUses(dec, RangeInRevision(0, 17, 0, 18));
+}
 
 } // End of namespace Ruby
 
