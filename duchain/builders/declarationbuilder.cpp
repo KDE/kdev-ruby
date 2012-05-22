@@ -272,6 +272,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
 
     debug() << "==== Starting with the assignment statement !!!!";
     DUChainReadLocker lock(DUChain::lock());
+
+    /* First of all, fetch the types and declaration on the right side */
     RubyAst *aux = new RubyAst(node->tree->r, node->context);
     for (Node *n = aux->tree; n != NULL; n = n->next) {
         ExpressionVisitor v(currentContext(), m_editor);
@@ -283,6 +285,12 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     }
     lock.unlock();
 
+    /*
+     * Check if we can unpack. If it's possible, do it and get out! We can
+     * unpack if the following conditions are satisfied:
+     *  - More than 1 expressions on the left side.
+     *  - Just one expression on the right side, which has Array as its type.
+     */
     int rsize = values.length();
     if (rsize == 1) {
         int rest = nodeListSize(node->tree->l);
@@ -303,6 +311,10 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         }
     }
 
+    /*
+     * We cannot unpack, so iterate over the left side expressions
+     * and assign types.
+     */
     int i = 0;
     AbstractType::Ptr type;
     for (Node *n = node->tree->l; n != NULL; n = n->next, i++) {
