@@ -375,7 +375,7 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
             int i = 0;
             lock.unlock();
             DUChainWriteLocker wlock(DUChain::lock());
-            for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
+            for (Node *n = aux->tree; n != NULL && i < args.size(); n = n->next, i++) {
                 aux->tree = n;
                 ExpressionVisitor av(currentContext(), m_editor);
                 av.visitNode(aux);
@@ -533,6 +533,7 @@ Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
         if (!list.empty()) {
             ClassDeclaration *d = dynamic_cast<ClassDeclaration *>(list.last());
             if (!d || d->classType() != ClassDeclarationData::Interface) {
+                rlock.unlock();
                 appendProblem(n, i18n("TypeError: wrong argument type (expected Module)"));
                 return NULL;
             } else {

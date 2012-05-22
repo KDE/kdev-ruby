@@ -176,7 +176,7 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
         Declaration *d = decls.first();
         ClassType::Ptr vc = d->abstractType().cast<ClassType>();
         if (vc)
-            encounter(vc->contentType().type<AbstractType>());
+            encounter(vc->contentType().abstractType());
     }
     delete child;
 }
