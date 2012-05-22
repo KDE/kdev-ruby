@@ -254,6 +254,8 @@ void free_errors(struct error_t * errors);
 #define is_class_method(n) (n->cond->r != NULL)
 #define is_rest_arg(n) (n->flags == 1)
 #define is_block_arg(n) (n->flags == 2)
+#define has_star(n) (n->flags > 0)
+#define is_just_a_star(n) (n->flags == 2)
 
 
 #ifdef __cplusplus

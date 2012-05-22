@@ -30,8 +30,9 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
-#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/tests/duchain.h>
+#include <duchain/types/classtype.h>
+#include <duchain/declarations/methoddeclaration.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -338,25 +339,97 @@ void TestDUChain::multipleAssignmentRight2()
 
 void TestDUChain::multipleAssignmentStar()
 {
-    QByteArray code("a, *, b = 1, 2, 3, 4, 5, 'a'");
+    QByteArray code("b = 0; a, *, c = b, nil, 3, 4, 5, 'asd'");
+    TopDUContext *top = parse(code, "multipleAssignmentStar");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    Declaration *dec1 = top->localDeclarations().at(1);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec2 = top->localDeclarations().at(2);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 
 void TestDUChain::multipleAssignmentNamedStar()
 {
-    QByteArray code("a, *b, c = 1, 2, 3, 4, 5, 'a'");
+    QByteArray code("a, *b, c = nil, nil, 3, 4, 5, 'asd'");
+    TopDUContext *top = parse(code, "multipleAssignmentNamedStar");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    QVERIFY(dec2->type<ClassType>()->contentType());
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(dec2->type<ClassType>()->contentType().abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "NilClass";
+    testUnsureTypes(unsure, list);
+
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::starAtTheBeginning()
+{
+    QByteArray code("*, i = 1, 2, nil");
+    TopDUContext *top = parse(code, "starAtTheBeginning");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+}
+
+void TestDUChain::starAtTheEnd()
+{
+    QByteArray code("q, * = //, 1, 2");
+    TopDUContext *top = parse(code, "starAtTheEnd");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+}
+
+void TestDUChain::emptyStar()
+{
+    QByteArray code("r, *t, w = 1, 'as'");
+    TopDUContext *top = parse(code, "emptyStar");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    Declaration *dec2 = top->localDeclarations().at(1);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::unpackArray1()
+{
+    QByteArray code("a, b, c = [1, 2]");
 
     /* TODO: pending */
     QVERIFY(true);
 }
 
-void TestDUChain::unpackArray()
+void TestDUChain::unpackArray2()
 {
-    QByteArray code("a, b, c = [1, 2]");
+    QByteArray code("a = [1, 2]; b, c, d = a");
 
-    /* TODO: pending */
     QVERIFY(true);
 }
 

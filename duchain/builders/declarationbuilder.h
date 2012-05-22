@@ -79,6 +79,16 @@ private:
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     bool insideClassModule;
 
+    // TODO: this is ugly as hell
+    inline TypePtr<AbstractType> getArray()
+    {
+        DUChainReadLocker lock(DUChain::lock());
+        QList<Declaration *> decls = m_builtinsContext->findDeclarations(QualifiedIdentifier("Array"));
+        Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
+        AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
+        return type;
+    }
+
 private:
     EditorIntegrator *m_editor;
 };

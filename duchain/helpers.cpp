@@ -200,5 +200,12 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
     return AbstractType::Ptr::staticCast(res);
 }
 
+int nodeListSize(Node *node)
+{
+    int i = 0;
+    for (Node *n = node; n != NULL; n = n->next, i++);
+    return i;
+}
+
 } // End of namespace Ruby
 

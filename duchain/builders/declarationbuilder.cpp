@@ -295,7 +295,19 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     AbstractType::Ptr type;
     for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
         aux->tree = n;
-        if (i < rsize) {
+        if (has_star(n)) {
+            int rest = nodeListSize(n) - 1;
+            int pack = rsize - i - rest;
+            ClassType::Ptr newType = getArray().cast<ClassType>();
+            for (int j = pack; j > 0; j--, i++)
+                newType->addContentType(values.at(i));
+            i--;
+            if (!is_just_a_star(n)) {
+                QualifiedIdentifier id = getIdentifier(aux);
+                debug() << newType->toString();
+                declareVariable(currentContext(), newType.cast<AbstractType>(), id, aux);
+            }
+        } else if (i < rsize) {
             if (alias.at(i)) {
                 DUChainWriteLocker wlock(DUChain::lock());
                 RangeInRevision range = getNameRange(aux);
@@ -304,7 +316,6 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 d->setAliasedDeclaration(declarations.at(i).data());
                 closeDeclaration();
             } else {
-                DUChainWriteLocker wlock(DUChain::lock());
                 type = values.at(i);
                 if (!type) // HACK: provisional fix, should be removed in the future
                     type = new ObjectType();

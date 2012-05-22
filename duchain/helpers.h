@@ -110,6 +110,9 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
 
+    /// TODO
+    KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
+
 } // End of namespace Ruby
 
 

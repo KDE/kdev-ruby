@@ -241,18 +241,15 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
     delete child;    
 }
 
-void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
+void RubyAstVisitor::visitAssignmentStatement(RubyAst *)
 {
     /*
      * l -> the left side of the assignment.
      * r -> the right side of the assignment.
      */
-
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    child->tree = node->tree->r;
-    visitStatements(child);
-    delete child;
+    /*
+     * Not implemented to not mess with the DeclarationBuilder and the stars.
+     */
 }
 
 void RubyAstVisitor::visitIfStatement(RubyAst *node)

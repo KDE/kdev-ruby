@@ -75,7 +75,11 @@ private slots:
     void multipleAssignmentRight2();
     void multipleAssignmentStar();
     void multipleAssignmentNamedStar();
-    void unpackArray();
+    void starAtTheBeginning();
+    void starAtTheEnd();
+    void emptyStar();
+    void unpackArray1();
+    void unpackArray2();
     void aliasedAssignment();
     void hashAssignment();
 

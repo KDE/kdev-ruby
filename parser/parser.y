@@ -470,22 +470,33 @@ mlhs_inner: mlhs_basic
 
 mlhs_basic: mlhs_head
   | mlhs_head mlhs_item { $$ = update_list($1, $2); }
-  | mlhs_head tSTAR mlhs_node { $$ = update_list($1, $3); }
+  | mlhs_head tSTAR mlhs_node
+  {
+    $3->flags = 1;
+    $$ = update_list($1, $3);
+  }
   | mlhs_head tSTAR mlhs_node ',' mlhs_post
   {
+    $3->flags = 1;
     $$ = concat_list($1, update_list($3, $5));
   }
-  | mlhs_head tSTAR { $$ = fix_star(parser); $$ = update_list($1, $$); }
+  | mlhs_head tSTAR
+  {
+    $$ = fix_star(parser);
+    $$->flags = 2;
+    $$ = update_list($1, $$);
+  }
   | mlhs_head tSTAR ',' mlhs_post
   {
     $$ = fix_star(parser);
+    $$->flags = 2;
     $$ = update_list($1, $$);
     $$ = concat_list($$, $4);
   }
-  | tSTAR mlhs_node { $$ = $2; }
-  | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); }
-  | tSTAR { $$ = fix_star(parser); }
-  | tSTAR ',' mlhs_post { $$ = $3; }
+  | tSTAR mlhs_node { $$ = $2; $$->flags = 1; }
+  | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); $2->flags = 1; }
+  | tSTAR { $$ = fix_star(parser); $$->flags = 2; }
+  | tSTAR ',' mlhs_post { $$ = fix_star(parser); $$->flags = 2; $$ = update_list($$, $3); }
 ;
 
 mlhs_item: mlhs_node
