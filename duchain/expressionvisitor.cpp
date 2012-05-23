@@ -231,6 +231,22 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitWhileStatement(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
+    encounter(obj);
+}
+
+void ExpressionVisitor::visitForStatement(RubyAst *node)
+{
+    ExpressionVisitor ev(this);
+    Node *n = node->tree;
+    node->tree = node->tree->cond;
+    ev.visitNode(node);
+    node->tree = n;
+    encounter(ev.lastType());
+}
+
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));

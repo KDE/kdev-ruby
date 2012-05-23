@@ -66,6 +66,7 @@ protected:
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
+    virtual void visitForStatement(RubyAst *node);
 
 private:
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,

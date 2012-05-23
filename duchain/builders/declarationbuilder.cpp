@@ -469,6 +469,29 @@ void DeclarationBuilder::visitLambda(RubyAst *node)
     Ruby::RubyAstVisitor::visitLambda(node);
 }
 
+void DeclarationBuilder::visitForStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitForStatement(node);
+    RubyAst *aux = new RubyAst(node->tree->l, node->context);
+    ExpressionVisitor ev(currentContext(), m_editor);
+    ev.visitNode(aux);
+    AbstractType::Ptr type = ev.lastType();
+    if (type) {
+        ClassType::Ptr ctype = type.cast<ClassType>();
+        if (ctype && ctype->contentType())
+            type = ctype->contentType().abstractType();
+        else
+            type = AbstractType::Ptr(new ObjectType);
+    } else
+        type = AbstractType::Ptr(new ObjectType);
+
+    for (Node *n = node->tree->r; n != NULL; n = n->next) {
+        aux->tree = n;
+        QualifiedIdentifier id = getIdentifier(aux);
+        declareVariable(currentContext(), type, id, aux);
+    }
+}
+
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {
