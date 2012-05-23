@@ -241,10 +241,32 @@ void ExpressionVisitor::visitForStatement(RubyAst *node)
 {
     ExpressionVisitor ev(this);
     Node *n = node->tree;
-    node->tree = node->tree->cond;
+    node->tree = n->l;
+    RubyAstVisitor::visitNode(node);
+    node->tree = n->cond;
     ev.visitNode(node);
     node->tree = n;
     encounter(ev.lastType());
+}
+
+void ExpressionVisitor::visitBinary(RubyAst *node)
+{
+    Node *n = node->tree;
+    node->tree = node->tree->l;
+    ExpressionVisitor ev(this);
+    ev.visitNode(node);
+    AbstractType::Ptr left = ev.lastType();
+    node->tree = n->r;
+    ev.visitNode(node);
+    node->tree = n;
+    encounter(mergeTypes(left, ev.lastType()));
+}
+
+void ExpressionVisitor::visitBoolean(RubyAst *)
+{
+    AbstractType::Ptr truthy = getBuiltinsType("TrueClass", m_ctx);
+    AbstractType::Ptr falsy = getBuiltinsType("FalseClass", m_ctx);
+    encounter(mergeTypes(truthy, falsy));
 }
 
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)

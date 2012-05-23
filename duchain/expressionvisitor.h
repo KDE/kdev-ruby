@@ -87,6 +87,8 @@ protected:
     virtual void visitLambda(RubyAst *node);
     virtual void visitWhileStatement(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
+    virtual void visitBinary(RubyAst *node);
+    virtual void visitBoolean(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);

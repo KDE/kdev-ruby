@@ -590,9 +590,6 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_not:
             visitUnary(node);
             break;
-        case token_cmp: case token_eq: case token_eqq: case token_match:
-        case token_nmatch: case token_greater: case  token_geq:
-        case token_lesser:  case token_leq:
         case token_plus: case token_minus: case token_mul: case token_div:
         case token_mod: case token_lshift: case token_rshift: case token_pow:
             visitBinary(node);
@@ -600,6 +597,9 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_dot2: case token_dot3:
             visitRange(node);
             break;
+        case token_cmp: case token_eq: case token_eqq: case token_match:
+        case token_nmatch: case token_greater: case  token_geq:
+        case token_lesser:  case token_leq:
         case token_or: case token_and: case token_kw_and:
         case token_kw_not: case token_kw_or:
             visitBoolean(node);
