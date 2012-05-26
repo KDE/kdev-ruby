@@ -87,7 +87,8 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
 KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
     QList<KUrl> searchPaths;
-    QString name("");
+    QList<KUrl> gemPaths;
+    QString name(""), base("");
 
     // TODO: by now take a look at the current directory if this is not a string
     // TODO: instead of the current directory, pick the project root directory
@@ -96,12 +97,36 @@ KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
     } else {
         name = editor->tokenToString(node);
         name.replace("'", ""); // remove surrounding '
+        base = name;
         if (!name.endsWith(".rb"))
             name += ".rb";
         if (local)
             searchPaths << editor->url().toUrl().directory();
-        else
-            searchPaths << getSearchPaths();
+        else {
+            const QPair<QList<KUrl>, QList<KUrl> > &p = getSearchPaths();
+            searchPaths << p.first;
+            gemPaths << p.second;
+        }
+    }
+
+    QStringList filter;
+    filter << base + "*";
+    foreach (const KUrl &path, gemPaths) {
+        QString basePath = path.path(KUrl::AddTrailingSlash) + "gems/";
+        QDir dir(basePath);
+        QStringList list = dir.entryList(filter, QDir::Dirs);
+        foreach (const QString &inside, list) {
+            // TODO: right now it assumes that the /lib directory exists. Even
+            // though this is a pretty standard situation, it's not necessarily true.
+            QString url = basePath + inside + "/lib/" + name;
+            QFile script(url);
+            QFileInfo info(url);
+            if (script.exists() && !info.isDir()) {
+                KUrl res(url);
+                res.cleanPath();
+                return res;
+            }
+        }
     }
 
     foreach (const KUrl &path, searchPaths) {
@@ -118,22 +143,27 @@ KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
     return KUrl();
 }
 
-QList<KUrl> getSearchPaths()
+QPair<QList<KUrl>, QList<KUrl> > getSearchPaths()
 {
     // TODO: Cache, cache, cache !!!
     QList<KUrl> paths;
+    QList<KUrl> gpaths;
 
     QStringList code;
-    code << "ruby" << "-e" << "puts $:";
+    code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
     QProcess ruby;
     ruby.start("/usr/bin/env", code);
     ruby.waitForFinished();
     QList<QByteArray> rpaths = ruby.readAllStandardOutput().split('\n');
+    QList<QByteArray> epaths = ruby.readAllStandardError().split('\n');
     rpaths.removeAll("");
+    epaths.removeAll("");
     foreach (const QString &s, rpaths)
         paths << s;
+    foreach (const QString &s, epaths)
+        gpaths << s;
 
-    return paths;
+    return QPair<QList<KUrl>, QList<KUrl> >(paths, gpaths);
 }
 
 QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl)

@@ -91,7 +91,7 @@ using namespace KDevelop;
     /**
      * @return the list of urls available from ruby through $:
      */
-    KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
+    KDEVRUBYDUCHAIN_EXPORT QPair<QList<KUrl>, QList<KUrl> > getSearchPaths();
 
     /**
      * @returns the declared methods inside the given declaration @p decl,
