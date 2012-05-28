@@ -231,6 +231,18 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
     encounter(obj);
 }
 
+void ExpressionVisitor::visitLastStatement(RubyAst *node)
+{
+    if (!node->tree)
+        return;
+
+    Node *n = node->tree;
+    if (n->last)
+        node->tree = n->last;
+    ExpressionVisitor::visitNode(node);
+    node->tree = n;
+}
+
 void ExpressionVisitor::visitWhileStatement(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
@@ -267,6 +279,38 @@ void ExpressionVisitor::visitBoolean(RubyAst *)
     AbstractType::Ptr truthy = getBuiltinsType("TrueClass", m_ctx);
     AbstractType::Ptr falsy = getBuiltinsType("FalseClass", m_ctx);
     encounter(mergeTypes(truthy, falsy));
+}
+
+void ExpressionVisitor::visitIfStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitIfStatement(node);
+    Node *aux = node->tree;
+    node->tree = aux->l;
+    ExpressionVisitor::visitLastStatement(node);
+    AbstractType::Ptr res = lastType();
+
+    for (Node *n = aux->r; n != NULL; n = n->r) {
+        node->tree = n;
+        ExpressionVisitor::visitLastStatement(node);
+        res = mergeTypes(res, lastType());
+    }
+    encounter(res);
+    node->tree = aux;
+}
+
+void ExpressionVisitor::visitCaseStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitCaseStatement(node);
+    Node *aux = node->tree;
+    AbstractType::Ptr res;
+
+    for (Node *n = aux->l; n != NULL; n = n->r) {
+        node->tree = n->l;
+        ExpressionVisitor::visitLastStatement(node);
+        res = mergeTypes(res, lastType());
+    }
+    encounter(res);
+    node->tree = aux;
 }
 
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)

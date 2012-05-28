@@ -254,6 +254,38 @@ void TestDUChain::aliasGlobal2()
 
 //END: Simple Statements
 
+//BEGIN: Compound Statements
+
+void TestDUChain::ifStatement()
+{
+    QByteArray code("a = if d; 1; elsif b; nil; else; 'asd'; end");
+    TopDUContext *top = parse(code, "ifStatement");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
+    QList<QString> list;
+    list << "NilClass" << "String" << "Fixnum";
+    testUnsureTypes(ut, list);
+}
+
+void TestDUChain::caseStatement()
+{
+    QByteArray code("f = case a; when 1; 2; nil; when 2; 1; else; 'asd'; end");
+    TopDUContext *top = parse(code, "caseStatement");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *dec = top->localDeclarations().at(0);
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
+    QList<QString> list;
+    list << "NilClass" << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+}
+
+//END: Compound Statements
+
 //BEGIN: Assignments
 
 void TestDUChain::multipleAssignment1()

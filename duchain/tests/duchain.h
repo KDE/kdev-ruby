@@ -67,6 +67,10 @@ private slots:
     void aliasGlobal1();
     void aliasGlobal2();
 
+    // Compound Statements
+    void ifStatement();
+    void caseStatement();
+
     // Assignments
     void multipleAssignment1();
     void multipleAssignment2();

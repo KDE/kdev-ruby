@@ -89,6 +89,8 @@ protected:
     virtual void visitForStatement(RubyAst *node);
     virtual void visitBinary(RubyAst *node);
     virtual void visitBoolean(RubyAst *node);
+    virtual void visitIfStatement(RubyAst *node);
+    virtual void visitCaseStatement(RubyAst *node);
 
 private:
     TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
@@ -101,6 +103,7 @@ private:
     Declaration * findDeclarationForCall(RubyAst *ast, DUContext *ctx);
     Declaration * findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id);
     const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
+    void visitLastStatement(RubyAst *node);
 
 private:
     KDevelop::DUContext *m_ctx;
