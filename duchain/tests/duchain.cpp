@@ -578,11 +578,11 @@ void TestDUChain::assignToArrayItem()
 
 //BEGIN: Declarations
 
-void TestDUChain::methodDeclaration()
+void TestDUChain::instanceClassMethodDeclaration()
 {
     QByteArray code("class Klass; def foo(a, b); end; def asd; end; ");
     code += "def self.selfish; end; def Klass.selfish; end; end";
-    TopDUContext *top = parse(code, "methodDeclaration");
+    TopDUContext *top = parse(code, "instanceClassMethodDeclaration");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
     QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
@@ -600,6 +600,50 @@ void TestDUChain::methodDeclaration()
 
     MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
     QVERIFY(d4->isClassMethod());
+}
+
+void TestDUChain::accessPolicyMethodInClass()
+{
+    QByteArray code("class Klass; def foo; end; protected; def asd; end; ");
+    code += "private; def zxc; end; public; def iop; end; end";
+    TopDUContext *top = parse(code, "accessPolicyMethodInClass");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+    QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
+
+    MethodDeclaration *d1 = dynamic_cast<MethodDeclaration *>(decs.first());
+    QVERIFY(d1->accessPolicy() == Declaration::Public);
+
+    MethodDeclaration *d2 = dynamic_cast<MethodDeclaration *>(decs.at(1));
+    QVERIFY(d2->accessPolicy() == Declaration::Protected);
+
+    MethodDeclaration *d3 = dynamic_cast<MethodDeclaration *>(decs.at(2));
+    QVERIFY(d3->accessPolicy() == Declaration::Private);
+
+    MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
+    QVERIFY(d4->accessPolicy() == Declaration::Public);
+}
+
+void TestDUChain::accessPolicyMethodInModule()
+{
+    QByteArray code("module Klass; def foo; end; protected; def asd; end; ");
+    code += "private; def zxc; end; public; def iop; end; end";
+    TopDUContext *top = parse(code, "accessPolicyMethodInClass");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+    QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
+
+    MethodDeclaration *d1 = dynamic_cast<MethodDeclaration *>(decs.first());
+    QVERIFY(d1->accessPolicy() == Declaration::Public);
+
+    MethodDeclaration *d2 = dynamic_cast<MethodDeclaration *>(decs.at(1));
+    QVERIFY(d2->accessPolicy() == Declaration::Protected);
+
+    MethodDeclaration *d3 = dynamic_cast<MethodDeclaration *>(decs.at(2));
+    QVERIFY(d3->accessPolicy() == Declaration::Private);
+
+    MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
+    QVERIFY(d4->accessPolicy() == Declaration::Public);
 }
 
 //END: Declarations

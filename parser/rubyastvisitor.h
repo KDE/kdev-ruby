@@ -114,6 +114,7 @@ protected:
     virtual void visitFile(RubyAst *node);
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
+    virtual void visitAccessSpecifier(short policy);
 
 private:
     /**

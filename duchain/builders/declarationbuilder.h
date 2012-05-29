@@ -67,6 +67,7 @@ protected:
     virtual void visitExtend(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
+    virtual void visitAccessSpecifier(short int policy);
 
 private:
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
@@ -89,6 +90,21 @@ private:
         AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
         return type;
     }
+
+    inline KDevelop::Declaration::AccessPolicy currentAccessPolicy()
+    {
+        if (m_accessPolicyStack.isEmpty())
+            return KDevelop::Declaration::Public;
+        else
+            return m_accessPolicyStack.top();
+    }
+
+    inline void setAccessPolicy(KDevelop::Declaration::AccessPolicy policy)
+    {
+        m_accessPolicyStack.top() = policy;
+    }
+
+    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicyStack;
 
 private:
     EditorIntegrator *m_editor;

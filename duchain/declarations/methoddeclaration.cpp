@@ -58,4 +58,15 @@ void MethodDeclaration::setClassMethod(const bool isClass)
     d_func_dynamic()->classMethod = isClass;
 }
 
+KDevelop::Declaration::AccessPolicy MethodDeclaration::accessPolicy() const
+{
+    return d_func()->m_accessPolicy;
+}
+
+void MethodDeclaration::setAccessPolicy(const KDevelop::Declaration::AccessPolicy &policy)
+{
+    d_func_dynamic()->m_accessPolicy = policy;
+}
+
+
 } // End of namespace Ruby

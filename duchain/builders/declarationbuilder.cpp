@@ -85,6 +85,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
     decl->setClassType(ClassDeclarationData::Class);
+    m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
 
@@ -130,6 +131,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     closeType();
     closeDeclaration();
     insideClassModule = false;
+    m_accessPolicyStack.pop();
 }
 
 void DeclarationBuilder::visitModuleStatement(RubyAst* node)
@@ -144,6 +146,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
     decl->setClassType(ClassDeclarationData::Interface);
+    m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
 
@@ -162,6 +165,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     closeType();
     closeDeclaration();
     insideClassModule = false;
+    m_accessPolicyStack.pop();
 }
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
@@ -174,6 +178,8 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
     decl->setClassMethod(is_class_method(node->tree));
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    if (currentContext()->type() == DUContext::Class)
+        decl->setAccessPolicy(currentAccessPolicy());
 
     openType(type);
     decl->setInSymbolTable(false);
@@ -489,6 +495,20 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
         aux->tree = n;
         QualifiedIdentifier id = getIdentifier(aux);
         declareVariable(currentContext(), type, id, aux);
+    }
+}
+
+void DeclarationBuilder::visitAccessSpecifier(short int policy)
+{
+    switch (policy) {
+        case 0:
+            setAccessPolicy(KDevelop::Declaration::Public);
+            break;
+        case 1:
+            setAccessPolicy(KDevelop::Declaration::Protected);
+            break;
+        case 2:
+            setAccessPolicy(KDevelop::Declaration::Private);
     }
 }
 

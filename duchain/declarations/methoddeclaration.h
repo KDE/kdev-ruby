@@ -56,6 +56,9 @@ public:
 
     /// True if this is a Class method
     bool classMethod;
+
+    /// The access policy for this method.
+    KDevelop::Declaration::AccessPolicy m_accessPolicy;
 };
 
 /**
@@ -93,6 +96,12 @@ public:
 
     /// @returns true if this is a class method, false otherwise.
     bool isClassMethod() const;
+
+    /// Set the access policy to this methods according to the given @p policy.
+    void setAccessPolicy(const KDevelop::Declaration::AccessPolicy &policy);
+
+    /// @returns the access policy for this method.
+    KDevelop::Declaration::AccessPolicy accessPolicy() const;
 
     enum { Identity = 42 /** The id of this Type. */ };
 

@@ -553,9 +553,15 @@ void RubyAstVisitor::visitSelf(RubyAst *node)
     Q_UNUSED(node)
 }
 
+void RubyAstVisitor::visitAccessSpecifier(short int policy)
+{
+    Q_UNUSED(policy)
+}
+
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
+    QByteArray name;
 
     /* This is not a valid node */
     if (!n || n->kind == token_invalid)
@@ -581,7 +587,17 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_method_call: checkMethodCall(node); break;
         case token_assign:
         case token_op_assign: visitAssignmentStatement(node); break;
-        case token_object: visitName(node); break;
+        case token_object:
+            name = QByteArray(node->tree->name);
+            if (name == "public")
+                visitAccessSpecifier(0);
+            else if (name == "protected")
+                visitAccessSpecifier(1);
+            else if (name == "private")
+                visitAccessSpecifier(2);
+            else
+                visitName(node);
+            break;
         case token_hash: visitHash(node); break;
         case token_array: visitArray(node); break;
         case token_array_value: visitArrayValue(node); break;
@@ -673,19 +689,19 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
      * expression.
      */
     if (mc->tree->l != NULL) {
-      const QByteArray & name = QByteArray(mc->tree->l->name);
-      if (name == "require")
-          visitRequire(mc);
-      else if (name == "include")
-          visitInclude(mc);
-      else if (name == "extend")
-          visitExtend(mc);
-      else if (name == "require_relative")
-          visitRequireRelative(mc);
-      else
-          visitMethodCall(mc);
-    } else
-        visitLambda(mc);
+        const QByteArray &name = QByteArray(mc->tree->l->name);
+        if (name == "require")
+            visitRequire(mc);
+        else if (name == "include")
+            visitInclude(mc);
+        else if (name == "extend")
+            visitExtend(mc);
+        else if (name == "require_relative")
+            visitRequireRelative(mc);
+        else
+            visitMethodCall(mc);
+        } else
+            visitLambda(mc);
 }
 
 } // End of namespace Ruby

@@ -95,7 +95,9 @@ private slots:
     void assignToArrayItem();
 
     // Declarations
-    void methodDeclaration();
+    void instanceClassMethodDeclaration();
+    void accessPolicyMethodInClass();
+    void accessPolicyMethodInModule();
 
     // Returning values
     void multipleReturns();
