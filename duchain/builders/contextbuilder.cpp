@@ -148,14 +148,20 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)
 {
-    node->tree = node->tree->l;
+    Node *aux = node->tree;
+    node->tree = aux->l;
     visitBody(node);
+    node->tree = aux;
 }
 
 void ContextBuilder::visitClassStatement(RubyAst *node)
 {
-    node->tree = node->tree->l;
+    Node *aux = node->tree;
+    node->tree = aux->cond;
+    visitNode(node);
+    node->tree = aux->l;
     visitBody(node);
+    node->tree = aux;
 }
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
@@ -183,6 +189,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
         RubyAstVisitor::visitBody(node);
         closeContext();
     }
+    node->tree = aux;
 }
 
 void ContextBuilder::visitRequire(RubyAst *node)

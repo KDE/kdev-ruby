@@ -89,6 +89,7 @@ private slots:
     void hashAssignment();
 
     // Variable Length Container
+    // TODO: rename the VariableLengthContainer thingy.
     void assignFromArrayItem1();
     void assignFromArrayItem2();
     void assignFromHashItem();
@@ -98,6 +99,8 @@ private slots:
     void instanceClassMethodDeclaration();
     void accessPolicyMethodInClass();
     void accessPolicyMethodInModule();
+    void checkSubClassing();
+    void checkDeclarationsOnSubClass();
 
     // Returning values
     void multipleReturns();

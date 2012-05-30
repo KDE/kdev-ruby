@@ -88,6 +88,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
+    openContextForClassDefinition(node);
 
     /*
      * Now let's check for the base class. Ruby does not support multiple
@@ -98,17 +99,18 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     if (node->tree) {
         QualifiedIdentifier baseId = getIdentifier(node);
         KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
-        if (!baseDecl) {
+        if (!baseDecl)
             appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
-        } else {
+        else {
             ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
-            if (!realClass || realClass->classType() == ClassDeclarationData::Interface) {
+            if (!realClass || realClass->classType() == ClassDeclarationData::Interface)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            } else {
+            else {
+                currentContext()->addImportedParentContext(realClass->internalContext());
                 BaseClassInstance base;
-                StructureType::Ptr baseType = baseDecl->type<StructureType>();
-                base.baseClass = baseType->indexed();
+                base.baseClass = realClass->indexedType();
                 base.access = KDevelop::Declaration::Public;
+                base.virtualInheritance = false;
                 decl->addBaseClass(base);
             }
         }
@@ -116,16 +118,13 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     node->tree = aux;
 
     /*  Setup types and go for the class body */
-    StructureType::Ptr type = StructureType::Ptr(new ClassType());
+    ClassType::Ptr type = ClassType::Ptr(new ClassType());
     type->setDeclaration(decl);
     decl->setType(type);
     openType(type);
 
-    openContextForClassDefinition(node);
     decl->setInternalContext(currentContext());
-    lock.unlock();
     DeclarationBuilderBase::visitClassStatement(node);
-    lock.lock();
     closeContext();
 
     closeType();
@@ -141,7 +140,6 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     QualifiedIdentifier id = getIdentifier(node);
 
     setComment(getComment(node));
-    /* TODO: should this get a ModuleDeclaration or so? */
     ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
     decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClasses();
@@ -157,9 +155,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
 
     openContextForClassDefinition(node);
     decl->setInternalContext(currentContext());
-    lock.unlock();
     DeclarationBuilderBase::visitModuleStatement(node);
-    lock.lock();
     closeContext();
 
     closeType();

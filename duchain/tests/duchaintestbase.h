@@ -32,6 +32,11 @@
 #include <duchain/duchainexport.h>
 
 
+// Defined so tests can be marked as pending.
+#define DO_PRAGMA(x) _Pragma (#x)
+#define PENDING(x) DO_PRAGMA(message ("PENDING: " #x))
+
+
 namespace Ruby
 {
 

@@ -104,6 +104,20 @@ void TestUseBuilder::assignment()
     compareUses(dec, RangeInRevision(0, 17, 0, 18));
 }
 
+void TestUseBuilder::checkSubClassing()
+{
+    //               0          1        2         3
+    //               0123456789012345678901234567890123456789
+    QByteArray code("class Base; end; class Final < Base; end");
+    TopDUContext *top = parse(code, "checkSubClassing");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 31, 0, 35));
+}
+
 } // End of namespace Ruby
 
 

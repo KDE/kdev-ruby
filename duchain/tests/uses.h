@@ -56,6 +56,7 @@ private slots:
     void stringInterpolation();
     void alias();
     void assignment();
+    void checkSubClassing();
 };
 
 }

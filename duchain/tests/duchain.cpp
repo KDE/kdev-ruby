@@ -33,6 +33,7 @@
 #include <duchain/tests/duchain.h>
 #include <duchain/types/classtype.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/classdeclaration.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -312,8 +313,7 @@ void TestDUChain::multipleAssignment2()
 {
     QByteArray code("a, b = 1, [1, 2, 3]");
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Waiting for the ClassType to be supported");
 }
 
 void TestDUChain::multipleAssignmentLeft()
@@ -546,32 +546,28 @@ void TestDUChain::assignFromArrayItem1()
 {
     QByteArray code("a = [1, 2, 3]; b = a[0]");
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Waiting for the ClassType to be supported");
 }
 
 void TestDUChain::assignFromArrayItem2()
 {
     QByteArray code("a = [1, '2']; b = a[0]");
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Waiting for the ClassType to be supported");
 }
 
 void TestDUChain::assignFromHashItem()
 {
     QByteArray code("a = { :a => 'a', b: 1 }; b = a[:a]");
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Waiting for the ClassType to be supported");
 }
 
 void TestDUChain::assignToArrayItem()
 {
     QByteArray code("a = [1, nil]; a[1] = 2");
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Waiting for the ClassType to be supported");
 }
 
 //END: Variable Length Container
@@ -644,6 +640,47 @@ void TestDUChain::accessPolicyMethodInModule()
 
     MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
     QVERIFY(d4->accessPolicy() == Declaration::Public);
+}
+
+void TestDUChain::checkSubClassing()
+{
+    QByteArray code("class Base; end; class Final < Base; end");
+    TopDUContext *top = parse(code, "checkSubClassing");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Base
+    ClassDeclaration *base = dynamic_cast<ClassDeclaration *>(top->localDeclarations().first());
+    QVERIFY(base);
+    QCOMPARE(base->internalContext()->childContexts().count(), 0);
+    QCOMPARE(base->internalContext()->importedParentContexts().count(), 0);
+    QCOMPARE(base->internalContext()->localScopeIdentifier(), QualifiedIdentifier("Base"));
+
+    // Final
+    ClassDeclaration *final = dynamic_cast<ClassDeclaration *>(top->localDeclarations().last());
+    QVERIFY(final);
+    QCOMPARE(final->internalContext()->childContexts().count(), 0);
+    QCOMPARE(final->internalContext()->importedParentContexts().count(), 1);
+    QCOMPARE(final->internalContext()->localScopeIdentifier(), QualifiedIdentifier("Final"));
+    QCOMPARE(final->baseClassesSize(), 1u);
+    QCOMPARE(final->baseClasses()[0].baseClass, base->indexedType());
+}
+
+void TestDUChain::checkDeclarationsOnSubClass()
+{
+    /*
+     * The class Base defines a public instance method and a public class
+     * method. Then it defines a protected instance method and a private one.
+     * Finally, the class Final gets defined, and it subclasses the Base class.
+     */
+    QByteArray code("class Base; def foo; end; def self.selfish; end; ");
+    code += "protected; def protected_foo; end; private; def private_foo;";
+    code += "end; end; class Final < Base; end";
+    TopDUContext *top = parse(code, "checkDeclarationsOnSubClass");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("Still hacking on the subclassing code");
 }
 
 //END: Declarations
@@ -788,8 +825,7 @@ void TestDUChain::include2()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Left as pending for some reason.");
 }
 
 void TestDUChain::extend1()
@@ -801,8 +837,7 @@ void TestDUChain::extend1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    /* TODO: pending */
-    QVERIFY(true);
+    PENDING("Left as pending for some reason.");
 }
 
 //END: Include & Extend
