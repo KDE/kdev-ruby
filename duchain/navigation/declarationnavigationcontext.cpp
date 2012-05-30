@@ -29,6 +29,7 @@
 #include <duchain/helpers.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/navigation/declarationnavigationcontext.h>
 
 
@@ -49,6 +50,7 @@ void DeclarationNavigationContext::htmlClass()
     StructureType::Ptr klass = m_declaration->abstractType().cast<StructureType>();
     Q_ASSERT(klass);
     ClassDeclaration *classDecl = dynamic_cast<ClassDeclaration *>(klass->declaration(m_topContext.data()));
+    ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(klass->declaration(m_topContext.data()));
 
     if (classDecl) {
         /* Write class type */
@@ -65,6 +67,12 @@ void DeclarationNavigationContext::htmlClass()
             modifyHtml() += " is a subclass of ";
             eventuallyMakeTypeLinks(base);
         }
+        modifyHtml() += " ";
+    } else if (mDecl) {
+        modifyHtml() += "module ";
+        /* Write identifier */
+        eventuallyMakeTypeLinks(m_declaration->abstractType());
+        /* Write inheritance */
         modifyHtml() += " ";
     }
 }
@@ -83,8 +91,12 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
 QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
 {
     const MethodDeclaration *md = dynamic_cast<const MethodDeclaration *>(decl.data());
+    
     if (md)
         return (md->isClassMethod()) ? "Class method" : "Instance method";
+    ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(decl.data());
+    if (mDecl)
+        return NULL;
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 

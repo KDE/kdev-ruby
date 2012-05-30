@@ -25,10 +25,6 @@
 #include <language/duchain/classdeclaration.h>
 #include <duchain/duchainexport.h>
 
-/*
- * WARNING: This file is under development.
- */
-
 
 namespace Ruby
 {

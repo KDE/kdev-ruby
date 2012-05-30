@@ -40,6 +40,7 @@
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/types/classtype.h>
 
 
@@ -103,7 +104,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
             appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
         else {
             ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
-            if (!realClass || realClass->classType() == ClassDeclarationData::Interface)
+            if (!realClass)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
             else {
                 currentContext()->addImportedParentContext(realClass->internalContext());
@@ -140,10 +141,9 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     QualifiedIdentifier id = getIdentifier(node);
 
     setComment(getComment(node));
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
+    ModuleDeclaration *decl = openDeclaration<ModuleDeclaration>(id, range);
+    decl->clearModuleMixins();
     decl->setKind(KDevelop::Declaration::Type);
-    decl->clearBaseClasses();
-    decl->setClassType(ClassDeclarationData::Interface);
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
@@ -427,7 +427,21 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
 void DeclarationBuilder::visitInclude(RubyAst *node)
 {
     RubyAst *module = new RubyAst(node->tree->r, node->context);
-    Declaration *decl = getModuleDeclaration(module);
+    ModuleDeclaration *decl = getModuleDeclaration(module);
+
+    // Register module mix-in
+    if (lastClassModule) {
+        ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
+        // TODO: accept classes
+        if (current) {
+            ModuleMixin mixin;
+            mixin.included = true;
+            mixin.module = decl->indexedType();
+            current->addModuleMixin(mixin);
+        }
+    } else {
+        // TODO: register to the Kernel module
+    }
 
     if (decl) {
         QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
@@ -448,7 +462,7 @@ void DeclarationBuilder::visitInclude(RubyAst *node)
 void DeclarationBuilder::visitExtend(RubyAst *node)
 {
     RubyAst *module = new RubyAst(node->tree->r, node->context);
-    Declaration *decl = getModuleDeclaration(module);
+    ModuleDeclaration *decl = getModuleDeclaration(module);
 
     if (decl) {
         QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
@@ -585,7 +599,7 @@ KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
     return m_editor->findRange(rb_name_node(node->tree));
 }
 
-Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
+ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
 {
     /*
      * NOTE: this is a convenient method that allows us to retrieve the declaration of
@@ -596,7 +610,7 @@ Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
     DUChainReadLocker rlock(DUChain::lock());
     RubyAst *aux = new RubyAst(module->tree, module->context);
     DUContext *lastCtx = module->context;
-    Declaration *lastDecl = NULL;
+    ModuleDeclaration *lastDecl = NULL;
 
     if (aux->tree->kind == token_method_call)
         aux->tree = aux->tree->l;
@@ -604,8 +618,8 @@ Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
         QualifiedIdentifier id = getIdentifier(aux);
         QList<Declaration *> list = lastCtx->findDeclarations(id.last());
         if (!list.empty()) {
-            ClassDeclaration *d = dynamic_cast<ClassDeclaration *>(list.last());
-            if (!d || d->classType() != ClassDeclarationData::Interface) {
+            ModuleDeclaration *d = dynamic_cast<ModuleDeclaration *>(list.last());
+            if (!d) {
                 rlock.unlock();
                 appendProblem(n, i18n("TypeError: wrong argument type (expected Module)"));
                 return NULL;

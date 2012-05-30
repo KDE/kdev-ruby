@@ -32,6 +32,8 @@
 namespace Ruby
 {
 
+class ModuleDeclaration;
+
 typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
 /**
@@ -77,7 +79,7 @@ private:
                                 KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
     void appendProblem(Node* node, const QString &msg);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-    Declaration *getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
+    ModuleDeclaration * getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     bool insideClassModule;
 

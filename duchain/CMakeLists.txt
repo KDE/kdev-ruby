@@ -19,6 +19,7 @@ set(rubyduchain_SRCS
     declarations/classdeclaration.cpp
     declarations/methoddeclaration.cpp
     declarations/variabledeclaration.cpp
+    declarations/moduledeclaration.cpp
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
