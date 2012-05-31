@@ -425,18 +425,9 @@ void DeclarationBuilder::visitInclude(RubyAst *node)
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
     // Register module mix-in
-    if (lastClassModule) {
-        ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
-        if (current) {
-            ModuleMixin mixin;
-            mixin.included = true;
-            mixin.module = decl->indexedType();
-            current->addModuleMixin(mixin);
-        }
-    } else {
-        // TODO: register to the Kernel module
-    }
+    registerModuleMixin(decl->indexedType(), true);
 
+    // Include the instance methods
     if (decl) {
         QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, iMethods) {
@@ -458,6 +449,10 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
     RubyAst *module = new RubyAst(node->tree->r, node->context);
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
+    // Register module mix-in
+    registerModuleMixin(decl->indexedType(), false);
+
+    // Include the class methods
     if (decl) {
         QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, eMethods) {
@@ -626,6 +621,21 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *modu
     }
     delete aux;
     return lastDecl;
+}
+
+void DeclarationBuilder::registerModuleMixin(IndexedType type, bool include)
+{
+    if (lastClassModule) {
+        ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
+        if (current) {
+            ModuleMixin mixin;
+            mixin.included = include;
+            mixin.module = type;
+            current->addModuleMixin(mixin);
+        }
+    } else {
+        // TODO: register to the Kernel module
+    }
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

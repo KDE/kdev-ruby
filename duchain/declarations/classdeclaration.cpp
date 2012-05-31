@@ -44,17 +44,17 @@ ClassDeclaration::ClassDeclaration(ModuleDeclarationData &data)
 
 void ClassDeclaration::setBaseClass(KDevelop::IndexedType base)
 {
-    m_baseClass = base;
+    d_func_dynamic()->baseClass = base;
 }
 
 void ClassDeclaration::clearBaseClass()
 {
-    m_baseClass = KDevelop::IndexedType(0);
+    d_func_dynamic()->baseClass = KDevelop::IndexedType(0);
 }
 
 KDevelop::IndexedType ClassDeclaration::baseClass() const
 {
-    return m_baseClass;
+    return d_func()->baseClass;
 }
 
 } // End of namespace Ruby

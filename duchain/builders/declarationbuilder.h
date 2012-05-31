@@ -108,6 +108,8 @@ private:
 
     QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicyStack;
 
+    void registerModuleMixin(KDevelop::IndexedType type, bool include);
+
 private:
     EditorIntegrator *m_editor;
 };

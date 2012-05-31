@@ -662,8 +662,8 @@ void TestDUChain::checkSubClassing()
     QCOMPARE(final->internalContext()->childContexts().count(), 0);
     QCOMPARE(final->internalContext()->importedParentContexts().count(), 1);
     QCOMPARE(final->internalContext()->localScopeIdentifier(), QualifiedIdentifier("Final"));
-    QCOMPARE(final->baseClassesSize(), 1u);
-    QCOMPARE(final->baseClasses()[0].baseClass, base->indexedType());
+    QVERIFY(final->baseClass());
+    QCOMPARE(final->baseClass(), base->indexedType());
 }
 
 void TestDUChain::checkDeclarationsOnSubClass()
@@ -810,7 +810,11 @@ void TestDUChain::include1()
     DUChainWriteLocker lock(DUChain::lock());
 
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
-    QVERIFY(obj->internalContext()->localDeclarations(obj->topContext()).size() == 1);
+    ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
+    QVERIFY(md);
+    QCOMPARE(md->internalContext()->localDeclarations(md->topContext()).size(), 1);
+    QCOMPARE(md->moduleMixinsSize(), 1u);
+    QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::BB"));
 }
 
 void TestDUChain::include2()

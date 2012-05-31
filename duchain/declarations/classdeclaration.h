@@ -46,6 +46,8 @@ public:
     {
         
     }
+
+    KDevelop::IndexedType baseClass;
 };
 
 class KDEVRUBYDUCHAIN_EXPORT ClassDeclaration : public ModuleDeclaration
@@ -77,7 +79,6 @@ public:
 
 private:
     DUCHAIN_DECLARE_DATA(ClassDeclaration)
-    KDevelop::IndexedType m_baseClass;
 };
 
 } // End of namespace Ruby
