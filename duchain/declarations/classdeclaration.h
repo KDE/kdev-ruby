@@ -22,13 +22,20 @@
 #define RUBY_CLASSDECLARATION_H
 
 
-#include "moduledeclaration.h"
 #include <duchain/duchainexport.h>
+#include <duchain/declarations/moduledeclaration.h>
 
 
 namespace Ruby
 {
 
+/**
+ * @class ClassDeclaration
+ *
+ * This is class represents a class declaration. It's a subclass of the
+ * ModuleDeclaration. This way, it has access of the moduleMixins list from
+ * the ModuleDeclaration class.
+ */
 class KDEVRUBYDUCHAIN_EXPORT ClassDeclaration : public ModuleDeclaration
 {
 public:
@@ -48,14 +55,22 @@ public:
      */
     ClassDeclaration(ModuleDeclarationData &data);
 
+    /// Set the type @p base as the new base class for this class declaration.
     void setBaseClass(KDevelop::IndexedType base);
+
+    /// Invalidate the current base class.
     void clearBaseClass();
+
+    /// @returns the base class for this class declaration.
     KDevelop::IndexedType baseClass() const;    
 
     enum { Identity = 46 /** The id of this Type. */ };
 
 private:
+    /// Re-implemented from KDevelop::Declaration.
     virtual KDevelop::Declaration * clonePrivate() const;
+
+private:
     KDevelop::IndexedType m_baseClass;
 };
 
@@ -63,4 +78,3 @@ private:
 
 
 #endif // RUBY_CLASSDECLARATION_H
-

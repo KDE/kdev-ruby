@@ -53,11 +53,6 @@ ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range, KDe
         setContext(context);
 }
 
-ModuleDeclaration::~ModuleDeclaration()
-{
-
-}
-
 void ModuleDeclaration::clearModuleMixins()
 {
     bool wasInSymbolTable = inSymbolTable();

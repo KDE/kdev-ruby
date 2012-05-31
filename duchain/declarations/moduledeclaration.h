@@ -31,6 +31,7 @@
 namespace Ruby
 {
 
+/// Struct used in the appended list in the MethodDeclarationData.
 struct KDEVRUBYDUCHAIN_EXPORT ModuleMixin {
     KDevelop::IndexedType module;
     bool included;
@@ -38,20 +39,30 @@ struct KDEVRUBYDUCHAIN_EXPORT ModuleMixin {
 
 KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
 
+/**
+ * @class ModuleDeclarationData
+ *
+ * Private data structure for ModuleDeclaration. It contains an appended list
+ * of module mix-ins.
+ */
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::DeclarationData
 {
 public:
+    /// Constructor.
     ModuleDeclarationData()
     {
         initializeAppendedLists();
     }
 
-    ModuleDeclarationData(const ModuleDeclarationData &rhs) : KDevelop::DeclarationData(rhs)
+    /// Copy constructor.
+    ModuleDeclarationData(const ModuleDeclarationData &rhs)
+        : KDevelop::DeclarationData(rhs)
     {
         initializeAppendedLists();
         copyListsFrom(rhs);
     }
 
+    /// Destructor.
     ~ModuleDeclarationData()
     {
         freeAppendedLists();
@@ -62,25 +73,51 @@ public:
     END_APPENDED_LISTS(ModuleDeclarationData, moduleMixins);
 };
 
-
+/**
+ * @class ModuleDeclaration
+ *
+ * This class represents a module declaration. It defines methods to access to
+ * the list of module mixins.
+ */
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclaration : public KDevelop::Declaration
 {
 public:
-    ModuleDeclaration(const ModuleDeclaration &rhs);
-    ModuleDeclaration(ModuleDeclarationData &data);
-    ModuleDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *context);
-    ~ModuleDeclaration();
+    /**
+     * Constructor.
+     * @param range The range of this declaration.
+     * @param ctx The context of this declaration.
+     */
+    ModuleDeclaration(const KDevelop::RangeInRevision &range,
+                      KDevelop::DUContext *context);
 
+    /// Copy constructor.
+    ModuleDeclaration(const ModuleDeclaration &rhs);
+
+    /**
+     * Copy constructor.
+     * @param data The data to be copied.
+     */
+    ModuleDeclaration(ModuleDeclarationData &data);
+
+    /// Clean the list of module mix-ins.
     void clearModuleMixins();
+
+    /// @returns the size of the list of module mix-ins.
     uint moduleMixinsSize();
+
+    /// @returns the list of module mix-ins.
     const ModuleMixin * moduleMixins() const;
+
+    /// Add a new module mix-in @p module to the list.
     void addModuleMixin(ModuleMixin module);
 
+    /// Re-implemented from KDevelop::Declaration.
     QString toString() const;
 
-    enum { Identity = 44 };
+    enum { Identity = 44 /** The id of this Type. */ };
 
 private:
+    /// Re-implemented from KDevelop::Declaration.
     virtual KDevelop::Declaration * clonePrivate() const;
     DUCHAIN_DECLARE_DATA(ModuleDeclaration)
 };

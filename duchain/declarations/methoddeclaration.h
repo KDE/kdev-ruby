@@ -22,8 +22,8 @@
 #define R_METHOD_DECLARATION_H
 
 
-#include <language/duchain/functiondeclaration.h>
 #include <duchain/duchainexport.h>
+#include <language/duchain/functiondeclaration.h>
 
 
 namespace Ruby

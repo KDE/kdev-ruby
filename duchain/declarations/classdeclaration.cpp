@@ -19,21 +19,15 @@
 
 
 #include <duchain/declarations/classdeclaration.h>
-#include <language/duchain/identifier.h>
-#include <language/duchain/declaration.h>
-#include <language/duchain/appendedlist.h>
-#include <language/duchain/duchainregister.h>
 
 
 namespace Ruby
 {
 
-// REGISTER_DUCHAIN_ITEM(ClassDeclaration);
-
-
 ClassDeclaration::ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
     : ModuleDeclaration(range, ctx)
 {
+    /* There's nothing to do here */
 }
 
 ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
@@ -45,7 +39,7 @@ ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
 ClassDeclaration::ClassDeclaration(ModuleDeclarationData &data)
     : ModuleDeclaration(data)
 {
-
+    /* There's nothing to do here */
 }
 
 void ClassDeclaration::setBaseClass(KDevelop::IndexedType base)
@@ -67,37 +61,6 @@ KDevelop::Declaration * ClassDeclaration::clonePrivate() const
 {
     return new ClassDeclaration(*this);
 }
-/*
-QString ClassDeclaration::toString() const
-{
-    return "class " + identifier().toString();
-}*/
-/*
-void ClassDeclaration::clearModuleMixins()
-{
-    bool wasInSymbolTable = inSymbolTable();
-    setInSymbolTable(false);
-    d_func_dynamic()->moduleMixinsList().clear();
-    setInSymbolTable(wasInSymbolTable);
-}
-
-uint ClassDeclaration::moduleMixinsSize()
-{
-    return d_func()->moduleMixinsSize();
-}
-
-const ModuleMixin * ClassDeclaration::moduleMixins() const
-{
-    return d_func()->moduleMixins();
-}
-
-void ClassDeclaration::addModuleMixin(ModuleMixin module)
-{
-    bool wasInSymbolTable = inSymbolTable();
-    setInSymbolTable(false);
-    d_func_dynamic()->moduleMixinsList().append(module);
-    setInSymbolTable(wasInSymbolTable);
-}*/
 
 } // End of namespace Ruby
 
