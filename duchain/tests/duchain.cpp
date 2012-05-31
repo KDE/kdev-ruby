@@ -815,6 +815,7 @@ void TestDUChain::include1()
     QVERIFY(md);
     QCOMPARE(md->internalContext()->localDeclarations(md->topContext()).size(), 1);
     QCOMPARE(md->moduleMixinsSize(), 1u);
+    QVERIFY(md->moduleMixins()[0].included);
     QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::BB"));
 }
 
@@ -830,7 +831,13 @@ void TestDUChain::include2()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Left as pending for some reason.");
+    Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
+    ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
+    QVERIFY(md);
+    QCOMPARE(md->internalContext()->localDeclarations(md->topContext()).size(), 1);
+    QCOMPARE(md->moduleMixinsSize(), 1u);
+    QVERIFY(md->moduleMixins()[0].included);
+    QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::CC"));
 }
 
 void TestDUChain::extend1()
@@ -842,7 +849,13 @@ void TestDUChain::extend1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Left as pending for some reason.");
+    Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
+    ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
+    QVERIFY(md);
+    QCOMPARE(md->internalContext()->localDeclarations(md->topContext()).size(), 1);
+    QCOMPARE(md->moduleMixinsSize(), 1u);
+    QVERIFY(!md->moduleMixins()[0].included);
+    QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::BB"));
 }
 
 //END: Include & Extend

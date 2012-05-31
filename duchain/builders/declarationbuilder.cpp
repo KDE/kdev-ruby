@@ -83,8 +83,9 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     /* First of all, open the declaration and set the comment */
     setComment(getComment(node));
     ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
-    decl->setKind(KDevelop::Declaration::Type);
     decl->clearBaseClass();
+    decl->clearModuleMixins();
+    decl->setKind(KDevelop::Declaration::Type);
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
