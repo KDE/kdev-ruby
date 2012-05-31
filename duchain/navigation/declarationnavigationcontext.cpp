@@ -54,16 +54,13 @@ void DeclarationNavigationContext::htmlClass()
 
     if (classDecl) {
         /* Write class type */
-        if (classDecl->classType() == ClassDeclarationData::Interface)
-            modifyHtml() += "module ";
-        else
-            modifyHtml() += "class ";
+        modifyHtml() += "class ";
 
         /* Write identifier */
         eventuallyMakeTypeLinks(m_declaration->abstractType());
         /* Write inheritance */
-        if (classDecl->baseClassesSize() > 0) {
-            AbstractType::Ptr base = classDecl->baseClasses()->baseClass.abstractType();
+        if (classDecl->baseClass()) {
+            AbstractType::Ptr base = classDecl->baseClass().abstractType();
             modifyHtml() += " is a subclass of ";
             eventuallyMakeTypeLinks(base);
         }

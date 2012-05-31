@@ -18,34 +18,43 @@
  */
 
 
-#include "classdeclaration.h"
+#include <duchain/declarations/classdeclaration.h>
 
 
 namespace Ruby
 {
 
-RubyClassDeclaration::RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::ClassDeclaration(range, ctx)
+ClassDeclaration::ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
+    : ModuleDeclaration(range, ctx)
 {
 
 }
 
-RubyClassDeclaration::RubyClassDeclaration(const KDevelop::ClassDeclaration &rhs)
-    : KDevelop::ClassDeclaration(rhs)
+ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
+    : ModuleDeclaration(rhs)
 {
 
 }
 
-RubyClassDeclaration::RubyClassDeclaration(KDevelop::ClassDeclarationData &data)
-    : KDevelop::ClassDeclaration(data)
+ClassDeclaration::ClassDeclaration(ModuleDeclarationData &data)
+    : ModuleDeclaration(data)
 {
 
 }
 
-RubyClassDeclaration::RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::ClassDeclaration(data, range, ctx)
+void ClassDeclaration::setBaseClass(KDevelop::IndexedType base)
 {
+    m_baseClass = base;
+}
 
+void ClassDeclaration::clearBaseClass()
+{
+    m_baseClass = KDevelop::IndexedType(0);
+}
+
+KDevelop::IndexedType ClassDeclaration::baseClass() const
+{
+    return m_baseClass;
 }
 
 } // End of namespace Ruby

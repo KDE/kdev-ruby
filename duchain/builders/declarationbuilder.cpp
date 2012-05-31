@@ -84,8 +84,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     setComment(getComment(node));
     ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
     decl->setKind(KDevelop::Declaration::Type);
-    decl->clearBaseClasses();
-    decl->setClassType(ClassDeclarationData::Class);
+    decl->clearBaseClass();
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
@@ -108,11 +107,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
             else {
                 currentContext()->addImportedParentContext(realClass->internalContext());
-                BaseClassInstance base;
-                base.baseClass = realClass->indexedType();
-                base.access = KDevelop::Declaration::Public;
-                base.virtualInheritance = false;
-                decl->addBaseClass(base);
+                decl->setBaseClass(realClass->indexedType());
             }
         }
     }
@@ -432,7 +427,6 @@ void DeclarationBuilder::visitInclude(RubyAst *node)
     // Register module mix-in
     if (lastClassModule) {
         ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
-        // TODO: accept classes
         if (current) {
             ModuleMixin mixin;
             mixin.included = true;
