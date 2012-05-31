@@ -87,8 +87,7 @@ private:
 
 } // End of namespace Ruby
 
-
-Q_DECLARE_TYPEINFO(Ruby::ModuleMixin, Q_MOVABLE_TYPE); // TODO: check this
+Q_DECLARE_TYPEINFO(Ruby::ModuleMixin, Q_MOVABLE_TYPE);
 
 
 #endif /* MODULE_DECLARATION_H */

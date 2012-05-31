@@ -22,33 +22,12 @@
 #define RUBY_CLASSDECLARATION_H
 
 
-#include <duchain/declarations/moduledeclaration.h>
+#include "moduledeclaration.h"
 #include <duchain/duchainexport.h>
 
 
 namespace Ruby
 {
-
-class KDEVRUBYDUCHAIN_EXPORT ClassDeclarationData : public ModuleDeclarationData
-{
-public:
-    /// Constructor.
-    ClassDeclarationData() : ModuleDeclarationData()
-    {
-        /* There's nothing to do here */
-    }
-
-    /**
-     * Copy constructor.
-     * @param rhs data to copy.
-     */
-    ClassDeclarationData(const ClassDeclarationData &rhs) : ModuleDeclarationData(rhs)
-    {
-        
-    }
-
-    KDevelop::IndexedType baseClass;
-};
 
 class KDEVRUBYDUCHAIN_EXPORT ClassDeclaration : public ModuleDeclaration
 {
@@ -70,15 +49,14 @@ public:
     ClassDeclaration(ModuleDeclarationData &data);
 
     void setBaseClass(KDevelop::IndexedType base);
-
     void clearBaseClass();
+    KDevelop::IndexedType baseClass() const;    
 
-    KDevelop::IndexedType baseClass() const;
-
-    enum { Identity = 45 /** The id of this Type. */ };
+    enum { Identity = 46 /** The id of this Type. */ };
 
 private:
-    DUCHAIN_DECLARE_DATA(ClassDeclaration)
+    virtual KDevelop::Declaration * clonePrivate() const;
+    KDevelop::IndexedType m_baseClass;
 };
 
 } // End of namespace Ruby

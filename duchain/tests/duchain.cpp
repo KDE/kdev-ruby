@@ -34,6 +34,7 @@
 #include <duchain/types/classtype.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)

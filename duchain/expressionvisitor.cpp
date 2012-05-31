@@ -62,6 +62,7 @@ void ExpressionVisitor::visitName(RubyAst *node)
 {
     if (!node->tree) // TODO: clean, it shouldn't happen, but it does :(
         return;
+    DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
     const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
     QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
@@ -167,6 +168,7 @@ void ExpressionVisitor::visitHash(RubyAst *node)
 
 void ExpressionVisitor::visitArrayValue(RubyAst *node)
 {
+    DUChainReadLocker lock(DUChain::lock());
     RubyAstVisitor::visitArrayValue(node);
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
@@ -315,6 +317,7 @@ void ExpressionVisitor::visitCaseStatement(RubyAst *node)
 
 TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
 {
+    DUChainReadLocker lock(DUChain::lock());
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
     Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
     AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);

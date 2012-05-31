@@ -424,11 +424,8 @@ void DeclarationBuilder::visitInclude(RubyAst *node)
     RubyAst *module = new RubyAst(node->tree->r, node->context);
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
-    // Register module mix-in
-    registerModuleMixin(decl->indexedType(), true);
-
-    // Include the instance methods
     if (decl) {
+        registerModuleMixin(decl->indexedType(), true);
         QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, iMethods) {
             if (!md->isClassMethod()) {
@@ -449,11 +446,8 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
     RubyAst *module = new RubyAst(node->tree->r, node->context);
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
-    // Register module mix-in
-    registerModuleMixin(decl->indexedType(), false);
-
-    // Include the class methods
     if (decl) {
+        registerModuleMixin(decl->indexedType(), false);
         QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, eMethods) {
             if (md->isClassMethod()) {
