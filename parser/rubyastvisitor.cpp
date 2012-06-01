@@ -46,13 +46,13 @@ RubyAstVisitor::~RubyAstVisitor()
 void RubyAstVisitor::visitCode(RubyAst *node)
 {
     debug() << "Visiting Code...";
-    RubyAst *child = new RubyAst(node->tree, node->context);
+    Node *aux = node->tree;
 
-    for (Node *n = node->tree; n != NULL; n = n->next) {
-        visitNode(child);
-        child->tree = n->next;
+    for (Node *n = aux; n != NULL; n = n->next) {
+        visitNode(node);
+        node->tree = n->next;
     }
-    delete child;
+    node->tree = aux;
 }
 
 void RubyAstVisitor::visitVariable(RubyAst *node)
@@ -81,9 +81,10 @@ void RubyAstVisitor::visitString(RubyAst *node)
      * l -> list of variables contained inside the string (by using #{var}).
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitSymbol(RubyAst *node)
@@ -100,17 +101,19 @@ void RubyAstVisitor::visitBody(RubyAst *node)
      * ensure -> optional ensure statement.
      */
 
-    if (node->tree == NULL)
+    Node *n = node->tree;
+    if (!n)
         return;
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    child->tree = node->tree->r;
-    visitNode(child);
-    child->tree = node->tree->cond;
-    visitNode(child);
-    child->tree = node->tree->ensure;
-    visitNode(child);
-    delete child;
+
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n->cond;
+    visitNode(node);
+    node->tree = n->ensure;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitBinary(RubyAst *node)
@@ -120,33 +123,36 @@ void RubyAstVisitor::visitBinary(RubyAst *node)
      * r -> right operator.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    child->tree = node->tree->r;
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitBoolean(RubyAst *node)
 {
     /* Same as for the visitBinary method  */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    child->tree = node->tree->r;
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitRange(RubyAst *node)
 {
     /* Same as for the visitBinary method  */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    child->tree = node->tree->r;
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitUnary(RubyAst *node)
@@ -155,9 +161,10 @@ void RubyAstVisitor::visitUnary(RubyAst *node)
      * l -> the operator.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitArray(RubyAst *node)
@@ -166,9 +173,10 @@ void RubyAstVisitor::visitArray(RubyAst *node)
      * l -> list of statements (the items of the array).
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitArrayValue(RubyAst *node)
@@ -178,11 +186,12 @@ void RubyAstVisitor::visitArrayValue(RubyAst *node)
      * r -> the index expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    child->tree = node->tree->r;
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitHash(RubyAst *node)
@@ -191,10 +200,11 @@ void RubyAstVisitor::visitHash(RubyAst *node)
      * l -> list of hash items.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    for (; child->tree != NULL; child->tree = child->tree->next)
-        visitBinary(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    for (; node->tree != NULL; node->tree = node->tree->next)
+        visitBinary(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitReturnStatement(RubyAst *node)
@@ -203,9 +213,10 @@ void RubyAstVisitor::visitReturnStatement(RubyAst *node)
      * l -> the return expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitUndefStatement(RubyAst *node)
@@ -214,20 +225,22 @@ void RubyAstVisitor::visitUndefStatement(RubyAst *node)
      * l -> list of undef items.
      */
 
-    RubyAst *child = new RubyAst(node->tree->r, node->context);
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->r;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitAliasStatement(RubyAst *node)
 {
     /* Same as for the visitBinary method. */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    child->tree = node->tree->r;
-    visitNode(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitYieldStatement(RubyAst *node)
@@ -236,9 +249,10 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
      * l -> the yield expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitNode(child);
-    delete child;    
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
@@ -252,9 +266,10 @@ void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
      * The left side is not implemented here because it may conflict with
      * the implementation of the DeclarationBuilder.
      */
-    RubyAst *child = new RubyAst(node->tree->r, node->context);
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->r;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitIfStatement(RubyAst *node)
@@ -265,13 +280,14 @@ void RubyAstVisitor::visitIfStatement(RubyAst *node)
      * cond -> the condition expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->cond, node->context);
-    visitNode(child);
-    child->tree = node->tree->l;
-    visitStatements(child);
-    child->tree = node->tree->r;
-    visitIfTail(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->cond;
+    visitNode(node);
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n->r;
+    visitIfTail(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitCaseStatement(RubyAst *node)
@@ -282,11 +298,12 @@ void RubyAstVisitor::visitCaseStatement(RubyAst *node)
      * cond -> the condition expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->cond, node->context);
-    visitNode(child);
-    child->tree = node->tree->l;
-    visitWhenStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->cond;
+    visitNode(node);
+    node->tree = n->l;
+    visitWhenStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitBeginStatement(RubyAst *node)
@@ -296,9 +313,10 @@ void RubyAstVisitor::visitBeginStatement(RubyAst *node)
      * a list of "regular" statement, check the visitBody method for more info.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitBody(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitBody(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitUpBeginEndStatement(RubyAst *node)
@@ -307,9 +325,10 @@ void RubyAstVisitor::visitUpBeginEndStatement(RubyAst *node)
      * l -> list of inner statements.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitWhileStatement(RubyAst *node)
@@ -319,11 +338,12 @@ void RubyAstVisitor::visitWhileStatement(RubyAst *node)
      * cond -> the condition expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->cond, node->context);
-    visitNode(child);
-    child->tree = node->tree->l;
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->cond;
+    visitNode(node);
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitForStatement(RubyAst *node)
@@ -334,13 +354,14 @@ void RubyAstVisitor::visitForStatement(RubyAst *node)
      * cond -> the expression after the "in" keyword.
      */
 
-    RubyAst *child = new RubyAst(node->tree->r, node->context);
-    visitStatements(child);
-    child->tree = node->tree->cond;
-    visitNode(child);
-    child->tree = node->tree->l;
-    visitStatements(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->r;
+    visitStatements(node);
+    node->tree = n->cond;
+    visitNode(node);
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitMethodStatement(RubyAst *node)
@@ -351,26 +372,26 @@ void RubyAstVisitor::visitMethodStatement(RubyAst *node)
      */
 
     Node *n = node->tree;
-    if (n == NULL)
+    if (!n)
         return;
 
-    RubyAst *child = new RubyAst(n->r, node->context);
-    visitMethodArguments(child);
-    child->tree = n->l;
-    visitBody(child);
-    delete child;
+    node->tree = n->r;
+    visitMethodArguments(node);
+    node->tree = n->l;
+    visitBody(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitMethodArguments(RubyAst *node)
 {
     /* Just iterate over the "next" pointer. */
 
-    RubyAst *child = new RubyAst(node->tree, node->context);
-    for (Node *n = node->tree; n != NULL; n = n->next) {
-        visitParameter(child);
-        child->tree = n->next;
+    Node *aux = node->tree;
+    for (Node *n = aux; n != NULL; n = n->next) {
+        visitParameter(node);
+        node->tree = n->next;
     }
-    delete child;
+    node->tree = aux;
 }
 
 void RubyAstVisitor::visitParameter(RubyAst *node)
@@ -387,11 +408,11 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
      */
 
     Node *n = node->tree;
-    RubyAst *child = new RubyAst(n->cond, node->context);
-    visitName(child);
-    child->tree = n->l;
-    visitBody(child);
-    delete child;
+    node->tree = n->cond;
+    visitName(node);
+    node->tree = n->l;
+    visitBody(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitSingletonClass(RubyAst *node)
@@ -403,11 +424,11 @@ void RubyAstVisitor::visitSingletonClass(RubyAst *node)
      */
 
     Node *n = node->tree;
-    RubyAst *child = new RubyAst(n->l, node->context);
-    visitBody(child);
-    child->tree = n->r;
-    visitNode(child);
-    delete child;
+    node->tree = n->l;
+    visitBody(node);
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitModuleStatement(RubyAst *node)
@@ -418,9 +439,9 @@ void RubyAstVisitor::visitModuleStatement(RubyAst *node)
      */
 
     Node *n = node->tree;
-    RubyAst *child = new RubyAst(n->l, node->context);
-    visitBody(child);
-    delete child;
+    node->tree = n->l;
+    visitBody(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitMethodCall(RubyAst *node)
@@ -431,23 +452,24 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
      * cond -> an optional Ruby block.
      */
 
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
-    for (Node *aux = child->tree; aux != NULL; aux = aux->next) {
-        visitNode(child);
-        child->tree = aux->next;
+    Node *n = node->tree;
+    node->tree = n->l;
+    for (Node *aux = n->l; aux != NULL; aux = aux->next) {
+        visitNode(node);
+        node->tree = aux->next;
     }
 
     /* Visit the method arguments */
-    child->tree = node->tree->r;
-    for (Node *aux = child->tree; aux != NULL; aux = aux->next) {
-        visitNode(child);
-        child->tree = aux->next;
+    node->tree = n->r;
+    for (Node *aux = n->r; aux != NULL; aux = aux->next) {
+        visitNode(node);
+        node->tree = aux->next;
     }
 
     /* Vist method call block */
-    child->tree = node->tree->cond;
-    visitBlock(child);
-    delete child;
+    node->tree = n->cond;
+    visitBlock(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitLambda(RubyAst *node)
@@ -456,9 +478,10 @@ void RubyAstVisitor::visitLambda(RubyAst *node)
      * cond -> the block of this lambda expression.
      */
 
-    RubyAst *child = new RubyAst(node->tree->cond, node->context);
-    visitBlock(child);
-    delete child;
+    Node *n = node->tree;
+    node->tree = n->cond;
+    visitBlock(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitBlock(RubyAst *node)
@@ -468,17 +491,17 @@ void RubyAstVisitor::visitBlock(RubyAst *node)
      * r -> list of block variables.
      */
 
-    Node *n;
-    if (node->tree == NULL)
+    Node *aux = node->tree;
+    if (!aux)
         return;
-    RubyAst *child = new RubyAst(node->tree->r, node->context);
-    for (n = node->tree->r; n != NULL; n = n->next) {
-        visitBlockVariable(child);
-        child->tree = n->next;
+    node->tree = aux->r;
+    for (Node *n = aux->r; n != NULL; n = n->next) {
+        visitBlockVariable(node);
+        node->tree = n->next;
     }
-    child->tree = node->tree->l;
-    visitStatements(child);
-    delete child;
+    node->tree = aux->l;
+    visitStatements(node);
+    node->tree = aux;
 }
 
 void RubyAstVisitor::visitBlockVariable(RubyAst *node)
@@ -513,9 +536,9 @@ void RubyAstVisitor::visitDefined(RubyAst *node)
      */
 
     Node *n = node->tree;
-    RubyAst *child = new RubyAst(n->l, node->context);
-    visitNode(child);
-    delete child;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitTrue(RubyAst *node)
@@ -639,10 +662,12 @@ void RubyAstVisitor::visitNode(RubyAst *node)
 
 void RubyAstVisitor::visitStatements(RubyAst *list)
 {
-    for (Node *n = list->tree; n != NULL; n = n->next) {
+    Node *aux = list->tree;
+    for (Node *n = aux; n != NULL; n = n->next) {
         visitNode(list);
         list->tree = n->next;
     }
+    list->tree = aux;
 }
 
 void RubyAstVisitor::visitIfTail(RubyAst *tail)
@@ -657,27 +682,28 @@ void RubyAstVisitor::visitIfTail(RubyAst *tail)
         visitStatements(tail);
     } else
         visitIfStatement(tail);
+    tail->tree = n;
 }
 
 void RubyAstVisitor::visitWhenStatements(RubyAst *list)
 {
     Node *n = list->tree;
-    if (n == NULL)
+    if (!n)
         return;
 
     /* Check whether this is a when or an else statement */
     if (n->kind == token_when) {
-        RubyAst *child = new RubyAst(n->cond, list->context);
-        visitNode(child);
-        child->tree = n->l;
-        visitStatements(child);
-        child->tree = n->r;
-        visitWhenStatements(child);
-        delete child;
+        list->tree = n->cond;
+        visitNode(list);
+        list->tree = n->l;
+        visitStatements(list);
+        list->tree = n->r;
+        visitWhenStatements(list);
     } else {
         list->tree = n->l;
         visitStatements(list);
     }
+    list->tree = n;
 }
 
 void RubyAstVisitor::checkMethodCall(RubyAst *mc)

@@ -204,6 +204,22 @@ void ContextBuilder::visitRequireRelative(RubyAst *node)
     require(node->tree->r, true);
 }
 
+void ContextBuilder::visitInclude(RubyAst *node)
+{
+    Node *n = node->tree;
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
+}
+
+void ContextBuilder::visitExtend(RubyAst *node)
+{
+    Node *n = node->tree;
+    node->tree = n->r;
+    visitNode(node);
+    node->tree = n;
+}
+
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());

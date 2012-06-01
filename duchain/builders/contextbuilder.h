@@ -85,6 +85,8 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitRequire(RubyAst *node);
     virtual void visitRequireRelative(RubyAst *node);
+    virtual void visitInclude(RubyAst *node);
+    virtual void visitExtend(RubyAst *node);
 
     void openContextForClassDefinition(RubyAst *node);
     KDevelop::DocumentRange getDocumentRange(Node *node);
