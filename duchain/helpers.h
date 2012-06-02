@@ -73,9 +73,9 @@ using namespace KDevelop;
      * @param range The range for this node.
      * @param context A pointer to the DUContext of this node.
      */
-    KDEVRUBYDUCHAIN_EXPORT Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                                           const RangeInRevision &range,
-                                                           DUContextPointer context);
+    KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
+                                                        const RangeInRevision &range,
+                                                        DUContextPointer context);
 
     /**
      * Get the url of the file specified by a require statement.

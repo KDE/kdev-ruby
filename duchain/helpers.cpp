@@ -58,9 +58,7 @@ const QByteArray getComment(RubyAst *ast)
     return (m_comment != NULL) ? QByteArray(m_comment) : QByteArray("");
 }
 
-Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                const RangeInRevision &range,
-                                DUContextPointer context)
+Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, DUContextPointer context)
 {
     QList<Declaration *> decls;
 

@@ -39,20 +39,16 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 
 void UseBuilder::visitName(RubyAst *node)
 {
-    NameAst *name = new NameAst(node);
-    const QualifiedIdentifier &id = identifierForNode(name);
-    const QString str = name->value;
-    delete name;
-
+    const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
-    KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+    KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (!decl) {
         KDevelop::Problem *p = new KDevelop::Problem();
         p->setFinalLocation(DocumentRange(m_editor->url(), range.castToSimpleRange()));
         p->setSource(KDevelop::ProblemData::SemanticAnalysis);
         p->setSeverity(KDevelop::ProblemData::Hint);
-        p->setDescription(i18n("Undefined variable or method: %1", str));
+        p->setDescription(i18n("Undefined variable or method: %1", id.toString()));
         {
             DUChainWriteLocker wlock(DUChain::lock());
             ProblemPointer ptr(p);

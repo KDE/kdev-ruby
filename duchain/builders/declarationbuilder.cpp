@@ -99,7 +99,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     node->tree = node->tree->cond;
     if (node->tree) {
         QualifiedIdentifier baseId = getIdentifier(node);
-        KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
+        KDevelop::Declaration *baseDecl = getDeclaration(baseId, range, DUContextPointer(currentContext()));
         if (!baseDecl)
             appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
         else {
@@ -361,7 +361,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
     QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
     DUChainReadLocker lock(DUChain::lock());
     const RangeInRevision &range = editorFindRange(right, right);
-    KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
+    KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
     lock.unlock();
 
     if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
