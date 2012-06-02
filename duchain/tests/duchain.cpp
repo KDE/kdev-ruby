@@ -527,6 +527,8 @@ void TestDUChain::hashAssignment()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
+    PENDING("Waiting for the ClassType to be supported");
+
     QVERIFY(top->localDeclarations().size() == 2);
 
     Declaration *dec1 = top->localDeclarations().at(0);
@@ -534,6 +536,7 @@ void TestDUChain::hashAssignment()
 
     Declaration *dec2 = top->localDeclarations().at(1);
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec2->abstractType());
+    QVERIFY(ut);
     QList<QString> list;
     list << "Fixnum" << "String";
     testUnsureTypes(ut, list);

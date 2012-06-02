@@ -26,27 +26,40 @@
 #include <duchain/duchainexport.h>
 
 
-/*
- * WARNING: This file is under development.
- */
-/*
- * TODO
- *  - Define a set of variable kinds
- */
-
 namespace Ruby
 {
 
-class KDEVRUBYDUCHAIN_EXPORT RubyVariableDeclaration : public KDevelop::Declaration
+/**
+ * @class VariableDeclaration
+ *
+ * Represents the declaration of a variable in ruby.
+ */
+class KDEVRUBYDUCHAIN_EXPORT VariableDeclaration : public KDevelop::Declaration
 {
 public:
-    RubyVariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-    RubyVariableDeclaration(const RubyVariableDeclaration &rhs);
-    RubyVariableDeclaration(KDevelop::DeclarationData &data);
-    RubyVariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range);
-};
+    /**
+     * Constructor.
+     * @param range The range of this declaration.
+     * @param ctx The context of this declaration.
+     */
+    VariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
 
-typedef RubyVariableDeclaration VariableDeclaration;
+    /**
+     * Constructor.
+     * @param data The data to be copied.
+     * @param range The range of this declaration.
+     */
+    VariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range);
+
+    /// Copy constructor.
+    VariableDeclaration(const VariableDeclaration &rhs);
+
+    /**
+     * Copy constructor.
+     * @param data The data to be copied.
+     */
+    VariableDeclaration(KDevelop::DeclarationData &data);
+};
 
 } // End of namespace: Ruby
 

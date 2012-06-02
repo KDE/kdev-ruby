@@ -73,7 +73,7 @@ public:
      *
      * @param node the node to get its range.
      */
-    KDevelop::RangeInRevision findRange(Node * node) const;
+    KDevelop::RangeInRevision findRange(Node *node) const;
 
     /**
      * Set the parse session (parser) for this EditorIntegrator.

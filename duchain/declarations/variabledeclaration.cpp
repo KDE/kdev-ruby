@@ -17,34 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "variabledeclaration.h"
+
+#include <duchain/declarations/variabledeclaration.h>
 
 
 namespace Ruby
 {
 
-RubyVariableDeclaration::RubyVariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext* ctx)
+VariableDeclaration::VariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
     : KDevelop::Declaration(range, ctx)
 {
-
+    /* There's nothing to do here */
 }
 
-RubyVariableDeclaration::RubyVariableDeclaration(const RubyVariableDeclaration& rhs)
+VariableDeclaration::VariableDeclaration(const VariableDeclaration &rhs)
     : KDevelop::Declaration(rhs)
 {
-
+    /* There's nothing to do here */
 }
 
-RubyVariableDeclaration::RubyVariableDeclaration(KDevelop::DeclarationData& data)
+VariableDeclaration::VariableDeclaration(KDevelop::DeclarationData &data)
     : KDevelop::Declaration(data)
 {
-
+    /* There's nothing to do here */
 }
 
-RubyVariableDeclaration::RubyVariableDeclaration(KDevelop::DeclarationData& data, const KDevelop::RangeInRevision& range)
+VariableDeclaration::VariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range)
     : KDevelop::Declaration(data, range)
 {
-
+    /* There's nothing to do here */
 }
 
-}
+} // End of namespace Ruby

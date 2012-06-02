@@ -184,7 +184,9 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
      * has been fired. Thus, the type of the last expression has to be mixed
      * into the return type of this method.
      */
-    if (node->tree->l) {
+    Node *aux = node->tree;
+    node->tree = aux->l;
+    if (node->tree && node->tree->l) {
         node->tree = get_last_expr(node->tree->l);
         if (node->tree->kind != token_return) {
             ExpressionVisitor ev(currentContext(), m_editor);
@@ -193,6 +195,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
                 type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
         }
     }
+    node->tree = aux;
     if (!type->returnType())
         type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
     decl->setType(type);
