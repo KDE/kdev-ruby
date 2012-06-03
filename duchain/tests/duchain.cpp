@@ -254,6 +254,45 @@ void TestDUChain::aliasGlobal2()
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
 }
 
+void TestDUChain::yield1()
+{
+    QByteArray code("def foo; yield; end; foo { |a, b| puts a + b }");
+    TopDUContext *top = parse(code, "yield1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    Declaration *dec1 = top->localDeclarations().at(1);
+    Declaration *dec2 = top->localDeclarations().at(2);
+
+    QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    // TODO: types must be NilClass
+}
+
+void TestDUChain::yield2()
+{
+    QByteArray code("def foo; yield 1, 2; yield 'a', 'b'; end; foo { |a, b| puts a + b }");
+    TopDUContext *top = parse(code, "yield2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 3);
+
+    Declaration *dec = top->localDeclarations().at(1);
+    QCOMPARE(dec->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+
+    dec = top->localDeclarations().at(2);
+    QCOMPARE(dec->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
+    testUnsureTypes(ut, list);
+}
+
 //END: Simple Statements
 
 //BEGIN: Compound Statements

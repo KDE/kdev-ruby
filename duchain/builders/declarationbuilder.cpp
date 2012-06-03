@@ -246,7 +246,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
         if (yieldList && i < max)
             type = yieldList[i].type.abstractType();
         else
-            type = new ObjectType();
+            type = new ObjectType(); // TODO: set to nil
         declareVariable(currentContext(), type, getIdentifier(node), node);
     }
 }

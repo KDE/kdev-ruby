@@ -66,6 +66,8 @@ private slots:
     void alias();
     void aliasGlobal1();
     void aliasGlobal2();
+    void yield1();
+    void yield2();
 
     // Compound Statements
     void ifStatement();
