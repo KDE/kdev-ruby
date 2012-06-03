@@ -18,8 +18,9 @@
  */
 
 
-#include <duchain/declarations/methoddeclaration.h>
 #include <language/duchain/duchainregister.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <duchain/helpers.h>
 
 
 namespace Ruby
@@ -82,9 +83,13 @@ void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
     bool wasInSymbolTable = inSymbolTable();
 
     setInSymbolTable(false);
-    if (n < d_func()->yieldTypesSize())
-        d_func_dynamic()->yieldTypesList()[n] = yield;
-    else
+    if (n < d_func()->yieldTypesSize()) {
+        IndexedType old = d_func_dynamic()->yieldTypesList()[n].type;
+        YieldType res;
+        AbstractType::Ptr merged = mergeTypes(old.abstractType(), yield.type.abstractType());
+        res.type = merged.unsafeData()->indexed();
+        d_func_dynamic()->yieldTypesList()[n] = res;
+    } else
         d_func_dynamic()->yieldTypesList().append(yield);
     setInSymbolTable(wasInSymbolTable);
 }

@@ -230,11 +230,25 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     }
 }
 
-void DeclarationBuilder::visitBlockVariable(RubyAst *node)
+void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 {
-    /* TODO Type should be inferred from the yield calls from the caller method */
-    AbstractType::Ptr type(new ObjectType());
-    declareVariable(currentContext(), type, getIdentifier(node), node);
+    MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
+    Node *n = node->tree;
+    if (!m_lastMethodCall || !n)
+        return;
+
+    uint i = 0;
+    uint max = last->yieldTypesSize();
+    AbstractType::Ptr type;
+    const YieldType *yieldList = last->yieldTypes();
+    for (Node *aux = n; aux != NULL; aux = aux->next, i++) {
+        node->tree = aux;
+        if (yieldList && i < max)
+            type = yieldList[i].type.abstractType();
+        else
+            type = new ObjectType();
+        declareVariable(currentContext(), type, getIdentifier(node), node);
+    }
 }
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
@@ -422,7 +436,9 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
 
     /* And last but not least, go for the block */
     node->tree = aux->cond;
+    m_lastMethodCall = lastMethod.data();
     visitBlock(node);
+    m_lastMethodCall = NULL;
     node->tree = aux;
 }
 
@@ -510,6 +526,23 @@ void DeclarationBuilder::visitAccessSpecifier(short int policy)
         case 2:
             setAccessPolicy(KDevelop::Declaration::Private);
     }
+}
+
+void DeclarationBuilder::visitYieldStatement(RubyAst *node)
+{
+    MethodDeclaration *mDecl = currentDeclaration<MethodDeclaration>();
+    Node *n = node->tree;
+    if (mDecl && n->l) {
+        ExpressionVisitor ev(currentContext(), m_editor);
+        uint i = 0;
+        for (Node *aux = n->l; aux != NULL; aux = aux->next, i++) {
+            node->tree = aux;
+            ev.visitNode(node);
+            YieldType yt = { ev.lastType()->indexed() };
+            mDecl->replaceYieldTypes(yt, i);
+        }
+    }
+    node->tree = n;
 }
 
 void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,

@@ -60,7 +60,7 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitParameter(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
-    virtual void visitBlockVariable(RubyAst *node);
+    virtual void visitBlockVariables(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
     virtual void visitAssignmentStatement(RubyAst *node);
     virtual void visitAliasStatement(RubyAst *node);
@@ -70,6 +70,7 @@ protected:
     virtual void visitLambda(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
     virtual void visitAccessSpecifier(short int policy);
+    virtual void visitYieldStatement(RubyAst *node);
 
 private:
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
@@ -81,6 +82,7 @@ private:
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
     ModuleDeclaration * getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
+    Declaration *m_lastMethodCall;
     bool insideClassModule;
 
     // TODO: this is ugly as hell

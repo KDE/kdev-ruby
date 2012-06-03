@@ -248,7 +248,6 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
     /*
      * l -> the yield expression.
      */
-
     Node *n = node->tree;
     node->tree = n->l;
     visitNode(node);
@@ -495,18 +494,24 @@ void RubyAstVisitor::visitBlock(RubyAst *node)
     if (!aux)
         return;
     node->tree = aux->r;
-    for (Node *n = aux->r; n != NULL; n = n->next) {
-        visitBlockVariable(node);
-        node->tree = n->next;
-    }
+    visitBlockVariables(node);
     node->tree = aux->l;
     visitStatements(node);
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitBlockVariable(RubyAst *node)
+void RubyAstVisitor::visitBlockVariables(RubyAst *node)
 {
-    Q_UNUSED(node)
+    /*
+     * Just iterate over the next pointer.
+     */
+
+    Node *aux = node->tree;
+    for (Node *n = node->tree; n != NULL; n = n->next) {
+        visitNode(node);
+        node->tree = n->next;
+    }
+    node->tree = aux;
 }
 
 void RubyAstVisitor::visitExtend(RubyAst *node)
