@@ -89,7 +89,6 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
-    openContextForClassDefinition(node);
 
     /*
      * Now let's check for the base class. Ruby does not support multiple
@@ -120,6 +119,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->setType(type);
     openType(type);
 
+    openContextForClassDefinition(node);
     decl->setInternalContext(currentContext());
     DeclarationBuilderBase::visitClassStatement(node);
     closeContext();

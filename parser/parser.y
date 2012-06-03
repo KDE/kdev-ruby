@@ -278,9 +278,9 @@ stmt: tALIAS fsym fsym
   {
     /* Ugly as hell, but it works */
     struct node * l = alloc_node(token_object, NULL, NULL);
-    l->flags = 1;
+    l->flags = 3;
     struct node * r = alloc_node(token_object, NULL, NULL);
-    r->flags = 1;
+    r->flags = 3;
     fix_pos(parser, r);
     fix_pos(parser, l);
     pop_stack(parser, l);
@@ -1293,9 +1293,9 @@ symbol: tSYMBEG sym
 
 sym: fname
   | strings
-  | IVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=1; POP_STACK; }
-  | CVAR { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | IVAR { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=4; POP_STACK; }
+  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=3; POP_STACK; }
+  | CVAR { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=5; POP_STACK; }
 ;
 
 numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
@@ -1303,10 +1303,10 @@ numeric: NUMERIC { $$ = ALLOC_N(token_numeric, NULL, NULL); }
 ;
 
 variable: base
-  | IVAR   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
-  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=1; POP_STACK; }
+  | IVAR   { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=4; POP_STACK; }
+  | GLOBAL { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=3; POP_STACK; }
   | const
-  | CVAR   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+  | CVAR   { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=5; POP_STACK; }
   | other_vars
 ;
 
@@ -1445,7 +1445,7 @@ singleton: variable { $$ = $1; }
   }
 ;
 
-const: CONST { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+const: CONST { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags=6; POP_STACK; }
 ;
 
 base: BASE { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }

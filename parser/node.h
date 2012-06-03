@@ -151,7 +151,7 @@ typedef struct {
 struct node {
 /* Node info */
   int kind;
-  short flags;
+  int flags;
   char * name;
   char * comment;
 
@@ -249,12 +249,15 @@ void free_errors(struct error_t * errors);
 
 #define get_last_expr(n) ((n->last) ? n->last : n)
 #define is_valid(n) (n->startLine >= 0)
-#define is_global_var(n) (n->flags == 1)
-#define is_float(n) (n->flags == 1)
-#define is_class_method(n) (n->cond->r != NULL)
 #define is_rest_arg(n) (n->flags == 1)
 #define is_block_arg(n) (n->flags == 2)
-#define has_star(n) (n->flags > 0)
+#define is_global_var(n) (n->flags == 3)
+#define is_ivar(n) (n->flags == 4)
+#define is_cvar(n) (n->flags == 5)
+#define is_constant (n->flags == 6)
+#define is_float(n) (n->flags == 1)
+#define is_class_method(n) (n->cond->r != NULL)
+#define has_star(n) (n->flags == 1 || n->flags == 2)
 #define is_just_a_star(n) (n->flags == 2)
 
 
