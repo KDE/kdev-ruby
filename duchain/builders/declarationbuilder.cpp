@@ -169,6 +169,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     setComment(getComment(node));
     MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
+    decl->clearYieldTypes();
     decl->setClassMethod(is_class_method(node->tree));
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     if (currentContext()->type() == DUContext::Class)

@@ -25,6 +25,7 @@
 namespace Ruby
 {
 REGISTER_DUCHAIN_ITEM(MethodDeclaration);
+DEFINE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
 
 MethodDeclaration::MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
@@ -68,5 +69,34 @@ void MethodDeclaration::setAccessPolicy(const KDevelop::Declaration::AccessPolic
     d_func_dynamic()->m_accessPolicy = policy;
 }
 
+void MethodDeclaration::clearYieldTypes()
+{
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->yieldTypesList().clear();
+    setInSymbolTable(wasInSymbolTable);
+}
+
+void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
+{
+    bool wasInSymbolTable = inSymbolTable();
+
+    setInSymbolTable(false);
+    if (n < d_func()->yieldTypesSize())
+        d_func_dynamic()->yieldTypesList()[n] = yield;
+    else
+        d_func_dynamic()->yieldTypesList().append(yield);
+    setInSymbolTable(wasInSymbolTable);
+}
+
+const YieldType* MethodDeclaration::yieldTypes() const
+{
+    return d_func()->yieldTypes();
+}
+
+uint MethodDeclaration::yieldTypesSize()
+{
+    return d_func()->yieldTypesSize();
+}
 
 } // End of namespace Ruby
