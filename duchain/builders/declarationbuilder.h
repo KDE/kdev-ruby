@@ -62,7 +62,7 @@ protected:
     virtual void visitVariable(RubyAst *node);
     virtual void visitBlockVariable(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
-    virtual void visitAssignmentStatement(RubyAst *node); // TODO: cache the NilClass
+    virtual void visitAssignmentStatement(RubyAst *node);
     virtual void visitAliasStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitInclude(RubyAst *node);

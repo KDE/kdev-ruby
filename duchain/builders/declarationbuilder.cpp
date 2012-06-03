@@ -165,6 +165,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
+    Node *aux = node->tree;
 
     setComment(getComment(node));
     MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
@@ -175,8 +176,12 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     openType(type);
     decl->setInSymbolTable(false);
-    DeclarationBuilderBase::visitMethodStatement(node);
+    node->tree = aux->r;
+    visitMethodArguments(node);
+    node->tree = aux->l;
+    visitMethodBody(node);
     closeDeclaration();
+    eventuallyAssignInternalContext();
     closeType();
 
     /*
@@ -184,8 +189,6 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
      * has been fired. Thus, the type of the last expression has to be mixed
      * into the return type of this method.
      */
-    Node *aux = node->tree;
-    node->tree = aux->l;
     if (node->tree && node->tree->l) {
         node->tree = get_last_expr(node->tree->l);
         if (node->tree->kind != token_return) {
@@ -199,6 +202,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     if (!type->returnType())
         type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
     decl->setType(type);
+    decl->setInSymbolTable(true);
 }
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
@@ -229,15 +233,7 @@ void DeclarationBuilder::visitBlockVariable(RubyAst *node)
 {
     /* TODO Type should be inferred from the yield calls from the caller method */
     AbstractType::Ptr type(new ObjectType());
-
-    // create variable declaration for argument
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = m_editor->findRange(node->tree);
-    openDefinition<VariableDeclaration>(getIdentifier(node), range);
-    currentDeclaration()->setKind(Declaration::Instance);
-    currentDeclaration()->setType(type);
-    DeclarationBuilderBase::visitBlockVariable(node);
-    closeDeclaration();
+    declareVariable(currentContext(), type, getIdentifier(node), node);
 }
 
 void DeclarationBuilder::visitVariable(RubyAst *node)
@@ -396,6 +392,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 void DeclarationBuilder::visitMethodCall(RubyAst *node)
 {
     DUChainReadLocker lock(DUChain::lock());
+    Node *aux = node->tree;
     ExpressionVisitor v(currentContext(), m_editor);
     v.visitNode(node);
 
@@ -405,15 +402,15 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
         DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
         FunctionType::Ptr mtype = lastMethod->type<FunctionType>();
         if (argCtx && mtype) {
-            RubyAst *aux = new RubyAst(node->tree->r, node->context);
+            node->tree = aux->r;
             QVector<Declaration *> args = argCtx->localDeclarations();
             int i = 0;
             lock.unlock();
             DUChainWriteLocker wlock(DUChain::lock());
-            for (Node *n = aux->tree; n != NULL && i < args.size(); n = n->next, i++) {
-                aux->tree = n;
+            for (Node *n = node->tree; n != NULL && i < args.size(); n = n->next, i++) {
+                node->tree = n;
                 ExpressionVisitor av(currentContext(), m_editor);
-                av.visitNode(aux);
+                av.visitNode(node);
                 AbstractType::Ptr merged = mergeTypes(args.at(i)->abstractType(),
                                                       av.lastType().cast<AbstractType>());
                 args.at(i)->setType(merged);
@@ -421,6 +418,11 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
             wlock.unlock();
         }
     }
+
+    /* And last but not least, go for the block */
+    node->tree = aux->cond;
+    visitBlock(node);
+    node->tree = aux;
 }
 
 void DeclarationBuilder::visitInclude(RubyAst *node)
@@ -553,7 +555,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
-    eventuallyAssignInternalContext();
     DeclarationBuilderBase::closeDeclaration();
 }
 

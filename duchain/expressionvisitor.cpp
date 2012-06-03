@@ -186,8 +186,6 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
     RubyAstVisitor::visitMethodCall(node);
-    // TODO: visit parameters ?
-
     Declaration *decl = findDeclarationForCall(node, m_ctx);
     if (decl) {
         AbstractType::Ptr type;

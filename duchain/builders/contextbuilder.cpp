@@ -167,28 +167,15 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
-    QualifiedIdentifier name = getIdentifier(node);
-    Node *aux = node->tree;
-    node->tree = node->tree->r;
-    RangeInRevision rg = rangeForMethodArguments(node);
 
     /* Check the parameters */
-    DUContext *params = openContext(node, rg, DUContext::Function, name);
-    RubyAstVisitor::visitMethodArguments(node);
-    closeContext();
+    Node *aux = node->tree;
+    node->tree = node->tree->r;
+    visitMethodArguments(node);
 
     /* And now take care of the method body */
     node->tree = aux->l;
-    if (node->tree && is_valid(node->tree)) {
-        RangeInRevision range = editorFindRange(node, node);
-        DUContext *body = openContext(node, range, DUContext::Other, name);
-        if (compilingContexts()) {
-            body->addImportedParentContext(params);
-            body->setInSymbolTable(false);
-        }
-        RubyAstVisitor::visitBody(node);
-        closeContext();
-    }
+    visitMethodBody(node);
     node->tree = aux;
 }
 
@@ -218,6 +205,29 @@ void ContextBuilder::visitExtend(RubyAst *node)
     node->tree = n->r;
     visitNode(node);
     node->tree = n;
+}
+
+void ContextBuilder::visitMethodArguments(RubyAst *node)
+{
+    RangeInRevision rg = rangeForMethodArguments(node);
+    QualifiedIdentifier name = getIdentifier(node);
+    DUContext *params = openContext(node, rg, DUContext::Function, name);
+    RubyAstVisitor::visitMethodArguments(node);
+    closeContext();
+    m_importedParentContexts.append(params);
+}
+
+void ContextBuilder::visitMethodBody(RubyAst *node)
+{
+    if (node->tree && is_valid(node->tree)) {
+        RangeInRevision range = editorFindRange(node, node);
+        QualifiedIdentifier name = getIdentifier(node);
+        openContext(node, range, DUContext::Other, name);
+        currentContext()->setLocalScopeIdentifier(name);
+        addImportedContexts();
+        visitBody(node);
+        closeContext();
+    }
 }
 
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
