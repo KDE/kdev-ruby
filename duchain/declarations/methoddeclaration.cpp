@@ -104,4 +104,9 @@ uint MethodDeclaration::yieldTypesSize()
     return d_func()->yieldTypesSize();
 }
 
+KDevelop::Declaration* MethodDeclaration::clonePrivate() const
+{
+    return new MethodDeclaration(*this);
+}
+
 } // End of namespace Ruby

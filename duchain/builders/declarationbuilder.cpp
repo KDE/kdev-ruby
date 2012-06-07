@@ -234,7 +234,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 {
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
     Node *n = node->tree;
-    if (!m_lastMethodCall || !n)
+    if (!last || !n)
         return;
 
     uint i = 0;
@@ -437,7 +437,9 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     /* And last but not least, go for the block */
     node->tree = aux->cond;
     m_lastMethodCall = lastMethod.data();
+    lock.unlock();
     visitBlock(node);
+    lock.lock();
     m_lastMethodCall = NULL;
     node->tree = aux;
 }

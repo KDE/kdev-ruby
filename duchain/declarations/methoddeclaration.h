@@ -145,6 +145,11 @@ public:
 
     enum { Identity = 42 /** The id of this Type. */ };
 
+
+private:
+    /// Re-implemented from KDevelop::Declaration.
+    virtual KDevelop::Declaration * clonePrivate() const;
+
 private:
     DUCHAIN_DECLARE_DATA(MethodDeclaration)
 };
