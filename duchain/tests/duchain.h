@@ -110,7 +110,7 @@ private slots:
     void mixedExplicitAndImplicitReturn();
 
     // Method Calls
-    void callingtoNew();
+    void callingToInstanceMethod();
     void setMethodArgumentTypes1();
     void setMethodArgumentTypes2();
     void setUnsureArgument();

@@ -777,15 +777,18 @@ void TestDUChain::mixedExplicitAndImplicitReturn()
 
 //BEGIN: Method Calls
 
-void TestDUChain::callingtoNew()
+void TestDUChain::callingToInstanceMethod()
 {
-    QByteArray code("class Klass; end; obj = Klass.new");
-    TopDUContext *top = parse(code, "callingToNew");
+    QByteArray code("class Klass; def foo; 1; end; end; obj = Klass.new; a = obj.foo");
+    TopDUContext *top = parse(code, "callingToInstanceMethod");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     Declaration *obj = top->localDeclarations().at(1);
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+
+    obj = top->localDeclarations().at(2);
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::setMethodArgumentTypes1()
