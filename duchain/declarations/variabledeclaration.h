@@ -23,11 +23,44 @@
 
 
 #include <language/duchain/declaration.h>
+#include <language/duchain/declarationdata.h>
+#include <parser/node.h>
 #include <duchain/duchainexport.h>
 
 
 namespace Ruby
 {
+
+/**
+ * @class VariableDeclarationData
+ * Private data structure for VariableDeclaration.
+ */
+class KDEVRUBYDUCHAIN_EXPORT VariableDeclarationData : public KDevelop::DeclarationData
+{
+public:
+    /// Constructor
+    VariableDeclarationData() : KDevelop::DeclarationData(), m_kind(2)
+    {
+        /* There's nothing to do here */
+    }
+
+    /// Copy constructor.
+    VariableDeclarationData(const VariableDeclarationData &rhs)
+        : KDevelop::DeclarationData(rhs)
+    {
+        m_kind = rhs.m_kind;
+    }
+
+    /// Destructor.
+    ~VariableDeclarationData()
+    {
+        /* There's nothing to do here */
+    }
+
+public:
+    /// The kind of a variable declaration (i.e. constant, ivar, ...)
+    int m_kind;
+};
 
 /**
  * @class VariableDeclaration
@@ -42,27 +75,40 @@ public:
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    VariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    VariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext *context);
 
     /**
      * Constructor.
      * @param data The data to be copied.
      * @param range The range of this declaration.
      */
-    VariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range);
+    VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range);
+
+    /// Copy constructor
+    VariableDeclaration(const VariableDeclaration &rhs);
 
     /// Copy constructor.
-    VariableDeclaration(const VariableDeclaration &rhs);
+    VariableDeclaration(VariableDeclarationData &data);
 
     /**
      * Copy constructor.
      * @param data The data to be copied.
      */
     VariableDeclaration(KDevelop::DeclarationData &data);
+
+    /// Given a @p node, set the variable kind.
+    void setVariableKind(const Node *node);
+
+    /// @returns the kind of this variable declaration.
+    int variableKind() const;
+
+    enum { Identity = 47 /** The id of this Type. */ };
+
+private:
+    DUCHAIN_DECLARE_DATA(VariableDeclaration)
 };
 
 } // End of namespace: Ruby
 
 
 #endif // RUBY_VARIABLEDECLARATION_H
-

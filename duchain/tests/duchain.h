@@ -98,6 +98,7 @@ private slots:
     void assignToArrayItem();
 
     // Declarations
+    void checkVariableKind();
     void instanceClassMethodDeclaration();
     void accessPolicyMethodInClass();
     void accessPolicyMethodInModule();

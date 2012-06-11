@@ -35,6 +35,7 @@
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
+#include <duchain/declarations/variabledeclaration.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -616,6 +617,29 @@ void TestDUChain::assignToArrayItem()
 //END: Variable Length Container
 
 //BEGIN: Declarations
+
+void TestDUChain::checkVariableKind()
+{
+    QByteArray code("$a = 0; @a = 0; @@a = 0; a = 0; A = 0");
+    TopDUContext *top = parse(code, "checkVariableKind");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    VariableDeclaration *obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(0));
+    QCOMPARE(obj->variableKind(), 3);
+
+    obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(1));
+    QCOMPARE(obj->variableKind(), 4);
+
+    obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(2));
+    QCOMPARE(obj->variableKind(), 5);
+
+    obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(3));
+    QCOMPARE(obj->variableKind(), 0);
+
+    obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(4));
+    QCOMPARE(obj->variableKind(), 6);
+}
 
 void TestDUChain::instanceClassMethodDeclaration()
 {

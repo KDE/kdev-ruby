@@ -191,7 +191,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
         AbstractType::Ptr type;
         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(test.data());
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(test.data());
-        if (md) {
+        if (md && md->type<FunctionType>()) {
             type = md->type<FunctionType>()->returnType();
             encounter(type);
         } else if (cd) {

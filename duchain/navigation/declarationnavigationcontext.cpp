@@ -30,6 +30,7 @@
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
+#include <duchain/declarations/variabledeclaration.h>
 #include <duchain/navigation/declarationnavigationcontext.h>
 
 
@@ -88,12 +89,23 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
 QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
 {
     const MethodDeclaration *md = dynamic_cast<const MethodDeclaration *>(decl.data());
-    
     if (md)
         return (md->isClassMethod()) ? "Class method" : "Instance method";
-    ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(decl.data());
+
+    const ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(decl.data());
     if (mDecl)
         return NULL;
+
+    VariableDeclaration *var = dynamic_cast<VariableDeclaration *>(decl.data());
+    if (var) {
+        switch (var->variableKind()) {
+            case 3: return "Global variable";
+            case 4: return "Instance variable";
+            case 5: return "Class variable";
+            case 6: return "Constant";
+            default: return "Variable";
+        }
+    }
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 

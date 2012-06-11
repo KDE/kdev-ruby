@@ -589,6 +589,7 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     }
 
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
+    dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setAbstractType(type);
     DeclarationBuilderBase::closeDeclaration();

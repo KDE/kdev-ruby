@@ -20,9 +20,6 @@
 
 
 #include <duchain/declarations/moduledeclaration.h>
-#include <language/duchain/identifier.h>
-#include <language/duchain/declaration.h>
-#include <language/duchain/appendedlist.h>
 #include <language/duchain/duchainregister.h>
 
 
