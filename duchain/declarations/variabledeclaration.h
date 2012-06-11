@@ -102,6 +102,14 @@ public:
     /// @returns the kind of this variable declaration.
     int variableKind() const;
 
+    // Helper methods
+
+    inline bool isNormal() const { return d_func()->m_kind < 3; }
+    inline bool isGlobal() const { return d_func()->m_kind == 3; }
+    inline bool isIvar() const { return d_func()->m_kind == 4; }
+    inline bool isCvar() const { return d_func()->m_kind == 5; }
+    inline bool isConstant() const { return d_func()->m_kind == 6; }
+
     enum { Identity = 47 /** The id of this Type. */ };
 
 private:

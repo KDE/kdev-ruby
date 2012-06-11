@@ -384,9 +384,10 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         if (!decl) {
             // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
             AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
-            decl = openDefinition<VariableDeclaration>(id, range);
-            decl->setKind(Declaration::Instance);
-            decl->setType(type);
+            VariableDeclaration *vDecl = openDefinition<VariableDeclaration>(id, range);
+            vDecl->setVariableKind(right->tree);
+            vDecl->setKind(Declaration::Instance);
+            vDecl->setType(type);
             eventuallyAssignInternalContext();
             DeclarationBuilderBase::closeDeclaration();
         }

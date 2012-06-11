@@ -626,19 +626,19 @@ void TestDUChain::checkVariableKind()
     DUChainWriteLocker lock(DUChain::lock());
 
     VariableDeclaration *obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(0));
-    QCOMPARE(obj->variableKind(), 3);
+    QVERIFY(obj->isGlobal());
 
     obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(1));
-    QCOMPARE(obj->variableKind(), 4);
+    QVERIFY(obj->isIvar());
 
     obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(2));
-    QCOMPARE(obj->variableKind(), 5);
+    QVERIFY(obj->isCvar());
 
     obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(3));
-    QCOMPARE(obj->variableKind(), 0);
+    QVERIFY(obj->isNormal());
 
     obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(4));
-    QCOMPARE(obj->variableKind(), 6);
+    QVERIFY(obj->isConstant());
 }
 
 void TestDUChain::instanceClassMethodDeclaration()
