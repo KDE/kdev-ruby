@@ -113,6 +113,9 @@ using namespace KDevelop;
     /// @returns the number of nodes that are next to the given @p node.
     KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
 
+    /// @returns the QualifiedIdentifier of the given @p ast.
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
+
 } // End of namespace Ruby
 
 

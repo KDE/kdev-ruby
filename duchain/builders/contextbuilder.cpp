@@ -250,13 +250,6 @@ DocumentRange ContextBuilder::getDocumentRange(Node *node)
     return DocumentRange(ind, range);
 }
 
-const QualifiedIdentifier ContextBuilder::getIdentifier(const RubyAst *ast)
-{
-    NameAst nameAst(ast);
-    QualifiedIdentifier name = identifierForNode(&nameAst);
-    return name;
-}
-
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 {
     if (!node->tree)

@@ -87,7 +87,7 @@ public:
      * Copy constructor.
      * @param data data to copy.
      */
-    ClassType(ClassTypeData &data);
+    ClassType(KDevelop::StructureTypeData &data);
 
     /// Add the given type @p typeToAdd to the contents.
     void addContentType(AbstractType::Ptr typeToAdd);

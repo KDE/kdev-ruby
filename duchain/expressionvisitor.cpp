@@ -24,7 +24,7 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/types/integraltype.h>
-#include <language/duchain/types/arraytype.h>
+#include <language/duchain/types/functiontype.h>
 
 // Ruby
 #include <rubydefs.h>
@@ -185,15 +185,15 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
-    RubyAstVisitor::visitMethodCall(node);
-    Declaration *decl = findDeclarationForCall(node, m_ctx);
-    if (decl) {
+    DeclarationPointer test = getDeclarationForCall(node, m_ctx);
+    DUChainReadLocker lock(DUChain::lock());
+    if (test) {
         AbstractType::Ptr type;
-        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(decl);
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
-        m_lastDeclaration = decl;
+        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(test.data());
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(test.data());
         if (md) {
-            // TODO
+            type = md->type<FunctionType>()->returnType();
+            encounter(type);
         } else if (cd) {
             type = cd->abstractType();
             encounter(type);
@@ -344,45 +344,44 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
     return ct;
 }
 
-Declaration * ExpressionVisitor::findDeclarationForCall(RubyAst *ast, DUContext *ctx)
+DeclarationPointer ExpressionVisitor::getDeclarationForCall(RubyAst *ast, DUContext *ctx)
 {
     DUChainReadLocker lock(DUChain::lock());
-    DUContext *lastCtx = ctx;
-    QList<Declaration *> stack, aux;
+    DUContext *aux, *lastCtx = ctx;
     RubyAst *left = new RubyAst(ast->tree->l, ast->context);
+    // HACK: this makes the Klass.new case to work. It should be implemented
+    // in a way that the "new" method is already inside a class definition
+    // without defining it.
+    DeclarationPointer last;
 
     for (Node *n = ast->tree->l; n != NULL; n = n->next) {
         left->tree = n;
         QualifiedIdentifier id = getIdentifier(left);
-        aux = lastCtx->findDeclarations(id.last());
-        aux << findInternalDeclaration(lastCtx, id.last()); // TODO: clean this
-        if (!aux.empty() && aux.last()) {
-            stack << aux.last();
-            if (aux.last()->internalContext())
-                lastCtx = aux.last()->internalContext();
-        } else
-            debug() << "Something went wrong : " << getIdentifier(left).toString();
+        aux = getDeclarationInternalContext(id, lastCtx);
+        if (!aux)
+            return (m_lastDeclaration) ? m_lastDeclaration : last;
+        last = m_lastDeclaration;
+        lastCtx = aux;
     }
-
-    // TODO: should be handled in a more formal way
-    if (stack.size() > 1 && stack.last()->identifier().toString() == "new")
-        return stack.at(stack.size() - 2);
-    return (!stack.isEmpty()) ? stack.last() : NULL;
+    return DeclarationPointer(NULL);
 }
 
-const QualifiedIdentifier ExpressionVisitor::getIdentifier(const RubyAst *ast)
+DUContext * ExpressionVisitor::getDeclarationInternalContext(const QualifiedIdentifier &id, DUContext *ctx)
 {
-    NameAst nameAst(ast);
-    QualifiedIdentifier name = QualifiedIdentifier(nameAst.value);
-    return name;
-}
+    QList<Declaration *> aux = ctx->findDeclarations(id);
+    m_lastDeclaration = NULL;
+    if (aux.isEmpty())
+        return NULL;
 
-Declaration * ExpressionVisitor::findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id)
-{
-    DUChainReadLocker lock(DUChain::lock());
-    foreach (Declaration *d, ctx->localDeclarations())
-        if (d->identifier() == id)
-            return d;
+    Declaration * last = aux.last();
+    // HACK: should be the last instruction before "return NULL", but in this way
+    // the hack from getDeclarationForCall works.
+    m_lastDeclaration = last;
+    ClassType::Ptr ct = last->type<ClassType>();
+    if (ct) {
+        IdentifiedType *it = dynamic_cast<IdentifiedType *>(ct.unsafeData());
+        return it->declaration(ctx->topContext())->internalContext();
+    }
     return NULL;
 }
 

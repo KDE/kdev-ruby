@@ -100,10 +100,9 @@ private:
         m_lastType = type;
     }
     ClassType::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
-    Declaration * findDeclarationForCall(RubyAst *ast, DUContext *ctx);
-    Declaration * findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id);
-    const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
     void visitLastStatement(RubyAst *node);
+    DeclarationPointer getDeclarationForCall(RubyAst *ast, DUContext *ctx);
+    DUContext * getDeclarationInternalContext(const QualifiedIdentifier &id, DUContext *ctx);
 
 private:
     KDevelop::DUContext *m_ctx;

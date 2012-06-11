@@ -37,8 +37,7 @@ namespace Ruby
 
 REGISTER_TYPE(ClassType);
 
-ClassType::ClassType()
-    : KDevelop::StructureType(createData<ClassType>())
+ClassType::ClassType() : KDevelop::StructureType(createData<ClassType>())
 {
     /* There's nothing to do here */
 }
@@ -49,7 +48,7 @@ ClassType::ClassType(const ClassType &rhs)
     /* There's nothing to do here */
 }
 
-ClassType::ClassType(ClassTypeData &data)
+ClassType::ClassType(KDevelop::StructureTypeData &data)
     : KDevelop::StructureType(data)
 {
     /* There's nothing to do here */

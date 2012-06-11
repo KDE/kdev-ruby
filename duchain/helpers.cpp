@@ -34,6 +34,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/types/classtype.h>
 
 
 namespace Ruby
@@ -233,6 +234,12 @@ int nodeListSize(Node *node)
     int i = 0;
     for (Node *n = node; n != NULL; n = n->next, i++);
     return i;
+}
+
+const QualifiedIdentifier getIdentifier(const RubyAst *ast)
+{
+    NameAst nameAst(ast);
+    return KDevelop::QualifiedIdentifier(nameAst.value);
 }
 
 } // End of namespace Ruby
