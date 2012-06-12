@@ -67,4 +67,3 @@ QString NavigationWidget::shortDescription(KDevelop::IncludeItem &item)
 
 
 } // End of namespace Ruby
-
