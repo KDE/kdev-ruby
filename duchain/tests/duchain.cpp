@@ -882,10 +882,21 @@ void TestDUChain::include1()
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
     ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
     QVERIFY(md);
+
+    // Check for the moduleMixins list of the class Klass
     QCOMPARE(md->internalContext()->localDeclarations(md->topContext()).size(), 1);
     QCOMPARE(md->moduleMixinsSize(), 1u);
     QVERIFY(md->moduleMixins()[0].included);
     QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::BB"));
+    QCOMPARE(md->mixersSize(), 0u);
+
+    // Check for the mixers list of the module AA::BB
+    obj = top->localDeclarations().at(0)->internalContext()->localDeclarations().first();
+    md = dynamic_cast<ModuleDeclaration *>(obj);
+    QVERIFY(md);
+    QCOMPARE(md->moduleMixinsSize(), 0u);
+    QCOMPARE(md->mixersSize(), 1u);
+    QCOMPARE(md->mixers()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
 }
 
 void TestDUChain::include2()
@@ -918,6 +929,7 @@ void TestDUChain::extend1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
+    // Check for the moduleMixins list of the class Klass
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
     ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
     QVERIFY(md);
@@ -925,6 +937,14 @@ void TestDUChain::extend1()
     QCOMPARE(md->moduleMixinsSize(), 1u);
     QVERIFY(!md->moduleMixins()[0].included);
     QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::BB"));
+
+    // Check for the mixers list of the module AA::BB
+    obj = top->localDeclarations().at(0)->internalContext()->localDeclarations().first();
+    md = dynamic_cast<ModuleDeclaration *>(obj);
+    QVERIFY(md);
+    QCOMPARE(md->moduleMixinsSize(), 0u);
+    QCOMPARE(md->mixersSize(), 1u);
+    QCOMPARE(md->mixers()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
 }
 
 //END: Include & Extend
