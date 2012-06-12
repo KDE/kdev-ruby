@@ -38,12 +38,13 @@ struct KDEVRUBYDUCHAIN_EXPORT ModuleMixin {
 };
 
 KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
+KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 
 /**
  * @class ModuleDeclarationData
  *
  * Private data structure for ModuleDeclaration. It contains an appended list
- * of module mix-ins.
+ * of module mix-ins and another one for the mixers.
  */
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::DeclarationData
 {
@@ -70,14 +71,15 @@ public:
 
     START_APPENDED_LISTS_BASE(ModuleDeclarationData, KDevelop::DeclarationData);
     APPENDED_LIST_FIRST(ModuleDeclarationData, ModuleMixin, moduleMixins);
-    END_APPENDED_LISTS(ModuleDeclarationData, moduleMixins);
+    APPENDED_LIST(ModuleDeclarationData, ModuleMixin, mixers, moduleMixins);
+    END_APPENDED_LISTS(ModuleDeclarationData, mixers);
 };
 
 /**
  * @class ModuleDeclaration
  *
  * This class represents a module declaration. It defines methods to access to
- * the list of module mixins.
+ * the list of module mixins and the list of the mixers.
  */
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclaration : public KDevelop::Declaration
 {
@@ -108,8 +110,20 @@ public:
     /// @returns the list of module mix-ins.
     const ModuleMixin * moduleMixins() const;
 
-    /// Add a new module mix-in @p module to the list.
+    /// Add a new module mix-in @p module to the list of module mix-ins.
     void addModuleMixin(ModuleMixin module);
+
+    /// Clean the list of mixers.
+    void clearMixers();
+
+    /// @returns the size of the list of mixers.
+    uint mixersSize();
+
+    /// @returns the list of mixers.
+    const ModuleMixin * mixers() const;
+
+    /// Add a new module mix-in @p module to the mixers list.
+    void addMixer(ModuleMixin module);
 
     /// Re-implemented from KDevelop::Declaration.
     QString toString() const;

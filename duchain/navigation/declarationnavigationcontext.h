@@ -79,14 +79,20 @@ protected:
     virtual QString declarationKind(KDevelop::DeclarationPointer decl);
 
 private:
-    /// TODO
+    /**
+     * Add to the html all the info about module mixins that can be extracted
+     * from the given declaration @p decl.
+     */
     void addModuleMixins(ModuleDeclaration *decl);
 
-    void addMixedIn(ModuleDeclaration *decl);
+    /**
+     * Add to the html all the modules/classes that extend/include the
+     * given module declaration @p decl.
+     */
+    void addMixers(ModuleDeclaration *decl);
 };
 
 }
 
 
 #endif /* DECLARATIONNAVIGATIONWIDGET_H */
-

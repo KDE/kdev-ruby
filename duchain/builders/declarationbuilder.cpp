@@ -139,6 +139,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     setComment(getComment(node));
     ModuleDeclaration *decl = openDeclaration<ModuleDeclaration>(id, range);
     decl->clearModuleMixins();
+    decl->clearMixers();
     decl->setKind(KDevelop::Declaration::Type);
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
@@ -451,7 +452,7 @@ void DeclarationBuilder::visitInclude(RubyAst *node)
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
     if (decl) {
-        registerModuleMixin(decl->indexedType(), true);
+        registerModuleMixin(decl, true);
         QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, iMethods) {
             if (!md->isClassMethod()) {
@@ -473,7 +474,7 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
     ModuleDeclaration *decl = getModuleDeclaration(module);
 
     if (decl) {
-        registerModuleMixin(decl->indexedType(), false);
+        registerModuleMixin(decl, false);
         QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, eMethods) {
             if (md->isClassMethod()) {
@@ -660,15 +661,17 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *modu
     return lastDecl;
 }
 
-void DeclarationBuilder::registerModuleMixin(IndexedType type, bool include)
+void DeclarationBuilder::registerModuleMixin(ModuleDeclaration *decl, bool include)
 {
     if (lastClassModule) {
         ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
         if (current) {
             ModuleMixin mixin;
             mixin.included = include;
-            mixin.module = type;
+            mixin.module = decl->indexedType();
             current->addModuleMixin(mixin);
+            mixin.module = current->indexedType();
+            decl->addMixer(mixin);
         }
     } else {
         // TODO: register to the Kernel module

@@ -71,10 +71,11 @@ void DeclarationNavigationContext::htmlClass()
         /* Write identifier */
         eventuallyMakeTypeLinks(m_declaration->abstractType());
         modifyHtml() += " ";
-        addMixedIn(mDecl);
+        // Add the modules/classes that include/extend this module.
+        addMixers(mDecl);
     }
 
-    // Both classes and modules can enter here
+    // Both classes and modules can have a valid module mix-in list.
     if (mDecl)
         addModuleMixins(mDecl);
 }
@@ -140,9 +141,20 @@ void DeclarationNavigationContext::addModuleMixins(ModuleDeclaration *decl)
     }
 }
 
-void DeclarationNavigationContext::addMixedIn(ModuleDeclaration *decl)
+void DeclarationNavigationContext::addMixers(ModuleDeclaration *decl)
 {
-    // TODO
+    uint nMixers = decl->mixersSize();
+    const ModuleMixin *aux;
+
+    if (nMixers > 0) {
+        aux = decl->mixers();
+        modifyHtml() += "<br>Mixed in: ";
+        for (uint i = 0; i < nMixers; i++) {
+            eventuallyMakeTypeLinks(aux[i].module.abstractType());
+            if (i != nMixers - 1)
+                modifyHtml() += ", ";
+        }
+    }
 }
 
 } // End of namespace Ruby

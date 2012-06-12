@@ -28,6 +28,7 @@ namespace Ruby
 
 REGISTER_DUCHAIN_ITEM(ModuleDeclaration);
 DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
+DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 
 
 ModuleDeclaration::ModuleDeclaration(const ModuleDeclaration &rhs)
@@ -73,6 +74,32 @@ void ModuleDeclaration::addModuleMixin(ModuleMixin module)
     bool wasInSymbolTable = inSymbolTable();
     setInSymbolTable(false);
     d_func_dynamic()->moduleMixinsList().append(module);
+    setInSymbolTable(wasInSymbolTable);
+}
+
+void ModuleDeclaration::clearMixers()
+{
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->mixersList().clear();
+    setInSymbolTable(wasInSymbolTable);
+}
+
+uint ModuleDeclaration::mixersSize()
+{
+    return d_func()->mixersSize();
+}
+
+const ModuleMixin* ModuleDeclaration::mixers() const
+{
+    return d_func()->mixers();
+}
+
+void ModuleDeclaration::addMixer(ModuleMixin module)
+{
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->mixersList().append(module);
     setInSymbolTable(wasInSymbolTable);
 }
 
