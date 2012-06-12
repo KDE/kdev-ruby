@@ -70,9 +70,13 @@ void DeclarationNavigationContext::htmlClass()
         modifyHtml() += "module ";
         /* Write identifier */
         eventuallyMakeTypeLinks(m_declaration->abstractType());
-        /* Write inheritance */
         modifyHtml() += " ";
+        addMixedIn(mDecl);
     }
+
+    // Both classes and modules can enter here
+    if (mDecl)
+        addModuleMixins(mDecl);
 }
 
 void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPointer declaration,
@@ -109,11 +113,36 @@ QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 
-void DeclarationNavigationContext::htmlIdentifiedType(AbstractType::Ptr type,
-                                                      const IdentifiedType *idType)
+void DeclarationNavigationContext::addModuleMixins(ModuleDeclaration *decl)
+{
+    uint nMixins = decl->moduleMixinsSize();
+    QList<AbstractType::Ptr> includes, extends;
+    ModuleMixin aux;
+
+    if (nMixins > 0) {
+        for (uint i = 0; i < nMixins; i++) {
+            aux = decl->moduleMixins()[i];
+            if (aux.included)
+                includes << aux.module.abstractType();
+            else
+                extends << aux.module.abstractType();
+        }
+        if (!includes.isEmpty()) {
+            modifyHtml() += "<br>Includes: ";
+            foreach (const AbstractType::Ptr d, includes)
+                eventuallyMakeTypeLinks(d);
+        }
+        if (!extends.isEmpty()) {
+            modifyHtml() += "<br>Extends: ";
+            foreach (const AbstractType::Ptr d, extends)
+                eventuallyMakeTypeLinks(d);
+        }
+    }
+}
+
+void DeclarationNavigationContext::addMixedIn(ModuleDeclaration *decl)
 {
     // TODO
-    KDevelop::AbstractDeclarationNavigationContext::htmlIdentifiedType(type, idType);
 }
 
 } // End of namespace Ruby

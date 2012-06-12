@@ -28,6 +28,7 @@
 
 namespace Ruby
 {
+class ModuleDeclaration;
 
 /**
  * @class DeclarationNavigationContext
@@ -77,12 +78,11 @@ protected:
      */
     virtual QString declarationKind(KDevelop::DeclarationPointer decl);
 
-    /**
-     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
-     * we can add some extra information about the identified type.
-     */
-    virtual void htmlIdentifiedType(KDevelop::AbstractType::Ptr type,
-                                    const KDevelop::IdentifiedType *idType);
+private:
+    /// TODO
+    void addModuleMixins(ModuleDeclaration *decl);
+
+    void addMixedIn(ModuleDeclaration *decl);
 };
 
 }
