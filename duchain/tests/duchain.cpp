@@ -920,7 +920,7 @@ void TestDUChain::include2()
     QCOMPARE(md->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("AA::CC"));
 }
 
-void TestDUChain::extend1()
+void TestDUChain::extend()
 {
     /* Same as include1 but with extend and a class method */
     QByteArray code("module AA; module BB; def foo; end; def self.selfish; end;");

@@ -119,7 +119,7 @@ private slots:
     // Include & Extend
     void include1();
     void include2();
-    void extend1();
+    void extend();
 };
 
 } // End of namespace Ruby

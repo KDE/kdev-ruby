@@ -391,6 +391,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
             vDecl->setType(type);
             eventuallyAssignInternalContext();
             DeclarationBuilderBase::closeDeclaration();
+            decl = vDecl;
         }
         node->tree = node->tree->l;
         QualifiedIdentifier aid = getIdentifier(node);
