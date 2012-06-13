@@ -211,7 +211,7 @@ void ContextBuilder::visitMethodArguments(RubyAst *node)
 {
     RangeInRevision rg = rangeForMethodArguments(node);
     QualifiedIdentifier name = getIdentifier(node);
-    DUContext *params = openContext(node, rg, DUContext::Function, name);
+    DUContext *params = openContext(node, rg, DUContext::Function, m_lastMethod);
     RubyAstVisitor::visitMethodArguments(node);
     closeContext();
     m_importedParentContexts.append(params);
@@ -222,8 +222,8 @@ void ContextBuilder::visitMethodBody(RubyAst *node)
     if (node->tree && is_valid(node->tree)) {
         RangeInRevision range = editorFindRange(node, node);
         QualifiedIdentifier name = getIdentifier(node);
-        openContext(node, range, DUContext::Other, name);
-        currentContext()->setLocalScopeIdentifier(name);
+        openContext(node, range, DUContext::Other, m_lastMethod);
+        currentContext()->setLocalScopeIdentifier(m_lastMethod);
         addImportedContexts();
         visitBody(node);
         closeContext();

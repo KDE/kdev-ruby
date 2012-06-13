@@ -42,9 +42,8 @@ protected:
     virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
 
 private:
-    /**
-     */
-    void compareUses(KDevelop::Declaration *dec, KDevelop::RangeInRevision range);
+    /// Compare the uses of the given declaration @p dec with the given @p range.
+    void compareUses(KDevelop::Declaration *dec, const KDevelop::RangeInRevision &range);
 
     /**
      * Let's compare the uses of the given declaration @p dec with the given
@@ -57,6 +56,7 @@ private slots:
     void alias();
     void assignment();
     void checkSubClassing();
+    void checkMethodArgumentsContext();
 };
 
 }

@@ -23,6 +23,7 @@
 #include <QtTest/QtTest>
 #include <language/duchain/declaration.h>
 #include <language/duchain/types/structuretype.h>
+#include <language/duchain/duchainutils.h>
 
 // Ruby
 #include <duchain/tests/uses.h>
@@ -45,7 +46,7 @@ TopDUContext * TestUseBuilder::parse(const QByteArray &code, const QString &id)
     return DUChainTestBase::parse(code, name);
 }
 
-void TestUseBuilder::compareUses(Declaration *dec, RangeInRevision range)
+void TestUseBuilder::compareUses(Declaration *dec, const RangeInRevision &range)
 {
     QList<RangeInRevision> ranges;
     ranges << range;
@@ -116,6 +117,41 @@ void TestUseBuilder::checkSubClassing()
     Declaration *d = top->localDeclarations().first();
     QCOMPARE(d->uses().count(), 1);
     compareUses(d, RangeInRevision(0, 31, 0, 35));
+}
+
+void TestUseBuilder::checkMethodArgumentsContext()
+{
+    //               0          1        2
+    //               0123456789012345678901234
+    QByteArray code("def foo(a, b); a; end; a");
+    TopDUContext *top = parse(code, "checkMethodArgumentsContext");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Check that exists a method declaration and that it has a proper
+    // context for its parameters
+    QCOMPARE(top->localDeclarations().count(), 1);
+    Declaration *d = dynamic_cast<Declaration *>(top->localDeclarations().first());
+    QVERIFY(d);
+    DUContext *params = DUChainUtils::getArgumentContext(d);
+    QVERIFY(params);
+    QCOMPARE(params->range(), RangeInRevision(0, 8, 0, 12));
+
+    // Check that there's a context for the method body and that it imports
+    // the context of the parameters
+    DUContext *body = d->internalContext();
+    QVERIFY(body);
+    QCOMPARE(body->range(), RangeInRevision(0, 15, 0, 16));
+    QCOMPARE(body->importedParentContexts().count(), 1);
+    QCOMPARE(body->importedParentContexts().first().context(top), params);
+
+    // And finally check the uses of the parameters. There's only one use of a,
+    // but it's in the method's body. not the a that is outside.
+    QCOMPARE(params->localDeclarations().count(), 2);
+    Declaration *a = params->localDeclarations().first();
+    QCOMPARE(a->qualifiedIdentifier(), QualifiedIdentifier("foo::a"));
+    QCOMPARE(a->uses().count(), 1);
+    compareUses(a, RangeInRevision(0, 15, 0, 16));
 }
 
 } // End of namespace Ruby

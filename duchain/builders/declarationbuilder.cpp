@@ -177,6 +177,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
         decl->setAccessPolicy(currentAccessPolicy());
 
     openType(type);
+    m_lastMethod = id;
     decl->setInSymbolTable(false);
     node->tree = aux->r;
     visitMethodArguments(node);

@@ -101,6 +101,7 @@ protected:
     EditorIntegrator *m_editor;
     KDevelop::ReferencedTopDUContext m_topContext;
     KDevelop::TopDUContextPointer m_builtinsContext;
+    QualifiedIdentifier m_lastMethod; // TODO: ugly as hell
 
 private:
     RangeInRevision rangeForMethodArguments(RubyAst *node);
