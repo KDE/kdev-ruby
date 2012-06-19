@@ -29,6 +29,7 @@
 // Ruby
 #include <rubydefs.h>
 #include <duchain/helpers.h>
+#include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/contextbuilder.h>
@@ -283,7 +284,7 @@ void ContextBuilder::addImportedContexts()
 
 void ContextBuilder::require(Node *node, bool local)
 {
-    KUrl path = getRequiredFile(node, m_editor, local);
+    KUrl path = Loader::getRequiredFile(node, m_editor, local);
     if (path.isEmpty()) {
         KDevelop::Problem *p = new KDevelop::Problem();
         p->setFinalLocation(getDocumentRange(node));

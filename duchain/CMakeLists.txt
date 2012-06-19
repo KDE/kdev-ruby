@@ -3,6 +3,7 @@ set(rubyduchain_SRCS
     editorintegrator.cpp
     rubyducontext.cpp
     helpers.cpp
+    loader.cpp
 
     builders/declarationbuilder.cpp
     builders/usebuilder.cpp
