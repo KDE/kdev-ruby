@@ -85,7 +85,7 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
         file = new KDevelop::ParsingEnvironmentFile(doc);
         file->setLanguage(KDevelop::IndexedString("Ruby"));
     }
-    TopDUContext *top = new RubyTopDUContext(doc, range, file);
+    TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
     top->setType(DUContext::Global);
     m_topContext = ReferencedTopDUContext(top);
     return top;

@@ -48,9 +48,6 @@ public:
     DeclarationBuilder(EditorIntegrator *editor);
     virtual ~DeclarationBuilder();
 
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
-        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
-
 protected:
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();

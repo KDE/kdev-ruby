@@ -63,11 +63,6 @@ DeclarationBuilder::~DeclarationBuilder()
     /* There's nothing to do here! */
 }
 
-ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyAst *node, ReferencedTopDUContext updateContext)
-{
-    return DeclarationBuilderBase::build(url, node, updateContext);
-}
-
 void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();
