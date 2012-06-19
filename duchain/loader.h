@@ -67,6 +67,15 @@ public:
 private:
     /// @return the list of urls available from ruby through $:
     static QPair<QList<KUrl>, QList<KUrl> > getSearchPaths();
+
+    /// @returns true if the url cache has been filled with search paths.
+    static inline bool urlsCached()
+    {
+        return !m_urlCache.first.isEmpty() || !m_urlCache.second.isEmpty();
+    }
+
+private:
+    static QPair<QList<KUrl>, QList<KUrl> > m_urlCache;
 };
 
 } // End of namespace Ruby

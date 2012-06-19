@@ -30,6 +30,8 @@
 namespace Ruby
 {
 
+QPair<QList<KUrl>, QList<KUrl> > Loader::m_urlCache;
+
 KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
     QList<KUrl> searchPaths;
@@ -91,7 +93,9 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
 
 QPair<QList<KUrl>, QList<KUrl> > Loader::getSearchPaths()
 {
-    // TODO: Cache, cache, cache !!!
+    if (urlsCached())
+        return m_urlCache;
+
     QList<KUrl> paths;
     QList<KUrl> gpaths;
 
@@ -109,6 +113,8 @@ QPair<QList<KUrl>, QList<KUrl> > Loader::getSearchPaths()
     foreach (const QString &s, epaths)
         gpaths << s;
 
+    m_urlCache.first = paths;
+    m_urlCache.second = gpaths;
     return QPair<QList<KUrl>, QList<KUrl> >(paths, gpaths);
 }
 
