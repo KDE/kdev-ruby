@@ -63,6 +63,18 @@ void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, QList<QString> list)
     }
 }
 
+void TestDUChain::testProblems(TopDUContext *ctx, const QList<QString> &list)
+{
+    int i = 0;
+    QList<ProblemPointer> problems = ctx->problems();
+    QVERIFY(problems.size() == list.size());
+    foreach (ProblemPointer pp, problems) {
+        Problem *p = pp.data();
+        QCOMPARE(p->description(), list.at(i));
+        i++;
+    }
+}
+
 //BEGIN: Builtin classes
 
 void TestDUChain::numeric()
@@ -748,6 +760,19 @@ void TestDUChain::checkDeclarationsOnSubClass()
     DUChainWriteLocker lock(DUChain::lock());
 
     PENDING("Still hacking on the subclassing code");
+}
+
+void TestDUChain::errorOnInvalidRedeclaration()
+{
+    QByteArray code("module Module; end; class Kernel; end");
+    TopDUContext *top = parse(code, "errorOnInvalidRedeclaration");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QStringList errors;
+    errors << "TypeError: Module is not a module"
+            << "TypeError: Kernel is not a class";
+    testProblems(top, errors);
 }
 
 //END: Declarations

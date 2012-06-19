@@ -250,6 +250,13 @@ DocumentRange ContextBuilder::getDocumentRange(Node *node)
     return DocumentRange(ind, range);
 }
 
+DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange rg = range.castToSimpleRange();
+    return DocumentRange(ind, rg);
+}
+
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 {
     if (!node->tree)

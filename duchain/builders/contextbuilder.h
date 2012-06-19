@@ -93,6 +93,7 @@ protected:
 
     void openContextForClassDefinition(RubyAst *node);
     KDevelop::DocumentRange getDocumentRange(Node *node);
+    KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range);
 
 protected:
 

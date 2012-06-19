@@ -80,6 +80,9 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
 
+    if (!validReDeclaration(id, range))
+        return;
+
     /* First of all, open the declaration and set the comment */
     setComment(getComment(node));
     ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
@@ -135,6 +138,9 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
+
+    if (!validReDeclaration(id, range, false))
+        return;
 
     setComment(getComment(node));
     ModuleDeclaration *decl = openDeclaration<ModuleDeclaration>(id, range);
@@ -623,6 +629,19 @@ void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
     }
 }
 
+void DeclarationBuilder::appendProblem(const RangeInRevision &range, const QString &msg)
+{
+    KDevelop::Problem *p = new KDevelop::Problem();
+    p->setFinalLocation(getDocumentRange(range));
+    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setDescription(msg);
+    p->setSeverity(KDevelop::ProblemData::Error);
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        topContext()->addProblem(ProblemPointer(p));
+    }
+}
+
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
 {
     return m_editor->findRange(rb_name_node(node->tree));
@@ -678,6 +697,23 @@ void DeclarationBuilder::registerModuleMixin(ModuleDeclaration *decl, bool inclu
     } else {
         // TODO: register to the Kernel module
     }
+}
+
+bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    QList<Declaration *> decls = currentContext()->topContext()->findDeclarations(id);
+    foreach (Declaration *d, decls) {
+        ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
+        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(d);
+        if ((cd && !isClass) || (md && isClass)) {
+            const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
+            rlock.unlock();
+            appendProblem(range, msg);
+            return false;
+        }
+    }
+    return true;
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

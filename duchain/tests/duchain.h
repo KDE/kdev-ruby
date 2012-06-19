@@ -49,8 +49,16 @@ private:
     /**
      * Given an unsure @p type, compare its possible types with the given
      * @p list of class identifiers. Note that the order *does* matter.
+     * @note that the order of the @p list items is important.
      */
     void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, QList<QString> list);
+
+    /**
+     * Given a top context @p ctx, get all the encountered problems and
+     * compare their descriptions to the given @p list of problem descriptions.
+     * @note that the order of the @p list items is important.
+     */
+    void testProblems(KDevelop::TopDUContext *ctx, const QList<QString> &list);
 
 private slots:
     // Builtin classes
@@ -104,6 +112,7 @@ private slots:
     void accessPolicyMethodInModule();
     void checkSubClassing();
     void checkDeclarationsOnSubClass();
+    void errorOnInvalidRedeclaration();
 
     // Returning values
     void multipleReturns();
