@@ -103,10 +103,11 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
             ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
             if (!realClass)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            else {
+            else if (realClass->internalContext()) {
                 currentContext()->addImportedParentContext(realClass->internalContext());
                 decl->setBaseClass(realClass->indexedType());
-            }
+            } else
+                debug() << "Error: found a valid base class but with no internal context";
         }
     }
     node->tree = aux;
