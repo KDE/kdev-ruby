@@ -69,18 +69,46 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
     DeclarationBuilderBase::startVisiting(node);
 }
 
+template<typename T>
+T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    Declaration *res = NULL;
+    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+
+    foreach (Declaration *d, decls) {
+        Declaration *fitting = dynamic_cast<T*>(d);
+        if (fitting && (d->topContext() == currentContext()->topContext())) {
+            debug() << "Reopening the following declaration: " << d->toString();
+            openDeclarationInternal(d);
+            d->setRange(range);
+            setEncountered(d);
+            // TODO: register the re-opening
+            res = d;
+            break;
+        } else
+            debug() << "Do not reopen since it's not in the same top context";
+    }
+
+    if (!res)
+        res = openDeclaration<T>(id, range);
+    return static_cast<T*>(res);
+}
+
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray &comment = getComment(node);
 
-    if (!validReDeclaration(id, range))
-        return;
+//     if (!validReDeclaration(id, range))
+//         return;
 
     /* First of all, open the declaration and set the comment */
-    setComment(getComment(node));
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
+    ClassDeclaration *decl = reopenDeclaration<ClassDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
     decl->clearBaseClass();
     decl->clearModuleMixins();
     decl->setKind(KDevelop::Declaration::Type);
@@ -134,12 +162,14 @@ void DeclarationBuilder::visitModuleStatement(RubyAst* node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray &comment = getComment(node);
 
-    if (!validReDeclaration(id, range, false))
-        return;
+//     if (!validReDeclaration(id, range, false))
+//         return;
 
-    setComment(getComment(node));
-    ModuleDeclaration *decl = openDeclaration<ModuleDeclaration>(id, range);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
     decl->clearModuleMixins();
     decl->clearMixers();
     decl->setKind(KDevelop::Declaration::Type);
@@ -168,10 +198,12 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray &comment = getComment(node);
     Node *aux = node->tree;
 
-    setComment(getComment(node));
-    MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
+    MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
     decl->clearYieldTypes();
     decl->setClassMethod(is_class_method(node->tree));
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());

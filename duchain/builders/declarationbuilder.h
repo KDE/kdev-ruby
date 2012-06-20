@@ -83,6 +83,8 @@ private:
     Declaration *m_lastMethodCall;
     bool insideClassModule;
 
+    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
+
     // TODO: this is ugly as hell
     inline TypePtr<AbstractType> getArray()
     {
