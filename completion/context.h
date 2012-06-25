@@ -53,6 +53,7 @@ public:
     virtual ~CodeCompletionContext();
 
     virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort, bool fullCompletion = true);
+    virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements();
 
 public:
     enum CompletionContextType {
@@ -61,7 +62,12 @@ public:
     };
 
 private:
+    void eventuallyAddGroup(const QString &name, int priority, QList<KSharedPtr<KDevelop::CompletionTreeItem> > items);
+    void addRubyKeywords();
+
+private:
     CompletionContextType m_kind;
+    QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
 };
 
 } // End of namespace Ruby

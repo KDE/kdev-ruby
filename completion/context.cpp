@@ -65,7 +65,28 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
         }
     }
 
-    // TODO: this list of keywords has to go somewhere else :)
+    addRubyKeywords();
+
+    return list;
+}
+
+QList< CompletionTreeElementPointer > CodeCompletionContext::ungroupedElements()
+{
+    return m_ungroupedItems;
+}
+
+void CodeCompletionContext::eventuallyAddGroup(const QString &name, int priority,
+                                               QList<KSharedPtr<CompletionTreeItem> > items)
+{
+    KDevelop::CompletionCustomGroupNode *node = new KDevelop::CompletionCustomGroupNode(name, priority);
+    node->appendChildren(items);
+    m_ungroupedItems << CompletionTreeElementPointer(node);
+}
+
+void CodeCompletionContext::addRubyKeywords()
+{
+    QList<CompletionTreeItemPointer> list;
+
     // TODO: pick user's indentation level
     // TODO: statement modifiers
     // TODO: be careful with the 4 kinds of tDO's
@@ -109,7 +130,7 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
     ADD_KEYWORD2("begin", "begin\n  %CURSOR%\n%END%");
     ADD_KEYWORD2("do", "do |%CURSOR%|\n%END%");
 
-    return list;
+    eventuallyAddGroup(i18n("Ruby Keyword"), 800, list);
 }
 
 }
