@@ -42,4 +42,4 @@ KDevelop::CodeCompletionWorker * CodeCompletionModel::createCompletionWorker()
     return new Ruby::CodeCompletionWorker(this);
 }
 
-}
+} // End of namespace Ruby

@@ -20,14 +20,24 @@
 
 
 #include <completion/context.h>
+#include <language/duchain/duchainlock.h>
+#include <language/duchain/duchain.h>
+#include <completion/keyworditem.h>
 
+
+#define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
+
+
+using namespace KDevelop;
 
 namespace Ruby
 {
 
-CodeCompletionContext::CodeCompletionContext(KDevelop::DUContextPointer ctxt, const QString &text, const QString &followingText,
-                                             const KDevelop::CursorInRevision &pos, int depth)
+CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QString &text,
+                                             const QString &followingText,
+                                             const CursorInRevision &pos, int depth)
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
+    , m_kind(NoMemberAccess)
 {
     /* TODO */
     Q_UNUSED(followingText)
@@ -40,10 +50,12 @@ CodeCompletionContext::~CodeCompletionContext()
 
 QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItems(bool &abort, bool fullCompletion)
 {
-    /* TODO */
-    Q_UNUSED(abort)
-    Q_UNUSED(fullCompletion)
-    QList<KDevelop::CompletionTreeItemPointer> list;
+    QList<CompletionTreeItemPointer> list;
+    LOCKDUCHAIN;
+
+    list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), "while", "while %SELECT%condition%ENDSELECT%\n%END%"));
+
+
     return list;
 }
 

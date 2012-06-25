@@ -35,6 +35,14 @@ namespace KDevelop {
 namespace Ruby
 {
 
+/**
+ * @class CodeCompletionContext
+ *
+ * This class handles the completion context for the Ruby language support.
+ * It's responsible for finding out what kind of completion is needed, what
+ * expression should be evaluated for the container-class of the completion,
+ * what conversion will be applied to the result of the completion, etc.
+ */
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionContext : public KDevelop::CodeCompletionContext
 {
 public:
@@ -45,8 +53,17 @@ public:
     virtual ~CodeCompletionContext();
 
     virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort, bool fullCompletion = true);
+
+public:
+    enum CompletionContextType {
+        NoMemberAccess,
+        NoCompletion
+    };
+
+private:
+    CompletionContextType m_kind;
 };
 
-}
+} // End of namespace Ruby
 
 #endif /* RUBY_COMPLETION_CONTEXT_H */

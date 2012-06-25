@@ -30,18 +30,26 @@
 namespace Ruby
 {
 
+/**
+ * @class CodeCompletionModel
+ * This is the code completion model for the Ruby language support.
+ */
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionModel : public KDevelop::CodeCompletionModel
 {
     Q_OBJECT
 
 public:
+    /// Constructor.
     CodeCompletionModel(QObject *parent);
+
+    /// Destructor.
     virtual ~CodeCompletionModel();
 
 protected:
+    /// Re-implemented from KDevelop::CodeCompletionModel.
     virtual KDevelop::CodeCompletionWorker *createCompletionWorker();
 };
 
-}
+} // End of namespace Ruby
 
 #endif /* RUBY_COMPLETION_MODEL_H */

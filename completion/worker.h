@@ -18,6 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+
 #ifndef RUBY_COMPLETION_WORKER_H
 #define RUBY_COMPLETION_WORKER_H
 
@@ -32,18 +33,24 @@ namespace Ruby
 class CodeCompletionModel;
 class CodeCompletionContext;
 
+/**
+ * @class CodeCompletionWorker
+ * This is the worker for the code completion.
+ */
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionWorker : public KDevelop::CodeCompletionWorker
 {
     Q_OBJECT
 
 public:
+    /// Constructor
     CodeCompletionWorker(CodeCompletionModel *parent);
 
 protected:
+    /// Re-implemented from KDevelop::CodeCompletionWorker
     virtual KDevelop::CodeCompletionContext *createCompletionContext(KDevelop::DUContextPointer context, const QString &contextText,
                                                                      const QString &followingText, const KDevelop::CursorInRevision &position) const;
 };
 
-}
+} // End of namespace Ruby
 
 #endif /* RUBY_COMPLETION_WORKER_H */

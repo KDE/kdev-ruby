@@ -39,4 +39,4 @@ KDevelop::CodeCompletionContext* CodeCompletionWorker::createCompletionContext(K
     return new Ruby::CodeCompletionContext(context, contextText, followingText, position);
 }
 
-}
+} // End of namespace Ruby
