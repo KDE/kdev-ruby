@@ -27,9 +27,9 @@
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
-#define ADD_KEYWORD(list, name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
-#define ADD_KEYWORD2(list, name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
-#define ADD_ONE_LINER(list, name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
+#define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
+#define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
+#define ADD_ONE_LINER(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
 
 
 using namespace KDevelop;
@@ -60,13 +60,54 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
     // TODO: check for m_kind to be some value to enter at the following block
     {
         if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
-            ADD_ONE_LINER(list, "#!/usr/bin/env ruby", i18n("insert Shebang line"));
-            ADD_ONE_LINER(list, "# encoding: UTF-8", i18n("insert encoding line"));
+            ADD_ONE_LINER("#!/usr/bin/env ruby", i18n("insert Shebang line"));
+            ADD_ONE_LINER("# encoding: UTF-8", i18n("insert encoding line"));
         }
     }
 
-    ADD_KEYWORD2(list, "while", "while %SELECT%condition%ENDSELECT%\n%END%");
+    // TODO: this list of keywords has to go somewhere else :)
+    // TODO: pick user's indentation level
+    // TODO: statement modifiers
+    // TODO: be careful with the 4 kinds of tDO's
+    // TODO: complete | | from bracket blocks ?
+    // TODO: unindent things like rescue, ensure,...
 
+    ADD_KEYWORD("next");
+    ADD_KEYWORD("break");
+    ADD_KEYWORD("true");
+    ADD_KEYWORD("false");
+    ADD_KEYWORD("self");
+    ADD_KEYWORD("then");
+    ADD_KEYWORD("redo");
+    ADD_KEYWORD("retry");
+    ADD_KEYWORD("yield");
+    ADD_KEYWORD("super");
+    ADD_KEYWORD("return");
+    ADD_KEYWORD("defined?");
+    ADD_KEYWORD("ensure");
+    ADD_KEYWORD("__FILE__");
+    ADD_KEYWORD("__LINE__");
+    ADD_KEYWORD("__ENCODING__");
+
+    ADD_KEYWORD2("alias", "alias ");
+    ADD_KEYWORD2("undef", "undef ");
+    ADD_KEYWORD2("rescue", "rescue ");
+    ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
+    ADD_KEYWORD2("END", "END {\n  %CURSOR%\n}");
+
+    ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("elsif", "elsif %SELECT%condition%ENDSELECT%");
+    ADD_KEYWORD2("while", "while %SELECT%condition%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("until", "until %SELECT%condition%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("for", "for %SELECT%condition%ENDSELECT% in \n%END%");
+    ADD_KEYWORD2("def", "def %SELECT%name%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("class", "class %SELECT%Name%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("module", "module %SELECT%Name%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("case", "case %SELECT%condition%ENDSELECT%\n%END%");
+    ADD_KEYWORD2("when", "when %SELECT%condition%ENDSELECT%");
+    ADD_KEYWORD2("begin", "begin\n  %CURSOR%\n%END%");
+    ADD_KEYWORD2("do", "do |%CURSOR%|\n%END%");
 
     return list;
 }
