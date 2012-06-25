@@ -25,7 +25,7 @@
 #include <language/codecompletion/codecompletionmodel.h>
 
 // Ruby
-#include <completion/keyworditem.h>
+#include <completion/items/keyworditem.h>
 #include <completion/helpers.h>
 
 
@@ -35,9 +35,10 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-KeywordItem::KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword, const QString &customReplacement)
+KeywordItem::KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
+                         const QString &customReplacement, bool line)
     : NormalDeclarationCompletionItem(DeclarationPointer(), ctx)
-    , m_keyword(keyword), m_replacement(customReplacement)
+    , m_keyword(keyword), m_replacement(customReplacement), m_wholeLine(line)
 {
     /* There's nothing to do here */
 }
@@ -63,7 +64,11 @@ void KeywordItem::execute(Document *document, const Range &word)
             }
         }
 
-        document->replaceText(word, replacement);
+        if (m_wholeLine) {
+            Range newRange(Cursor(word.start().line(), 0), word.end());
+            document->replaceText(newRange, m_keyword);
+        } else
+            document->replaceText(word, replacement);
 
         if (cursor != -1) {
             if (KTextEditor::View *view = document->activeView()) {
@@ -87,7 +92,7 @@ void KeywordItem::execute(Document *document, const Range &word)
             }
         }
     } else
-        document->replaceText(word, m_keyword + ' ');
+        document->replaceText(word, m_keyword);
 }
 
 QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const
@@ -98,6 +103,8 @@ QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::C
     case Qt::DisplayRole:
         if (index.column() == KTextEditor::CodeCompletionModel::Name)
             return QVariant(m_keyword);
+        else if (m_wholeLine && index.column() == KTextEditor::CodeCompletionModel::Prefix)
+            return QVariant(m_replacement);
         else
             return QVariant("");
     case KTextEditor::CodeCompletionModel::ItemSelected:

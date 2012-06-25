@@ -41,13 +41,17 @@ public:
      * Constructor.
      * @param ctx The code completion context.
      * @param keyword The keyword that this item is representing.
-     * @param customReplacement Can be used for additional power on how the
-     * keyword gets replaced. To place the cursor, use %CURSOR%. You can select
-     * a word with %SELECT%word%ENDSELECT%. Finally, use %END% to place an
-     * end keyword indented to the indentation level of the line we execute
-     * the item on.
+     * @param customReplacement If the \p line is set to false, it can be used
+     * for additional power on how the keyword gets replaced. To place the
+     * cursor, use %CURSOR%. You can select a word with
+     * %SELECT%word%ENDSELECT%. Finally, use %END% to place an end keyword
+     * indented to the indentation level of the line we execute the item on.
+     * If the \p line is set to true, this parameter only acts as a descriptor.
+     * @param line Set to true if you want that the whole line gets replaced.
+     * False by default.
      */
-    KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword, const QString &customReplacement = QString(""));
+    KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
+                const QString &customReplacement = QString(""), bool line = false);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
     virtual void execute(KTextEditor::Document *document, const KTextEditor::Range &word);
@@ -58,6 +62,7 @@ public:
 private:
     QString m_keyword;
     QString m_replacement;
+    bool m_wholeLine;
 };
 
 } // End of namespace Ruby

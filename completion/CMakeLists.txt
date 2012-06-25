@@ -3,8 +3,9 @@ set(rubycompletion_SRCS
     context.cpp
     model.cpp
     worker.cpp
-    keyworditem.cpp
     helpers.cpp
+
+    items/keyworditem.cpp
 )
 
 kde4_add_library(kdev4rubycompletion SHARED ${rubycompletion_SRCS})

@@ -22,10 +22,14 @@
 #include <completion/context.h>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchain.h>
-#include <completion/keyworditem.h>
+#include <completion/items/keyworditem.h>
+#include <KLocale>
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
+#define ADD_KEYWORD(list, name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
+#define ADD_KEYWORD2(list, name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
+#define ADD_ONE_LINER(list, name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
 
 
 using namespace KDevelop;
@@ -53,7 +57,15 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
     QList<CompletionTreeItemPointer> list;
     LOCKDUCHAIN;
 
-    list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), "while", "while %SELECT%condition%ENDSELECT%\n%END%"));
+    // TODO: check for m_kind to be some value to enter at the following block
+    {
+        if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
+            ADD_ONE_LINER(list, "#!/usr/bin/env ruby", i18n("insert Shebang line"));
+            ADD_ONE_LINER(list, "# encoding: UTF-8", i18n("insert encoding line"));
+        }
+    }
+
+    ADD_KEYWORD2(list, "while", "while %SELECT%condition%ENDSELECT%\n%END%");
 
 
     return list;
