@@ -48,7 +48,7 @@ using namespace KDevelop;
  * This class handles the ruby's require/require_relative statements. Ideally,
  * the programmer only wants to use the @p getRequiredFile() method in order
  * to require a file. This class implements a caching system to keep the
- * whole as optimal as possible.
+ * whole thing as optimal as possible.
  */
 class KDEVRUBYDUCHAIN_EXPORT Loader
 {
