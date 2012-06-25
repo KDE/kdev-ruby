@@ -1,4 +1,6 @@
 
+add_subdirectory(tests)
+
 set(rubycompletion_SRCS
     context.cpp
     model.cpp
