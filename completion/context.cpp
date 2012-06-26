@@ -24,6 +24,7 @@
 #include <language/duchain/duchain.h>
 #include <completion/items/keyworditem.h>
 #include <KLocale>
+#include <rubydefs.h>
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
@@ -37,6 +38,55 @@ using namespace KDevelop;
 namespace Ruby
 {
 
+const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend require require_relative").split(' ').toSet();
+const int MEMBER_STRINGS_MAX = 16; // require_relative
+
+void compressText(QString &text)
+{
+    for (int i = text.length() - 1; i >= 0; --i) {
+        if (!text[i].isSpace())
+            break;
+        text.remove(i, 1);
+    }
+}
+
+QString getEndingFromSet(const QString &str, const QSet<QString> &set, int maxMatchLen)
+{
+    QString end;
+
+    for (int i = qMin(str.length(), maxMatchLen); i > 0; --i) {
+        end = str.right(i);
+        if (set.contains(end))
+            return end;
+    }
+    return QString();
+}
+
+bool insideClass(const QString &text)
+{
+    int idx = text.lastIndexOf("<");
+    int classIdx = text.lastIndexOf("class", idx);
+    int semicolon = text.lastIndexOf(";", idx);
+    return  (classIdx != -1 && (classIdx > semicolon));
+}
+
+CodeCompletionContext::CompletionContextType findAccessKind(const QString &original)
+{
+    QString text = getEndingFromSet(original, MEMBER_STRINGS, MEMBER_STRINGS_MAX);
+
+    if (text == ".")
+        return CodeCompletionContext::MemberAccess;
+    if (text == "::")
+        return CodeCompletionContext::ModuleMemberAccess;
+    if (text == "<" && insideClass(original))
+        return CodeCompletionContext::BaseClassAccess;
+    if (text == "include" || text == "extend")
+        return CodeCompletionContext::ModuleMixinAccess;
+    if (text == "require" || text == "require_relative")
+        return CodeCompletionContext::FileChoose;
+    return CodeCompletionContext::NoMemberAccess;
+}
+
 CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QString &text,
                                              const QString &followingText,
                                              const CursorInRevision &pos, int depth)
@@ -47,6 +97,9 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
         m_valid = false;
         return;
     }
+
+    compressText(m_text);
+    m_kind = findAccessKind(m_text);
 }
 
 CodeCompletionContext::~CodeCompletionContext()
@@ -105,6 +158,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside MemberAccessItems";
 
     return list;
 }
@@ -114,6 +168,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside ModuleMemberAccessItems";
 
     return list;
 }
@@ -123,6 +178,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside BaseClassItems";
 
     return list;
 }
@@ -132,6 +188,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside ModuleMixinItems";
 
     return list;
 }
@@ -141,6 +198,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::classMemberItems()
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside ClassMemberItems";
 
     return list;
 }
@@ -150,6 +208,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
     QList<CompletionTreeItemPointer> list;
 
     // TODO
+    debug() << "Inside FileChooseItems";
 
     return list;
 }
@@ -164,6 +223,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
     }
 
     // TODO
+    debug() << "Inside StandardAccessItems";
 
     return list;
 }
