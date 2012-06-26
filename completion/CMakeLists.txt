@@ -7,6 +7,7 @@ set(rubycompletion_SRCS
     worker.cpp
     helpers.cpp
 
+    items/normalitem.cpp
     items/keyworditem.cpp
 )
 

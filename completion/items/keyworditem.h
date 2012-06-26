@@ -23,6 +23,7 @@
 
 
 #include <language/codecompletion/normaldeclarationcompletionitem.h>
+#include <completion/completionexport.h>
 
 
 namespace Ruby
@@ -34,7 +35,7 @@ namespace Ruby
  * A completion item for a ruby keyword. Depending on how it's initialized
  * this class, it will add some extra code.
  */
-class KeywordItem : public KDevelop::NormalDeclarationCompletionItem
+class KDEVRUBYCOMPLETION_EXPORT KeywordItem : public KDevelop::NormalDeclarationCompletionItem
 {
 public:
     /**
