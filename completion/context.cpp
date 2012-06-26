@@ -195,10 +195,16 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
 {
     QList<CompletionTreeItemPointer> list;
+    QList<DeclarationPair> decls;
 
-    // TODO
-    debug() << "Inside ModuleMixinItems";
+    {
+        LOCKDUCHAIN;
+        decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
+    }
 
+    foreach(DeclarationPair d, decls)
+        if (dynamic_cast<ModuleDeclaration *>(d.first))
+            ADD_NORMAL(d.first);
     return list;
 }
 
@@ -255,6 +261,7 @@ void CodeCompletionContext::addRubyKeywords()
     // TODO: complete | | from bracket blocks ?
     // TODO: unindent things like rescue, ensure,...
 
+    // "Ultra-simple" statements. Some of them may not be *that* useful.
     ADD_KEYWORD("next");
     ADD_KEYWORD("break");
     ADD_KEYWORD("true");
@@ -272,12 +279,18 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD("__LINE__");
     ADD_KEYWORD("__ENCODING__");
 
+    // Simple statements
     ADD_KEYWORD2("alias", "alias ");
     ADD_KEYWORD2("undef", "undef ");
     ADD_KEYWORD2("rescue", "rescue ");
     ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
     ADD_KEYWORD2("END", "END {\n  %CURSOR%\n}");
 
+    // Not really keywords, but who cares? ;)
+    ADD_KEYWORD2("include", "include %SELECT%MyModule%ENDSELECT%");
+    ADD_KEYWORD2("extend", "extend %SELECT%MyModule%ENDSELECT%");
+
+    // More complex constructions
     ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("elsif", "elsif %SELECT%condition%ENDSELECT%");
@@ -292,6 +305,7 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("begin", "begin\n  %CURSOR%\n%END%");
     ADD_KEYWORD2("do", "do |%CURSOR%|\n%END%");
 
+    // Group all these keywords into the "Ruby Keyword" group.
     eventuallyAddGroup(i18n("Ruby Keyword"), 800, list);
 }
 
