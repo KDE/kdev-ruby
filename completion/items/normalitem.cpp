@@ -22,6 +22,10 @@
 #include <completion/items/normalitem.h>
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
+#include <language/duchain/types/functiontype.h>
+#include <duchain/navigation/navigationwidget.h>
+#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
 
 using namespace KDevelop;
 
@@ -40,7 +44,35 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
         return QVariant();
     DUChainReadLocker rlock(DUChain::lock());
 
-    // TODO
+    Declaration* dec = const_cast<Declaration*>(m_declaration.data());
+    switch (role) {
+    case CodeCompletionModel::ItemSelected:
+        return QVariant(NavigationWidget::shortDescription(dec));
+    case Qt::DisplayRole:
+        switch (index.column()) {
+        case CodeCompletionModel::Postfix:
+            return QVariant();
+        case CodeCompletionModel::Prefix:
+            MethodDeclaration *mDec = dynamic_cast<MethodDeclaration *>(dec);
+            if (mDec) {
+                FunctionType::Ptr ftype = mDec->type<FunctionType>();
+                if (ftype && ftype->returnType())
+                    return ftype->returnType()->toString();
+                else
+                    return "<no type>";
+            } else {
+                ClassDeclaration *classDec = dynamic_cast<ClassDeclaration *>(dec);
+                ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
+                if (classDec)
+                    return "class";
+                else if (moDec)
+                    return "module";
+            }
+            return QVariant();
+        }
+        break;
+    }
+    rlock.unlock();
 
     return NormalDeclarationCompletionItem::data(index, role, model);
 }
