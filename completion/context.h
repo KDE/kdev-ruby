@@ -34,6 +34,7 @@ namespace KDevelop {
 
 namespace Ruby
 {
+typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 
 /**
  * @class CodeCompletionContext

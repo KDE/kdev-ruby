@@ -16,6 +16,8 @@ target_link_libraries( kdev4rubycompletion
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDE4_KTEXTEDITOR_LIBS}
+    kdev4rubyduchain
+    kdev4rubyparser
 )
 
 install(TARGETS kdev4rubycompletion DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

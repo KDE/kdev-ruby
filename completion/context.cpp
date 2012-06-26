@@ -25,6 +25,7 @@
 #include <completion/items/keyworditem.h>
 #include <KLocale>
 #include <rubydefs.h>
+#include <duchain/declarations/classdeclaration.h>
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
@@ -176,9 +177,14 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
 QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 {
     QList<CompletionTreeItemPointer> list;
+    LOCKDUCHAIN;
 
-    // TODO
-    debug() << "Inside BaseClassItems";
+    QList<DeclarationPair> decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
+    foreach(DeclarationPair d, decls) {
+        if (dynamic_cast<ClassDeclaration *>(d.first)) {
+            list << CompletionTreeItemPointer(new NormalDeclarationCompletionItem(DeclarationPointer(d.first), KDevelop::CodeCompletionContext::Ptr(this)));
+        }
+    }
 
     return list;
 }
