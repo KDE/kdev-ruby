@@ -40,8 +40,13 @@ protected:
     /// Re-implemented from DUChainTestBase.
     virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
 
+private:
+    /// Verify that all the items in @p shoulda are contained in @p list.
+    void shouldContain(const QStringList &list, const QStringList &shoulda);
+
 private slots:
     void baseClass();
+    void moduleMixins();
 };
 
 } // End of namespace Ruby

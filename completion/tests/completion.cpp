@@ -56,9 +56,41 @@ KDevelop::TopDUContext * TestCompletion::parse(const QByteArray &code, const QSt
     return DUChainTestBase::parse(code, name);
 }
 
+void TestCompletion::shouldContain(const QStringList &list, const QStringList &shoulda)
+{
+    foreach (const QString &str, shoulda)
+        QVERIFY(list.contains(str, Qt::CaseSensitive));
+}
+
 void TestCompletion::baseClass()
 {
-    PENDING("Leave it as pending by now");
+    QByteArray code("class BaseClass; end;");
+    TopDUContext *top = parse(code, "baseClass");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "class Klass < ");
+        shouldContain(tester.names, QStringList() << "BaseClass" << "Object" << "String");
+    }
+}
+
+void TestCompletion::moduleMixins()
+{
+    QByteArray code("module Awesome; end; ");
+    TopDUContext *top = parse(code, "moduleMixins");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "module MyModule; include ");
+        shouldContain(tester.names, QStringList() << "Awesome" << "Kernel" << "Enumerable");
+    }
+
+    {
+        RubyCompletionTester tester(top, "module MyModule; extend ");
+        shouldContain(tester.names, QStringList() << "Awesome" << "Kernel" << "Enumerable");
+    }
 }
 
 } // End of namespace Ruby
