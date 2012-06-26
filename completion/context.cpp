@@ -41,10 +41,12 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
                                              const QString &followingText,
                                              const CursorInRevision &pos, int depth)
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
-    , m_kind(NoMemberAccess)
+    , m_kind(NoMemberAccess), m_valid(true)
 {
-    /* TODO */
-    Q_UNUSED(followingText)
+    if (!m_duContext) {
+        m_valid = false;
+        return;
+    }
 }
 
 CodeCompletionContext::~CodeCompletionContext()
@@ -54,25 +56,116 @@ CodeCompletionContext::~CodeCompletionContext()
 
 QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItems(bool &abort, bool fullCompletion)
 {
-    QList<CompletionTreeItemPointer> list;
-    LOCKDUCHAIN;
+    QList<CompletionTreeItemPointer> items;
+    if (!m_valid)
+        return items;
 
-    // TODO: check for m_kind to be some value to enter at the following block
-    {
-        if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
-            ADD_ONE_LINER("#!/usr/bin/env ruby", i18n("insert Shebang line"));
-            ADD_ONE_LINER("# encoding: UTF-8", i18n("insert encoding line"));
-        }
+    switch(m_kind) {
+        case MemberAccess:
+            items += memberAccessItems();
+            break;
+        case ModuleMemberAccess:
+            items += moduleMemberAccessItems();
+            break;
+        case BaseClassAccess:
+            items += baseClassItems();
+            break;
+        case ModuleMixinAccess:
+            items += moduleMixinItems();
+            break;
+        case ClassMemberChoose:
+            items += classMemberItems();
+            break;
+        case FileChoose:
+            items += fileChooseItems();
+            break;
+        default:
+            items += standardAccessItems();
+            addRubyKeywords();
     }
 
-    addRubyKeywords();
+    if (shouldAddParentItems(fullCompletion))
+        items.append(parentContext()->completionItems(abort, fullCompletion));
+
+    return items;
+}
+
+QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
+{
+    return m_ungroupedItems;
+}
+
+bool CodeCompletionContext::shouldAddParentItems(bool fullCompletion)
+{
+    return (m_parentContext && fullCompletion);
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
 
     return list;
 }
 
-QList< CompletionTreeElementPointer > CodeCompletionContext::ungroupedElements()
+QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems()
 {
-    return m_ungroupedItems;
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
+
+    return list;
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
+
+    return list;
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
+
+    return list;
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::classMemberItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
+
+    return list;
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // TODO
+
+    return list;
+}
+
+QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
+        ADD_ONE_LINER("#!/usr/bin/env ruby", i18n("insert Shebang line"));
+        ADD_ONE_LINER("# encoding: UTF-8", i18n("insert encoding line"));
+    }
+
+    // TODO
+
+    return list;
 }
 
 void CodeCompletionContext::eventuallyAddGroup(const QString &name, int priority,

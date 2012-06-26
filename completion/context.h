@@ -57,17 +57,48 @@ public:
 
 public:
     enum CompletionContextType {
-        NoMemberAccess,
-        NoCompletion
+        NoMemberAccess,         /// A global completion should be done.
+        MemberAccess,           /// obj.
+        ModuleMemberAccess,     /// MyModule::
+        BaseClassAccess,        /// After "class Klass <" only classes should be shown.
+        ModuleMixinAccess,      /// After "include" or "extend", only available modules should be shown.
+        ClassMemberChoose,      /// In module/class context, access modifiers, overloadable methods,...
+        FileChoose              /// Autocompletion for files.
     };
 
 private:
+    /// @returns true if the parent items should be added to this one.
+    bool shouldAddParentItems(bool fullCompletion);
+
+    /**
+     * Item creation methods for various completion types.
+     */
+
+    QList<KDevelop::CompletionTreeItemPointer> memberAccessItems();
+    QList<KDevelop::CompletionTreeItemPointer> moduleMemberAccessItems();
+    QList<KDevelop::CompletionTreeItemPointer> baseClassItems();
+    QList<KDevelop::CompletionTreeItemPointer> moduleMixinItems();
+    QList<KDevelop::CompletionTreeItemPointer> classMemberItems();
+    QList<KDevelop::CompletionTreeItemPointer> fileChooseItems();
+
+    /// Computes the completion-items for the case that no special kind of access is used.
+    QList<KDevelop::CompletionTreeItemPointer> standardAccessItems();
+
+    /**
+     * Creates the group and adds it to m_ungroupedItems.
+     * @param name The name of the group. You should call i18n() first.
+     * @param priority The given priority for this new group.
+     * @param items The items that should constitute this new group.
+     */
     void eventuallyAddGroup(const QString &name, int priority, QList<KSharedPtr<KDevelop::CompletionTreeItem> > items);
+
+    /// Group adding methods.
     void addRubyKeywords();
 
 private:
     CompletionContextType m_kind;
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
+    bool m_valid;
 };
 
 } // End of namespace Ruby
