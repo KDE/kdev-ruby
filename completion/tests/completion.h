@@ -42,12 +42,14 @@ protected:
 
 private:
     /// Verify that all the items in @p shoulda are contained in @p list.
-    void shouldContain(const QStringList &list, const QStringList &shoulda);
+    void shouldContain(const QStringList &list, const QStringList &shoulda, bool sameSize = false);
 
 private slots:
     void standardAccess();
     void baseClass();
     void moduleMixins();
+    void memberAccess();
+    void checkSubclassing();
 };
 
 } // End of namespace Ruby

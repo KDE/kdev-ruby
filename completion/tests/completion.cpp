@@ -43,6 +43,22 @@ public:
         /* There's nothing to do here */
     }
 };
+
+const QByteArray testBase(
+    "class Base\n"
+    "   def somewhere; end\n"
+    "   def over; end\n"
+    "   protected\n"
+    "   def the; end\n"
+    "   private\n"
+    "   def rainbow; end\n"
+    "end\n"
+);
+
+const QByteArray testKlass(
+    "class Klass < Base\n"
+    "end\n"
+);
 //END: Helper structures
 
 TestCompletion::TestCompletion()
@@ -56,8 +72,10 @@ KDevelop::TopDUContext * TestCompletion::parse(const QByteArray &code, const QSt
     return DUChainTestBase::parse(code, name);
 }
 
-void TestCompletion::shouldContain(const QStringList &list, const QStringList &shoulda)
+void TestCompletion::shouldContain(const QStringList &list, const QStringList &shoulda, bool sameSize)
 {
+    if (sameSize)
+        QCOMPARE(list.size(), shoulda.size());
     foreach (const QString &str, shoulda)
         QVERIFY(list.contains(str, Qt::CaseSensitive));
 }
@@ -103,6 +121,32 @@ void TestCompletion::moduleMixins()
     {
         RubyCompletionTester tester(top, "module MyModule; extend ");
         shouldContain(tester.names, QStringList() << "Awesome" << "Kernel" << "Enumerable");
+    }
+}
+
+void TestCompletion::memberAccess()
+{
+    QByteArray code(testBase);
+    TopDUContext *top = parse(code, "memberAccess");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "obj = Base.new; obj.");
+        shouldContain(tester.names, QStringList() << "somewhere" << "over", true);
+    }
+}
+
+void TestCompletion::checkSubclassing()
+{
+    QByteArray code(testBase + testKlass);
+    TopDUContext *top = parse(code, "checkSubclassing");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "obj = Klass.new; obj.");
+        shouldContain(tester.names, QStringList() << "somewhere" << "over" << "the", true);
     }
 }
 
