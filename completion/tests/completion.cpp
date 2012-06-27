@@ -62,6 +62,19 @@ void TestCompletion::shouldContain(const QStringList &list, const QStringList &s
         QVERIFY(list.contains(str, Qt::CaseSensitive));
 }
 
+void TestCompletion::standardAccess()
+{
+    QByteArray code("obj = 1; ");
+    TopDUContext *top = parse(code, "standardAccess");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "");
+        shouldContain(tester.names, QStringList() << "obj" << "Kernel" << "while");
+    }
+}
+
 void TestCompletion::baseClass()
 {
     QByteArray code("class BaseClass; end;");

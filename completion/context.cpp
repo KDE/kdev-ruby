@@ -186,7 +186,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
-    foreach(DeclarationPair d, decls)
+    foreach (DeclarationPair d, decls)
         if (dynamic_cast<ClassDeclaration *>(d.first))
             ADD_NORMAL(d.first);
     return list;
@@ -202,7 +202,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
-    foreach(DeclarationPair d, decls)
+    foreach (DeclarationPair d, decls)
         if (dynamic_cast<ModuleDeclaration *>(d.first))
             ADD_NORMAL(d.first);
     return list;
@@ -231,15 +231,21 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
+    QList<DeclarationPair> decls;
 
+    // Add one-liners (i.e. shebang)
     if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
         ADD_ONE_LINER("#!/usr/bin/env ruby", i18n("insert Shebang line"));
         ADD_ONE_LINER("# encoding: UTF-8", i18n("insert encoding line"));
     }
 
-    // TODO
-    debug() << "Inside StandardAccessItems";
-
+    // Find everything that is accessible at this point
+    {
+        LOCKDUCHAIN;
+        decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
+    }
+    foreach (DeclarationPair d, decls)
+        ADD_NORMAL(d.first);
     return list;
 }
 

@@ -45,6 +45,7 @@ private:
     void shouldContain(const QStringList &list, const QStringList &shoulda);
 
 private slots:
+    void standardAccess();
     void baseClass();
     void moduleMixins();
 };

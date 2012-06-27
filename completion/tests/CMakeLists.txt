@@ -11,8 +11,8 @@ set(completiontest_SRCS
     ../../duchain/tests/duchaintestbase.cpp
 )
 
-kde4_add_unit_test(completiontest ${completiontest_SRCS})
-target_link_libraries(completiontest
+kde4_add_unit_test(completion ${completiontest_SRCS})
+target_link_libraries(completion
     kdev4rubycompletion
     kdev4rubyduchain
     kdev4rubyparser
