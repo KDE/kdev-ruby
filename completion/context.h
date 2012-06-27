@@ -72,7 +72,7 @@ public:
 
 private:
     /// TODO
-    QString getExpressionFromText(const QString &token);
+    KDevelop::AbstractType::Ptr getExpressionType(const QString &token);
     QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type);
     QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type);
 

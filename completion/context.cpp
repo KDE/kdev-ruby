@@ -26,6 +26,7 @@
 #include <KLocale>
 #include <rubydefs.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/expressionvisitor.h>
 #include <completion/items/normalitem.h>
 #include <parser/rubyparser.h>
@@ -155,10 +156,26 @@ QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
     return m_ungroupedItems;
 }
 
-QString CodeCompletionContext::getExpressionFromText(const QString &token)
+AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
 {
-    int idx = m_text.lastIndexOf(token);
-    return m_text.left(idx);
+    AbstractType::Ptr res;
+    QString expr = m_text.left(m_text.lastIndexOf(token));
+    RubyParser *parser = new RubyParser;
+    EditorIntegrator *e = new EditorIntegrator;
+    ExpressionVisitor *ev = new ExpressionVisitor(m_duContext.data(), e);
+
+    LOCKDUCHAIN;
+    parser->setCurrentDocument(KUrl());
+    parser->setContents(expr.toUtf8());
+    RubyAst *ast = parser->parse();
+    ev->visitCode(ast);
+    res = ev->lastType();
+    parser->freeAst(ast);
+    delete parser;
+    delete ev;
+    delete e;
+
+    return res;
 }
 
 QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromType(AbstractType::Ptr type)
@@ -177,14 +194,22 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromTy
 QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOneType(AbstractType::Ptr type)
 {
     QList<CompletionTreeItemPointer> list;
+    QList<DeclarationPair> decls;
     StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
 
-    if (!sType || !sType->internalContext(m_duContext->topContext()))
-        return QList<CompletionTreeItemPointer>();
-    DUContext *current = sType->internalContext(m_duContext->topContext());
-    QList<DeclarationPair> decls = current->allDeclarations(CursorInRevision::invalid(), m_duContext->topContext(), false);
-    foreach (DeclarationPair d, decls)
-        ADD_NORMAL(d.first);
+    {
+        LOCKDUCHAIN;
+        if (!sType || !sType->internalContext(m_duContext->topContext()))
+            return QList<CompletionTreeItemPointer>();
+        DUContext *current = sType->internalContext(m_duContext->topContext());
+        decls = current->allDeclarations(CursorInRevision::invalid(), m_duContext->topContext(), false);
+    }
+
+    foreach (DeclarationPair d, decls) {
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d.first);
+        if (md && md->accessPolicy() == Declaration::Public)
+            ADD_NORMAL(d.first);
+    }
     return list;
 }
 
@@ -196,23 +221,11 @@ bool CodeCompletionContext::shouldAddParentItems(bool fullCompletion)
 QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
-    QString expr = getExpressionFromText(".");
-    LOCKDUCHAIN;
-    RubyParser *parser = new RubyParser;
-    ExpressionVisitor *ev = new ExpressionVisitor(m_duContext.data(), new EditorIntegrator());
-
-    parser->setCurrentDocument(KUrl());
-    parser->setContents(expr.toUtf8());
-    RubyAst *ast = parser->parse();
-    ev->visitCode(ast);
-    parser->freeAst(ast);
-    delete parser;
-    if (ev->lastType())
-        list << getCompletionItemsFromType(ev->lastType());
+    AbstractType::Ptr type = getExpressionType(".");
+    if (type)
+        list << getCompletionItemsFromType(type);
     else
         debug() << "Oops: cannot access at the member";
-    delete ev;
-
     return list;
 }
 
