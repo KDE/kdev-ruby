@@ -25,6 +25,7 @@
 
 #include <language/codecompletion/codecompletioncontext.h>
 #include <language/codecompletion/codecompletionitem.h>
+#include <language/duchain/types/abstracttype.h>
 #include <completion/completionexport.h>
 
 
@@ -34,6 +35,8 @@ namespace KDevelop {
 
 namespace Ruby
 {
+
+class RubyAst;
 typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 
 /**
@@ -68,12 +71,15 @@ public:
     };
 
 private:
+    /// TODO
+    QString getExpressionFromText(const QString &token);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type);
+
     /// @returns true if the parent items should be added to this one.
     bool shouldAddParentItems(bool fullCompletion);
 
-    /**
-     * Item creation methods for various completion types.
-     */
+    /// Item creation methods for various completion types.
 
     QList<KDevelop::CompletionTreeItemPointer> memberAccessItems();
     QList<KDevelop::CompletionTreeItemPointer> moduleMemberAccessItems();
@@ -81,8 +87,6 @@ private:
     QList<KDevelop::CompletionTreeItemPointer> moduleMixinItems();
     QList<KDevelop::CompletionTreeItemPointer> classMemberItems();
     QList<KDevelop::CompletionTreeItemPointer> fileChooseItems();
-
-    /// Computes the completion-items for the case that no special kind of access is used.
     QList<KDevelop::CompletionTreeItemPointer> standardAccessItems();
 
     /**
