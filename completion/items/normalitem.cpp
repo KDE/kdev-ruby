@@ -27,6 +27,7 @@
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 
+
 using namespace KDevelop;
 
 namespace Ruby
@@ -68,13 +69,23 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
                 else if (moDec)
                     return "module";
             }
-            return QVariant();
+            return dec->abstractType()->toString();
         }
         break;
     }
     rlock.unlock();
 
     return NormalDeclarationCompletionItem::data(index, role, model);
+}
+
+QWidget * NormalItem::createExpandingWidget(const CodeCompletionModel *model) const
+{
+    return new NavigationWidget(m_declaration, model->currentTopContext());
+}
+
+bool NormalItem::createsExpandingWidget() const
+{
+    return true;
 }
 
 } // End of namespace Ruby

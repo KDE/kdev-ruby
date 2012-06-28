@@ -22,13 +22,16 @@
 #define RUBYNORMALITEM_H
 
 
-#include <language/codecompletion/normaldeclarationcompletionitem.h>
 #include <completion/completionexport.h>
+#include <language/codecompletion/normaldeclarationcompletionitem.h>
 
 
 namespace Ruby
 {
 
+/**
+ * 
+ */
 class KDEVRUBYCOMPLETION_EXPORT NormalItem : public KDevelop::NormalDeclarationCompletionItem
 {
 public:
@@ -38,6 +41,9 @@ public:
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
     virtual QVariant data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const;
+
+    virtual QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const;
+    virtual bool createsExpandingWidget() const;
 };
 
 } // End of namespace Ruby

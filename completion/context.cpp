@@ -38,7 +38,7 @@
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
 #define ADD_ONE_LINER(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
-#define ADD_NORMAL(decl) list << CompletionTreeItemPointer(new NormalItem(DeclarationPointer(decl), KDevelop::CodeCompletionContext::Ptr(this)));
+#define ADD_NORMAL(decl, depth) list << CompletionTreeItemPointer(new NormalItem(DeclarationPointer(decl), KDevelop::CodeCompletionContext::Ptr(this), depth));
 
 
 using namespace KDevelop;
@@ -208,7 +208,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
     foreach (DeclarationPair d, decls) {
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d.first);
         if (md && md->accessPolicy() == Declaration::Public)
-            ADD_NORMAL(d.first);
+            ADD_NORMAL(d.first, d.second);
     }
     return list;
 }
@@ -251,7 +251,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 
     foreach (DeclarationPair d, decls)
         if (dynamic_cast<ClassDeclaration *>(d.first))
-            ADD_NORMAL(d.first);
+            ADD_NORMAL(d.first, d.second);
     return list;
 }
 
@@ -267,7 +267,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
 
     foreach (DeclarationPair d, decls)
         if (dynamic_cast<ModuleDeclaration *>(d.first))
-            ADD_NORMAL(d.first);
+            ADD_NORMAL(d.first, d.second);
     return list;
 }
 
@@ -308,7 +308,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
     foreach (DeclarationPair d, decls)
-        ADD_NORMAL(d.first);
+        ADD_NORMAL(d.first, d.second);
     return list;
 }
 
