@@ -50,6 +50,7 @@ private slots:
     void moduleMixins();
     void memberAccess();
     void checkSubclassing();
+    void classMemberAccess();
 };
 
 } // End of namespace Ruby

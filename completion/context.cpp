@@ -134,9 +134,6 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
         case ModuleMixinAccess:
             items += moduleMixinItems();
             break;
-        case ClassMemberChoose:
-            items += classMemberItems();
-            break;
         case FileChoose:
             items += fileChooseItems();
             break;
@@ -168,6 +165,8 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     parser->setCurrentDocument(KUrl());
     parser->setContents(expr.toUtf8());
     RubyAst *ast = parser->parse();
+    if (!ast || !ast->tree)
+        return AbstractType::Ptr(NULL);
     ev->visitCode(ast);
     res = ev->lastType();
     parser->freeAst(ast);
@@ -178,20 +177,20 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     return res;
 }
 
-QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromType(AbstractType::Ptr type)
+QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromType(AbstractType::Ptr type, bool scoped)
 {
     QList<CompletionTreeItemPointer> res;
     if (type->whichType() == AbstractType::TypeUnsure) {
         UnsureType::Ptr unsure = type.cast<UnsureType>();
         int count = unsure->typesSize();
         for (int i = 0; i < count; i++)
-            res.append(getCompletionItemsForOneType(unsure->types()[i].abstractType()));
+            res.append(getCompletionItemsForOneType(unsure->types()[i].abstractType(), scoped));
     } else
-        res = getCompletionItemsForOneType(type);
+        res = getCompletionItemsForOneType(type, scoped);
     return res;
 }
 
-QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOneType(AbstractType::Ptr type)
+QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOneType(AbstractType::Ptr type, bool scoped)
 {
     QList<CompletionTreeItemPointer> list;
     QList<DeclarationPair> decls;
@@ -207,7 +206,10 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
 
     foreach (DeclarationPair d, decls) {
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d.first);
-        if (md && md->accessPolicy() == Declaration::Public)
+        if (md && md->accessPolicy() == Declaration::Public) {
+            if (!scoped || (scoped && md->isClassMethod()))
+                ADD_NORMAL(d.first, d.second);
+        } else if (scoped && dynamic_cast<ModuleDeclaration *>(d.first))
             ADD_NORMAL(d.first, d.second);
     }
     return list;
@@ -232,9 +234,11 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
-
-    // TODO
-    debug() << "Inside ModuleMemberAccessItems";
+    AbstractType::Ptr type = getExpressionType("::");
+    if (type)
+        list << getCompletionItemsFromType(type, true);
+    else
+        debug() << "Oops: cannot access at the member";
 
     return list;
 }
@@ -268,16 +272,6 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
     foreach (DeclarationPair d, decls)
         if (dynamic_cast<ModuleDeclaration *>(d.first))
             ADD_NORMAL(d.first, d.second);
-    return list;
-}
-
-QList<CompletionTreeItemPointer> CodeCompletionContext::classMemberItems()
-{
-    QList<CompletionTreeItemPointer> list;
-
-    // TODO
-    debug() << "Inside ClassMemberItems";
-
     return list;
 }
 

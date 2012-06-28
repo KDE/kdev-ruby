@@ -66,15 +66,14 @@ public:
         ModuleMemberAccess,     /// MyModule::
         BaseClassAccess,        /// After "class Klass <" only classes should be shown.
         ModuleMixinAccess,      /// After "include" or "extend", only available modules should be shown.
-        ClassMemberChoose,      /// In module/class context, access modifiers, overloadable methods,...
         FileChoose              /// Autocompletion for files.
     };
 
 private:
     /// TODO
     KDevelop::AbstractType::Ptr getExpressionType(const QString &token);
-    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type);
-    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type, bool scoped = false);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type, bool scoped);
 
     /// @returns true if the parent items should be added to this one.
     bool shouldAddParentItems(bool fullCompletion);

@@ -150,5 +150,18 @@ void TestCompletion::checkSubclassing()
     }
 }
 
+void TestCompletion::classMemberAccess()
+{
+    QByteArray code("module MyModule; class Klass; end; end\n");
+    TopDUContext *top = parse(code, "classMemberAccess");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        RubyCompletionTester tester(top, "MyModule::");
+        shouldContain(tester.names, QStringList() << "Klass", true);
+    }
+}
+
 } // End of namespace Ruby
 
