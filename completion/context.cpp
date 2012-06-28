@@ -19,19 +19,22 @@
  */
 
 
-#include <completion/context.h>
+// KDE + KDevelop
+#include <KLocale>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchain.h>
-#include <completion/items/keyworditem.h>
-#include <KLocale>
+#include <language/duchain/types/unsuretype.h>
+
+// Ruby
 #include <rubydefs.h>
-#include <duchain/declarations/classdeclaration.h>
-#include <duchain/declarations/methoddeclaration.h>
-#include <duchain/expressionvisitor.h>
-#include <completion/items/normalitem.h>
 #include <parser/rubyparser.h>
 #include <duchain/editorintegrator.h>
-#include <language/duchain/types/unsuretype.h>
+#include <duchain/expressionvisitor.h>
+#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <completion/context.h>
+#include <completion/items/keyworditem.h>
+#include <completion/items/normalitem.h>
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
@@ -101,6 +104,7 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
     , m_kind(NoMemberAccess), m_valid(true)
 {
+    Q_UNUSED(followingText);
     if (!m_duContext) {
         m_valid = false;
         return;

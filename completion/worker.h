@@ -53,4 +53,5 @@ protected:
 
 } // End of namespace Ruby
 
+
 #endif /* RUBY_COMPLETION_WORKER_H */

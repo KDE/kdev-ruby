@@ -52,4 +52,5 @@ protected:
 
 } // End of namespace Ruby
 
+
 #endif /* RUBY_COMPLETION_MODEL_H */

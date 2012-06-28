@@ -24,7 +24,6 @@
 
 
 #include <language/codecompletion/codecompletioncontext.h>
-#include <language/codecompletion/codecompletionitem.h>
 #include <language/duchain/types/abstracttype.h>
 #include <completion/completionexport.h>
 
@@ -36,7 +35,6 @@ namespace KDevelop {
 namespace Ruby
 {
 
-class RubyAst;
 typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 
 /**
@@ -52,11 +50,17 @@ class KDEVRUBYCOMPLETION_EXPORT CodeCompletionContext : public KDevelop::CodeCom
 public:
     typedef KSharedPtr<CodeCompletionContext> Ptr;
 
+    /// Constructor.
     CodeCompletionContext(KDevelop::DUContextPointer ctxt, const QString &text, const QString &followingText,
                           const KDevelop::CursorInRevision &pos, int depth = 0);
+
+    /// Destructor.
     virtual ~CodeCompletionContext();
 
+    /// Re-implemented from KDevelop::CodeCompletionContext.
     virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort, bool fullCompletion = true);
+
+    /// Re-implemented from KDevelop::CodeCompletionContext.
     virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements();
 
 public:
@@ -70,9 +74,25 @@ public:
     };
 
 private:
-    /// TODO
+    /**
+     * @returns the type of the last expression from m_text that is at the
+     * left side of the given @p token.
+     */
     KDevelop::AbstractType::Ptr getExpressionType(const QString &token);
+
+    /**
+     * @returns the completion items for the given @p type. Set @p scoped to
+     * true if you want to handle the case of MyModule::. Otherwise, it will
+     * assume the case of obj.method.
+     * @note that the type can be anything, even unsure.
+     */
     QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type, bool scoped = false);
+
+    /**
+     * @returns the completion items for the given @p type which is not unsure.
+     * @note this is just a helper method for the previous one, so you
+     * shouldn't call this directly.
+     */
     QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type, bool scoped);
 
     /// @returns true if the parent items should be added to this one.
@@ -106,5 +126,6 @@ private:
 };
 
 } // End of namespace Ruby
+
 
 #endif /* RUBY_COMPLETION_CONTEXT_H */
