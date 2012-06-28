@@ -18,14 +18,17 @@
  */
 
 
-#include <language/codecompletion/codecompletionmodel.h>
-#include <completion/items/normalitem.h>
+// KDevelop
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/types/functiontype.h>
+#include <language/codecompletion/codecompletionmodel.h>
+
+// Ruby
 #include <duchain/navigation/navigationwidget.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <completion/items/normalitem.h>
 
 
 using namespace KDevelop;

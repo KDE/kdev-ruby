@@ -30,11 +30,13 @@ namespace Ruby
 {
 
 /**
- * 
+ * @class NormalItem
+ * This is the NormalDeclarationCompletionItem to be used for this plugin.
  */
 class KDEVRUBYCOMPLETION_EXPORT NormalItem : public KDevelop::NormalDeclarationCompletionItem
 {
 public:
+    /// Constructor.
     NormalItem(KDevelop::DeclarationPointer decl = KDevelop::DeclarationPointer(),
                KSharedPtr<KDevelop::CodeCompletionContext> context = KSharedPtr<KDevelop::CodeCompletionContext>(),
                int inheritanceDepth = 0);
@@ -42,7 +44,11 @@ public:
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
     virtual QVariant data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const;
 
+protected:
+    /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
     virtual QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const;
+
+    /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
     virtual bool createsExpandingWidget() const;
 };
 
