@@ -182,14 +182,14 @@ QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
 bool CodeCompletionContext::doRequireCompletion()
 {
     QString line = lastNLines(m_text, 1).trimmed();
-    bool relative = false;
+    KUrl relative("");
     int idx = 8;
 
     if (!line.startsWith("require ")) {
-        idx += 9;
-        relative = true;
         if (!line.startsWith("require_relative "))
             return false;
+        idx += 9;
+        relative = m_duContext->url().toUrl().directory();
     }
     line = line.mid(idx).trimmed();
     if ((idx = line.indexOf("'")) < 0) {

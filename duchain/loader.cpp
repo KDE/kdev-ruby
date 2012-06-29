@@ -91,11 +91,16 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     return KUrl();
 }
 
-QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, bool relative)
+QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &relative)
 {
-    QList<IncludeItem> res;
-    QList<KUrl> paths = getSearchPaths().first;
     int number = 0;
+    QList<IncludeItem> res;
+    QList<KUrl> paths;
+
+    if (relative.isEmpty())
+        paths = getSearchPaths().first;
+    else
+        paths << relative;
 
     foreach (const KUrl &path, paths) {
         QString p = path.path(KUrl::AddTrailingSlash) + url;

@@ -45,10 +45,9 @@ using namespace KDevelop;
 /**
  * @class Loader
  *
- * This class handles the ruby's require/require_relative statements. Ideally,
- * the programmer only wants to use the @p getRequiredFile() method in order
- * to require a file. This class implements a caching system to keep the
- * whole thing as optimal as possible.
+ * This class handles the ruby's require/require_relative statements. This
+ * class implements a caching system to keep the whole thing as
+ * optimal as possible.
  */
 class KDEVRUBYDUCHAIN_EXPORT Loader
 {
@@ -65,7 +64,7 @@ public:
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
     /// TODO
-    static QList<IncludeItem> getFilesInSearchPath(const QString &url, bool relative);
+    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const KUrl &relative = KUrl());
 
 private:
     /// @returns the list of urls available from ruby through $:
