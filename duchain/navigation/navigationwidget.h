@@ -83,7 +83,7 @@ public:
      *
      * @param decl The given Include item.
      */
-    static QString shortDescription(KDevelop::IncludeItem &item);
+    static QString shortDescription(const KDevelop::IncludeItem &item);
 };
 
 } // End of namespace Ruby

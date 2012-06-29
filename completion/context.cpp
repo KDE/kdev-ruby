@@ -28,6 +28,7 @@
 // Ruby
 #include <rubydefs.h>
 #include <parser/rubyparser.h>
+#include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/declarations/classdeclaration.h>
@@ -35,6 +36,7 @@
 #include <completion/context.h>
 #include <completion/items/keyworditem.h>
 #include <completion/items/normalitem.h>
+#include <completion/items/requirefileitem.h>
 
 
 #define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
@@ -49,8 +51,8 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend require require_relative").split(' ').toSet();
-const int MEMBER_STRINGS_MAX = 16; // require_relative
+const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend").split(' ').toSet();
+const int MEMBER_STRINGS_MAX = 7; // include
 
 void compressText(QString &text)
 {
@@ -67,6 +69,7 @@ QString getEndingFromSet(const QString &str, const QSet<QString> &set, int maxMa
 
     for (int i = qMin(str.length(), maxMatchLen); i > 0; --i) {
         end = str.right(i);
+        debug() << end;
         if (set.contains(end))
             return end;
     }
@@ -81,6 +84,23 @@ bool insideClass(const QString &text)
     return  (classIdx != -1 && (classIdx > semicolon));
 }
 
+QString lastNLines(const QString &str, int n)
+{
+    int curNewLine = str.lastIndexOf('\n');
+    int nthLine = curNewLine;
+
+    for (int i = 0; i < n; ++i) {
+        if (curNewLine == -1)
+            break;
+        else
+            nthLine = curNewLine;
+        curNewLine = str.lastIndexOf('\n', curNewLine - 1);
+    }
+
+    // return the position after the newline, or whole str if no newline
+    return str.mid(nthLine + 1);
+}
+
 CodeCompletionContext::CompletionContextType findAccessKind(const QString &original)
 {
     QString text = getEndingFromSet(original, MEMBER_STRINGS, MEMBER_STRINGS_MAX);
@@ -93,8 +113,6 @@ CodeCompletionContext::CompletionContextType findAccessKind(const QString &origi
         return CodeCompletionContext::BaseClassAccess;
     if (text == "include" || text == "extend")
         return CodeCompletionContext::ModuleMixinAccess;
-    if (text == "require" || text == "require_relative")
-        return CodeCompletionContext::FileChoose;
     return CodeCompletionContext::NoMemberAccess;
 }
 
@@ -105,10 +123,14 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
     , m_kind(NoMemberAccess), m_valid(true)
 {
     Q_UNUSED(followingText);
+
     if (!m_duContext) {
         m_valid = false;
         return;
     }
+
+    if (doRequireCompletion())
+        return;
 
     compressText(m_text);
     m_kind = findAccessKind(m_text);
@@ -155,6 +177,30 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
 QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
 {
     return m_ungroupedItems;
+}
+
+bool CodeCompletionContext::doRequireCompletion()
+{
+    QString line = lastNLines(m_text, 1).trimmed();
+    bool relative = false;
+    int idx = 8;
+
+    if (!line.startsWith("require ")) {
+        idx += 9;
+        relative = true;
+        if (!line.startsWith("require_relative "))
+            return false;
+    }
+    line = line.mid(idx).trimmed();
+    if ((idx = line.indexOf("'")) < 0) {
+        if ((idx = line.indexOf("\"")) < 0)
+            return false;            
+    }
+    line = line.mid(idx + 1);
+
+    m_includeItems = Loader::getFilesInSearchPath(line, relative);
+    m_kind = FileChoose;
+    return true;
 }
 
 AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
@@ -283,9 +329,8 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
 {
     QList<CompletionTreeItemPointer> list;
 
-    // TODO
-    debug() << "Inside FileChooseItems";
-
+    foreach (const KDevelop::IncludeItem &item, m_includeItems)
+        list << CompletionTreeItemPointer(new RequireFileItem(item));
     return list;
 }
 
@@ -356,6 +401,8 @@ void CodeCompletionContext::addRubyKeywords()
     // Not really keywords, but who cares? ;)
     ADD_KEYWORD2("include", "include %SELECT%MyModule%ENDSELECT%");
     ADD_KEYWORD2("extend", "extend %SELECT%MyModule%ENDSELECT%");
+    ADD_KEYWORD2("require", "require '%CURSOR%'");
+    ADD_KEYWORD2("require_relative", "require_relative '%CURSOR%'");
 
     // More complex constructions
     ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");

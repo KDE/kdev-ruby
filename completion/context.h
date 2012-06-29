@@ -29,7 +29,8 @@
 
 
 namespace KDevelop {
-  typedef KSharedPtr<CompletionTreeItem> CompletionTreeItemPointer;
+    typedef KSharedPtr<CompletionTreeItem> CompletionTreeItemPointer;
+    class IncludeItem;
 }
 
 namespace Ruby
@@ -74,6 +75,9 @@ public:
     };
 
 private:
+    /// TODO
+    bool doRequireCompletion();
+
     /**
      * @returns the type of the last expression from m_text that is at the
      * left side of the given @p token.
@@ -123,6 +127,7 @@ private:
     CompletionContextType m_kind;
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
     bool m_valid;
+    QList<KDevelop::IncludeItem> m_includeItems;
 };
 
 } // End of namespace Ruby

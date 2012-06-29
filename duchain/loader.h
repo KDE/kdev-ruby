@@ -24,6 +24,7 @@
 
 // KDevelop
 #include <language/duchain/declaration.h>
+#include <language/util/includeitem.h>
 
 // Ruby
 #include <duchain/duchainexport.h>
@@ -33,7 +34,6 @@
 /*
  * TODO: this class is still under construction.
  */
-
 
 namespace Ruby
 {
@@ -60,12 +60,15 @@ public:
      * @param editor The EditorIntegrator from the current builder.
      * @param local Set to true if the required file is relative to the current
      * document (used for the require_relative statement).
-     * @return a KUrl containing the path to the required file.
+     * @returns a KUrl containing the path to the required file.
      */
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
+    /// TODO
+    static QList<IncludeItem> getFilesInSearchPath(const QString &url, bool relative);
+
 private:
-    /// @return the list of urls available from ruby through $:
+    /// @returns the list of urls available from ruby through $:
     static QPair<QList<KUrl>, QList<KUrl> > getSearchPaths();
 
     /// @returns true if the url cache has been filled with search paths.

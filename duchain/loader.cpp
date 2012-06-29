@@ -18,9 +18,9 @@
  */
 
 
-// Qt + KDE
+// Qt
 #include <QtCore/QProcess>
-#include <KUrl>
+#include <QtCore/QDirIterator>
 
 // Ruby
 #include <duchain/loader.h>
@@ -89,6 +89,31 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     }
 
     return KUrl();
+}
+
+QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, bool relative)
+{
+    QList<IncludeItem> res;
+    QList<KUrl> paths = getSearchPaths().first;
+    int number = 0;
+
+    foreach (const KUrl &path, paths) {
+        QString p = path.path(KUrl::AddTrailingSlash) + url;
+        QDirIterator it(p);
+        while (it.hasNext()) {
+            it.next();
+            IncludeItem item;
+            item.name = it.fileInfo().fileName();
+            if (item.name.startsWith(".") || item.name.endsWith("~"))
+                continue;
+            item.pathNumber = number;
+            item.isDirectory = it.fileInfo().isDir();
+            item.basePath = p;
+            res << item;
+        }
+        number++;
+    }
+    return res;
 }
 
 QPair<QList<KUrl>, QList<KUrl> > Loader::getSearchPaths()

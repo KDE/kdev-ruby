@@ -9,6 +9,7 @@ set(rubycompletion_SRCS
 
     items/normalitem.cpp
     items/keyworditem.cpp
+    items/requirefileitem.cpp
 )
 
 kde4_add_library(kdev4rubycompletion SHARED ${rubycompletion_SRCS})
