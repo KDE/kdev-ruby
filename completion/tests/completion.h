@@ -51,6 +51,7 @@ private slots:
     void memberAccess();
     void checkSubclassing();
     void classMemberAccess();
+    void fileChoose();
 };
 
 } // End of namespace Ruby

@@ -163,5 +163,27 @@ void TestCompletion::classMemberAccess()
     }
 }
 
+void TestCompletion::fileChoose()
+{
+    QByteArray code("a = 0\n");
+    TopDUContext *top = parse(code, "fileChoose");
+    DUChainReleaser releaseTop(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    {
+        // Using the stdlib. It's ok if you've installed ruby 1.8.x or 1.9.x
+        RubyCompletionTester tester(top, "require 'rss/");
+        shouldContain(tester.names, QStringList() << "maker/" << "0.9.rb" << "utils.rb");
+    }
+
+    {
+        // The name used to check if it works is the file containing this same test.
+        RubyCompletionTester tester(top, "require_relative '");
+        shouldContain(tester.names, QStringList() << "kdevruby_completion_fileChoose.rb");
+    }
+
+    PENDING("Test for the require of a gem");
+}
+
 } // End of namespace Ruby
 
