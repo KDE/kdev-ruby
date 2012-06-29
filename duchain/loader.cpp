@@ -97,9 +97,11 @@ QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &
     QList<IncludeItem> res;
     QList<KUrl> paths;
 
-    if (relative.isEmpty())
-        paths = getSearchPaths().first;
-    else
+    if (relative.isEmpty()) {
+        // TODO: handle the gem path properly
+        QPair<QList<KUrl>, QList<KUrl> > pair = getSearchPaths();
+        paths = pair.first + pair.second;
+    } else
         paths << relative;
 
     foreach (const KUrl &path, paths) {

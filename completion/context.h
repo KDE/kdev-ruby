@@ -75,7 +75,10 @@ public:
     };
 
 private:
-    /// TODO
+    /**
+     * @returns true if this is a require/require_relative completion. If so,
+     * it then fills the m_includeItems attribute with the requirable files.
+     */
     bool doRequireCompletion();
 
     /**

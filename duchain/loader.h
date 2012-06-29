@@ -31,10 +31,6 @@
 #include <parser/rubyast.h>
 
 
-/*
- * TODO: this class is still under construction.
- */
-
 namespace Ruby
 {
 
@@ -63,7 +59,17 @@ public:
      */
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
-    /// TODO
+    /**
+     * Get all the files/directories inside the given directory except for
+     * (UNIX) hidden files and backup files (that end with ~).
+     *
+     * @param url the url where to search.
+     * @param relative the absolute path of the directory that contains the
+     * current file. If set, all the items returned are relative to the given
+     * path.
+     * @returns a list of IncludeItem's containing all the files/directories
+     * that fit the given parameters.
+     */
     static QList<IncludeItem> getFilesInSearchPath(const QString &url, const KUrl &relative = KUrl());
 
 private:
