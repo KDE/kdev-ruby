@@ -22,14 +22,32 @@
 #define RUBYCOMPLETIONHELPERS_H
 
 
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 #include <completion/completionexport.h>
 
+
+namespace KDevelop {
+    class Declaration;
+}
 
 namespace Ruby
 {
 
+class NormalItem;
+
 /// Get the indentation of a given @p line.
 QString KDEVRUBYCOMPLETION_EXPORT getIndendation(const QString &line);
+
+/**
+ * Get the representation of the arguments list of a method declaration.
+ * @param decl The declaration of the method.
+ * @param highlighting A list of the highlighted items of the text. You
+ * usually want this list empty before calling this method.
+ * @note the DUChain must be locked.
+ * @returns a QString representing the argument list of the given method.
+ */
+QString KDEVRUBYCOMPLETION_EXPORT getArgumentList(KDevelop::Declaration *decl, QList<QVariant> *highlighting);
 
 } // End of namespace Ruby
 

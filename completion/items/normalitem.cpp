@@ -29,6 +29,7 @@
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <completion/items/normalitem.h>
+#include <completion/helpers.h>
 
 
 using namespace KDevelop;
@@ -56,7 +57,7 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
         switch (index.column()) {
         case CodeCompletionModel::Postfix:
             return QVariant();
-        case CodeCompletionModel::Prefix:
+        case CodeCompletionModel::Prefix: {
             MethodDeclaration *mDec = dynamic_cast<MethodDeclaration *>(dec);
             if (mDec) {
                 FunctionType::Ptr ftype = mDec->type<FunctionType>();
@@ -73,6 +74,11 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
                     return "module";
             }
             return dec->abstractType()->toString();
+        }
+        case CodeCompletionModel::Arguments:
+            if (FunctionType::Ptr fType = dec->type<FunctionType>())
+                return getArgumentList(m_declaration.data(), 0);
+            break;
         }
         break;
     }

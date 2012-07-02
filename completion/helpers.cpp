@@ -18,10 +18,12 @@
  */
 
 
-#include <QtCore/QString>
-#include <QtCore/QRegExp>
+#include <language/duchain/declaration.h>
+#include <language/duchain/duchainutils.h>
 #include <completion/helpers.h>
 
+
+using namespace KDevelop;
 
 namespace Ruby
 {
@@ -29,6 +31,28 @@ namespace Ruby
 QString getIndendation(const QString &line)
 {
     return line.left(line.indexOf(QRegExp("\\S"), 0));
+}
+
+QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
+{
+    QString ret = "(";
+    QVector<Declaration *> params;
+
+    if (DUContext *ctx = DUChainUtils::getArgumentContext(decl))
+        params = ctx->localDeclarations();
+
+    // TODO: this is just too simplistic
+
+    bool first = true;
+    foreach (Declaration *d, params) {
+        if (first)
+            first = false;
+        else
+            ret += ", ";
+        ret += d->identifier().toString();
+    }
+    ret += ")";
+    return ret;
 }
 
 } // End of namespace Ruby

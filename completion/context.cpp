@@ -69,7 +69,6 @@ QString getEndingFromSet(const QString &str, const QSet<QString> &set, int maxMa
 
     for (int i = qMin(str.length(), maxMatchLen); i > 0; --i) {
         end = str.right(i);
-        debug() << end;
         if (set.contains(end))
             return end;
     }
