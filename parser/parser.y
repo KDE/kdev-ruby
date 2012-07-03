@@ -34,8 +34,12 @@
 #include "parser.h"
 
 #define STACK_SIZE 128
-#define BSIZE STACK_SIZE
-
+/* buffer size for heredocs and code blocks inside strings
+   let's say it has place for about 2k lines of utf8-encoded
+   code for now */
+#define STRING_BSIZE 320000
+/* buffer size for other tokens that are not strings */
+#define TOK_BSIZE 128
 
 /* Flags used by the lexer */
 struct flags_t {
@@ -1697,7 +1701,7 @@ static int push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
   int diff = *curs - p->cursor - oax + 2;
   struct pos_t tp = { p->line, p->line, p->column + diff, -1, 0 };
   int possible_error = *curs + 1;
-  char buffer[BSIZE];
+  char buffer[STRING_BSIZE];
   char * ptr = buffer;
   int step = 0; /* How many bytes the actual utf8 character has */
   int ax = 0; /* Used to properly update the column when utf8 chars appear */
@@ -1731,7 +1735,7 @@ static int push_string_var(struct parser_t * p, int * curs, char ** ch, int oax)
 
 static int parse_heredoc(struct parser_t * p, char * c, int * curs)
 {
-  char buffer[BSIZE], aux[BSIZE];
+  char buffer[STRING_BSIZE], aux[STRING_BSIZE];
   unsigned char quote_seen = 0, term = ' ';
   unsigned char dash_seen = 0;
   int i, l = 0, spaces = 0;
@@ -2162,7 +2166,7 @@ static int parse_re_options(struct parser_t *p, char *c, int curs)
 static int parser_yylex(struct parser_t * parser)
 {
   int t = token_invalid;
-  char buffer[BSIZE];
+  char buffer[TOK_BSIZE];
   char * c;
   int curs, len;
   unsigned char space_seen = 0;
