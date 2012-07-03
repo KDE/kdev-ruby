@@ -261,6 +261,8 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     /* Finally, declare the parameter */
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
+        if (!type)
+            type = new ObjectType(); // HACK: this should be done in a more proper way
         mType->addArgument(type);
         declareVariable(currentContext(), type, getIdentifier(node), node);
     }
@@ -626,11 +628,16 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
         }
     }
 
+    debug() << type->toString();
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
-    dec->setAbstractType(type);
+    dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
+    if (dec->type<ClassType>())
+        debug() << "YES :: " << dec->type<ClassType>()->toString();
+    else
+        debug() << "NO";
 }
 
 void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
