@@ -313,15 +313,6 @@ void ExpressionVisitor::visitCaseStatement(RubyAst *node)
     node->tree = aux;
 }
 
-TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
-{
-    DUChainReadLocker lock(DUChain::lock());
-    QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
-    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
-    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
-    return type;
-}
-
 template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 {
     encounter(AbstractType::Ptr::staticCast(type));

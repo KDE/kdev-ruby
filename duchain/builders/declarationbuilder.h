@@ -85,16 +85,6 @@ private:
 
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
 
-    // TODO: this is ugly as hell
-    inline TypePtr<AbstractType> getArray()
-    {
-        DUChainReadLocker lock(DUChain::lock());
-        QList<Declaration *> decls = m_builtinsContext->findDeclarations(QualifiedIdentifier("Array"));
-        Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
-        AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
-        return type;
-    }
-
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy()
     {
         if (m_accessPolicyStack.isEmpty())

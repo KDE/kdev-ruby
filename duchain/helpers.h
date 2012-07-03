@@ -78,6 +78,17 @@ using namespace KDevelop;
                                                         DUContextPointer context);
 
     /**
+     * Get the required builtin type.
+     *
+     * @param desc The name of the builtin type.
+     * @param ctx The context where this type is available.
+     * @returns a TypePtr< AbstractType > containing the required type or null
+     * if it was not found.
+     * @note This method already acquires a read lock for the DUChain.
+     */
+    KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx);
+
+    /**
      * @returns the declared methods inside the given declaration @p decl,
      * which is a class or a module.
      */
@@ -104,4 +115,3 @@ using namespace KDevelop;
 
 
 #endif /* RUBYDUCHAINHELPERS_H_ */
-

@@ -83,6 +83,15 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
     return (decls.length()) ? decls.last() : NULL;
 }
 
+TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
+    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
+    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
+    return type;
+}
+
 QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl)
 {
     DUChainReadLocker rlock(DUChain::lock());

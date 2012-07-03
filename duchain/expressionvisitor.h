@@ -93,7 +93,6 @@ protected:
     virtual void visitCaseStatement(RubyAst *node);
 
 private:
-    TypePtr<AbstractType> getBuiltinsType(const QString &desc, KDevelop::DUContext *ctx);
     template<typename T> void encounter(TypePtr<T> type);
     inline void encounter(KDevelop::AbstractType::Ptr type)
     {

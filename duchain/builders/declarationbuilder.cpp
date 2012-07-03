@@ -372,7 +372,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         if (has_star(n)) {
             int rest = nodeListSize(n) - 1;
             int pack = rsize - i - rest;
-            ClassType::Ptr newType = getArray().cast<ClassType>();
+            ClassType::Ptr newType = getBuiltinsType("Array", currentContext()).cast<ClassType>();
             for (int j = pack; j > 0; j--, i++)
                 newType->addContentType(values.at(i));
             i--;
