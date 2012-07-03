@@ -38,24 +38,25 @@ namespace Ruby
 class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
-    /**
-     * Default constructor.
-     */
+    /// Default constructor.
     ClassTypeData() : KDevelop::StructureTypeData(), m_contentType(0)
     {
         /* There's nothing to do here! */
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param rhs data to copy.
-     */
+    /// Copy constructor. @param rhs data to copy.
     ClassTypeData(const ClassTypeData &rhs)
         : KDevelop::StructureTypeData(rhs), m_contentType(rhs.m_contentType)
     {
         /* There's nothing to do here! */
     }
+
+    /// Copy constructor. @param rhs data to copy.
+    ClassTypeData(const StructureTypeData &rhs)
+        : KDevelop::StructureTypeData(rhs), m_contentType(0)
+    {
+        /* There's nothing to do here */
+    };
 
     /// The type of the content.
     KDevelop::IndexedType m_contentType;
