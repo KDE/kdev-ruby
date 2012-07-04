@@ -281,7 +281,8 @@ void TestDUChain::yield1()
 
     QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("a"));
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("b"));
-    // TODO: types must be NilClass
+
+    PENDING("types must be NilClass");
 }
 
 void TestDUChain::yield2()
@@ -572,10 +573,52 @@ void TestDUChain::aliasedAssignment()
     QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-void TestDUChain::hashAssignment()
+//END: Assignments
+
+//BEGIN: ClassType
+
+void TestDUChain::assignFromArrayItem1()
 {
-    QByteArray code("a = { :a => 1, :b => 'b' }; b = a[:b]");
-    TopDUContext *top = parse(code, "hashAssignment");
+    QByteArray code("a = [1, 2, 3]; b = a[0]");
+    TopDUContext *top = parse(code, "assignFromArrayItem1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    // a
+    Declaration *d = top->localDeclarations().at(0);
+    QCOMPARE(d->type<ClassType>()->toString(), QString("Array of Fixnum"));
+
+    // b
+    d = top->localDeclarations().at(1);
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
+void TestDUChain::assignFromArrayItem2()
+{
+    QByteArray code("a = [1, '2']; b = a[0]");
+    TopDUContext *top = parse(code, "assignFromArrayItem2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    // a
+    Declaration *d = top->localDeclarations().at(0);
+    QCOMPARE(d->type<ClassType>()->toString(), QString("Array of unsure (Fixnum, String)"));
+
+    // b
+    d = top->localDeclarations().at(1);
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(d->type<UnsureType>(), list);
+}
+
+void TestDUChain::assignFromHashItem()
+{
+    QByteArray code("a = { :a => 'a', b: 1 }; b = a[:a]");
+    TopDUContext *top = parse(code, "assignFromHashItem");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -583,50 +626,25 @@ void TestDUChain::hashAssignment()
 
     QVERIFY(top->localDeclarations().size() == 2);
 
-    Declaration *dec1 = top->localDeclarations().at(0);
-    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Hash"));
+    // a
+    Declaration *d = top->localDeclarations().at(0);
+    QCOMPARE(d->type<ClassType>()->toString(), QString("Hash of unsure (String, Fixnum)"));
 
-    Declaration *dec2 = top->localDeclarations().at(1);
-    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec2->abstractType());
-    QVERIFY(ut);
+    // b
+    d = top->localDeclarations().at(1);
     QList<QString> list;
-    list << "Fixnum" << "String";
-    testUnsureTypes(ut, list);
-}
-
-//END: Assignments
-
-//BEGIN: Variable Length Container
-
-void TestDUChain::assignFromArrayItem1()
-{
-    QByteArray code("a = [1, 2, 3]; b = a[0]");
-
-    PENDING("Waiting for the ClassType to be supported");
-}
-
-void TestDUChain::assignFromArrayItem2()
-{
-    QByteArray code("a = [1, '2']; b = a[0]");
-
-    PENDING("Waiting for the ClassType to be supported");
-}
-
-void TestDUChain::assignFromHashItem()
-{
-    QByteArray code("a = { :a => 'a', b: 1 }; b = a[:a]");
-
-    PENDING("Waiting for the ClassType to be supported");
+    list << "String" << "Fixnum";
+    testUnsureTypes(d->type<UnsureType>(), list);
 }
 
 void TestDUChain::assignToArrayItem()
 {
-    QByteArray code("a = [1, nil]; a[1] = 2");
+    QByteArray code("a = [1, nil]; a[1] = 'asd'");
 
     PENDING("Waiting for the ClassType to be supported");
 }
 
-//END: Variable Length Container
+//END: ClassType
 
 //BEGIN: Declarations
 

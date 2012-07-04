@@ -48,7 +48,7 @@ protected:
 private:
     /**
      * Given an unsure @p type, compare its possible types with the given
-     * @p list of class identifiers. Note that the order *does* matter.
+     * @p list of class identifiers.
      * @note that the order of the @p list items is important.
      */
     void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, QList<QString> list);
@@ -96,10 +96,8 @@ private slots:
     void unpackArray2();
     void unpackArray3();
     void aliasedAssignment();
-    void hashAssignment();
 
-    // Variable Length Container
-    // TODO: rename the VariableLengthContainer thingy.
+    // ClassType
     void assignFromArrayItem1();
     void assignFromArrayItem2();
     void assignFromHashItem();
