@@ -157,7 +157,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     m_accessPolicyStack.pop();
 }
 
-void DeclarationBuilder::visitModuleStatement(RubyAst* node)
+void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 {
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
@@ -628,16 +628,11 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
         }
     }
 
-    debug() << type->toString();
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
-    if (dec->type<ClassType>())
-        debug() << "YES :: " << dec->type<ClassType>()->toString();
-    else
-        debug() << "NO";
 }
 
 void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,

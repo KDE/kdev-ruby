@@ -74,7 +74,9 @@ AbstractType* ClassType::clone() const
 
 uint ClassType::hash() const
 {
-    return StructureType::hash() << 4;
+    return StructureType::hash() +
+        ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 ) +
+        ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 );
 }
 
 QString ClassType::toString() const
