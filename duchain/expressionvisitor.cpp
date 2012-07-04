@@ -325,7 +325,13 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
         for (Node *n = ast->tree; n != NULL; n = n->next) {
-            (hasKey) ? ev.visitBinary(ast) : ev.visitNode(ast);
+            if (hasKey) {
+                Node *aux = ast->tree;
+                ast->tree = ast->tree->r;
+                ev.visitNode(ast);
+                ast->tree = aux;
+            } else
+                ev.visitNode(ast);
             ct->addContentType(ev.lastType());
             ast->tree = n->next;
         }

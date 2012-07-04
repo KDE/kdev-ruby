@@ -25,6 +25,7 @@
 
 #include <duchain/tests/duchaintestbase.h>
 
+
 namespace KDevelop {
     class UnsureType;
 }
