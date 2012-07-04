@@ -70,6 +70,7 @@ protected:
     virtual void visitYieldStatement(RubyAst *node);
 
 private:
+    /// TODO: reformat the code of this method.
     void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
                         const KDevelop::QualifiedIdentifier& id, RubyAst *node);
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,

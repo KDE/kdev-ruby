@@ -654,12 +654,11 @@ void TestDUChain::assignToArrayItem()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Waiting for the ClassType to be supported");
-
     Declaration *d = top->localDeclarations().at(0);
+    UnsureType::Ptr cont = d->type<ClassType>()->contentType().type<UnsureType>();
     QList<QString> list;
     list << "Fixnum" << "NilClass" << "String";
-    testUnsureTypes(d->type<UnsureType>(), list);
+    testUnsureTypes(cont, list);
 }
 
 //END: ClassType

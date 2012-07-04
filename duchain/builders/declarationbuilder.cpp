@@ -591,12 +591,19 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                                          const QualifiedIdentifier &id, RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
-    const RangeInRevision range = editorFindRange(node, node);
+    RangeInRevision range;
+    Node *aux = node->tree;
+    QualifiedIdentifier rId(id);
+
+    /* Take care of the special a[...] case */
+    if (aux->kind == token_array_value) {
+        node->tree = aux->l;
+        rId = getIdentifier(node);
+    }
+    range = editorFindRange(node, node);
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = ctx->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
-
-    // TODO: Not sure if this is properly working...
+    QList<Declaration *> decs = ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
     if (!decs.isEmpty()) {
         QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
         for (;; --it) {
@@ -605,7 +612,10 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                     setEncountered(*it);
                     (*it)->setRange(range);
                 }
-                if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
+                if (ClassType::Ptr tt = (*it)->type<ClassType>()) {
+                    tt->addContentType(type);
+                    (*it)->setType(AbstractType::Ptr::dynamicCast(tt));
+                } else if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
                     if ( IntegralType::Ptr integral = IntegralType::Ptr::dynamicCast((*it)->abstractType()) ) {
                         if ( integral->dataType() == IntegralType::TypeMixed ) {
                             // mixed to @p type
@@ -628,11 +638,12 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
         }
     }
 
-    VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
+    VariableDeclaration *dec = openDefinition<VariableDeclaration>(rId, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
+    node->tree = aux;
 }
 
 void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
