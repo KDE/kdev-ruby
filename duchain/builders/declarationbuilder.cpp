@@ -101,6 +101,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray &comment = getComment(node);
+    ClassDeclaration *baseClass = NULL;
 
 //     if (!validReDeclaration(id, range))
 //         return;
@@ -128,13 +129,12 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
         if (!baseDecl)
             appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
         else {
-            ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
-            if (!realClass)
+            baseClass = dynamic_cast<ClassDeclaration *>(baseDecl);
+            if (!baseClass)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            else if (realClass->internalContext()) {
-                currentContext()->addImportedParentContext(realClass->internalContext());
-                decl->setBaseClass(realClass->indexedType());
-            } else
+            else if (baseClass->internalContext())
+                decl->setBaseClass(baseClass->indexedType());
+            else
                 debug() << "Error: found a valid base class but with no internal context";
         }
     }
@@ -147,6 +147,8 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     openType(type);
 
     openContextForClassDefinition(node);
+    if (baseClass)
+        currentContext()->addImportedParentContext(baseClass->internalContext());
     decl->setInternalContext(currentContext());
     DeclarationBuilderBase::visitClassStatement(node);
     closeContext();
