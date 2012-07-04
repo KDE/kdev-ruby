@@ -468,7 +468,7 @@ void TestDUChain::multipleAssignmentNamedStar()
     QVERIFY(dec2->type<ClassType>()->contentType());
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(dec2->type<ClassType>()->contentType().abstractType());
     QList<QString> list;
-    list << "Fixnum" << "NilClass";
+    list << "NilClass" << "Fixnum";
     testUnsureTypes(unsure, list);
 
     Declaration *dec3 = top->localDeclarations().at(2);

@@ -57,6 +57,14 @@ protected:
      * @param node The given variable.
      */
     virtual void visitName(RubyAst *node);
+
+    /**
+     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
+     * of array values.
+     *
+     * @param node The given array value.
+     */
+    virtual void visitArrayValue(RubyAst *node);
 };
 
 } // End of namespace Ruby

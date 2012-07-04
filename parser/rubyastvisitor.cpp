@@ -261,11 +261,9 @@ void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
      * r -> the right side of the assignment.
      */
 
-    /*
-     * The left side is not implemented here because it may conflict with
-     * the implementation of the DeclarationBuilder.
-     */
     Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
     node->tree = n->r;
     visitStatements(node);
     node->tree = n;
