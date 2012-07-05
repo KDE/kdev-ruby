@@ -40,14 +40,10 @@ namespace Ruby
 class KDEVRUBYPARSER_EXPORT RubyAstVisitor
 {
 public:
-    /**
-     * Constructor.
-     */
+    /// Constructor.
     RubyAstVisitor();
 
-    /**
-     * Destructor.
-     */
+    /// Destructor.
     virtual ~RubyAstVisitor();
 
     /**

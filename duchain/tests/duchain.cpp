@@ -861,7 +861,7 @@ void TestDUChain::mixedExplicitAndImplicitReturn()
 
 //END: Returning Values
 
-//BEGIN: Method Calls
+//BEGIN: Methods
 
 void TestDUChain::callingToInstanceMethod()
 {
@@ -877,7 +877,35 @@ void TestDUChain::callingToInstanceMethod()
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-void TestDUChain::setMethodArgumentTypes1()
+void TestDUChain::optionalMethodArguments()
+{
+    QByteArray code("def foo(a, b = 1, c = 'asd'); end");
+    TopDUContext *top = parse(code, "optionalMethodArguments");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("The code that handles optional arguments is still under construction");
+}
+
+void TestDUChain::specialMethodArguments()
+{
+    QByteArray code("def foo(*args, &blk); end");
+    TopDUContext *top = parse(code, "specialMethodArguments");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
+    QVERIFY(md);
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
+    QVERIFY(args.size() == 2);
+
+    Declaration *a = args.first();
+    QCOMPARE(a->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    a = args.last();
+    QCOMPARE(a->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
+void TestDUChain::guessMethodArgumentTypes1()
 {
     QByteArray code("def foo(a, b); end; foo 1, 2");
     TopDUContext *top = parse(code, "setMethodArgumentTypes1");
@@ -892,7 +920,7 @@ void TestDUChain::setMethodArgumentTypes1()
         QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-void TestDUChain::setMethodArgumentTypes2()
+void TestDUChain::guessMethodArgumentTypes2()
 {
     QByteArray code("def foo(a, b); end; c = 1.2; foo c, 2");
     TopDUContext *top = parse(code, "setMethodArgumentTypes2");
@@ -925,7 +953,7 @@ void TestDUChain::setUnsureArgument()
     QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-//END: Method Calls
+//END: Methods
 
 //BEGIN: Include & Extend
 

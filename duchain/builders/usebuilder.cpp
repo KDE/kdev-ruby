@@ -67,7 +67,6 @@ void UseBuilder::visitArrayValue(RubyAst *node)
     node->tree = aux->l;
     visitNode(node);
     node->tree = aux;
-    
 }
 
 } // End of namespace Ruby

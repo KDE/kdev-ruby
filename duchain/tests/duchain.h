@@ -118,10 +118,12 @@ private slots:
     void implicitReturn();
     void mixedExplicitAndImplicitReturn();
 
-    // Method Calls
+    // Methods
     void callingToInstanceMethod();
-    void setMethodArgumentTypes1();
-    void setMethodArgumentTypes2();
+    void optionalMethodArguments();
+    void specialMethodArguments();
+    void guessMethodArgumentTypes1();
+    void guessMethodArgumentTypes2();
     void setUnsureArgument();
 
     // Include & Extend
