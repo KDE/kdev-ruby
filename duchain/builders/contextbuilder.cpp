@@ -213,6 +213,7 @@ void ContextBuilder::visitMethodArguments(RubyAst *node)
     RangeInRevision rg = rangeForMethodArguments(node);
     QualifiedIdentifier name = getIdentifier(node);
     DUContext *params = openContext(node, rg, DUContext::Function, m_lastMethod);
+    debug() << "OPEN ARGUMENTS CONTEXT :: " << params->range();
     RubyAstVisitor::visitMethodArguments(node);
     closeContext();
     m_importedParentContexts.append(params);
@@ -224,6 +225,7 @@ void ContextBuilder::visitMethodBody(RubyAst *node)
         RangeInRevision range = editorFindRange(node, node);
         QualifiedIdentifier name = getIdentifier(node);
         openContext(node, range, DUContext::Other, m_lastMethod);
+        debug() << "OPEN BODY CONTEXT :: " << range;
         currentContext()->setLocalScopeIdentifier(m_lastMethod);
         addImportedContexts();
         visitBody(node);
@@ -276,8 +278,10 @@ void ContextBuilder::addImportedContexts()
 {
     if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
         DUChainWriteLocker wlock(DUChain::lock());
-        foreach (KDevelop::DUContext *imported, m_importedParentContexts)
+        foreach (KDevelop::DUContext *imported, m_importedParentContexts) {
+            debug() << "ADDING: " << imported->range() << " TO " << currentContext()->range();
             currentContext()->addImportedParentContext(imported);
+        }
         m_importedParentContexts.clear();
     }
 }

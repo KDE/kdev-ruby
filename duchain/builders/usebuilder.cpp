@@ -57,7 +57,9 @@ void UseBuilder::visitName(RubyAst *node)
     } else if (decl->range() == range)
         return;
 
-    debug() << "New use: " << id << " at " << range;
+    if (decl)
+        debug() << "New use: " << id << " at " << range << " from " << decl->range();
+
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 

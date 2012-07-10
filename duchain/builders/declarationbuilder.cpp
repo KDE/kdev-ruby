@@ -147,7 +147,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     openType(type);
 
     openContextForClassDefinition(node);
-    if (baseClass)
+    if (baseClass && baseClass->internalContext())
         currentContext()->addImportedParentContext(baseClass->internalContext());
     decl->setInternalContext(currentContext());
     DeclarationBuilderBase::visitClassStatement(node);
@@ -204,6 +204,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     Node *aux = node->tree;
 
     MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
+    debug() << "OPENING DECLARATION";
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
