@@ -598,8 +598,6 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     RangeInRevision range;
     Node *aux = node->tree;
     QualifiedIdentifier rId(id);
-    DUContextPointer internal(NULL);
-    DUContext *previousCtx = NULL;
 
     /* Take care of the special a[...] case */
     if (aux->kind == token_array_value) {
@@ -608,17 +606,8 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     }
     range = editorFindRange(node, node);
 
-    QList<Declaration *> decs;
-    if ((is_ivar(node->tree) || is_cvar(node->tree)) && !m_classDeclarations.isEmpty()) {
-        previousCtx = currentContext();
-        internal = m_classDeclarations.last()->internalContext();
-        injectContext(internal.data());
-//         decs = currentContext()->localDeclarations().toList(); // BUG: crash !!
-    }
-
-    debug() << "SEARCHING FOR: " << rId.toString();
-
     /* Let's check if this variable is already declared */
+    QList<Declaration *> decs;
     decs.append(ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent));
     if (!decs.isEmpty()) {
         debug() << "INSIDE"; // TODO: remove
@@ -651,25 +640,19 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
                     unsure->addType(type->indexed());
                     (*it)->setType(unsure);
                 }
+                node->tree = aux;
                 return;
             }
             if (it == decs.constBegin())
                 break;
         }
-    } else
-        debug() << "EMPTY"; // TODO: remove
+    }
 
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(rId, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
-    if (previousCtx) {
-        dec->setRange(RangeInRevision(internal->range().start, internal->range().start));
-        dec->setAutoDeclaration(true);
-        previousCtx->createUse(dec->ownIndex(), range);
-        closeInjectedContext();
-    }
     node->tree = aux;
 }
 
