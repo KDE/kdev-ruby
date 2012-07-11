@@ -812,6 +812,37 @@ void TestDUChain::errorOnInvalidRedeclaration()
     testProblems(top, errors);
 }
 
+void TestDUChain::instanceVariable()
+{
+    QByteArray code("class Klass; def foo; @lala = 1; end; def asd; @lala = 'asd'; end; end");
+    TopDUContext *top = parse(code, "instanceVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QList<Declaration *> ds;
+    foreach (Declaration *d, top->childContexts().first()->localDeclarations())
+        if (dynamic_cast<VariableDeclaration *>(d))
+            ds << d;
+    QCOMPARE(ds.size(), 1);
+
+    Declaration *decl = ds.first();
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(decl->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+}
+
+void TestDUChain::classVariable()
+{
+    QByteArray code("class Base; @@lala = 1; end; class Klass < Base; @@lala; end");
+    TopDUContext *top = parse(code, "classVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("Not implemented yet");
+    // TODO
+}
+
 //END: Declarations
 
 //BEGIN: Returning Values

@@ -112,6 +112,8 @@ private slots:
     void checkSubClassing();
     void checkDeclarationsOnSubClass();
     void errorOnInvalidRedeclaration();
+    void instanceVariable();
+    void classVariable();
 
     // Returning values
     void multipleReturns();

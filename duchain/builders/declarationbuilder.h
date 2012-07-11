@@ -82,7 +82,7 @@ private:
     ModuleDeclaration * getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     Declaration *m_lastMethodCall;
-    bool insideClassModule;
+    bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
 
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
 
@@ -107,6 +107,7 @@ private:
 
 private:
     EditorIntegrator *m_editor;
+    QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
 };
 
 } // End of namespace Ruby

@@ -154,6 +154,26 @@ void TestUseBuilder::checkMethodArgumentsContext()
     compareUses(a, RangeInRevision(0, 15, 0, 16));
 }
 
+void TestUseBuilder::instanceVariable()
+{
+    QByteArray code("class Klass; def foo; @lala = 1; end; def asd; @lala = 'asd'; end; end");
+    TopDUContext *top = parse(code, "instanceVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("Not implemented yet");
+}
+
+void TestUseBuilder::classVariable()
+{
+    QByteArray code("class Base; @@lala = 1; end; class Klass < Base; @@lala; end");
+    TopDUContext *top = parse(code, "classVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("Not implemented yet");
+}
+
 } // End of namespace Ruby
 
 

@@ -116,6 +116,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     m_accessPolicyStack.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
+    m_classDeclarations.push(DeclarationPointer(decl));
 
     /*
      * Now let's check for the base class. Ruby does not support multiple
@@ -155,6 +156,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
     closeType();
     closeDeclaration();
+    m_classDeclarations.pop();
     insideClassModule = false;
     m_accessPolicyStack.pop();
 }
@@ -204,7 +206,6 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     Node *aux = node->tree;
 
     MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
-    debug() << "OPENING DECLARATION";
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
@@ -597,6 +598,8 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     RangeInRevision range;
     Node *aux = node->tree;
     QualifiedIdentifier rId(id);
+    DUContextPointer internal(NULL);
+    DUContext *previousCtx = NULL;
 
     /* Take care of the special a[...] case */
     if (aux->kind == token_array_value) {
@@ -605,11 +608,25 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     }
     range = editorFindRange(node, node);
 
+    QList<Declaration *> decs;
+    if ((is_ivar(node->tree) || is_cvar(node->tree)) && !m_classDeclarations.isEmpty()) {
+        previousCtx = currentContext();
+        internal = m_classDeclarations.last()->internalContext();
+        injectContext(internal.data());
+//         decs = currentContext()->localDeclarations().toList(); // BUG: crash !!
+    }
+
+    debug() << "SEARCHING FOR: " << rId.toString();
+
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    decs.append(ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent));
     if (!decs.isEmpty()) {
+        debug() << "INSIDE"; // TODO: remove
         QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
         for (;; --it) {
+            /*
+             * TODO: use the mergeTypes method instead of this load of crap
+             */
             if (dynamic_cast<VariableDeclaration *>(*it)) {
                 if (!wasEncountered(*it)) {
                     setEncountered(*it);
@@ -639,13 +656,20 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
             if (it == decs.constBegin())
                 break;
         }
-    }
+    } else
+        debug() << "EMPTY"; // TODO: remove
 
     VariableDeclaration *dec = openDefinition<VariableDeclaration>(rId, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
+    if (previousCtx) {
+        dec->setRange(RangeInRevision(internal->range().start, internal->range().start));
+        dec->setAutoDeclaration(true);
+        previousCtx->createUse(dec->ownIndex(), range);
+        closeInjectedContext();
+    }
     node->tree = aux;
 }
 

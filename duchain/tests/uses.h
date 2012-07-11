@@ -57,6 +57,8 @@ private slots:
     void assignment();
     void checkSubClassing();
     void checkMethodArgumentsContext();
+    void instanceVariable();
+    void classVariable();
 };
 
 }
