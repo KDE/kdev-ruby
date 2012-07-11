@@ -839,8 +839,26 @@ void TestDUChain::classVariable()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Not implemented yet");
-    // TODO
+    QList<Declaration *> ds;
+    foreach (Declaration *d, top->childContexts().first()->localDeclarations())
+        if (dynamic_cast<VariableDeclaration *>(d))
+            ds << d;
+    QCOMPARE(ds.size(), 1);
+
+    // @@lala = 1
+    Declaration *decl = ds.first();
+    QCOMPARE(decl->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // Check that the @@lala inside Klass is the same as the Base one
+    QCOMPARE(top->childContexts().last()->localDeclarations().size(), 0);
+    QVector<DUContext::Import> aux = top->childContexts().last()->importedParentContexts();
+    ds.clear();
+    foreach (Declaration *d, aux.first().context(top)->localDeclarations())
+        if (dynamic_cast<VariableDeclaration *>(d))
+            ds << d;
+    QCOMPARE(ds.size(), 1);
+    decl = ds.first();
+    QCOMPARE(decl->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 //END: Declarations
