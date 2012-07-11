@@ -609,6 +609,23 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     }
     range = editorFindRange(node, node);
 
+    if ((is_ivar(node->tree) || is_cvar(node->tree)) && !m_classDeclarations.isEmpty()) {
+        DUContext *internal = m_classDeclarations.last()->internalContext();
+        DUContext *previousCtx = currentContext();
+        injectContext(internal);
+        VariableDeclaration *var = reopenDeclaration<VariableDeclaration>(rId, range);
+        var->setRange(RangeInRevision(internal->range().start, internal->range().start));
+        var->setAutoDeclaration(true);
+        previousCtx->createUse(var->ownIndex(), range);
+        var->setVariableKind(node->tree);
+        var->setKind(Declaration::Instance);
+        var->setType(mergeTypes(var->abstractType(), type));
+        DeclarationBuilderBase::closeDeclaration();
+        closeInjectedContext();
+        node->tree = aux;
+        return;
+    }
+
     /* Let's check if this variable is already declared */
     QList<Declaration *> decs = ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
     if (!decs.isEmpty()) {
