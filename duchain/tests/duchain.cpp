@@ -343,6 +343,21 @@ void TestDUChain::caseStatement()
 
 //BEGIN: Assignments
 
+void TestDUChain::simpleUnsure()
+{
+    QByteArray code("a = 1; a = 'string'");
+    TopDUContext *top = parse(code, "simpleUnsure");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 1);
+    Declaration *d = top->localDeclarations().first();
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
+}
+
 void TestDUChain::multipleAssignment1()
 {
     QByteArray code("a, b = 1, 'a'");

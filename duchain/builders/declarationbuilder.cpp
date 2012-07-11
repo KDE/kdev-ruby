@@ -598,57 +598,34 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     RangeInRevision range;
     Node *aux = node->tree;
     QualifiedIdentifier rId(id);
+    VariableDeclaration *dec = NULL;
+    bool hintContainer = false;
 
     /* Take care of the special a[...] case */
     if (aux->kind == token_array_value) {
         node->tree = aux->l;
         rId = getIdentifier(node);
+        hintContainer = true;
     }
     range = editorFindRange(node, node);
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs;
-    decs.append(ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent));
+    QList<Declaration *> decs = ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
     if (!decs.isEmpty()) {
-        debug() << "INSIDE"; // TODO: remove
-        QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
-        for (;; --it) {
-            /*
-             * TODO: use the mergeTypes method instead of this load of crap
-             */
-            if (dynamic_cast<VariableDeclaration *>(*it)) {
-                if (!wasEncountered(*it)) {
-                    setEncountered(*it);
-                    (*it)->setRange(range);
-                }
-                if (ClassType::Ptr tt = (*it)->type<ClassType>()) {
-                    tt->addContentType(type);
-                    (*it)->setType(AbstractType::Ptr::dynamicCast(tt));
-                } else if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
-                    if ( IntegralType::Ptr integral = IntegralType::Ptr::dynamicCast((*it)->abstractType()) ) {
-                        if ( integral->dataType() == IntegralType::TypeMixed ) {
-                            // mixed to @p type
-                            (*it)->setType(type);
-                            return;
-                        }
-                    }
-                    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast((*it)->abstractType());
-                    if ( !unsure ) {
-                        unsure = UnsureType::Ptr(new UnsureType());
-                        unsure->addType((*it)->indexedType());
-                    }
-                    unsure->addType(type->indexed());
-                    (*it)->setType(unsure);
-                }
-                node->tree = aux;
-                return;
-            }
-            if (it == decs.constBegin())
-                break;
+        dec = dynamic_cast<VariableDeclaration *>(decs.last());
+        if (dec) {
+            if (hintContainer) {
+                ClassType::Ptr ct = dec->type<ClassType>();
+                ct->addContentType(type);
+                dec->setType(AbstractType::Ptr::dynamicCast(ct));
+            } else
+                dec->setType(mergeTypes(dec->abstractType(), type));
+            node->tree = aux;
+            return;
         }
     }
 
-    VariableDeclaration *dec = openDefinition<VariableDeclaration>(rId, range);
+    dec = openDefinition<VariableDeclaration>(rId, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);

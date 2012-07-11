@@ -83,6 +83,7 @@ private slots:
     void caseStatement();
 
     // Assignments
+    void simpleUnsure();
     void multipleAssignment1();
     void multipleAssignment2();
     void multipleAssignmentLeft();
