@@ -92,23 +92,6 @@ TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
     return type;
 }
 
-QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl)
-{
-    DUChainReadLocker rlock(DUChain::lock());
-    QList<MethodDeclaration *> res;
-    DUContext *internal = decl->internalContext();
-    if (!internal)
-        return res;
-
-    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
-    for (int i = 0; i < list.size(); i++) {
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
-        if (md)
-            res << md;
-    }
-    return res;
-}
-
 bool isUsefulType(AbstractType::Ptr type)
 {
     if (!type)

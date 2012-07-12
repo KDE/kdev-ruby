@@ -33,6 +33,7 @@ namespace Ruby
 {
 
 class ModuleDeclaration;
+class MethodDeclaration;
 
 typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
@@ -102,6 +103,13 @@ private:
     void registerModuleMixin(ModuleDeclaration *decl, bool include);
 
     bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass = true);
+
+    /**
+     * @returns the declared methods inside the given declaration @p decl,
+     * which is a class or a module.
+     * @note This method already acquires a read lock for the DUChain.
+     */
+    QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
 private:
     EditorIntegrator *m_editor;

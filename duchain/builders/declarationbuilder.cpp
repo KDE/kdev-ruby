@@ -415,10 +415,8 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 {
     RubyAst *right = new RubyAst(node->tree->r, node->context);
     QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
-    DUChainReadLocker lock(DUChain::lock());
     const RangeInRevision &range = editorFindRange(right, right);
     KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
-    lock.unlock();
 
     if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
         DUChainWriteLocker wlock(DUChain::lock());
@@ -759,6 +757,23 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
         }
     }
     return true;
+}
+
+QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    QList<MethodDeclaration *> res;
+    DUContext *internal = decl->internalContext();
+    if (!internal)
+        return res;
+
+    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
+    for (int i = 0; i < list.size(); i++) {
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
+        if (md)
+            res << md;
+    }
+    return res;
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

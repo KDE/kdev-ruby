@@ -72,6 +72,7 @@ using namespace KDevelop;
      * @param id The qualified identifier that identifies our node.
      * @param range The range for this node.
      * @param context A pointer to the DUContext of this node.
+     * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
                                                         const RangeInRevision &range,
@@ -87,12 +88,6 @@ using namespace KDevelop;
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx);
-
-    /**
-     * @returns the declared methods inside the given declaration @p decl,
-     * which is a class or a module.
-     */
-    KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
     /**
      * @returns true if the given @p type is useful, and false otherwise.
