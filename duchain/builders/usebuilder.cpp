@@ -63,12 +63,4 @@ void UseBuilder::visitName(RubyAst *node)
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 
-void UseBuilder::visitArrayValue(RubyAst *node)
-{
-    Node *aux = node->tree;
-    node->tree = aux->l;
-    visitNode(node);
-    node->tree = aux;
-}
-
 } // End of namespace Ruby
