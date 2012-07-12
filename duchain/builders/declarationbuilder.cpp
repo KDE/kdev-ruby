@@ -732,6 +732,7 @@ void DeclarationBuilder::registerModuleMixin(ModuleDeclaration *decl, bool inclu
     if (lastClassModule) {
         ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
         if (current) {
+            DUChainWriteLocker lock(DUChain::lock());
             ModuleMixin mixin;
             mixin.included = include;
             mixin.module = decl->indexedType();
