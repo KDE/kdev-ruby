@@ -384,6 +384,12 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 QualifiedIdentifier id = getIdentifier(aux);
                 declareVariable(currentContext(), newType.cast<AbstractType>(), id, aux);
             }
+        } else if (n->kind == token_array_value) {
+            // assignment to array value, for example:
+            // x[y] = z
+            // "x" should already be defined by this point and have Array type
+            // there's nothing to be done with "y"
+            // TODO: adymo: what else shall we do here, if anything?
         } else if (i < rsize) {
             if (alias.at(i)) {
                 DUChainWriteLocker wlock(DUChain::lock());
