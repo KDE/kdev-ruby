@@ -264,8 +264,6 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     /* Finally, declare the parameter */
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
-        if (!type)
-            type = new ObjectType(); // HACK: this should be done in a more proper way
         mType->addArgument(type);
         declareVariable(getIdentifier(node), type, node);
     }
@@ -287,7 +285,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
         if (yieldList && i < max)
             type = yieldList[i].type.abstractType();
         else
-            type = new ObjectType(); // TODO: set to nil
+            type = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
         declareVariable(getIdentifier(node), type, node);
     }
 }

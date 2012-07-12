@@ -280,9 +280,9 @@ void TestDUChain::yield1()
     Declaration *dec2 = top->localDeclarations().at(2);
 
     QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    QCOMPARE(dec1->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("b"));
-
-    PENDING("types must be NilClass");
+    QCOMPARE(dec2->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
 }
 
 void TestDUChain::yield2()
