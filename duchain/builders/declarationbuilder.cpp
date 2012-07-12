@@ -257,7 +257,6 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     if (node->tree->l) {
         Node *aux = node->tree->l;
         node->tree = node->tree->r;
-        // TODO: for some reason, it assumes that *all* the parameters have this same default value :S
         mDecl->addDefaultParameter(IndexedString(m_editor->tokenToString(node->tree)));
         node->tree = aux;
     }

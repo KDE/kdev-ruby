@@ -795,23 +795,6 @@ void TestDUChain::checkSubClassing()
     QCOMPARE(final->baseClass(), base->indexedType());
 }
 
-void TestDUChain::checkDeclarationsOnSubClass()
-{
-    /*
-     * The class Base defines a public instance method and a public class
-     * method. Then it defines a protected instance method and a private one.
-     * Finally, the class Final gets defined, and it subclasses the Base class.
-     */
-    QByteArray code("class Base; def foo; end; def self.selfish; end; ");
-    code += "protected; def protected_foo; end; private; def private_foo;";
-    code += "end; end; class Final < Base; end";
-    TopDUContext *top = parse(code, "checkDeclarationsOnSubClass");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    PENDING("Still hacking on the subclassing code");
-}
-
 void TestDUChain::errorOnInvalidRedeclaration()
 {
     QByteArray code("module Module; end; class Kernel; end");
@@ -943,12 +926,29 @@ void TestDUChain::callingToInstanceMethod()
 
 void TestDUChain::optionalMethodArguments()
 {
-    QByteArray code("def foo(a, b = 1, c = 'asd'); end");
+    QByteArray code("def foo(a, b = 1, c = 'asd'); end; foo 1, 2, 3");
     TopDUContext *top = parse(code, "optionalMethodArguments");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("The code that handles optional arguments is still under construction");
+    Declaration *obj = top->localDeclarations().first();
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(obj)->localDeclarations();
+    QCOMPARE(args.size(), 3);
+
+    // a
+    Declaration *d = args.first();
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // b
+    d = args.at(1);
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // c
+    d = args.last();
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->indexedType().abstractType());
+    QList<QString> list;
+    list << "String" << "Fixnum";
+    testUnsureTypes(unsure, list);
 }
 
 void TestDUChain::specialMethodArguments()
