@@ -137,7 +137,11 @@ void ParseJob::run()
      * And finally we do all the work if parsing was successful. Otherwise,
      * we have to add a new problem
      */
-    if (ast && ast->tree) {
+    if (ast) {
+        // Empty document, do nothing
+        if (!ast->tree)
+            return;
+
         if (abortRequested())
             return abortJob();
 
@@ -199,8 +203,6 @@ void ParseJob::run()
         if (canHighlight())
             ruby()->codeHighlighting()->highlightDUChain(m_duContext);
         debug() << "**** Parsing Succeeded ****";
-    } else if (ast && !ast->tree) {
-        // NOTE: empty document. This is ugly but it avoids a crash.
     } else {
         kWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock(DUChain::lock());

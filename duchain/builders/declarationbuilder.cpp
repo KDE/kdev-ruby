@@ -268,7 +268,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
         if (!type)
             type = new ObjectType(); // HACK: this should be done in a more proper way
         mType->addArgument(type);
-        declareVariable(currentContext(), type, getIdentifier(node), node);
+        declareVariable(getIdentifier(node), type, node);
     }
 }
 
@@ -289,7 +289,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
             type = yieldList[i].type.abstractType();
         else
             type = new ObjectType(); // TODO: set to nil
-        declareVariable(currentContext(), type, getIdentifier(node), node);
+        declareVariable(getIdentifier(node), type, node);
     }
 }
 
@@ -297,7 +297,7 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
 {
     QualifiedIdentifier id = getIdentifier(node);
     AbstractType::Ptr type(new ObjectType());
-    declareVariable(currentContext(), type, id, node);
+    declareVariable(id, type, node);
 }
 
 void DeclarationBuilder::visitReturnStatement(RubyAst *node)
@@ -357,7 +357,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 for (Node *n = node->tree->l; n != NULL; n = n->next) {
                     aux->tree = n;
                     QualifiedIdentifier id = getIdentifier(aux);
-                    declareVariable(currentContext(), ct->contentType().abstractType(), id, aux);
+                    declareVariable(id, ct->contentType().abstractType(), aux);
                 }
                 delete aux;
                 return;
@@ -382,7 +382,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             i--;
             if (!is_just_a_star(n)) {
                 QualifiedIdentifier id = getIdentifier(aux);
-                declareVariable(currentContext(), newType.cast<AbstractType>(), id, aux);
+                declareVariable(id, newType.cast<AbstractType>(), aux);
             }
         } else if (i < rsize) {
             if (alias.at(i)) {
@@ -398,14 +398,14 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                     type = new ObjectType();
                 debug() << "We have to set the following type: " << type->toString();
                 QualifiedIdentifier id = getIdentifier(aux);
-                declareVariable(currentContext(), type, id, aux);
+                declareVariable(id, type, aux);
             }
         } else {
             DUChainWriteLocker wlock(DUChain::lock());
             // TODO: the following shows that we need some caching system at the ExpressionVisitor
             type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
             QualifiedIdentifier id = getIdentifier(aux);
-            declareVariable(currentContext(), type, id, aux);
+            declareVariable(id, type, aux);
         }
     }
     delete aux;
@@ -437,7 +437,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         node->tree = node->tree->l;
         QualifiedIdentifier aid = getIdentifier(node);
         AbstractType::Ptr type = decl->abstractType();
-        declareVariable(currentContext(), type, aid, node);
+        declareVariable(aid, type, node);
     } else if (decl && decl->isFunctionDeclaration()) {
         DUChainWriteLocker wlock(DUChain::lock());
         node->tree = node->tree->l;
@@ -556,7 +556,7 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
     for (Node *n = node->tree->r; n != NULL; n = n->next) {
         aux->tree = n;
         QualifiedIdentifier id = getIdentifier(aux);
-        declareVariable(currentContext(), type, id, aux);
+        declareVariable(id, type, aux);
     }
 }
 
@@ -591,8 +591,7 @@ void DeclarationBuilder::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
-void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
-                                         const QualifiedIdentifier &id, RubyAst *node)
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range;
@@ -627,7 +626,7 @@ void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
     }
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = ctx->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
     if (!decs.isEmpty()) {
         dec = dynamic_cast<VariableDeclaration *>(decs.last());
         if (dec) {
