@@ -309,10 +309,10 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
         TypePtr<FunctionType> t = currentType<FunctionType>();
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
-        AbstractType::Ptr type = mergeTypes(ev.lastType(), t->returnType());
+        AbstractType::Ptr typ = mergeTypes(ev.lastType(), t->returnType());
+        DUChainWriteLocker wlock(DUChain::lock()); // TODO: sure ?
         t->setReturnType(type);
     }
-    setLastType(AbstractType::Ptr(0));
 }
 
 void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
@@ -374,8 +374,10 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             int rest = nodeListSize(n) - 1;
             int pack = rsize - i - rest;
             ClassType::Ptr newType = getBuiltinsType("Array", currentContext()).cast<ClassType>();
+            DUChainWriteLocker wlock(DUChain::lock());
             for (int j = pack; j > 0; j--, i++)
                 newType->addContentType(values.at(i));
+            wlock.unlock();
             i--;
             if (!is_just_a_star(n)) {
                 QualifiedIdentifier id = getIdentifier(aux);
@@ -398,9 +400,10 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 declareVariable(id, type, aux);
             }
         } else {
-            DUChainWriteLocker wlock(DUChain::lock());
             // TODO: the following shows that we need some caching system at the ExpressionVisitor
+            lock.lock();
             type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            lock.unlock();
             QualifiedIdentifier id = getIdentifier(aux);
             declareVariable(id, type, aux);
         }
@@ -465,9 +468,9 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
                 node->tree = n;
                 ExpressionVisitor av(currentContext(), m_editor);
                 av.visitNode(node);
-                AbstractType::Ptr merged = mergeTypes(args.at(i)->abstractType(),
-                                                      av.lastType().cast<AbstractType>());
-                args.at(i)->setType(merged);
+                AbstractType::Ptr last = av.lastType().cast<AbstractType>();
+                AbstractType::Ptr original = args.at(i)->abstractType();
+                args.at(i)->setType(mergeTypes(original, last));
             }
             wlock.unlock();
         }
@@ -625,8 +628,8 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
     if (!decs.isEmpty()) {
         dec = dynamic_cast<VariableDeclaration *>(decs.last());
         if (dec) {
-            if (hintContainer) {
-                ClassType::Ptr ct = dec->type<ClassType>();
+            ClassType::Ptr ct = dec->type<ClassType>();
+            if (ct && hintContainer) {
                 ct->addContentType(type);
                 dec->setType(AbstractType::Ptr::dynamicCast(ct));
             } else
