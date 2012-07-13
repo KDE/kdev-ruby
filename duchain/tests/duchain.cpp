@@ -924,6 +924,62 @@ void TestDUChain::callingToInstanceMethod()
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
+void TestDUChain::starArgument()
+{
+    QByteArray code("def asd(a, *b); end; asd 1, 2, 'string'; def foo(a, *b); end; foo 1");
+    TopDUContext *top = parse(code, "starArgument");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // asd
+    Declaration *d = top->localDeclarations().first();
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QCOMPARE(args.size(), 2);
+    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
+
+    // foo
+    d = top->localDeclarations().last();
+    args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QCOMPARE(args.size(), 2);
+    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    QVERIFY(! args.last()->type<ClassType>()->contentType());
+}
+
+void TestDUChain::hashArgument()
+{
+    QByteArray code("def foo(a, *b, c); end; foo 1, 2, 'string', :a => 'a', :b => 1");
+    TopDUContext *top = parse(code, "hashArgument");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QCOMPARE(args.size(), 3);
+
+    // a
+    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // b
+    QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
+
+    // c
+    QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Hash"));
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    QList<QString> list;
+    list << "String" << "Fixnum";
+    testUnsureTypes(unsure, list);
+}
+
 void TestDUChain::optionalMethodArguments()
 {
     QByteArray code("def foo(a, b = 1, c = 'asd'); end; foo 1, 2, 3");
