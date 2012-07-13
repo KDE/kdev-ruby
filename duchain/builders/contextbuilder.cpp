@@ -39,8 +39,7 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ContextBuilder::ContextBuilder() 
-    : m_reportErrors(true)
+ContextBuilder::ContextBuilder()
 {
     /* There's nothing to do here! */
 }
@@ -51,7 +50,7 @@ ContextBuilder::~ContextBuilder()
 }
 
 ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *node,
-                                                ReferencedTopDUContext updateContext)
+                                             ReferencedTopDUContext updateContext)
 {
     if (!updateContext) {
         DUChainReadLocker lock(DUChain::lock());
@@ -73,13 +72,28 @@ void ContextBuilder::setEditor(EditorIntegrator *editor)
     m_editor = editor;
 }
 
+EditorIntegrator * ContextBuilder::editor() const
+{
+    return m_editor;
+}
+
+void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
+{
+    node->context = ctx;
+}
+
+KDevelop::DUContext * ContextBuilder::contextFromNode(RubyAst *node)
+{
+    return node->context;
+}
+
 DUContext * ContextBuilder::newContext(const RangeInRevision &range)
 {
     return new RubyNormalDUContext(range, currentContext());
 }
 
-KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRevision &range,
-                                                      KDevelop::ParsingEnvironmentFile *file)
+KDevelop::TopDUContext* ContextBuilder::newTopContext(const RangeInRevision &range,
+                                                      ParsingEnvironmentFile *file)
 {
     KDevelop::IndexedString doc(m_editor->url());
     if (!file) {
@@ -90,6 +104,38 @@ KDevelop::TopDUContext* ContextBuilder::newTopContext(const KDevelop::RangeInRev
     top->setType(DUContext::Global);
     m_topContext = ReferencedTopDUContext(top);
     return top;
+}
+
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, RubyAst *toRange)
+{
+    return m_editor->findRange(fromRange->tree, toRange->tree);
+}
+
+DocumentRange ContextBuilder::getDocumentRange(Node *node)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange range(node->startLine - 1, node->startCol,
+                      node->endLine - 1, node->endCol);
+    return DocumentRange(ind, range);
+}
+
+DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range)
+{
+    IndexedString ind(m_editor->url());
+    SimpleRange rg = range.castToSimpleRange();
+    return DocumentRange(ind, rg);
+}
+
+KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node)
+{
+    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+}
+
+KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
+{
+    if (!name)
+        return KDevelop::QualifiedIdentifier();
+    return KDevelop::QualifiedIdentifier(name->value);
 }
 
 void ContextBuilder::startVisiting(RubyAst *node)
@@ -117,38 +163,6 @@ void ContextBuilder::startVisiting(RubyAst *node)
         }
     }
     RubyAstVisitor::visitCode(node);
-}
-
-void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
-{
-    node->context = ctx;
-}
-
-KDevelop::DUContext * ContextBuilder::contextFromNode(RubyAst *node)
-{
-    return node->context;
-}
-
-EditorIntegrator * ContextBuilder::editor() const
-{
-    return m_editor;
-}
-
-KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, RubyAst *toRange)
-{
-    return m_editor->findRange(fromRange->tree, toRange->tree);
-}
-
-KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node)
-{
-    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
-}
-
-KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
-{
-    if (!name)
-        return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(name->value);
 }
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)
@@ -184,6 +198,29 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 }
 
+void ContextBuilder::visitMethodArguments(RubyAst *node)
+{
+    RangeInRevision rg = rangeForMethodArguments(node);
+    QualifiedIdentifier name = getIdentifier(node);
+    DUContext *params = openContext(node, rg, DUContext::Function, m_lastMethod);
+    RubyAstVisitor::visitMethodArguments(node);
+    closeContext();
+    m_importedParentContexts.append(params);
+}
+
+void ContextBuilder::visitMethodBody(RubyAst *node)
+{
+    if (node->tree && is_valid(node->tree)) {
+        RangeInRevision range = editorFindRange(node, node);
+        QualifiedIdentifier name = getIdentifier(node);
+        openContext(node, range, DUContext::Other, m_lastMethod);
+        currentContext()->setLocalScopeIdentifier(m_lastMethod);
+        addImportedContexts();
+        visitBody(node);
+        closeContext();
+    }
+}
+
 void ContextBuilder::visitRequire(RubyAst *node)
 {
     RubyAstVisitor::visitRequire(node);
@@ -212,29 +249,6 @@ void ContextBuilder::visitExtend(RubyAst *node)
     node->tree = n;
 }
 
-void ContextBuilder::visitMethodArguments(RubyAst *node)
-{
-    RangeInRevision rg = rangeForMethodArguments(node);
-    QualifiedIdentifier name = getIdentifier(node);
-    DUContext *params = openContext(node, rg, DUContext::Function, m_lastMethod);
-    RubyAstVisitor::visitMethodArguments(node);
-    closeContext();
-    m_importedParentContexts.append(params);
-}
-
-void ContextBuilder::visitMethodBody(RubyAst *node)
-{
-    if (node->tree && is_valid(node->tree)) {
-        RangeInRevision range = editorFindRange(node, node);
-        QualifiedIdentifier name = getIdentifier(node);
-        openContext(node, range, DUContext::Other, m_lastMethod);
-        currentContext()->setLocalScopeIdentifier(m_lastMethod);
-        addImportedContexts();
-        visitBody(node);
-        closeContext();
-    }
-}
-
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
@@ -245,21 +259,6 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     currentContext()->setLocalScopeIdentifier(className);
     wlock.unlock();
     addImportedContexts();
-}
-
-DocumentRange ContextBuilder::getDocumentRange(Node *node)
-{
-    IndexedString ind(m_editor->url());
-    SimpleRange range(node->startLine - 1, node->startCol,
-                      node->endLine - 1, node->endCol);
-    return DocumentRange(ind, range);
-}
-
-DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range)
-{
-    IndexedString ind(m_editor->url());
-    SimpleRange rg = range.castToSimpleRange();
-    return DocumentRange(ind, rg);
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)

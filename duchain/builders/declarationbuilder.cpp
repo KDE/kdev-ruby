@@ -309,9 +309,7 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
         TypePtr<FunctionType> t = currentType<FunctionType>();
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
-        AbstractType::Ptr typ = mergeTypes(ev.lastType(), t->returnType());
-        DUChainWriteLocker wlock(DUChain::lock()); // TODO: sure ?
-        t->setReturnType(type);
+        t->setReturnType(mergeTypes(ev.lastType(), t->returnType()));
     }
 }
 
