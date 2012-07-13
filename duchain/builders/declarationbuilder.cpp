@@ -265,7 +265,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
         mType->addArgument(type);
-        declareVariable(getIdentifier(node), type, node);
+        declareVariable(getIdentifier(node), type, node, is_rest_arg(node->tree));
     }
 }
 
@@ -459,18 +459,8 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
         if (argCtx && mtype) {
             node->tree = aux->r;
             QVector<Declaration *> args = argCtx->localDeclarations();
-            int i = 0;
             lock.unlock();
-            DUChainWriteLocker wlock(DUChain::lock());
-            for (Node *n = node->tree; n != NULL && i < args.size(); n = n->next, i++) {
-                node->tree = n;
-                ExpressionVisitor av(currentContext(), m_editor);
-                av.visitNode(node);
-                AbstractType::Ptr last = av.lastType().cast<AbstractType>();
-                AbstractType::Ptr original = args.at(i)->abstractType();
-                args.at(i)->setType(mergeTypes(original, last));
-            }
-            wlock.unlock();
+            visitMethodCallArgs(node, args);
         }
     }
 
@@ -587,7 +577,7 @@ void DeclarationBuilder::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
-void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node, bool forceKind)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range;
@@ -638,7 +628,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
     }
 
     dec = openDefinition<VariableDeclaration>(rId, range);
-    dec->setVariableKind(node->tree);
+    (forceKind) ? dec->setVariableKind(4) : dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
@@ -772,6 +762,20 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *d
             res << md;
     }
     return res;
+}
+
+void DeclarationBuilder::visitMethodCallArgs(RubyAst *node, const QVector<Declaration *> &args)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    int i = 0;
+    for (Node *n = node->tree; n != NULL && i < args.size(); n = n->next, i++) {
+        node->tree = n;
+        ExpressionVisitor av(currentContext(), m_editor);
+        av.visitNode(node);
+        AbstractType::Ptr last = av.lastType().cast<AbstractType>();
+        AbstractType::Ptr original = args.at(i)->abstractType();
+        args.at(i)->setType(mergeTypes(original, last));
+    }
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

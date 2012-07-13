@@ -71,7 +71,7 @@ protected:
     virtual void visitYieldStatement(RubyAst *node);
 
 private:
-    void declareVariable(const KDevelop::QualifiedIdentifier& id, KDevelop::AbstractType::Ptr type, RubyAst *node);
+    void declareVariable(const KDevelop::QualifiedIdentifier& id, KDevelop::AbstractType::Ptr type, RubyAst *node, bool forceKind = false);
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
                                 KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
@@ -110,6 +110,8 @@ private:
      * @note This method already acquires a read lock for the DUChain.
      */
     QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
+
+    void visitMethodCallArgs(RubyAst *node, const QVector<Declaration *> &args);
 
 private:
     EditorIntegrator *m_editor;

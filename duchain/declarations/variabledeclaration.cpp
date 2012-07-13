@@ -58,6 +58,11 @@ void VariableDeclaration::setVariableKind(const Node *node)
         d_func_dynamic()->m_kind = node->flags;
 }
 
+void VariableDeclaration::setVariableKind(int kind)
+{
+    d_func_dynamic()->m_kind = kind;
+}
+
 int VariableDeclaration::variableKind() const
 {
     return d_func()->m_kind;

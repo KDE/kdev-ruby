@@ -967,15 +967,15 @@ void TestDUChain::hashArgument()
 
     // b
     QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
-    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->type<ClassType>()->contentType().abstractType());
     QList<QString> list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 
     // c
-    QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Hash"));
-    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
-    QList<QString> list;
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Hash"));
+    unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    list.clear();
     list << "String" << "Fixnum";
     testUnsureTypes(unsure, list);
 }
