@@ -924,31 +924,132 @@ void TestDUChain::callingToInstanceMethod()
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
-void TestDUChain::starArgument()
+// Defines a method with an amazing list of arguments
+const QByteArray foo("def foo(a, b = 0, c = 0, *d, e, f, &blk); end; ");
+
+void TestDUChain::guessArgumentsType1()
 {
-    QByteArray code("def asd(a, *b); end; asd 1, 2, 'string'; def foo(a, *b); end; foo 1");
-    TopDUContext *top = parse(code, "starArgument");
+    QByteArray code(foo + "foo 1, 'str', //");
+    TopDUContext *top = parse(code, "guessArgumentsType1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    // asd
     Declaration *d = top->localDeclarations().first();
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
-    QCOMPARE(args.size(), 2);
+    QCOMPARE(args.size(), 7);
+
+    // a, b and c are just Fixnum
     QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
-    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.last()->type<ClassType>()->contentType().abstractType());
+    QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+    QCOMPARE(args.at(2)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // d is an empty array
+    QCOMPARE(args.at(3)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    QVERIFY(! args.at(3)->type<ClassType>()->contentType());
+
+    // e is a String and f is a Regexp
+    QCOMPARE(args.at(4)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+    QCOMPARE(args.at(5)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+
+    // blk is just a Proc
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
+void TestDUChain::guessArgumentsType2()
+{
+    QByteArray code(foo + "foo 1, 'str', 1.2, //");
+    TopDUContext *top = parse(code, "guessArgumentsType2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QCOMPARE(args.size(), 7);
+
+    // a is just a Fixnum
+    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // b is an Unsure of Fixnum and String
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->abstractType());
     QList<QString> list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 
-    // foo
-    d = top->localDeclarations().last();
-    args = DUChainUtils::getArgumentContext(d)->localDeclarations();
-    QCOMPARE(args.size(), 2);
+    // c is just a Fixnum
+    QCOMPARE(args.at(2)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // d is an empty array
+    QCOMPARE(args.at(3)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    QVERIFY(! args.at(3)->type<ClassType>()->contentType());
+
+    // e is a Float and f is a Regexp
+    QCOMPARE(args.at(4)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
+    QCOMPARE(args.at(5)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+
+    // blk is just a Proc
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
+void TestDUChain::guessArgumentsType3()
+{
+    QByteArray code(foo + "foo 1, 'str', 1, 2, 'str', 1.2, //");
+    TopDUContext *top = parse(code, "guessArgumentsType3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QCOMPARE(args.size(), 7);
+
+    // a is just a Fixnum
     QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
-    QVERIFY(! args.last()->type<ClassType>()->contentType());
+
+    // b is an Unsure of Fixnum and String
+    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
+
+    // c is just a Fixnum
+    QCOMPARE(args.at(2)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+
+    // d is an empty array
+    QCOMPARE(args.at(3)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
+    unsure = UnsureType::Ptr::dynamicCast(args.at(3)->type<ClassType>()->contentType().abstractType());
+    list.clear();
+    list << "Fixnum" << "String";
+    testUnsureTypes(unsure, list);
+
+    // e is a Float and f is a Regexp
+    QCOMPARE(args.at(4)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
+    QCOMPARE(args.at(5)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+
+    // blk is just a Proc
+    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
+void TestDUChain::showErrorOnTooFewArguments()
+{
+    QByteArray code("def foo(a, b = 0, c = 0, *d, e, f, &blk); end; foo 1, 2");
+    TopDUContext *top = parse(code, "showErrorOnTooFewArguments");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QList<QString> errors;
+    errors << "wrong number of arguments (2 for 3) (ArgumentError)";
+    testProblems(top, errors);
+}
+
+void TestDUChain::showErrorOnTooManyArguments()
+{
+    QByteArray code("def foo(a, b); end; foo 1, 2, 3");
+    TopDUContext *top = parse(code, "showErrorOnTooManyArguments");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QList<QString> errors;
+    errors << "wrong number of arguments (3 for 2) (ArgumentError)";
+    testProblems(top, errors);
 }
 
 void TestDUChain::hashArgument()
@@ -978,81 +1079,6 @@ void TestDUChain::hashArgument()
     list.clear();
     list << "String" << "Fixnum";
     testUnsureTypes(unsure, list);
-}
-
-void TestDUChain::optionalMethodArguments()
-{
-    QByteArray code("def foo(a, b = 1, c = 'asd'); end; foo 1, 2, 3");
-    TopDUContext *top = parse(code, "optionalMethodArguments");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    Declaration *obj = top->localDeclarations().first();
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(obj)->localDeclarations();
-    QCOMPARE(args.size(), 3);
-
-    // a
-    Declaration *d = args.first();
-    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-
-    // b
-    d = args.at(1);
-    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-
-    // c
-    d = args.last();
-    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->indexedType().abstractType());
-    QList<QString> list;
-    list << "String" << "Fixnum";
-    testUnsureTypes(unsure, list);
-}
-
-void TestDUChain::specialMethodArguments()
-{
-    QByteArray code("def foo(*args, &blk); end");
-    TopDUContext *top = parse(code, "specialMethodArguments");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
-    QVERIFY(md);
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
-    QVERIFY(args.size() == 2);
-
-    Declaration *a = args.first();
-    QCOMPARE(a->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
-    a = args.last();
-    QCOMPARE(a->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
-}
-
-void TestDUChain::guessMethodArgumentTypes1()
-{
-    QByteArray code("def foo(a, b); end; foo 1, 2");
-    TopDUContext *top = parse(code, "setMethodArgumentTypes1");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
-    QVERIFY(md);
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
-    QVERIFY(args.size() == 2);
-    foreach (const Declaration *d, args)
-        QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
-}
-
-void TestDUChain::guessMethodArgumentTypes2()
-{
-    QByteArray code("def foo(a, b); end; c = 1.2; foo c, 2");
-    TopDUContext *top = parse(code, "setMethodArgumentTypes2");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
-    QVERIFY(md);
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
-    QVERIFY(args.size() == 2);
-    QCOMPARE(args.first()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
-    QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 void TestDUChain::setUnsureArgument()

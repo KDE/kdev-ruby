@@ -122,12 +122,12 @@ private slots:
 
     // Methods
     void callingToInstanceMethod();
-    void starArgument();
+    void guessArgumentsType1();
+    void guessArgumentsType2();
+    void guessArgumentsType3();
+    void showErrorOnTooFewArguments();
+    void showErrorOnTooManyArguments();
     void hashArgument();
-    void optionalMethodArguments();
-    void specialMethodArguments();
-    void guessMethodArgumentTypes1();
-    void guessMethodArgumentTypes2();
     void setUnsureArgument();
 
     // Include & Extend
