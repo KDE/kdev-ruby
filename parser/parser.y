@@ -753,10 +753,17 @@ opt_call_args: none | call_args
 
 call_args: command
   | args opt_block_arg { $$ = update_list($1, $2); }
-  | assocs opt_block_arg { $$ = update_list($1, $2); }
+  | assocs opt_block_arg
+  {
+    struct node *aux = alloc_node(token_hash, $1, NULL);
+    copy_wc_range_ext(aux, $1, $1);
+    $$ = update_list(aux, $2);
+  }
   | args ',' assocs opt_block_arg
   {
-    struct node *n = update_list($3, $4);
+    struct node *aux = alloc_node(token_hash, $3, NULL);
+    copy_wc_range_ext(aux, $3, $3);
+    struct node *n = update_list(aux, $4);
     $$ = concat_list($1, n);
   }
   | block_arg

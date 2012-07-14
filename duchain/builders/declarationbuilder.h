@@ -75,7 +75,7 @@ private:
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
                                 KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
-    void appendProblem(Node* node, const QString &msg);
+    void appendProblem(Node *node, const QString &msg);
     void appendProblem(const RangeInRevision &range, const QString &msg);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
     ModuleDeclaration * getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method

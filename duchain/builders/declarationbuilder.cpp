@@ -765,7 +765,6 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *d
 
 void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
     RubyAst *node = new RubyAst(mc->tree->r, mc->context);
     VariableDeclaration *vd;
     int total, left = 0, right = 0;
@@ -778,6 +777,12 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
         total = args.size() - vd->isBlock();
     }
 
+    /*
+     * Normal arguments can appear before and/or after a list of opt_args
+     * and a rest_arg. Therefore, these kind of arguments will mark the left
+     * side and the right side. This is important to know because of the
+     * flexibility that Ruby gives to the programmer.
+     */
     for (int i = 0; i < total; i++) {
         vd = dynamic_cast<VariableDeclaration *>(args.at(i));
         if (!vd->hasStar() && !vd->isOpt()) {
@@ -789,6 +794,7 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
             mark = true;
     }
 
+    /* We have enough info to know if we have to raise an ArgumentError */
     int nCaller = nodeListSize(node->tree);
     if (nCaller < (left + right)) {
         appendProblem(mc->tree, i18n("wrong number of arguments (%1 for %2)"
@@ -802,8 +808,13 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
         return;
     }
 
+    /*
+     * Everything is fine, do the iteration. Note that opt_args and rest_args
+     * will be fed depending on the left and right counters.
+     */
     int i = 0;
     int rest = nCaller - left - right;
+    DUChainWriteLocker wlock(DUChain::lock());
     for (Node *n = node->tree; n != NULL; i++) {
         vd = dynamic_cast<VariableDeclaration *>(args.at(i));
         node->tree = n;
