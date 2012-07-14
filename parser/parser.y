@@ -1399,7 +1399,7 @@ f_arg: f_arg_item
   | f_arg ',' f_arg_item { $$ = update_list($1, $3); }
 ;
 
-f_opt: base '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
+f_opt: base '=' arg { $$ = ALLOC_N(token_assign, $1, $3); $1->flags = 3; }
 ;
 
 f_block_opt: base '=' primary { $$ = ALLOC_N(token_assign, $1, $3); }

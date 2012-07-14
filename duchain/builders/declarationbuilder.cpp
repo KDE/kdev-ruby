@@ -265,7 +265,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
         mType->addArgument(type);
-        declareVariable(getIdentifier(node), type, node, is_rest_arg(node->tree));
+        declareVariable(getIdentifier(node), type, node);
     }
 }
 
@@ -457,7 +457,6 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
         DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
         FunctionType::Ptr mtype = lastMethod->type<FunctionType>();
         if (argCtx && mtype) {
-            node->tree = aux->r;
             QVector<Declaration *> args = argCtx->localDeclarations();
             lock.unlock();
             visitMethodCallArgs(node, args);
@@ -577,7 +576,7 @@ void DeclarationBuilder::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
-void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node, bool forceKind)
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range;
@@ -628,7 +627,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
     }
 
     dec = openDefinition<VariableDeclaration>(rId, range);
-    (forceKind) ? dec->setVariableKind(4) : dec->setVariableKind(node->tree);
+    dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
@@ -764,18 +763,75 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *d
     return res;
 }
 
-void DeclarationBuilder::visitMethodCallArgs(RubyAst *node, const QVector<Declaration *> &args)
+void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args)
 {
     DUChainWriteLocker wlock(DUChain::lock());
+    RubyAst *node = new RubyAst(mc->tree->r, mc->context);
+    VariableDeclaration *vd;
+    int total, left = 0, right = 0;
+    bool mark = false, starSeen = false;
+
+    if (args.isEmpty())
+        total = 0;
+    else {
+        vd = dynamic_cast<VariableDeclaration *>(args.last());
+        total = args.size() - vd->isBlock();
+    }
+
+    for (int i = 0; i < total; i++) {
+        vd = dynamic_cast<VariableDeclaration *>(args.at(i));
+        if (!vd->hasStar() && !vd->isOpt()) {
+            (mark) ? right++ : left++;
+        } else if (vd->hasStar()) {
+            starSeen = true;
+            mark = true;
+        } else
+            mark = true;
+    }
+
+    int nCaller = nodeListSize(node->tree);
+    if (nCaller < (left + right)) {
+        appendProblem(mc->tree, i18n("wrong number of arguments (%1 for %2)"
+                                       " (ArgumentError)", nCaller, left + right));
+        delete node;
+        return;
+    } else if (!starSeen && (total < nCaller)) {
+        appendProblem(mc->tree, i18n("wrong number of arguments (%1 for %2)"
+                                       " (ArgumentError)", nCaller, total));
+        delete node;
+        return;
+    }
+
     int i = 0;
-    for (Node *n = node->tree; n != NULL && i < args.size(); n = n->next, i++) {
+    int rest = nCaller - left - right;
+    for (Node *n = node->tree; n != NULL; i++) {
+        vd = dynamic_cast<VariableDeclaration *>(args.at(i));
         node->tree = n;
+        if (vd->isOpt()) {
+            if (rest > 0)
+                rest--;
+            else
+                continue;
+        } else if (vd->hasStar()) {
+            ClassType::Ptr ct = vd->type<ClassType>();
+            for (int j = rest; j > 0; j--) {
+                ExpressionVisitor av(currentContext(), m_editor);
+                av.visitNode(node);
+                ct->addContentType(av.lastType());
+                node->tree = node->tree->next;
+            }
+            vd->setType(ct);
+            n = node->tree;
+            continue;
+        }
         ExpressionVisitor av(currentContext(), m_editor);
         av.visitNode(node);
         AbstractType::Ptr last = av.lastType().cast<AbstractType>();
         AbstractType::Ptr original = args.at(i)->abstractType();
         args.at(i)->setType(mergeTypes(original, last));
+        n = n->next;
     }
+    delete node;
 }
 
 KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)

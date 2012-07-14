@@ -71,7 +71,7 @@ protected:
     virtual void visitYieldStatement(RubyAst *node);
 
 private:
-    void declareVariable(const KDevelop::QualifiedIdentifier& id, KDevelop::AbstractType::Ptr type, RubyAst *node, bool forceKind = false);
+    void declareVariable(const KDevelop::QualifiedIdentifier& id, KDevelop::AbstractType::Ptr type, RubyAst *node);
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
                                 KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
@@ -111,7 +111,7 @@ private:
      */
     QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
-    void visitMethodCallArgs(RubyAst *node, const QVector<Declaration *> &args);
+    void visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args);
 
 private:
     EditorIntegrator *m_editor;
