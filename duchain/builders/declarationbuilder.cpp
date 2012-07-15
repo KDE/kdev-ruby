@@ -217,6 +217,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     openType(type);
     m_lastMethod = id;
     decl->setInSymbolTable(false);
+    decl->clearDefaultParameters();
     node->tree = aux->r;
     visitMethodArguments(node);
     node->tree = aux->l;
