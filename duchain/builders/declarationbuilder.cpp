@@ -249,6 +249,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
 {
+    DUChainWriteLocker wlock(DUChain::lock());
     MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(currentDeclaration());
     ExpressionVisitor ev(currentContext(), m_editor);
     ev.visitParameter(node);

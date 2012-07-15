@@ -18,12 +18,16 @@
  */
 
 
-// KDE
+// Qt + KDE
+#include <QtGui/QTextDocument>
 #include <KLocalizedString>
 
 // KDevelop
 #include <language/duchain/types/abstracttype.h>
 #include <language/duchain/types/indexedtype.h>
+#include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/integraltype.h>
+#include <language/duchain/duchainutils.h>
 
 // Ruby
 #include <duchain/helpers.h>
@@ -44,6 +48,57 @@ DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer d
     : AbstractDeclarationNavigationContext(decl, topContext, prevContext)
 {
     /* There's nothing to do here! */
+}
+
+void DeclarationNavigationContext::htmlFunction()
+{
+    const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(m_declaration.data());
+    Q_ASSERT(mDecl);
+
+    const FunctionType::Ptr type = m_declaration->abstractType().cast<FunctionType>();
+    if (!type) {
+        modifyHtml() += errorHighlight("Invalid type<br/>");
+        return;
+    }
+
+    if (type->returnType()) {
+        IntegralType::Ptr it = type->returnType().cast<IntegralType>();
+        if (!it || it->dataType() != IntegralType::TypeNull)
+            eventuallyMakeTypeLinks(type->returnType());
+    }
+    modifyHtml() += ' ' + nameHighlight(Qt::escape(prettyIdentifier(m_declaration).toString()));
+
+    if (type->arguments().size() > 0) {
+        bool first = true;
+        int nDef = 0;
+        DUContext *ctx = DUChainUtils::getArgumentContext(m_declaration.data());
+
+        if (ctx) {
+            modifyHtml() += "( ";
+            foreach (Declaration *d, ctx->localDeclarations(m_topContext.data())) {
+                if (!first)
+                    modifyHtml() += ", ";
+                first = false;
+
+                VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(d);
+                eventuallyMakeTypeLinks(vd->abstractType());
+                if (vd->hasStar())
+                    modifyHtml() += " *";
+                else if (vd->isBlock())
+                    modifyHtml() += " &";
+                else
+                    modifyHtml() += " ";
+                modifyHtml() += nameHighlight(Qt::escape(vd->identifier().toString()));
+
+                if (vd->isOpt()) {
+                    modifyHtml() += " = " + Qt::escape(mDecl->defaultParameters()[nDef].str());
+                    nDef++;
+                }
+            }
+            modifyHtml() += " )";
+        }
+    }
+    modifyHtml() += "<br/>";
 }
 
 void DeclarationNavigationContext::htmlClass()

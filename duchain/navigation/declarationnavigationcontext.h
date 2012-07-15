@@ -53,6 +53,13 @@ public:
 
 protected:
     /**
+     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
+     * because the default implementation assumes that default arguments
+     * are always at the end, and in Ruby this is not true.
+     */
+    virtual void htmlFunction();
+
+    /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
      * we can improve the html to be rendered with Ruby-specific stuff.
      */
