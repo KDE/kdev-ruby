@@ -12,6 +12,23 @@ documentation/kdevruby_doc.rb script. The expected usage is:
 The 'source_dir' parameter is the path to the Ruby source code tree, and the
 'output_file' parameter is the name of the finally generated file.
 
+== Testing ==
+
+In order to test the DUChain and the Code completion you can do it as in
+any other KDevelop Language Plugin by going to the build directory and
+executing the different executables. To test the parser, please read the
+README file that can be found inside the parser/ directory.
+
+But you can do all of this automatically by using guard. From the root
+directory execute:
+  $ guard -w relative/path/to/the/build/directory
+
+We provide a Gemfile that handles all the dependencies. In particular, guard
+and its dependencies will be installed, as well for the assert_same gem, which
+is used to test the parser.
+
+Finally, note that the parser needs a ruby version < 1.9.
+
 == Authors ==
 
 - Alexander Dymo <adymo@kdevelop.org>
