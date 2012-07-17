@@ -830,7 +830,8 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
             for (int j = rest; j > 0; j--) {
                 ExpressionVisitor av(currentContext(), m_editor);
                 av.visitNode(node);
-                ct->addContentType(av.lastType());
+                if (av.lastType())
+                    ct->addContentType(av.lastType());
                 node->tree = node->tree->next;
             }
             vd->setType(ct);

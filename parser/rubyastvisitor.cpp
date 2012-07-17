@@ -647,8 +647,8 @@ void RubyAstVisitor::visitNode(RubyAst *node)
             visitBoolean(node);
             break;
         case token_numeric: visitNumeric(node); break;
-        case token_string: visitString(node); break;
-        case token_regexp: case token_heredoc: visitRegexp(node); break;
+        case token_string: case token_heredoc: visitString(node); break;
+        case token_regexp: visitRegexp(node); break;
         case token_nil: visitNil(node); break;
         case token_true: visitTrue(node); break;
         case token_false: visitFalse(node); break;
