@@ -35,6 +35,7 @@ QString getIndendation(const QString &line)
 
 QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
 {
+    Q_UNUSED(highlighting); // TODO
     QString ret = "(";
     QVector<Declaration *> params;
 

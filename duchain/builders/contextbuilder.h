@@ -84,7 +84,7 @@ protected:
      */
 
     virtual void setContextOnNode(RubyAst *node, DUContext *ctx);
-    virtual KDevelop::DUContext* contextFromNode(RubyAst *node);
+    virtual KDevelop::DUContext * contextFromNode(RubyAst *node);
     virtual KDevelop::DUContext * newContext(const RangeInRevision &range);
     virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
                                                    ParsingEnvironmentFile *file = 0);

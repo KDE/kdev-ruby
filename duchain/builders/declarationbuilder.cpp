@@ -103,8 +103,8 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     const QByteArray &comment = getComment(node);
     ClassDeclaration *baseClass = NULL;
 
-//     if (!validReDeclaration(id, range))
-//         return;
+    if (!validReDeclaration(id, range))
+        return;
 
     /* First of all, open the declaration and set the comment */
     ClassDeclaration *decl = reopenDeclaration<ClassDeclaration>(id, range);
@@ -168,8 +168,8 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray &comment = getComment(node);
 
-//     if (!validReDeclaration(id, range, false))
-//         return;
+    if (!validReDeclaration(id, range, false))
+        return;
 
     ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
     if (!comment.isEmpty())
@@ -735,10 +735,11 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
 {
     DUChainReadLocker rlock(DUChain::lock());
     QList<Declaration *> decls = currentContext()->topContext()->findDeclarations(id);
+
     foreach (Declaration *d, decls) {
         ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(d);
-        if ((cd && !isClass) || (md && isClass)) {
+        if ((cd && !isClass) || (md && !cd && isClass)) {
             const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
             rlock.unlock();
             appendProblem(range, msg);
