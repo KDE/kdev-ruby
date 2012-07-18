@@ -43,23 +43,10 @@ void UseBuilder::visitName(RubyAst *node)
     const RangeInRevision &range = editorFindRange(node, node);
     KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
-    if (!decl) {
-        KDevelop::Problem *p = new KDevelop::Problem();
-        p->setFinalLocation(DocumentRange(m_editor->url(), range.castToSimpleRange()));
-        p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-        p->setSeverity(KDevelop::ProblemData::Hint);
-        p->setDescription(i18n("Undefined variable or method: %1", id.toString()));
-        {
-            DUChainWriteLocker wlock(DUChain::lock());
-            ProblemPointer ptr(p);
-            topContext()->addProblem(ptr);
-        }
-    } else if (decl->range() == range)
+    if (decl && decl->range() == range)
         return;
 
-    if (decl)
-        debug() << "New use: " << id << " at " << range << " from " << decl->range();
-
+    debug() << "New use: " << id << " at " << range;
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 
