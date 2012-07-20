@@ -57,6 +57,12 @@ protected:
      * @param node The given variable.
      */
     virtual void visitName(RubyAst *node);
+
+    /// TODO
+    virtual void visitMethodCall(RubyAst *node);
+
+private:
+    void visitMethodCallMembers(RubyAst *node);
 };
 
 } // End of namespace Ruby

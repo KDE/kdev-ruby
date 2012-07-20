@@ -27,6 +27,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/usebuilder.h>
+#include <duchain/expressionvisitor.h>
 
 
 namespace Ruby
@@ -41,13 +42,111 @@ void UseBuilder::visitName(RubyAst *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
-    KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
+    Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (decl && decl->range() == range)
         return;
 
     debug() << "New use: " << id << " at " << range;
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
+}
+
+void UseBuilder::visitMethodCall(RubyAst *node)
+{
+//     debug() << "BEFORE";
+//     UseBuilderBase::visitMethodCall(node);
+//     debug() << "AFTER";
+    Node *n = node->tree;
+//     DUContext *ctx = currentContext();
+//     StructureType::Ptr sType;
+//     DUChainReadLocker rlock(DUChain::lock());
+//     debug() << "BEFORE LOOP";
+//     for (Node *aux = n; aux; aux = aux->next) {
+//         node->tree = aux;
+//         ExpressionVisitor ev(ctx, m_editor);
+//         ev.visitNode(node);
+//         sType = StructureType::Ptr::dynamicCast(ev.lastType());
+//         debug() << "HERE";
+//         if (!sType)
+//             continue;
+//         debug() << "LAL : " << getIdentifier(node) << " :type: " << sType->toString();
+//         ctx = sType->internalContext(topContext());
+//         if (!ctx) {
+//             debug() << "GTFO";
+//             break;
+//         }
+//         debug() << "Let's loop";
+//     }
+//     node->tree = n;
+
+    /* Visit the method call members */
+    node->tree = n->l;
+    visitMethodCallMembers(node);
+
+    /* Visit the method arguments */
+//     node->tree = n->r;
+//     for (Node *aux = n->r; aux; aux = aux->next) {
+//         visitNode(node);
+//         node->tree = aux->next;
+//     }
+
+    /* Vist method call block */
+//     node->tree = n->cond;
+//     visitBlock(node);
+    node->tree = n;
+//     debug() << "END";
+}
+
+void UseBuilder::visitMethodCallMembers(RubyAst *node)
+{
+    QualifiedIdentifier id;
+    RangeInRevision range;
+    DUChainWriteLocker rlock(DUChain::lock());
+    DUContext *ctx = currentContext();
+    Declaration * last;
+    ExpressionVisitor ev(ctx, editor());
+
+    debug() << "VISITING METHOD CALL MEMBERS";
+
+    for (Node *aux = node->tree; aux; aux = aux->next) {
+        id = getIdentifier(node); // TODO: remove
+        range = editorFindRange(node, node);
+        ev.setContext(ctx);
+        ev.visitNode(node);
+        last = ev.lastDeclaration().data();
+        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+//         last = getDeclaration(id, range, DUContextPointer(ctx));
+        debug() << "ID: " << id << " RANGE : " << range;
+//         if (!last) {
+//             debug()d << "NOPE";
+//             last = sType->declaration(topContext());
+//             if (!last) {
+                
+//                 return;
+//             }
+//             return;
+//         }
+//         debug() << "Got it!";
+        if (last) {
+            debug() << "Marking use, originally from: " << last->range() << " " << last->url().byteArray();
+            UseBuilderBase::newUse(node, range, DeclarationPointer(last));
+        }
+//         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+        if (!sType) {
+            debug() << "StructureType";
+            if (!last)
+                return;
+            ctx = last->internalContext();
+        } else {
+            debug() << "NO TYPE";
+            ctx = sType->internalContext(topContext());
+        }
+        if (!ctx)
+            return;
+        node->tree = aux->next;
+    }
+
+    debug() << "BYE BYE";
 }
 
 } // End of namespace Ruby

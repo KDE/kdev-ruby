@@ -65,6 +65,11 @@ public:
     }
     virtual void visitParameter(RubyAst *node);
 
+    inline void setContext(KDevelop::DUContext *ctx)
+    {
+        m_ctx = ctx;
+    }
+
 protected:
     virtual void visitString(RubyAst *node);
     virtual void visitRegexp(RubyAst *node);

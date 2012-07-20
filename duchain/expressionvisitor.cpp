@@ -64,13 +64,14 @@ void ExpressionVisitor::visitName(RubyAst *node)
         return;
     DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
-    const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
-    QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
-    if (!decls.isEmpty()) {
-        Declaration *d = decls.last();
-        m_alias = dynamic_cast<AliasDeclaration *>(d);
-        m_lastDeclaration = d;
-        encounter(d->abstractType());
+//     const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+    Declaration * decl = getDeclaration(id, m_editor->findRange(node->tree), DUContextPointer(m_ctx));
+//     QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
+    if (decl) {
+//         Declaration *d = decls.last();
+        m_alias = dynamic_cast<AliasDeclaration *>(decl);
+        m_lastDeclaration = decl;
+        encounter(decl->abstractType());
     } else {
         debug() << "Declaration NOT FOUND";
     }
@@ -185,22 +186,26 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
-    DeclarationPointer test = getDeclarationForCall(node, m_ctx);
-    DUChainReadLocker lock(DUChain::lock());
-    if (test) {
-        AbstractType::Ptr type;
-        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(test.data());
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(test.data());
-        if (md && md->type<FunctionType>()) {
-            type = md->type<FunctionType>()->returnType();
-            encounter(type);
-        } else if (cd) {
-            type = cd->abstractType();
-            encounter(type);
-        } else
-            debug() << "Found declaration is not callable";
-    } else
-        debug() << "Declaration not found";
+//     DeclarationPointer test = getDeclarationForCall(node, m_ctx);
+//     DUChainReadLocker lock(DUChain::lock());
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n;
+//     if (test) {
+//         AbstractType::Ptr type;
+//         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(test.data());
+//         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(test.data());
+//         if (md && md->type<FunctionType>()) {
+//             type = md->type<FunctionType>()->returnType();
+//             encounter(type);
+//         } else if (cd) {
+//             type = cd->abstractType();
+//             encounter(type);
+//         } else
+//             debug() << "Found declaration is not callable";
+//     } else
+//         debug() << "Declaration not found";
 }
 
 void ExpressionVisitor::visitLambda(RubyAst *node)
