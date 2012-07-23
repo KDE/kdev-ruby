@@ -53,6 +53,14 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     m_lastType = AbstractType::Ptr(NULL);
 }
 
+void ExpressionVisitor::setContext(DUContext *ctx)
+{
+    m_ctx = ctx;
+    m_lastType = AbstractType::Ptr(NULL);
+    m_lastDeclaration = NULL;
+    m_alias = false;
+}
+
 void ExpressionVisitor::visitVariable(RubyAst *node)
 {
     debug() << "HERE !!! " << node->tree->name;
@@ -64,11 +72,8 @@ void ExpressionVisitor::visitName(RubyAst *node)
         return;
     DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
-//     const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
     Declaration * decl = getDeclaration(id, m_editor->findRange(node->tree), DUContextPointer(m_ctx));
-//     QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
     if (decl) {
-//         Declaration *d = decls.last();
         m_alias = dynamic_cast<AliasDeclaration *>(decl);
         m_lastDeclaration = decl;
         encounter(decl->abstractType());
@@ -186,26 +191,10 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
-//     DeclarationPointer test = getDeclarationForCall(node, m_ctx);
-//     DUChainReadLocker lock(DUChain::lock());
     Node *n = node->tree;
     node->tree = n->l;
     visitNode(node);
     node->tree = n;
-//     if (test) {
-//         AbstractType::Ptr type;
-//         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(test.data());
-//         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(test.data());
-//         if (md && md->type<FunctionType>()) {
-//             type = md->type<FunctionType>()->returnType();
-//             encounter(type);
-//         } else if (cd) {
-//             type = cd->abstractType();
-//             encounter(type);
-//         } else
-//             debug() << "Found declaration is not callable";
-//     } else
-//         debug() << "Declaration not found";
 }
 
 void ExpressionVisitor::visitLambda(RubyAst *node)

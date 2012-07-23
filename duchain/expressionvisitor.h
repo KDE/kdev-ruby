@@ -65,10 +65,8 @@ public:
     }
     virtual void visitParameter(RubyAst *node);
 
-    inline void setContext(KDevelop::DUContext *ctx)
-    {
-        m_ctx = ctx;
-    }
+    /// Set the internal context to @p ctx and reset all the other attributes.
+    void setContext(KDevelop::DUContext *ctx);
 
 protected:
     virtual void visitString(RubyAst *node);

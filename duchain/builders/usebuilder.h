@@ -58,11 +58,27 @@ protected:
      */
     virtual void visitName(RubyAst *node);
 
-    /// TODO
+    /**
+     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
+     * of method calls.
+     *
+     * @param node The given method call.
+     */
     virtual void visitMethodCall(RubyAst *node);
 
 private:
+    /// @internal Visit the method call members from the given @p node.
     void visitMethodCallMembers(RubyAst *node);
+
+private:
+    /// Used at the method call visitor to keep track of the last context.
+    DUContext *m_lastCtx;
+
+    /**
+     * The method call visitor uses this to track the depth of
+     * the recursion level.
+     */
+    int mcDepth;
 };
 
 } // End of namespace Ruby

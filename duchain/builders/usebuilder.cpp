@@ -18,9 +18,10 @@
  */
 
 
-// KDE
+// KDE + KDevelop
 #include <KDebug>
 #include <KLocale>
+#include <language/duchain/types/functiontype.h>
 
 // Ruby
 #include <rubydefs.h>
@@ -36,6 +37,8 @@ namespace Ruby
 UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 {
     m_editor = editor;
+    m_lastCtx = NULL;
+    mcDepth = 0;
 }
 
 void UseBuilder::visitName(RubyAst *node)
@@ -53,100 +56,82 @@ void UseBuilder::visitName(RubyAst *node)
 
 void UseBuilder::visitMethodCall(RubyAst *node)
 {
-//     debug() << "BEFORE";
-//     UseBuilderBase::visitMethodCall(node);
-//     debug() << "AFTER";
+    DUChainWriteLocker wlock(DUChain::lock());
     Node *n = node->tree;
-//     DUContext *ctx = currentContext();
-//     StructureType::Ptr sType;
-//     DUChainReadLocker rlock(DUChain::lock());
-//     debug() << "BEFORE LOOP";
-//     for (Node *aux = n; aux; aux = aux->next) {
-//         node->tree = aux;
-//         ExpressionVisitor ev(ctx, m_editor);
-//         ev.visitNode(node);
-//         sType = StructureType::Ptr::dynamicCast(ev.lastType());
-//         debug() << "HERE";
-//         if (!sType)
-//             continue;
-//         debug() << "LAL : " << getIdentifier(node) << " :type: " << sType->toString();
-//         ctx = sType->internalContext(topContext());
-//         if (!ctx) {
-//             debug() << "GTFO";
-//             break;
-//         }
-//         debug() << "Let's loop";
-//     }
-//     node->tree = n;
 
     /* Visit the method call members */
     node->tree = n->l;
+    if (node->tree->kind == token_method_call) {
+        mcDepth++;
+        visitMethodCall(node);
+        mcDepth--;
+    }
     visitMethodCallMembers(node);
+    if (!mcDepth)
+        m_lastCtx = NULL;
 
     /* Visit the method arguments */
-//     node->tree = n->r;
-//     for (Node *aux = n->r; aux; aux = aux->next) {
-//         visitNode(node);
-//         node->tree = aux->next;
-//     }
+    node->tree = n->r;
+    for (Node *aux = n->r; aux; aux = aux->next) {
+        visitNode(node);
+        node->tree = aux->next;
+    }
 
     /* Vist method call block */
-//     node->tree = n->cond;
-//     visitBlock(node);
+    node->tree = n->cond;
+    visitBlock(node);
     node->tree = n;
-//     debug() << "END";
 }
 
 void UseBuilder::visitMethodCallMembers(RubyAst *node)
 {
-    QualifiedIdentifier id;
     RangeInRevision range;
-    DUChainWriteLocker rlock(DUChain::lock());
-    DUContext *ctx = currentContext();
+    DUChainWriteLocker wlock(DUChain::lock());
+    DUContext *ctx = (m_lastCtx) ? m_lastCtx : currentContext();
     Declaration * last;
     ExpressionVisitor ev(ctx, editor());
 
-    debug() << "VISITING METHOD CALL MEMBERS";
+    /*
+     * Go to the next element since we're coming from a recursion and we've
+     * already checked its children nodes.
+     */
+    if (node->tree->kind == token_method_call)
+        node->tree = node->tree->next;
 
+    // And this is the loop that does the dirty job.
     for (Node *aux = node->tree; aux; aux = aux->next) {
-        id = getIdentifier(node); // TODO: remove
+        node->tree = aux;
         range = editorFindRange(node, node);
         ev.setContext(ctx);
         ev.visitNode(node);
         last = ev.lastDeclaration().data();
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
-//         last = getDeclaration(id, range, DUContextPointer(ctx));
-        debug() << "ID: " << id << " RANGE : " << range;
-//         if (!last) {
-//             debug()d << "NOPE";
-//             last = sType->declaration(topContext());
-//             if (!last) {
-                
-//                 return;
-//             }
-//             return;
-//         }
-//         debug() << "Got it!";
-        if (last) {
-            debug() << "Marking use, originally from: " << last->range() << " " << last->url().byteArray();
+
+        // Mark a new use if possible
+        if (last)
             UseBuilderBase::newUse(node, range, DeclarationPointer(last));
-        }
-//         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+
+        /*
+         * If this is a StructureType, it means that we're in a case like;
+         * "A::B::" and therefore the next context should be A::B.
+         */
         if (!sType) {
-            debug() << "StructureType";
-            if (!last)
-                return;
-            ctx = last->internalContext();
-        } else {
-            debug() << "NO TYPE";
+            // It's not a StructureType, therefore it's a variable or a method.
+            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            if (!fType)
+                ctx = (last) ? last->internalContext() : NULL;
+            else {
+                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                ctx = (rType) ? rType->internalContext(topContext()) : NULL;
+            }
+        } else
             ctx = sType->internalContext(topContext());
-        }
+
+        // No context found, we can't go any further.
         if (!ctx)
             return;
-        node->tree = aux->next;
     }
-
-    debug() << "BYE BYE";
+    m_lastCtx = ctx;
 }
 
 } // End of namespace Ruby
