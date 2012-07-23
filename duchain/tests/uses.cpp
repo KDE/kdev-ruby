@@ -26,6 +26,7 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
+#include <duchain/helpers.h>
 #include <duchain/tests/uses.h>
 
 
@@ -61,6 +62,23 @@ void TestUseBuilder::compareUses(Declaration *dec, QList<RangeInRevision> ranges
     for (int i = 0; i < ranges.count(); ++i)
         QCOMPARE(dec->uses().values().first().at(i), ranges.at(i));
 }
+
+Declaration * TestUseBuilder::getBuiltinDeclaration(const QString &name, TopDUContext *top, DUContext *ctx)
+{
+    QStringList list = name.split("#");
+    DUContext *context = (ctx) ? ctx : top->childContexts().first();
+    AbstractType::Ptr type = getBuiltinsType(list.first(), context);
+    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
+    Declaration *d = sType->declaration(top);
+
+    QualifiedIdentifier id(list.first() + "::" + list.last());
+    foreach (Declaration *bd, d->internalContext()->localDeclarations())
+        if (bd->qualifiedIdentifier() == id)
+            return bd;
+    return NULL;
+}
+
+//BEGIN: Basic stuff
 
 void TestUseBuilder::stringInterpolation()
 {
@@ -173,6 +191,82 @@ void TestUseBuilder::classVariable()
 
     PENDING("Not implemented yet");
 }
+
+//END: Basic stuff
+
+//BEGIN: Method calls
+
+void TestUseBuilder::builtinUses()
+{
+    //               0          1        2
+    //               012345678901234567890123
+    QByteArray code("a = 0; a.zero?; 1.zero?");
+    TopDUContext *top = parse(code, "classVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    compareUses(d, RangeInRevision(0, 7, 0, 8));
+
+    // odd?
+    d = getBuiltinDeclaration("Fixnum#zero?", top, d->context());
+    QVERIFY(d);
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 9, 0, 14) << RangeInRevision(0, 18, 0, 23);
+    compareUses(d, ranges);
+}
+
+void TestUseBuilder::chained()
+{
+    //               0         1         2         3         4         5
+    //               012345678901234567890123456789012345678901234567890
+    QByteArray code("module Modul; class Klass; def self.selfish(a, b); ");
+    //                6         7         8         9         0         1
+    //       12345678901234567890123456789012345678901234567890123456789012345678
+    code += "'string'; end; end; end; a = 0; Modul::Klass.selfish(a, 1).bytesize";
+    TopDUContext *top = parse(code, "usingStd");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Module
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 83, 0, 88));
+
+    // Modul::Klass
+    d = d->internalContext()->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 90, 0, 95));
+
+    // Modul::Klass.selfish
+    d = d->internalContext()->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass::selfish"));
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 96, 0, 103));
+
+    // a
+    d = top->localDeclarations().last();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 104, 0, 105));
+
+    // String#bytesize
+    d = getBuiltinDeclaration("String#bytesize", top);
+    QVERIFY(d);
+    QCOMPARE(d->uses().count(), 1);
+    compareUses(d, RangeInRevision(0, 110, 0, 118));
+}
+
+//END: Method calls
 
 } // End of namespace Ruby
 
