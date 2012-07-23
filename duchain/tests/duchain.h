@@ -122,6 +122,8 @@ private slots:
 
     // Methods
     void callingToInstanceMethod();
+    void chainedCalls1();
+    void chainedCalls2();
     void guessArgumentsType1();
     void guessArgumentsType2();
     void guessArgumentsType3();
