@@ -76,6 +76,7 @@ private slots:
     // Method calls
     void builtinUses();
     void chained();
+    void fromClassAndAbove();
 };
 
 }

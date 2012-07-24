@@ -72,10 +72,8 @@ Declaration * TestUseBuilder::getBuiltinDeclaration(const QString &name, TopDUCo
     Declaration *d = sType->declaration(top);
 
     QualifiedIdentifier id(list.first() + "::" + list.last());
-    foreach (Declaration *bd, d->internalContext()->localDeclarations())
-        if (bd->qualifiedIdentifier() == id)
-            return bd;
-    return NULL;
+    QList<Declaration *> decls = d->internalContext()->findDeclarations(id);
+    return (decls.isEmpty()) ? NULL : decls.last();
 }
 
 //BEGIN: Basic stuff
@@ -201,7 +199,7 @@ void TestUseBuilder::builtinUses()
     //               0          1        2
     //               012345678901234567890123
     QByteArray code("a = 0; a.zero?; 1.zero?");
-    TopDUContext *top = parse(code, "classVariable");
+    TopDUContext *top = parse(code, "builtinUses");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -211,7 +209,7 @@ void TestUseBuilder::builtinUses()
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
     compareUses(d, RangeInRevision(0, 7, 0, 8));
 
-    // odd?
+    // zero?
     d = getBuiltinDeclaration("Fixnum#zero?", top, d->context());
     QVERIFY(d);
     QList<RangeInRevision> ranges;
@@ -227,7 +225,7 @@ void TestUseBuilder::chained()
     //                6         7         8         9         0         1
     //       12345678901234567890123456789012345678901234567890123456789012345678
     code += "'string'; end; end; end; a = 0; Modul::Klass.selfish(a, 1).bytesize";
-    TopDUContext *top = parse(code, "usingStd");
+    TopDUContext *top = parse(code, "chained");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -264,6 +262,21 @@ void TestUseBuilder::chained()
     QVERIFY(d);
     QCOMPARE(d->uses().count(), 1);
     compareUses(d, RangeInRevision(0, 110, 0, 118));
+}
+
+void TestUseBuilder::fromClassAndAbove()
+{
+    //               0         1         2         3
+    //               01234567890123456789012345678901234
+    QByteArray code("class Klass; attr_reader :asd; end");
+    TopDUContext *top = parse(code, "fromClassAndAbove");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Module#attr_reader
+    Declaration *d = getBuiltinDeclaration("Module#attr_reader", top);
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 13, 0, 24));
 }
 
 //END: Method calls
