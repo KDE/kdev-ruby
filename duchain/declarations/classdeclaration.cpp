@@ -57,6 +57,11 @@ KDevelop::IndexedType ClassDeclaration::baseClass() const
     return m_baseClass;
 }
 
+QString ClassDeclaration::toString() const
+{
+    return "class " + identifier().toString();
+}
+
 KDevelop::Declaration * ClassDeclaration::clonePrivate() const
 {
     return new ClassDeclaration(*this);

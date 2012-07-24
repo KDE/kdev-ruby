@@ -62,7 +62,10 @@ public:
     void clearBaseClass();
 
     /// @returns the base class for this class declaration.
-    KDevelop::IndexedType baseClass() const;    
+    KDevelop::IndexedType baseClass() const;
+
+    /// Re-implemented from ModuleDeclaration.
+    QString toString() const;
 
     enum { Identity = 46 /** The id of this Type. */ };
 
