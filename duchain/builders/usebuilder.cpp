@@ -28,6 +28,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/usebuilder.h>
+#include <duchain/declarations/classdeclaration.h>
 #include <duchain/expressionvisitor.h>
 
 
@@ -104,6 +105,13 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         range = editorFindRange(node, node);
         ev.setContext(ctx);
         ev.visitNode(node);
+        if (!ev.lastType()) {
+            ClassDeclaration *cdecl = dynamic_cast<ClassDeclaration *>(ctx->owner());
+            if (cdecl) {
+                ev.setContext(getClassContext(currentContext()));
+                ev.visitNode(node);
+            }
+        }
         last = ev.lastDeclaration().data();
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
 

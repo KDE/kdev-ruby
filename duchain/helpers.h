@@ -86,8 +86,21 @@ using namespace KDevelop;
      * @returns a TypePtr< AbstractType > containing the required type or null
      * if it was not found.
      * @note This method already acquires a read lock for the DUChain.
+     * TODO: this method highlights the importance of having a class that deal
+     * with builtin classes in an optimal way.
      */
     KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx);
+
+    /**
+     * Get the context of the Class class.
+     *
+     * @param ctx The current context.
+     * @returns a KDevelop::DUContext containing the Class class.
+     * @note This method already acquires a read lock for the DUChain.
+     * TODO: this method highlights the importance of having a class that deal
+     * with builtin classes in an optimal way.
+     */
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(DUContext *ctx);
 
     /**
      * @returns true if the given @p type is useful, and false otherwise.

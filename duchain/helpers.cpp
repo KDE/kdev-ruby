@@ -92,6 +92,15 @@ TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
     return type;
 }
 
+DUContext * getClassContext(DUContext *ctx)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
+    if (klass)
+        return klass->declaration(ctx->topContext())->internalContext();
+    return NULL;
+}
+
 bool isUsefulType(AbstractType::Ptr type)
 {
     if (!type)
