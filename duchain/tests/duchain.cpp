@@ -930,8 +930,6 @@ void TestDUChain::chainedCalls1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("This test is expected to fail, since the feature is covering is still under construction");
-
     Declaration *d = top->localDeclarations().last();
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
     QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
@@ -956,6 +954,28 @@ void TestDUChain::chainedCalls2()
     d = top->localDeclarations().last();
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
     QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::chainedCalls3()
+{
+    QByteArray code("module A; class B; def foo; //; end; end; a = B.new.foo;");
+    code += "end; b = A::B.new.foo";
+    TopDUContext *top = parse(code, "chainedCalls3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    PENDING("This test is expected to fail, since the feature is covering is still under construction");
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    d = d->internalContext()->localDeclarations().last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("A::a"));
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
+
+    // b
+    d = top->localDeclarations().last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
 }
 
 // Defines a method with an amazing list of arguments

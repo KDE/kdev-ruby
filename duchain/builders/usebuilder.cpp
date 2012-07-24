@@ -88,7 +88,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
     RangeInRevision range;
     DUChainWriteLocker wlock(DUChain::lock());
     DUContext *ctx = (m_lastCtx) ? m_lastCtx : currentContext();
-    Declaration * last;
+    Declaration *last;
     ExpressionVisitor ev(ctx, editor());
 
     /*

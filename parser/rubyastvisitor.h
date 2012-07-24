@@ -63,6 +63,10 @@ public:
     void visitNode(RubyAst *node);
 
 protected:
+    /**
+     * And the following is a list of virtual methods that can be overriden.
+     */
+
     virtual void visitVariable(RubyAst *node);
     virtual void visitName(RubyAst *node);
     virtual void visitString(RubyAst *node);
@@ -111,15 +115,15 @@ protected:
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
     virtual void visitAccessSpecifier(short policy);
-// TODO
-// private:
+
+private:
     /**
      * @internal Helper method useful to visit a list of statements.
      *
      * @param list A node that is the first item of a list of nodes.
      */
     void visitStatements(RubyAst *list);
-private:
+
     /**
      * @internal Helper method used for the visitIfStatement method. Its
      * goal is to visit a tail of an if statement.

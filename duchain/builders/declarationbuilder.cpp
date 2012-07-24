@@ -453,7 +453,7 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     ExpressionVisitor v(currentContext(), m_editor);
     v.visitNode(node);
 
-    /* And now let's take a look at the method arguments */
+    /* Let's take a look at the method arguments */
     DeclarationPointer lastMethod = v.lastDeclaration();
     if (lastMethod) {
         DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
@@ -818,7 +818,7 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
     int i = 0;
     int rest = nCaller - left - right;
     DUChainWriteLocker wlock(DUChain::lock());
-    for (Node *n = node->tree; n != NULL; i++) {
+    for (Node *n = node->tree; n; i++) {
         vd = dynamic_cast<VariableDeclaration *>(args.at(i));
         node->tree = n;
         if (vd->isOpt()) {

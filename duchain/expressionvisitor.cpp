@@ -44,6 +44,7 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(NULL);
+    m_lastCtx = NULL;
 }
 
 ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
@@ -51,6 +52,7 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
         m_lastDeclaration(NULL), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(NULL);
+    m_lastCtx = NULL;
 }
 
 void ExpressionVisitor::setContext(DUContext *ctx)
@@ -59,6 +61,7 @@ void ExpressionVisitor::setContext(DUContext *ctx)
     m_lastType = AbstractType::Ptr(NULL);
     m_lastDeclaration = NULL;
     m_alias = false;
+    m_lastCtx = NULL;
 }
 
 void ExpressionVisitor::visitVariable(RubyAst *node)
@@ -191,9 +194,13 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
+    DUChainReadLocker rlock(DUChain::lock());
     Node *n = node->tree;
+
     node->tree = n->l;
-    visitNode(node);
+    if (node->tree->kind == token_method_call)
+        visitMethodCall(node);
+    visitMethodCallMembers(node);
     node->tree = n;
 }
 
@@ -235,6 +242,57 @@ void ExpressionVisitor::visitLastStatement(RubyAst *node)
         node->tree = n->last;
     ExpressionVisitor::visitNode(node);
     node->tree = n;
+}
+
+void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
+{
+    RangeInRevision range;
+    DUContext *ctx = (m_lastCtx) ? m_lastCtx : m_ctx;
+    ExpressionVisitor ev(this);
+
+    /*
+     * Go to the next element since we're coming from a recursion and we've
+     * already checked its children nodes.
+     */
+    if (node->tree->kind == token_method_call)
+        node->tree = node->tree->next;
+
+    // And this is the loop that does the dirty job.
+    for (Node *aux = node->tree; aux; aux = aux->next) {
+        node->tree = aux;
+        range = m_editor->findRange(node->tree);
+        ev.setContext(ctx);
+        ev.visitNode(node);
+        m_lastDeclaration = ev.lastDeclaration().data();
+        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+
+        /*
+         * If this is a StructureType, it means that we're in a case like;
+         * "A::B::" and therefore the next context should be A::B.
+         */
+        if (!sType) {
+            // It's not a StructureType, therefore it's a variable or a method.
+            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            if (!fType)
+                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : NULL;
+            else {
+                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                if (rType) {
+                    encounter(fType->returnType());
+                    ctx = rType->internalContext(ctx->topContext());
+                } else
+                    ctx = NULL;
+            }
+        } else {
+            encounter(ev.lastType());
+            ctx = sType->internalContext(ctx->topContext());
+        }
+
+        // No context found, we can't go any further.
+        if (!ctx)
+            return;
+    }
+    m_lastCtx = ctx;
 }
 
 void ExpressionVisitor::visitWhileStatement(RubyAst *)
@@ -333,47 +391,6 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
     } else
         kWarning() << "Something went wrong! Fix code...";
     return ct;
-}
-
-DeclarationPointer ExpressionVisitor::getDeclarationForCall(RubyAst *ast, DUContext *ctx)
-{
-    DUChainReadLocker lock(DUChain::lock());
-    DUContext *aux, *lastCtx = ctx;
-    RubyAst *left = new RubyAst(ast->tree->l, ast->context);
-    // HACK: this makes the Klass.new case to work. It should be implemented
-    // in a way that the "new" method is already inside a class definition
-    // without defining it.
-    DeclarationPointer last;
-
-    for (Node *n = ast->tree->l; n != NULL; n = n->next) {
-        left->tree = n;
-        QualifiedIdentifier id = getIdentifier(left);
-        aux = getDeclarationInternalContext(id, lastCtx);
-        if (!aux)
-            return (m_lastDeclaration) ? m_lastDeclaration : last;
-        last = m_lastDeclaration;
-        lastCtx = aux;
-    }
-    return DeclarationPointer(NULL);
-}
-
-DUContext * ExpressionVisitor::getDeclarationInternalContext(const QualifiedIdentifier &id, DUContext *ctx)
-{
-    QList<Declaration *> aux = ctx->findDeclarations(id);
-    m_lastDeclaration = NULL;
-    if (aux.isEmpty())
-        return NULL;
-
-    Declaration * last = aux.last();
-    // HACK: should be the last instruction before "return NULL", but in this way
-    // the hack from getDeclarationForCall works.
-    m_lastDeclaration = last;
-    ClassType::Ptr ct = last->type<ClassType>();
-    if (ct) {
-        IdentifiedType *it = dynamic_cast<IdentifiedType *>(ct.unsafeData());
-        return it->declaration(ctx->topContext())->internalContext();
-    }
-    return NULL;
 }
 
 } // End of namespace Ruby

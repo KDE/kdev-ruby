@@ -34,11 +34,6 @@ namespace Ruby
 
 class EditorIntegrator;
 
-/*
- * TODO: it would be nice to have some caching system for builtin declarations
- * (most notably for classes like NilClass, that are used almost everywhere).
- */
-
 
 /**
  * TODO: Under construction
@@ -63,6 +58,12 @@ public:
     {
         return m_lastDeclaration;
     }
+
+    inline const KDevelop::DUContext * lastContext() const
+    {
+        return m_lastCtx;
+    }
+
     virtual void visitParameter(RubyAst *node);
 
     /// Set the internal context to @p ctx and reset all the other attributes.
@@ -103,8 +104,9 @@ private:
     }
     ClassType::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey = false);
     void visitLastStatement(RubyAst *node);
-    DeclarationPointer getDeclarationForCall(RubyAst *ast, DUContext *ctx);
-    DUContext * getDeclarationInternalContext(const QualifiedIdentifier &id, DUContext *ctx);
+
+
+    void visitMethodCallMembers(RubyAst *node);
 
 private:
     KDevelop::DUContext *m_ctx;
@@ -112,6 +114,8 @@ private:
     AbstractType::Ptr m_lastType;
     DeclarationPointer m_lastDeclaration;
     bool m_alias;
+
+    KDevelop::DUContext *m_lastCtx;
 };
 
 }
