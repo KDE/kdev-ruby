@@ -527,24 +527,24 @@ mlhs_node: variable { $$ = $1; }
   }
   | primary '.' base
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
   | primary tCOLON2 base
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
   | primary '.' const
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
   | primary tCOLON2 const
   {
     if (parser->in_def)
       yyerror(parser, "dynamic constant assignment");
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_wc_range_ext($$, $1, $3);
   }
   | tCOLON3 const
@@ -564,24 +564,24 @@ lhs: variable { $$ = $1; }
   }
   | primary '.' base
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_range($$, $1, $3);
   }
   | primary tCOLON2 base
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_range($$, $1, $3);
   }
   | primary '.' const
   {
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_range($$, $1, $3);
   }
   | primary tCOLON2 const
   {
     if (parser->in_def)
       yyerror(parser, "dynamic constant assignment");
-    $$ = alloc_node(token_object, $1, $3);
+    $$ = alloc_node(token_method_call, $1, $3);
     copy_range($$, $1, $3);
   }
   | tCOLON3 const

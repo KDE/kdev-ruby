@@ -369,6 +369,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     int i = 0;
     AbstractType::Ptr type;
     for (Node *n = node->tree->l; n != NULL; n = n->next, i++) {
+        if (n->kind == token_method_call)
+            continue;
         aux->tree = n;
         if (has_star(n)) {
             int rest = nodeListSize(n) - 1;
