@@ -111,8 +111,10 @@ QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &
             it.next();
             IncludeItem item;
             item.name = it.fileInfo().fileName();
-            if (item.name.startsWith(".") || item.name.endsWith("~"))
+            if (item.name.startsWith(".") || item.name.endsWith("~")
+                || item.name.endsWith(".so")) {
                 continue;
+            }
             item.pathNumber = number;
             item.isDirectory = it.fileInfo().isDir();
             item.basePath = p;

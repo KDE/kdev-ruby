@@ -61,7 +61,7 @@ public:
 
     /**
      * Get all the files/directories inside the given directory except for
-     * (UNIX) hidden files and backup files (that end with ~).
+     * (UNIX) hidden files, backup files (that end with ~) and .so files.
      *
      * @param url the url where to search.
      * @param relative the absolute path of the directory that contains the
