@@ -41,7 +41,7 @@
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
-#include <duchain/types/classtype.h>
+#include <duchain/types/objecttype.h>
 
 
 namespace Ruby

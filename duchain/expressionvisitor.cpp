@@ -33,7 +33,6 @@
 #include <duchain/expressionvisitor.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
-#include <duchain/types/classtype.h>
 
 
 using namespace KDevelop;
@@ -64,6 +63,27 @@ void ExpressionVisitor::setContext(DUContext *ctx)
     m_lastCtx = NULL;
 }
 
+void ExpressionVisitor::visitParameter(RubyAst *node)
+{
+    AbstractType::Ptr obj;
+
+    if (is_block_arg(node->tree)) {
+        obj = getBuiltinsType("Proc", m_ctx);
+    } else if (is_rest_arg(node->tree)) {
+        obj = getBuiltinsType("Array", m_ctx);
+        obj.cast<ClassType>();
+    } else if (node->tree->r != NULL) {
+        ExpressionVisitor da(this);
+        Node *n = node->tree;
+        node->tree = node->tree->r;
+        da.visitNode(node);
+        node->tree = n;
+        obj = da.lastType();
+    } else
+        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+    encounter(obj);
+}
+
 void ExpressionVisitor::visitVariable(RubyAst *node)
 {
     debug() << "HERE !!! " << node->tree->name;
@@ -71,18 +91,17 @@ void ExpressionVisitor::visitVariable(RubyAst *node)
 
 void ExpressionVisitor::visitName(RubyAst *node)
 {
-    if (!node->tree) // TODO: clean, it shouldn't happen, but it does :(
-        return;
     DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
-    Declaration * decl = getDeclaration(id, m_editor->findRange(node->tree), DUContextPointer(m_ctx));
+    RangeInRevision range = m_editor->findRange(node->tree);
+    Declaration * decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+
     if (decl) {
         m_alias = dynamic_cast<AliasDeclaration *>(decl);
         m_lastDeclaration = decl;
         encounter(decl->abstractType());
-    } else {
+    } else
         debug() << "Declaration NOT FOUND";
-    }
 }
 
 void ExpressionVisitor::visitTrue(RubyAst *)
@@ -211,90 +230,6 @@ void ExpressionVisitor::visitLambda(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitParameter(RubyAst *node)
-{
-    AbstractType::Ptr obj;
-
-    if (is_block_arg(node->tree)) {
-        obj = getBuiltinsType("Proc", m_ctx);
-    } else if (is_rest_arg(node->tree)) {
-        obj = getBuiltinsType("Array", m_ctx);
-        obj.cast<ClassType>();
-    } else if (node->tree->r != NULL) {
-        ExpressionVisitor da(this);
-        Node *n = node->tree;
-        node->tree = node->tree->r;
-        da.visitNode(node);
-        node->tree = n;
-        obj = da.lastType();
-    } else
-        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
-    encounter(obj);
-}
-
-void ExpressionVisitor::visitLastStatement(RubyAst *node)
-{
-    if (!node->tree)
-        return;
-
-    Node *n = node->tree;
-    if (n->last)
-        node->tree = n->last;
-    ExpressionVisitor::visitNode(node);
-    node->tree = n;
-}
-
-void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
-{
-    RangeInRevision range;
-    DUContext *ctx = (m_lastCtx) ? m_lastCtx : m_ctx;
-    ExpressionVisitor ev(this);
-
-    /*
-     * Go to the next element since we're coming from a recursion and we've
-     * already checked its children nodes.
-     */
-    if (node->tree->kind == token_method_call)
-        node->tree = node->tree->next;
-
-    // And this is the loop that does the dirty job.
-    for (Node *aux = node->tree; aux; aux = aux->next) {
-        node->tree = aux;
-        range = m_editor->findRange(node->tree);
-        ev.setContext(ctx);
-        ev.visitNode(node);
-        m_lastDeclaration = ev.lastDeclaration().data();
-        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
-
-        /*
-         * If this is a StructureType, it means that we're in a case like;
-         * "A::B::" and therefore the next context should be A::B.
-         */
-        if (!sType) {
-            // It's not a StructureType, therefore it's a variable or a method.
-            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
-            if (!fType)
-                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : NULL;
-            else {
-                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
-                if (rType) {
-                    encounter(fType->returnType());
-                    ctx = rType->internalContext(ctx->topContext());
-                } else
-                    ctx = NULL;
-            }
-        } else {
-            encounter(ev.lastType());
-            ctx = sType->internalContext(ctx->topContext());
-        }
-
-        // No context found, we can't go any further.
-        if (!ctx)
-            return;
-    }
-    m_lastCtx = ctx;
-}
-
 void ExpressionVisitor::visitWhileStatement(RubyAst *)
 {
     AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
@@ -391,6 +326,69 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
     } else
         kWarning() << "Something went wrong! Fix code...";
     return ct;
+}
+
+void ExpressionVisitor::visitLastStatement(RubyAst *node)
+{
+    if (!node->tree)
+        return;
+
+    Node *n = node->tree;
+    if (n->last)
+        node->tree = n->last;
+    ExpressionVisitor::visitNode(node);
+    node->tree = n;
+}
+
+void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
+{
+    RangeInRevision range;
+    DUContext *ctx = (m_lastCtx) ? m_lastCtx : m_ctx;
+    ExpressionVisitor ev(this);
+
+    /*
+     * Go to the next element since we're coming from a recursion and we've
+     * already checked its children nodes.
+     */
+    if (node->tree->kind == token_method_call)
+        node->tree = node->tree->next;
+
+    // And this is the loop that does the dirty job.
+    for (Node *aux = node->tree; aux; aux = aux->next) {
+        node->tree = aux;
+        range = m_editor->findRange(node->tree);
+        ev.setContext(ctx);
+        ev.visitNode(node);
+        m_lastDeclaration = ev.lastDeclaration().data();
+        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+
+        /*
+         * If this is a StructureType, it means that we're in a case like;
+         * "A::B::" and therefore the next context should be A::B.
+         */
+        if (!sType) {
+            // It's not a StructureType, therefore it's a variable or a method.
+            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            if (!fType)
+                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : NULL;
+            else {
+                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                if (rType) {
+                    encounter(fType->returnType());
+                    ctx = rType->internalContext(ctx->topContext());
+                } else
+                    ctx = NULL;
+            }
+        } else {
+            encounter(ev.lastType());
+            ctx = sType->internalContext(ctx->topContext());
+        }
+
+        // No context found, we can't go any further.
+        if (!ctx)
+            return;
+    }
+    m_lastCtx = ctx;
 }
 
 } // End of namespace Ruby

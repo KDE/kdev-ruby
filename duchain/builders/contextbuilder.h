@@ -71,7 +71,9 @@ public:
     }
 
 protected:
+    /// Set the given @p editor as the EditorIntegrator for this class.
     void setEditor(EditorIntegrator *editor);
+
     /**
      * @returns the editor used by the builder.
      * @note Used by KDevelop::AbstractContextBuilder.
