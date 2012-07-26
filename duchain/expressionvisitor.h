@@ -88,7 +88,6 @@ protected:
     virtual void visitString(RubyAst *node);
     virtual void visitRegexp(RubyAst *node);
     virtual void visitNumeric(RubyAst *node);
-    virtual void visitVariable(RubyAst *node);
     virtual void visitTrue(RubyAst *node);
     virtual void visitFalse(RubyAst *node);
     virtual void visitNil(RubyAst *node);

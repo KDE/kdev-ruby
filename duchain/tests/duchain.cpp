@@ -1215,7 +1215,7 @@ void TestDUChain::extend()
     /* Same as include1 but with extend and a class method */
     QByteArray code("module AA; module BB; def foo; end; def self.selfish; end;");
     code += "end; end; class Klass; extend AA::BB; end";
-    TopDUContext *top = parse(code, "extend1");
+    TopDUContext *top = parse(code, "extend");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -1235,6 +1235,18 @@ void TestDUChain::extend()
     QCOMPARE(md->moduleMixinsSize(), 0u);
     QCOMPARE(md->mixersSize(), 1u);
     QCOMPARE(md->mixers()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+}
+
+void TestDUChain::problemOnInvalidMixin()
+{
+    QByteArray code("class Lala; end; class Klass; include Lala; end");
+    TopDUContext *top = parse(code, "problemOnInvalidMixin");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QList<QString> list;
+    list << "TypeError: wrong argument type (expected Module)";
+    testProblems(top, list);
 }
 
 //END: Include & Extend

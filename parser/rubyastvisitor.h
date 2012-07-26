@@ -63,9 +63,7 @@ public:
     void visitNode(RubyAst *node);
 
 protected:
-    /**
-     * And the following is a list of virtual methods that can be overriden.
-     */
+    /// And the following is a list of virtual methods that can be overriden.
 
     virtual void visitVariable(RubyAst *node);
     virtual void visitName(RubyAst *node);

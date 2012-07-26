@@ -137,6 +137,7 @@ private slots:
     void include1();
     void include2();
     void extend();
+    void problemOnInvalidMixin();
 };
 
 } // End of namespace Ruby

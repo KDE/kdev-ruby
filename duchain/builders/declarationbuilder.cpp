@@ -680,39 +680,21 @@ KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
     return m_editor->findRange(rb_name_node(node->tree));
 }
 
-ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
+ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
 {
-    /*
-     * NOTE: this is a convenient method that allows us to retrieve the declaration of
-     * a module from an include/extend expression. This is just because the implementation
-     * of the ExpressionVisitor::visitMethodCall is still a bit clunky. Therefore,
-     * this method will eventually be gone.
-     */
-    DUChainReadLocker rlock(DUChain::lock());
-    RubyAst *aux = new RubyAst(module->tree, module->context);
-    DUContext *lastCtx = module->context;
-    ModuleDeclaration *lastDecl = NULL;
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Declaration *d;
 
-    if (aux->tree->kind == token_method_call)
-        aux->tree = aux->tree->l;
-    for (Node *n = aux->tree; n != NULL; n = n->next) {
-        QualifiedIdentifier id = getIdentifier(aux);
-        QList<Declaration *> list = lastCtx->findDeclarations(id.last());
-        if (!list.empty()) {
-            ModuleDeclaration *d = dynamic_cast<ModuleDeclaration *>(list.last());
-            if (!d) {
-                rlock.unlock();
-                appendProblem(n, i18n("TypeError: wrong argument type (expected Module)"));
-                return NULL;
-            } else {
-                lastCtx = d->internalContext();
-                lastDecl = d;
-            }
-        }
-        aux->tree = n->next;
+    ev.visitNode(module);
+    d = ev.lastDeclaration().data();
+    if (d) {
+        ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(d);
+        ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
+        if (!cDecl && found)
+            return found;
+        appendProblem(module->tree, i18n("TypeError: wrong argument type (expected Module)"));
     }
-    delete aux;
-    return lastDecl;
+    return NULL;
 }
 
 void DeclarationBuilder::registerModuleMixin(ModuleDeclaration *decl, bool include)

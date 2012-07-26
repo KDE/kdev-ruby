@@ -78,7 +78,7 @@ private:
     void appendProblem(Node *node, const QString &msg);
     void appendProblem(const RangeInRevision &range, const QString &msg);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-    ModuleDeclaration * getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
+    ModuleDeclaration * getModuleDeclaration(RubyAst *module);
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     Declaration *m_lastMethodCall;
     bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?

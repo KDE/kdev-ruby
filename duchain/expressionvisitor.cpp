@@ -84,11 +84,6 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitVariable(RubyAst *node)
-{
-    debug() << "HERE !!! " << node->tree->name;
-}
-
 void ExpressionVisitor::visitName(RubyAst *node)
 {
     DUChainReadLocker lock(DUChain::lock());
