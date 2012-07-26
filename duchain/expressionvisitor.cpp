@@ -86,6 +86,9 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
 
 void ExpressionVisitor::visitName(RubyAst *node)
 {
+    if (!node->tree)
+        return;
+
     DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);

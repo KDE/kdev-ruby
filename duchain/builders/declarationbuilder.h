@@ -84,17 +84,16 @@ private:
 
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
 
-    inline KDevelop::Declaration::AccessPolicy currentAccessPolicy()
+    /// @returns the current access policy.
+    inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
     {
-        if (m_accessPolicyStack.isEmpty())
-            return KDevelop::Declaration::Public;
-        else
-            return m_accessPolicyStack.top();
+        return m_accessPolicy;
     }
 
+    /// Sets the current access policy to the given @p policy.
     inline void setAccessPolicy(KDevelop::Declaration::AccessPolicy policy)
     {
-        m_accessPolicyStack.top() = policy;
+        m_accessPolicy = policy;
     }
 
     /// Module mixins helper methods.
@@ -128,7 +127,7 @@ private:
 
 private:
     EditorIntegrator *m_editor;
-    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicyStack;
+    KDevelop::Declaration::AccessPolicy m_accessPolicy;
     QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
 };
 

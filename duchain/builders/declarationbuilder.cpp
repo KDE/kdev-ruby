@@ -49,12 +49,13 @@ namespace Ruby
 
 DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
 {
-    /* There's nothing to do here! */
+    m_accessPolicy = KDevelop::Declaration::Public;
 }
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
     : DeclarationBuilderBase(), m_editor(editor)
 {
+    m_accessPolicy = KDevelop::Declaration::Public;
     setEditor(editor);
 }
 
