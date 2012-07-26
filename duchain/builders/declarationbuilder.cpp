@@ -49,13 +49,12 @@ namespace Ruby
 
 DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
 {
-    m_accessPolicy = KDevelop::Declaration::Public;
+    /* There's nothing to do here! */
 }
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
     : DeclarationBuilderBase(), m_editor(editor)
 {
-    m_accessPolicy = KDevelop::Declaration::Public;
     setEditor(editor);
 }
 
@@ -114,7 +113,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->clearBaseClass();
     decl->clearModuleMixins();
     decl->setKind(KDevelop::Declaration::Type);
-    m_accessPolicyStack.push(Declaration::Public);
+    m_accessPolicy.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
     m_classDeclarations.push(DeclarationPointer(decl));
@@ -159,7 +158,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     closeDeclaration();
     m_classDeclarations.pop();
     insideClassModule = false;
-    m_accessPolicyStack.pop();
+    m_accessPolicy.pop();
 }
 
 void DeclarationBuilder::visitModuleStatement(RubyAst *node)
@@ -178,7 +177,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     decl->clearModuleMixins();
     decl->clearMixers();
     decl->setKind(KDevelop::Declaration::Type);
-    m_accessPolicyStack.push(Declaration::Public);
+    m_accessPolicy.push(Declaration::Public);
     lastClassModule = decl;
     insideClassModule = true;
 
@@ -195,7 +194,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     closeType();
     closeDeclaration();
     insideClassModule = false;
-    m_accessPolicyStack.pop();
+    m_accessPolicy.pop();
 }
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)

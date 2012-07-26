@@ -87,13 +87,15 @@ private:
     /// @returns the current access policy.
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
     {
-        return m_accessPolicy;
+        if (m_accessPolicy.isEmpty())
+            return KDevelop::Declaration::Public;
+        return m_accessPolicy.top();
     }
 
     /// Sets the current access policy to the given @p policy.
     inline void setAccessPolicy(KDevelop::Declaration::AccessPolicy policy)
     {
-        m_accessPolicy = policy;
+        m_accessPolicy.top() = policy;
     }
 
     /// Module mixins helper methods.
@@ -127,7 +129,7 @@ private:
 
 private:
     EditorIntegrator *m_editor;
-    KDevelop::Declaration::AccessPolicy m_accessPolicy;
+    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
     QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
 };
 

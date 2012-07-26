@@ -771,6 +771,24 @@ void TestDUChain::accessPolicyMethodInModule()
     QVERIFY(d4->accessPolicy() == Declaration::Public);
 }
 
+void TestDUChain::nestedAccessPolicy()
+{
+    QByteArray code("class Outer; class Inner; private; def innerFoo; end; ");
+    code += "end; def outerFoo; end; end";
+    TopDUContext *top = parse(code, "nestedAccessPolicy");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+    QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
+
+    // innerFoo
+    Declaration *d = decs.first()->internalContext()->localDeclarations().first();
+    QVERIFY(dynamic_cast<MethodDeclaration *>(d)->accessPolicy() == Declaration::Private);
+
+    // outerFoo
+    d = decs.last();
+    QVERIFY(dynamic_cast<MethodDeclaration *>(d)->accessPolicy() == Declaration::Public);
+}
+
 void TestDUChain::checkSubClassing()
 {
     QByteArray code("class Base; end; class Final < Base; end");
