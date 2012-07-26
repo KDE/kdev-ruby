@@ -78,7 +78,6 @@ private:
     void appendProblem(Node *node, const QString &msg);
     void appendProblem(const RangeInRevision &range, const QString &msg);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-    ModuleDeclaration * getModuleDeclaration(RubyAst *module);
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     Declaration *m_lastMethodCall;
     bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
@@ -98,11 +97,21 @@ private:
         m_accessPolicyStack.top() = policy;
     }
 
-    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicyStack;
+    /// Module mixins helper methods.
 
-    void registerModuleMixin(ModuleDeclaration *decl, bool include);
+    /**
+     * Register a module mixin.
+     * @param module The include/extend AST.
+     * @param include Set to true if this is an include, false otherwise.
+     */
+    void registerModuleMixin(RubyAst *module, bool include);
 
-    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass = true);
+    /**
+     * Get the module declaration that is being mixed-in.
+     * @param module The include/extend AST.
+     * @returns the ModuleDeclaration that is being mixed-in.
+     */
+    ModuleDeclaration * getModuleDeclaration(RubyAst *module);
 
     /**
      * @returns the declared methods inside the given declaration @p decl,
@@ -111,10 +120,15 @@ private:
      */
     QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
+    /// other stuff.
+    /// TODO: clean this.
+
+    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass = true);
     void visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args);
 
 private:
     EditorIntegrator *m_editor;
+    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicyStack;
     QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
 };
 

@@ -479,46 +479,18 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
 
 void DeclarationBuilder::visitInclude(RubyAst *node)
 {
-    RubyAst *module = new RubyAst(node->tree->r, node->context);
-    ModuleDeclaration *decl = getModuleDeclaration(module);
-
-    if (decl) {
-        registerModuleMixin(decl, true);
-        QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
-        foreach (MethodDeclaration *md, iMethods) {
-            if (!md->isClassMethod()) {
-                Declaration *raw = dynamic_cast<Declaration *>(md);
-                {
-                    DUChainWriteLocker wlock(DUChain::lock());
-                    // TODO: instead of aliasing, register the include
-                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
-                }
-            }
-        }
-    }
-    delete module;
+    Node *aux = node->tree;
+    node->tree = node->tree->r;
+    registerModuleMixin(node, true);
+    node->tree = aux;
 }
 
 void DeclarationBuilder::visitExtend(RubyAst *node)
 {
-    RubyAst *module = new RubyAst(node->tree->r, node->context);
-    ModuleDeclaration *decl = getModuleDeclaration(module);
-
-    if (decl) {
-        registerModuleMixin(decl, false);
-        QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
-        foreach (MethodDeclaration *md, eMethods) {
-            if (md->isClassMethod()) {
-                Declaration *raw = dynamic_cast<Declaration *>(md);
-                {
-                    DUChainWriteLocker wlock(DUChain::lock());
-                    // TODO: instead of aliasing, register the exclude
-                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
-                }
-            }
-        }
-    }
-    delete module;
+    Node *aux = node->tree;
+    node->tree = node->tree->r;
+    registerModuleMixin(node, false);
+    node->tree = aux;
 }
 
 void DeclarationBuilder::visitLambda(RubyAst *node)
@@ -680,6 +652,36 @@ KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
     return m_editor->findRange(rb_name_node(node->tree));
 }
 
+void DeclarationBuilder::registerModuleMixin(RubyAst *module, bool include)
+{
+    ModuleDeclaration *decl = getModuleDeclaration(module);
+    if (decl) {
+        // Register the Module mixin
+        if (lastClassModule) {
+            ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
+            if (current) {
+                DUChainWriteLocker lock(DUChain::lock());
+                ModuleMixin mixin;
+                mixin.included = include;
+                mixin.module = decl->indexedType();
+                current->addModuleMixin(mixin);
+                mixin.module = current->indexedType();
+                decl->addMixer(mixin);
+            }
+        }
+
+        // Add all the available methods from the mixed in module
+        QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
+        foreach (MethodDeclaration *md, eMethods) {
+            if (md->isClassMethod() ^ include) {
+                DUChainWriteLocker wlock(DUChain::lock());
+                Declaration *raw = dynamic_cast<Declaration *>(md);
+                aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
+            }
+        }
+    }
+}
+
 ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
 {
     ExpressionVisitor ev(currentContext(), m_editor);
@@ -697,22 +699,21 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
     return NULL;
 }
 
-void DeclarationBuilder::registerModuleMixin(ModuleDeclaration *decl, bool include)
+QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
 {
-    if (lastClassModule) {
-        ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
-        if (current) {
-            DUChainWriteLocker lock(DUChain::lock());
-            ModuleMixin mixin;
-            mixin.included = include;
-            mixin.module = decl->indexedType();
-            current->addModuleMixin(mixin);
-            mixin.module = current->indexedType();
-            decl->addMixer(mixin);
-        }
-    } else {
-        // TODO: register to the Kernel module
+    DUChainReadLocker rlock(DUChain::lock());
+    QList<MethodDeclaration *> res;
+    DUContext *internal = decl->internalContext();
+    if (!internal)
+        return res;
+
+    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
+    for (int i = 0; i < list.size(); i++) {
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
+        if (md)
+            res << md;
     }
+    return res;
 }
 
 bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass)
@@ -731,23 +732,6 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
         }
     }
     return true;
-}
-
-QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
-{
-    DUChainReadLocker rlock(DUChain::lock());
-    QList<MethodDeclaration *> res;
-    DUContext *internal = decl->internalContext();
-    if (!internal)
-        return res;
-
-    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
-    for (int i = 0; i < list.size(); i++) {
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
-        if (md)
-            res << md;
-    }
-    return res;
 }
 
 void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args)
