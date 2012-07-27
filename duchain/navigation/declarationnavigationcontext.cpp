@@ -209,6 +209,7 @@ void DeclarationNavigationContext::addMixers(ModuleDeclaration *decl)
             if (i != nMixers - 1)
                 modifyHtml() += ", ";
         }
+        modifyHtml() += "<br>";
     }
 }
 
