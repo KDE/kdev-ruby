@@ -18,10 +18,14 @@
  */
 
 
+// KDE
 #include <KLocale>
+
+// Ruby
 #include <duchain/navigation/includenavigationcontext.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/variabledeclaration.h>
 
 
 namespace Ruby
@@ -37,9 +41,15 @@ IncludeNavigationContext::IncludeNavigationContext(const KDevelop::IncludeItem &
 void IncludeNavigationContext::getFileInfo(KDevelop::TopDUContext* duchain)
 {
     modifyHtml() += QString("%1: %2")
-                      .arg(labelHighlight(i18nc("Count of files this header was included into", "Included by")))
+                      .arg(labelHighlight(i18nc("Count of files this header was included into", "Required by")))
                       .arg(duchain->importers().count());
     modifyHtml() += "<br />";
+}
+
+bool IncludeNavigationContext::filterDeclaration(KDevelop::Declaration *decl)
+{
+    VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decl);
+    return !vd;
 }
 
 QString IncludeNavigationContext::declarationKind(KDevelop::DeclarationPointer decl)

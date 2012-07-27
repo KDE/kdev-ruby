@@ -52,16 +52,20 @@ protected:
     virtual void getFileInfo(KDevelop::TopDUContext *duchain);
 
     /**
+     * Re-implemented from KDevelop::AbstractIncludeNavigationContext to
+     * prevent variable declarations to appear on the widget.
+     */
+    virtual bool filterDeclaration(KDevelop::Declaration *decl);
+
+    /**
      * Re-implemented from KDevelop::AbstractNavigationContext so we can also
      * show to the user if this declaration has some special meaning for
      * the Ruby interpreter.
-     *
-     * @param decl The involved declaration.
      */
     virtual QString declarationKind(KDevelop::DeclarationPointer decl);
 };
 
-}
+} // End of namespace Ruby
 
 
 #endif /* INCLUDENAVIGATIONCONTEXT_H */
