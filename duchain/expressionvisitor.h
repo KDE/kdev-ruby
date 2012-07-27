@@ -138,11 +138,22 @@ private:
     void visitMethodCallMembers(RubyAst *node);
 
 private:
+    /// The DUContext that the visitor will use to find declarations.
     KDevelop::DUContext *m_ctx;
-    KDevelop::DUContext *m_lastCtx;
+
+    /// The EditorIntegrator used to mess with the document.
     EditorIntegrator *m_editor;
+
+    /// The last found DUContext. Used by the method call visitor.
+    KDevelop::DUContext *m_lastCtx;
+
+    /// The last AbstractType that has been found.
     AbstractType::Ptr m_lastType;
+
+    /// The last DeclarationPointer that has been found.
     DeclarationPointer m_lastDeclaration;
+
+    /// Tells us whether the last found declaration was an alias or not.
     bool m_alias;
 };
 

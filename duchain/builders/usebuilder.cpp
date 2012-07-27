@@ -27,9 +27,9 @@
 #include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
+#include <duchain/expressionvisitor.h>
 #include <duchain/builders/usebuilder.h>
 #include <duchain/declarations/classdeclaration.h>
-#include <duchain/expressionvisitor.h>
 
 
 namespace Ruby
@@ -57,7 +57,6 @@ void UseBuilder::visitName(RubyAst *node)
 
 void UseBuilder::visitMethodCall(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
     Node *n = node->tree;
 
     /* Visit the method call members */
