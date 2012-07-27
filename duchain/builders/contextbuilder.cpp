@@ -92,8 +92,8 @@ DUContext * ContextBuilder::newContext(const RangeInRevision &range)
     return new RubyNormalDUContext(range, currentContext());
 }
 
-KDevelop::TopDUContext* ContextBuilder::newTopContext(const RangeInRevision &range,
-                                                      ParsingEnvironmentFile *file)
+KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &range,
+                                                       ParsingEnvironmentFile *file)
 {
     KDevelop::IndexedString doc(m_editor->url());
     if (!file) {

@@ -74,9 +74,9 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
             decls = context->topContext()->findDeclarations(id, range.end);
         else
             decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
-        if (!decls.length()) {
+        if (decls.isEmpty()) {
             decls = context->findLocalDeclarations(id.last(), range.end);
-            if (!decls.length())
+            if (decls.isEmpty())
                 decls = context->findDeclarations(id.last(), range.end);
         }
     }
