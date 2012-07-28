@@ -140,7 +140,12 @@ void ExpressionVisitor::visitEncoding(RubyAst *)
 
 void ExpressionVisitor::visitSelf(RubyAst *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Object", m_ctx);
+    AbstractType::Ptr obj;
+    if (m_ctx->owner()) {
+        obj = m_ctx->owner()->abstractType();
+        m_lastDeclaration = DeclarationPointer(m_ctx->owner());
+    } else
+        obj = getBuiltinsType("Object", m_ctx);
     encounter(obj);
 }
 

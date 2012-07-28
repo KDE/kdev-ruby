@@ -125,10 +125,10 @@ void TestDUChain::stringAndRegexp()
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
 }
 
-void TestDUChain::booleanAndNilAndSelf()
+void TestDUChain::booleanAndNil()
 {
-    QByteArray code("a = true; b = false; c = nil; d = self");
-    TopDUContext *top = parse(code, "booleanAndNilAndSelf");
+    QByteArray code("a = true; b = false; c = nil");
+    TopDUContext *top = parse(code, "booleanAndNil");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -148,11 +148,6 @@ void TestDUChain::booleanAndNilAndSelf()
     Declaration *dec3 = top->localDeclarations().at(2);
     QVERIFY(dec3->type<StructureType>());
     QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
-
-    /* d = self */
-    Declaration *dec4 = top->localDeclarations().at(3);
-    QVERIFY(dec4->type<StructureType>());
-    QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 void TestDUChain::lineFileEncoding()
@@ -202,6 +197,30 @@ void TestDUChain::lambda()
     Declaration *dec = top->localDeclarations().at(0);
     QVERIFY(dec->type<StructureType>());
     QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+}
+
+void TestDUChain::self()
+{
+    QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self");
+    TopDUContext *top = parse(code, "self");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    Declaration *obj = d->internalContext()->localDeclarations().first();
+    QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::a"));
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
+
+    // b
+    obj = d->internalContext()->localDeclarations().last()->internalContext()->localDeclarations().first();
+    QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass::b"));
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
+
+    // c
+    d = top->localDeclarations().last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 //END: Builtin classes

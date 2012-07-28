@@ -66,10 +66,11 @@ private slots:
     void numeric();
     void range();
     void stringAndRegexp();
-    void booleanAndNilAndSelf();
+    void booleanAndNil();
     void lineFileEncoding();
     void symbol();
     void lambda();
+    void self();
 
     // Simple Statements
     void alias();
