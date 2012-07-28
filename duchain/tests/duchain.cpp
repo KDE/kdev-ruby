@@ -226,7 +226,7 @@ void TestDUChain::self()
 
 //END: Builtin classes
 
-//BEGIN: Simple Statements
+//BEGIN: Statements
 
 void TestDUChain::alias()
 {
@@ -327,10 +327,6 @@ void TestDUChain::yield2()
     testUnsureTypes(ut, list);
 }
 
-//END: Simple Statements
-
-//BEGIN: Compound Statements
-
 void TestDUChain::ifStatement()
 {
     QByteArray code("a = if d; 1; elsif b; nil; else; 'asd'; end");
@@ -359,7 +355,7 @@ void TestDUChain::caseStatement()
     testUnsureTypes(ut, list);
 }
 
-//END: Compound Statements
+//END: Statements
 
 //BEGIN: Assignments
 

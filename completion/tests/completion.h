@@ -28,6 +28,10 @@
 namespace Ruby
 {
 
+/**
+ * @class TestCompletion
+ * The Code completion test suite.
+ */
 class TestCompletion : public DUChainTestBase
 {
     Q_OBJECT

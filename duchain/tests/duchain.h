@@ -33,7 +33,10 @@ namespace KDevelop {
 namespace Ruby
 {
 
-/// The DUChain test suite.
+/**
+ * @class TestDUChain
+ * The DUChain test suite.
+ */
 class TestDUChain : public DUChainTestBase
 {
     Q_OBJECT
@@ -72,14 +75,12 @@ private slots:
     void lambda();
     void self();
 
-    // Simple Statements
+    // Statements
     void alias();
     void aliasGlobal1();
     void aliasGlobal2();
     void yield1();
     void yield2();
-
-    // Compound Statements
     void ifStatement();
     void caseStatement();
 

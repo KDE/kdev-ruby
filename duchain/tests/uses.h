@@ -29,7 +29,10 @@
 namespace Ruby
 {
 
-/// Test the UseBuilder class from the DUChain.
+/**
+ * @class TestUseBuilder
+ * Test the UseBuilder class from the DUChain.
+ */
 class TestUseBuilder : public DUChainTestBase
 {
     Q_OBJECT

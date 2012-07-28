@@ -55,7 +55,10 @@ struct DUChainReleaser {
 };
 
 
-/// The base class for all DUChain Test classes.
+/**
+ * @class DUChainTestBase
+ * The base class for all DUChain Test classes.
+ */
 class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
 {
     Q_OBJECT

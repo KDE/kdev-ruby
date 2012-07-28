@@ -207,6 +207,10 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     bool instance = true;
     Node *aux = node->tree;
 
+    /*
+     * Check if this is a singleton method. If it is so, we have to determine
+     * what's the context to be injected in order to get everything straight.
+     */
     node->tree = aux->cond;
     if (valid_children(node->tree)) {
         node->tree = node->tree->l;
