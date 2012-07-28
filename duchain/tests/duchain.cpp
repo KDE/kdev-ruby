@@ -31,6 +31,7 @@
 
 // Ruby
 #include <duchain/tests/duchain.h>
+#include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
@@ -132,7 +133,7 @@ void TestDUChain::booleanAndNil()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(top->localDeclarations().size() == 4);
+    QVERIFY(top->localDeclarations().size() == 3);
 
     /* a = true */
     Declaration *dec1 = top->localDeclarations().at(0);
@@ -744,6 +745,34 @@ void TestDUChain::instanceClassMethodDeclaration()
 
     MethodDeclaration *d4 = dynamic_cast<MethodDeclaration *>(decs.at(3));
     QVERIFY(d4->isClassMethod());
+}
+
+void TestDUChain::singletonMethods()
+{
+    QByteArray code("def Hash.foo; end; a = 0; def a.lala; end");
+    TopDUContext *top = parse(code, "singletonMethods");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    AbstractType::Ptr type = getBuiltinsType("Hash", top);
+    Declaration *hash = StructureType::Ptr::dynamicCast(type)->declaration(top);
+    DUContext *ctx = hash->internalContext();
+
+    // Hash.foo
+    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
+    QVERIFY(md);
+    QVERIFY(md->isClassMethod());
+
+    type = getBuiltinsType("Fixnum", top);
+    Declaration *fixnum = StructureType::Ptr::dynamicCast(type)->declaration(top);
+    ctx = fixnum->internalContext();
+
+    // a.lala
+    d = ctx->findDeclarations(QualifiedIdentifier("lala")).first();
+    md = dynamic_cast<MethodDeclaration *>(d);
+    QVERIFY(md);
+    QVERIFY(!md->isClassMethod());
 }
 
 void TestDUChain::accessPolicyMethodInClass()

@@ -256,7 +256,7 @@ void free_errors(struct error_t * errors);
 #define is_cvar(n) (n->flags == 5)
 #define is_constant (n->flags == 6)
 #define is_float(n) (n->flags == 1)
-#define is_class_method(n) (n->cond->r != NULL)
+#define valid_children(n) (n->r && n->l)
 #define has_star(n) (n->flags == 1 || n->flags == 2)
 #define is_just_a_star(n) (n->flags == 2)
 

@@ -203,13 +203,39 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray &comment = getComment(node);
+    bool injectedContext = false;
+    bool instance = true;
     Node *aux = node->tree;
+
+    node->tree = aux->cond;
+    if (valid_children(node->tree)) {
+        node->tree = node->tree->l;
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        if (ev.lastType()) {
+            Declaration *d = ev.lastDeclaration().data();
+            if (d) {
+                if (!d->internalContext()) {
+                    d = StructureType::Ptr::dynamicCast(ev.lastType())->declaration(topContext());
+                    instance = true;
+                } else
+                    instance = false;
+                if (d) {
+                    injectedContext = true;
+                    injectContext(d->internalContext());
+                    node->tree = aux->cond->r;
+                    id = getIdentifier(node);
+                    range = editorFindRange(node, node);
+                }
+            }
+        }
+    }
 
     MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
-    decl->setClassMethod(is_class_method(node->tree));
+    decl->setClassMethod(!instance);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     if (currentContext()->type() == DUContext::Class)
         decl->setAccessPolicy(currentAccessPolicy());
@@ -245,6 +271,9 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
         type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
     decl->setType(type);
     decl->setInSymbolTable(true);
+
+    if (injectedContext)
+        closeInjectedContext();
 }
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
