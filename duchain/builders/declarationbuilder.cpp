@@ -382,9 +382,12 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
             return;
         }
         TypePtr<FunctionType> t = currentType<FunctionType>();
+        if (!t) // the case of: a = -> { return 1 }
+            return;
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
-        t->setReturnType(mergeTypes(ev.lastType(), t->returnType()));
+        AbstractType::Ptr rType = t->returnType();
+        t->setReturnType(mergeTypes(ev.lastType(), rType));
     }
 }
 
