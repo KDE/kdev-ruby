@@ -54,18 +54,6 @@ private:
      */
     void compareUses(KDevelop::Declaration *dec, QList<KDevelop::RangeInRevision> ranges);
 
-    /**
-     * Get a builtin method declaration.
-     *
-     * @param name The name of the method in a format such as "String#bytesize"
-     * @param top The TopDUContext that we've got from parsing.
-     * @param ctx Optional DUContext. Set this when you don't want a child
-     * context from the @p top to be used.
-     * @returns the Declaration of the required builtin method.
-     */
-    KDevelop::Declaration * getBuiltinDeclaration(const QString &name, KDevelop::TopDUContext *top,
-                                                  KDevelop::DUContext *ctx = NULL);
-
 private slots:
     // Basic stuff
     void stringInterpolation();

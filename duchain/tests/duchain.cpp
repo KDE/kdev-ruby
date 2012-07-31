@@ -750,22 +750,14 @@ void TestDUChain::singletonMethods()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    AbstractType::Ptr type = getBuiltinsType("Hash", top);
-    Declaration *hash = StructureType::Ptr::dynamicCast(type)->declaration(top);
-    DUContext *ctx = hash->internalContext();
-
     // Hash.foo
-    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
+    Declaration *d = getBuiltinDeclaration("Hash#foo", top, top);
     MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
     QVERIFY(md);
     QVERIFY(md->isClassMethod());
 
-    type = getBuiltinsType("Fixnum", top);
-    Declaration *fixnum = StructureType::Ptr::dynamicCast(type)->declaration(top);
-    ctx = fixnum->internalContext();
-
     // a.lala
-    d = ctx->findDeclarations(QualifiedIdentifier("lala")).first();
+    d = getBuiltinDeclaration("Fixnum#lala", top, top);
     md = dynamic_cast<MethodDeclaration *>(d);
     QVERIFY(md);
     QVERIFY(!md->isClassMethod());
@@ -778,15 +770,13 @@ void TestDUChain::singletonClass1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    StructureType::Ptr type = StructureType::Ptr::dynamicCast(getBuiltinsType("Fixnum", top));
-    DUContext *ctx = type->declaration(top)->internalContext();
-    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
+    Declaration *d = getBuiltinDeclaration("Fixnum#foo", top, top);
     MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
     QVERIFY(md);
     QVERIFY(!md->isClassMethod());
 
-    type = StructureType::Ptr::dynamicCast(md->type<FunctionType>()->returnType());
-    QCOMPARE(type->qualifiedIdentifier(), QualifiedIdentifier("String"));
+    AbstractType::Ptr type = md->type<FunctionType>()->returnType();
+    QCOMPARE(type.cast<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 
 void TestDUChain::singletonClass2()

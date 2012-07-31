@@ -63,19 +63,6 @@ void TestUseBuilder::compareUses(Declaration *dec, QList<RangeInRevision> ranges
         QCOMPARE(dec->uses().values().first().at(i), ranges.at(i));
 }
 
-Declaration * TestUseBuilder::getBuiltinDeclaration(const QString &name, TopDUContext *top, DUContext *ctx)
-{
-    QStringList list = name.split("#");
-    DUContext *context = (ctx) ? ctx : top->childContexts().first();
-    AbstractType::Ptr type = getBuiltinsType(list.first(), context);
-    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
-    Declaration *d = sType->declaration(top);
-
-    QualifiedIdentifier id(list.first() + "::" + list.last());
-    QList<Declaration *> decls = d->internalContext()->findDeclarations(id);
-    return (decls.isEmpty()) ? NULL : decls.last();
-}
-
 //BEGIN: Basic stuff
 
 void TestUseBuilder::stringInterpolation()
