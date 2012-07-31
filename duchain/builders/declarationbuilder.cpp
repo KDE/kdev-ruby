@@ -257,7 +257,8 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
             Declaration *d = ev.lastDeclaration().data();
             if (d) {
                 if (!d->internalContext()) {
-                    d = StructureType::Ptr::dynamicCast(ev.lastType())->declaration(topContext());
+                    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                    d = (sType) ? sType->declaration(topContext()) : NULL;
                     instance = true;
                 } else
                     instance = false;
