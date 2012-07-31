@@ -54,6 +54,7 @@ protected:
     virtual void closeDeclaration();
     virtual void startVisiting(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
+    virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitParameter(RubyAst *node);
@@ -131,6 +132,8 @@ private:
     EditorIntegrator *m_editor;
     QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
     QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
+    bool m_injected;
+    bool m_instance;
 };
 
 } // End of namespace Ruby

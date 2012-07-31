@@ -771,6 +771,41 @@ void TestDUChain::singletonMethods()
     QVERIFY(!md->isClassMethod());
 }
 
+void TestDUChain::singletonClass1()
+{
+    QByteArray code("a = 0; class << a; def foo; 'string'; end; end");
+    TopDUContext *top = parse(code, "singletonClass1");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    StructureType::Ptr type = StructureType::Ptr::dynamicCast(getBuiltinsType("Fixnum", top));
+    DUContext *ctx = type->declaration(top)->internalContext();
+    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
+    QVERIFY(md);
+    QVERIFY(!md->isClassMethod());
+
+    type = StructureType::Ptr::dynamicCast(md->type<FunctionType>()->returnType());
+    QCOMPARE(type->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
+void TestDUChain::singletonClass2()
+{
+    QByteArray code("class Klass; class << self; def foo; 'string'; end; end; end");
+    TopDUContext *top = parse(code, "singletonClass2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    DUContext *ctx = top->localDeclarations().first()->internalContext();
+    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
+    QVERIFY(md);
+    QVERIFY(md->isClassMethod());
+
+    StructureType::Ptr type = StructureType::Ptr::dynamicCast(md->type<FunctionType>()->returnType());
+    QCOMPARE(type->qualifiedIdentifier(), QualifiedIdentifier("String"));
+}
+
 void TestDUChain::accessPolicyMethodInClass()
 {
     QByteArray code("class Klass; def foo; end; protected; def asd; end; ");

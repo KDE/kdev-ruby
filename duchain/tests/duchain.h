@@ -111,6 +111,8 @@ private slots:
     void checkVariableKind();
     void instanceClassMethodDeclaration();
     void singletonMethods();
+    void singletonClass1();
+    void singletonClass2();
     void accessPolicyMethodInClass();
     void accessPolicyMethodInModule();
     void nestedAccessPolicy();

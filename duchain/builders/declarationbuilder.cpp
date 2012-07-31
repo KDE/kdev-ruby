@@ -66,6 +66,7 @@ DeclarationBuilder::~DeclarationBuilder()
 void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();
+    m_injected = false;
     DeclarationBuilderBase::startVisiting(node);
 }
 
@@ -161,9 +162,45 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     m_accessPolicy.pop();
 }
 
+void DeclarationBuilder::visitSingletonClass(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Node *aux = node->tree;
+
+    node->tree = node->tree->r;
+    ev.visitNode(node);
+    if (ev.lastType()) {
+        Declaration *d = ev.lastDeclaration().data();
+        if (d) {
+            if (!d->internalContext()) {
+                d = StructureType::Ptr::dynamicCast(ev.lastType())->declaration(topContext());
+                m_instance = true;
+            } else
+                m_instance = false;
+            if (d) {
+                lastClassModule = d;
+                insideClassModule = true;
+                m_classDeclarations.push(DeclarationPointer(d));
+                m_injected = true;
+                injectContext(d->internalContext());
+            }
+        }
+    }
+
+    node->tree = aux;
+    RubyAstVisitor::visitSingletonClass(node);
+    if (m_injected) {
+        closeInjectedContext();
+        m_injected = false;
+        m_classDeclarations.pop();
+        insideClassModule = false;
+    }
+}
+
 void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray &comment = getComment(node);
@@ -239,7 +276,10 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
-    decl->setClassMethod(!instance);
+    if (m_injected)
+        decl->setClassMethod(!m_instance);
+    else
+        decl->setClassMethod(!instance);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     if (currentContext()->type() == DUContext::Class)
         decl->setAccessPolicy(currentAccessPolicy());
