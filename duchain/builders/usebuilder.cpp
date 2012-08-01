@@ -46,6 +46,7 @@ void UseBuilder::visitName(RubyAst *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
+    debug() << currentContext()->range(); // TODO: clean this
     Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (decl && decl->range() == range)

@@ -573,15 +573,17 @@ void DeclarationBuilder::visitExtend(RubyAst *node)
 
 void DeclarationBuilder::visitLambda(RubyAst *node)
 {
+    // TODO
     Ruby::RubyAstVisitor::visitLambda(node);
 }
 
 void DeclarationBuilder::visitForStatement(RubyAst *node)
 {
-    RubyAstVisitor::visitForStatement(node);
-    RubyAst *aux = new RubyAst(node->tree->l, node->context);
+    Node *aux = node->tree;
+    node->tree = node->tree->cond;
     ExpressionVisitor ev(currentContext(), m_editor);
-    ev.visitNode(aux);
+
+    ev.visitNode(node);
     AbstractType::Ptr type = ev.lastType();
     if (type) {
         ClassType::Ptr ctype = type.cast<ClassType>();
@@ -592,11 +594,13 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
     } else
         type = AbstractType::Ptr(new ObjectType);
 
-    for (Node *n = node->tree->r; n != NULL; n = n->next) {
-        aux->tree = n;
-        QualifiedIdentifier id = getIdentifier(aux);
-        declareVariable(id, type, aux);
+    node->tree = aux->r;
+    for (Node *n = node->tree; n != NULL; n = n->next) {
+        node->tree = n;
+        QualifiedIdentifier id = getIdentifier(node);
+        declareVariable(id, type, node);
     }
+    node->tree = aux;
 }
 
 void DeclarationBuilder::visitAccessSpecifier(short int policy)

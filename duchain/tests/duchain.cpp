@@ -355,6 +355,21 @@ void TestDUChain::caseStatement()
     testUnsureTypes(ut, list);
 }
 
+void TestDUChain::forStatement()
+{
+    QByteArray code("for i in [1, 'str'] do; end");
+    TopDUContext *top = parse(code, "forStatement");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QCOMPARE(top->localDeclarations().size(), 1);
+    Declaration *d = top->localDeclarations().first();
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(d->abstractType());
+    QList<QString> list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+}
+
 //END: Statements
 
 //BEGIN: Assignments

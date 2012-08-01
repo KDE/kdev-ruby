@@ -83,6 +83,7 @@ private slots:
     void yield2();
     void ifStatement();
     void caseStatement();
+    void forStatement();
 
     // Assignments
     void simpleUnsure();
