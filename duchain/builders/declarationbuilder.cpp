@@ -380,7 +380,7 @@ void DeclarationBuilder::visitReturnStatement(RubyAst *node)
     if (node->tree->l != NULL) {
         node->tree = node->tree->l;
         if (!hasCurrentType()) {
-            appendProblem(node->tree, "Return statement not within function declaration");
+            appendProblem(node->tree, i18n("Return statement not within function declaration"));
             return;
         }
         TypePtr<FunctionType> t = currentType<FunctionType>();
@@ -523,7 +523,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         QualifiedIdentifier aid = getIdentifier(node);
         aliasMethodDeclaration(aid, arange, decl);
     } else
-        appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
+        appendProblem(node->tree, i18n("undefined method `%1'", id.toString()));
 }
 
 void DeclarationBuilder::visitMethodCall(RubyAst *node)
