@@ -266,6 +266,23 @@ void TestUseBuilder::fromClassAndAbove()
     compareUses(d, RangeInRevision(0, 13, 0, 24));
 }
 
+void TestUseBuilder::super()
+{
+    //               0         1         2         3         4         5
+    //               0123456789012345678901234567890123456789012345678901234
+    QByteArray code("class Base; def foo; 'string'; end; end; class Klass < ");
+    //            6         7         8         9
+    //       5678901234567890123456789012345678901234
+    code += "Base; def foo; super.bytesize; end; end";
+    TopDUContext *top = parse(code, "super");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = getBuiltinDeclaration("String#bytesize", top);
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 76, 0, 84));
+}
+
 //END: Method calls
 
 } // End of namespace Ruby

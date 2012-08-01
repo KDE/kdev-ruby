@@ -288,6 +288,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     openType(type);
     m_lastMethod = id;
     decl->setInSymbolTable(false);
+    decl->setType(type);
     decl->clearDefaultParameters();
     node->tree = aux->r;
     visitMethodArguments(node);
@@ -305,7 +306,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     if (node->tree && node->tree->l) {
         node->tree = get_last_expr(node->tree->l);
         if (node->tree->kind != token_return) {
-            ExpressionVisitor ev(currentContext(), m_editor);
+            ExpressionVisitor ev(node->context, m_editor);
             ev.visitNode(node);
             if (ev.lastType())
                 type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));

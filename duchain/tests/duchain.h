@@ -131,6 +131,7 @@ private slots:
     void chainedCalls1();
     void chainedCalls2();
     void chainedCalls3();
+    void super();
     void guessArgumentsType1();
     void guessArgumentsType2();
     void guessArgumentsType3();

@@ -102,6 +102,7 @@ protected:
     virtual void visitHash(RubyAst *node);
     virtual void visitArrayValue(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
+    virtual void visitSuper(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
     virtual void visitWhileStatement(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);

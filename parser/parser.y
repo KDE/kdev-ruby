@@ -1178,7 +1178,7 @@ method_call: operation paren_args
   {
     $$ = alloc_node(token_method_call, $1, $3);
   }
-  | super paren_args { $$ = update_list($1, $2); }
+  | super paren_args { $$ = $1; $$->r = $2; }
   | super
   | primary '[' opt_call_args rbracket
   {
@@ -1498,7 +1498,7 @@ operation3: base
 label: tKEY { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
 ;
 
-super: tSUPER { $$ = ALLOC_N(token_method_call, NULL, NULL); }
+super: tSUPER { $$ = ALLOC_N(token_super, NULL, NULL); }
 ;
 
 dot_or_colon: '.' | tCOLON2

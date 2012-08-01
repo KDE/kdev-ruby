@@ -93,7 +93,7 @@ enum node_t {
   token_module,
   token_class,
   token_singleton_class,
-  token_superclass,     /* Not used anymore */
+  token_super,
   token_string,         /* 60 */
   token_regexp,
   token_key,
@@ -257,6 +257,7 @@ void free_errors(struct error_t * errors);
 #define is_constant (n->flags == 6)
 #define is_float(n) (n->flags == 1)
 #define valid_children(n) (n->r && n->l)
+#define is_super(n) (!n->l)
 #define has_star(n) (n->flags == 1 || n->flags == 2)
 #define is_just_a_star(n) (n->flags == 2)
 

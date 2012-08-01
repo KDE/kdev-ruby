@@ -97,6 +97,7 @@ protected:
     virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
+    virtual void visitSuper(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
     virtual void visitBlockVariables(RubyAst *node);

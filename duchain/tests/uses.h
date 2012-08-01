@@ -68,6 +68,7 @@ private slots:
     void builtinUses();
     void chained();
     void fromClassAndAbove();
+    void super();
 };
 
 }

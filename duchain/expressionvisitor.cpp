@@ -226,6 +226,11 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
     node->tree = n;
 }
 
+void ExpressionVisitor::visitSuper(RubyAst *node)
+{
+    // TODO
+}
+
 void ExpressionVisitor::visitLambda(RubyAst *node)
 {
     RubyAstVisitor::visitLambda(node);

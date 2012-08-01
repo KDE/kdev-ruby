@@ -469,6 +469,21 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
     node->tree = n;
 }
 
+void RubyAstVisitor::visitSuper(RubyAst *node)
+{
+    /*
+     * r -> the arguments passed to the super call.
+     */
+
+    Node *n = node->tree;
+    node->tree = n->r;
+    for (Node *aux = n->r; aux != NULL; aux = aux->next) {
+        visitNode(node);
+        node->tree = aux->next;
+    }
+    node->tree = n;
+}
+
 void RubyAstVisitor::visitLambda(RubyAst *node)
 {
     /*
@@ -610,6 +625,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_singleton_class: visitSingletonClass(node); break;
         case token_module: visitModuleStatement(node); break;
         case token_function: visitMethodStatement(node); break;
+        case token_super: visitSuper(node); break;
         case token_method_call: checkMethodCall(node); break;
         case token_assign:
         case token_op_assign: visitAssignmentStatement(node); break;
@@ -729,8 +745,8 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
             visitRequireRelative(mc);
         else
             visitMethodCall(mc);
-        } else
-            visitLambda(mc);
+    } else
+        visitLambda(mc);
 }
 
 } // End of namespace Ruby
