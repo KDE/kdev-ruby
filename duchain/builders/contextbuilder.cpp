@@ -185,17 +185,8 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock(DUChain::lock());
-
-    /* Check the parameters */
-    Node *aux = node->tree;
-    node->tree = node->tree->r;
-    visitMethodArguments(node);
-
-    /* And now take care of the method body */
-    node->tree = aux->l;
-    visitMethodBody(node);
-    node->tree = aux;
+    // TODO: clean this ?
+    RubyAstVisitor::visitMethodStatement(node);
 }
 
 void ContextBuilder::visitMethodArguments(RubyAst *node)
