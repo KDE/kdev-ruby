@@ -56,22 +56,22 @@ TopDUContext * TestDUChain::parse(const QByteArray &code, const QString &id)
     return DUChainTestBase::parse(code, name);
 }
 
-void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, QList<QString> list)
+void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, const QStringList &list)
 {
     for (uint i = 0; i < type->typesSize(); i++) {
         QualifiedIdentifier qi = type->types()[i].type<StructureType>()->qualifiedIdentifier();
-        QCOMPARE(qi, QualifiedIdentifier(list.at(i)));
+        QCOMPARE(qi, QualifiedIdentifier(list[i]));
     }
 }
 
-void TestDUChain::testProblems(TopDUContext *ctx, const QList<QString> &list)
+void TestDUChain::testProblems(TopDUContext *ctx, const QStringList &list)
 {
     int i = 0;
     QList<ProblemPointer> problems = ctx->problems();
     QVERIFY(problems.size() == list.size());
     foreach (ProblemPointer pp, problems) {
         Problem *p = pp.data();
-        QCOMPARE(p->description(), list.at(i));
+        QCOMPARE(p->description(), list[i]);
         i++;
     }
 }
@@ -317,7 +317,7 @@ void TestDUChain::yield2()
     Declaration *dec = top->localDeclarations().at(1);
     QCOMPARE(dec->qualifiedIdentifier(), QualifiedIdentifier("a"));
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(ut, list);
 
@@ -336,7 +336,7 @@ void TestDUChain::ifStatement()
 
     Declaration *dec = top->localDeclarations().at(0);
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "NilClass" << "String" << "Fixnum";
     testUnsureTypes(ut, list);
 }
@@ -350,7 +350,7 @@ void TestDUChain::caseStatement()
 
     Declaration *dec = top->localDeclarations().at(0);
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "NilClass" << "Fixnum" << "String";
     testUnsureTypes(ut, list);
 }
@@ -365,7 +365,7 @@ void TestDUChain::forStatement()
     QCOMPARE(top->localDeclarations().size(), 1);
     Declaration *d = top->localDeclarations().first();
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(d->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(ut, list);
 }
@@ -384,7 +384,7 @@ void TestDUChain::simpleUnsure()
     QVERIFY(top->localDeclarations().size() == 1);
     Declaration *d = top->localDeclarations().first();
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 }
@@ -513,7 +513,7 @@ void TestDUChain::multipleAssignmentNamedStar()
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
     QVERIFY(dec2->type<ClassType>()->contentType());
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(dec2->type<ClassType>()->contentType().abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "NilClass" << "Fixnum";
     testUnsureTypes(unsure, list);
 
@@ -668,7 +668,7 @@ void TestDUChain::assignFromArrayItem2()
 
     // b
     d = top->localDeclarations().at(1);
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(d->type<UnsureType>(), list);
 }
@@ -688,7 +688,7 @@ void TestDUChain::assignFromHashItem()
 
     // b
     d = top->localDeclarations().at(1);
-    QList<QString> list;
+    QStringList list;
     list << "String" << "Fixnum";
     testUnsureTypes(d->type<UnsureType>(), list);
 }
@@ -702,7 +702,7 @@ void TestDUChain::assignToArrayItem()
 
     Declaration *d = top->localDeclarations().at(0);
     UnsureType::Ptr cont = d->type<ClassType>()->contentType().type<UnsureType>();
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "NilClass" << "String";
     testUnsureTypes(cont, list);
 }
@@ -925,7 +925,7 @@ void TestDUChain::instanceVariable()
 
     Declaration *decl = ds.first();
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(decl->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(ut, list);
 }
@@ -973,7 +973,7 @@ void TestDUChain::multipleReturns()
     Declaration *decl = top->localDeclarations().first();
     FunctionType::Ptr ft = decl->type<FunctionType>();
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
-    QList<QString> list;
+    QStringList list;
     list << "String" << "NilClass";
     testUnsureTypes(ut, list);
 }
@@ -1001,7 +1001,7 @@ void TestDUChain::mixedExplicitAndImplicitReturn()
     Declaration *decl = top->localDeclarations().first();
     FunctionType::Ptr ft = decl->type<FunctionType>();
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ft->returnType());
-    QList<QString> list;
+    QStringList list;
     list << "String" << "NilClass";
     testUnsureTypes(ut, list);
 }
@@ -1140,7 +1140,7 @@ void TestDUChain::guessArgumentsType2()
 
     // b is an Unsure of Fixnum and String
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 
@@ -1175,7 +1175,7 @@ void TestDUChain::guessArgumentsType3()
 
     // b is an Unsure of Fixnum and String
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 
@@ -1204,7 +1204,7 @@ void TestDUChain::showErrorOnTooFewArguments()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QList<QString> errors;
+    QStringList errors;
     errors << "wrong number of arguments (2 for 3) (ArgumentError)";
     testProblems(top, errors);
 }
@@ -1216,7 +1216,7 @@ void TestDUChain::showErrorOnTooManyArguments()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QList<QString> errors;
+    QStringList errors;
     errors << "wrong number of arguments (3 for 2) (ArgumentError)";
     testProblems(top, errors);
 }
@@ -1238,7 +1238,7 @@ void TestDUChain::hashArgument()
     // b
     QCOMPARE(args.at(1)->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Array"));
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.at(1)->type<ClassType>()->contentType().abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
 
@@ -1262,7 +1262,7 @@ void TestDUChain::setUnsureArgument()
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
     QVERIFY(args.size() == 2);
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.first()->indexedType().abstractType());
-    QList<QString> list;
+    QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(unsure, list);
     QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
@@ -1359,7 +1359,7 @@ void TestDUChain::problemOnInvalidMixin()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QList<QString> list;
+    QStringList list;
     list << "TypeError: wrong argument type (expected Module)";
     testProblems(top, list);
 }

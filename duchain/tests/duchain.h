@@ -55,14 +55,14 @@ private:
      * @p list of class identifiers.
      * @note that the order of the @p list items is important.
      */
-    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, QList<QString> list);
+    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, const QStringList &list);
 
     /**
      * Given a top context @p ctx, get all the encountered problems and
      * compare their descriptions to the given @p list of problem descriptions.
      * @note that the order of the @p list items is important.
      */
-    void testProblems(KDevelop::TopDUContext *ctx, const QList<QString> &list);
+    void testProblems(KDevelop::TopDUContext *ctx, const QStringList &list);
 
 private slots:
     // Builtin classes
