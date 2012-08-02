@@ -79,11 +79,17 @@ EditorIntegrator * ContextBuilder::editor() const
 
 void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
 {
+    if (node->tree)
+        node->tree->context = ctx;
     node->context = ctx;
 }
 
 KDevelop::DUContext * ContextBuilder::contextFromNode(RubyAst *node)
 {
+    if (node->tree) {
+        DUContext *ctx = (DUContext *) node->tree->context;
+        return ctx;
+    }
     return node->context;
 }
 

@@ -154,6 +154,7 @@ struct node {
   int flags;
   char * name;
   char * comment;
+  void * context;
 
 /* Node's position */
   unsigned long long offset;
