@@ -226,9 +226,38 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
     node->tree = n;
 }
 
-void ExpressionVisitor::visitSuper(RubyAst *node)
+void ExpressionVisitor::visitSuper(RubyAst *)
 {
-    // TODO
+    DUChainReadLocker lock(DUChain::lock());
+    ClassDeclaration *cDecl = NULL;
+    DUContext *ctx = m_ctx->parentContext();
+    Declaration *md = m_ctx->owner();
+
+    if (!dynamic_cast<MethodDeclaration *>(md))
+        return;
+
+    while (ctx) {
+        Declaration *d = ctx->owner();
+        cDecl = dynamic_cast<ClassDeclaration *>(d);
+        if (cDecl)
+            break;
+        ctx = ctx->parentContext();
+    }
+    if (!cDecl)
+        return;
+
+    StructureType::Ptr type = cDecl->baseClass().abstractType().cast<StructureType>();
+    ctx = type->internalContext(m_ctx->topContext());
+    if (!ctx)
+        return;
+
+    // TODO: this is a shame, should be using some find* method instead.
+    foreach (Declaration *d, ctx->localDeclarations()) {
+        if (d->toString() == md->toString() && d->type<FunctionType>()) {
+            encounter(d->type<FunctionType>()->returnType());
+            break;
+        }
+    }
 }
 
 void ExpressionVisitor::visitLambda(RubyAst *node)
