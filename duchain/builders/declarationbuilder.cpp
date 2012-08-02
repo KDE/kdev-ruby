@@ -272,6 +272,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
             }
         }
     }
+    node->tree = aux;
 
     MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
     if (!comment.isEmpty())
@@ -286,14 +287,10 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
         decl->setAccessPolicy(currentAccessPolicy());
 
     openType(type);
-    m_lastMethod = id;
     decl->setInSymbolTable(false);
     decl->setType(type);
     decl->clearDefaultParameters();
-    node->tree = aux->r;
-    visitMethodArguments(node);
-    node->tree = aux->l;
-    visitMethodBody(node);
+    DeclarationBuilderBase::visitMethodStatement(node);
     closeDeclaration();
     eventuallyAssignInternalContext();
     closeType();
@@ -303,6 +300,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
      * has been fired. Thus, the type of the last expression has to be mixed
      * into the return type of this method.
      */
+    node->tree = aux->l;
     if (node->tree && node->tree->l) {
         node->tree = get_last_expr(node->tree->l);
         if (node->tree->kind != token_return) {
@@ -313,6 +311,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
         }
     }
     node->tree = aux;
+
     if (!type->returnType())
         type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
     decl->setType(type);

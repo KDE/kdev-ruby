@@ -185,29 +185,27 @@ void ContextBuilder::visitClassStatement(RubyAst *node)
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
-    // TODO: clean this ?
-    RubyAstVisitor::visitMethodStatement(node);
-}
+    Node *aux = node->tree;
+    NameAst name(node);
 
-void ContextBuilder::visitMethodArguments(RubyAst *node)
-{
-    RangeInRevision rg = rangeForMethodArguments(node);
-    DUContext *params = openContext(node, rg, DUContext::Function, m_lastMethod);
-    RubyAstVisitor::visitMethodArguments(node);
+    node->tree = aux->r;
+    RangeInRevision range = rangeForMethodArguments(node);
+    DUContext *params = openContext(node, range, DUContext::Function, &name);
+    visitMethodArguments(node);
     closeContext();
-    m_importedParentContexts.append(params);
-}
 
-void ContextBuilder::visitMethodBody(RubyAst *node)
-{
+    node->tree = aux->l;
     if (node->tree && is_valid(node->tree)) {
-        RangeInRevision range = editorFindRange(node, node);
-        openContext(node, range, DUContext::Other, m_lastMethod);
-        currentContext()->setLocalScopeIdentifier(m_lastMethod);
-        addImportedContexts();
+        DUContext *body = openContext(node, DUContext::Other, &name);
+        if (compilingContexts()) {
+            DUChainWriteLocker wlock(DUChain::lock());
+            body->addImportedParentContext(params);
+            body->setInSymbolTable(false);
+        }
         visitBody(node);
         closeContext();
     }
+    node->tree = aux;
 }
 
 void ContextBuilder::visitRequire(RubyAst *node)
