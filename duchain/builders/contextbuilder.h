@@ -114,8 +114,7 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitRequire(RubyAst *node);
-    virtual void visitRequireRelative(RubyAst *node);
+    virtual void visitRequire(RubyAst *node, bool relative = false);
 
     /// Given a @param node, open a context for a class definition.
     void openContextForClassDefinition(RubyAst *node);
@@ -124,7 +123,6 @@ protected:
     bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.
     EditorIntegrator *m_editor;
     QList<KUrl> m_unresolvedImports;
-    KDevelop::ReferencedTopDUContext m_topContext;
 
 private:
     /**

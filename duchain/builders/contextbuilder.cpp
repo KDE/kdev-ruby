@@ -108,7 +108,6 @@ KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &ra
     }
     TopDUContext *top = new RubyDUContext<TopDUContext>(doc, range, file);
     top->setType(DUContext::Global);
-    m_topContext = ReferencedTopDUContext(top);
     return top;
 }
 
@@ -222,16 +221,10 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 }
 
-void ContextBuilder::visitRequire(RubyAst *node)
+void ContextBuilder::visitRequire(RubyAst *node, bool relative)
 {
     RubyAstVisitor::visitRequire(node);
-    require(node->tree->r, false);
-}
-
-void ContextBuilder::visitRequireRelative(RubyAst *node)
-{
-    RubyAstVisitor::visitRequireRelative(node);
-    require(node->tree->r, true);
+    require(node->tree->r, relative);
 }
 
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)

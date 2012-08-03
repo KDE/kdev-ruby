@@ -101,8 +101,7 @@ protected:
     virtual void visitLambda(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
     virtual void visitBlockVariables(RubyAst *node);
-    virtual void visitRequire(RubyAst *node);
-    virtual void visitRequireRelative(RubyAst *node);
+    virtual void visitRequire(RubyAst *node, bool relative = false);
     virtual void visitInclude(RubyAst *node);
     virtual void visitExtend(RubyAst *node);
     virtual void visitDefined(RubyAst *node);
