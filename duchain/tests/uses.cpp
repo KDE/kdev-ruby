@@ -159,22 +159,40 @@ void TestUseBuilder::checkMethodArgumentsContext()
 
 void TestUseBuilder::instanceVariable()
 {
-    QByteArray code("class Klass; def foo; @lala = 1; end; def asd; @lala = 'asd'; end; end");
+    //               0         1         2         3         4         5         6         7
+    //               012345678901234567890123456789012345678901234567890123456789012345678901
+    QByteArray code("class Klass; def foo; @lala = 1; end; def asd; @lala = 'asd'; end; end; ");
+    //               8         9         10
+    //       23456789012345678901234567890123456
+    code += "class SubClass < Klass; @lala; end";
     TopDUContext *top = parse(code, "instanceVariable");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Not implemented yet");
+    Declaration *decl = top->localDeclarations().first();
+    decl = decl->internalContext()->findDeclarations(QualifiedIdentifier("@lala")).first();
+    QVERIFY(decl);
+    QList<RangeInRevision> list;
+    list << RangeInRevision(0, 22, 0, 27) << RangeInRevision(0, 47, 0, 52)
+         << RangeInRevision(0, 96, 0, 101);
+    compareUses(decl, list);
 }
 
 void TestUseBuilder::classVariable()
 {
+    //               0         1         2         3         4         5         6
+    //               0123456789012345678901234567890123456789012345678901234567890
     QByteArray code("class Base; @@lala = 1; end; class Klass < Base; @@lala; end");
     TopDUContext *top = parse(code, "classVariable");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("Not implemented yet");
+    Declaration *decl = top->localDeclarations().first();
+    decl = decl->internalContext()->findDeclarations(QualifiedIdentifier("@@lala")).first();
+    QVERIFY(decl);
+    QList<RangeInRevision> list;
+    list << RangeInRevision(0, 12, 0, 18) << RangeInRevision(0, 49, 0, 55);
+    compareUses(decl, list);
 }
 
 //END: Basic stuff

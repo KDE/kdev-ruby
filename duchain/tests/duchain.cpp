@@ -941,6 +941,7 @@ void TestDUChain::instanceVariable()
     QCOMPARE(ds.size(), 1);
 
     Declaration *decl = ds.first();
+    QVERIFY(decl->isAutoDeclaration());
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(decl->abstractType());
     QStringList list;
     list << "Fixnum" << "String";
@@ -962,6 +963,7 @@ void TestDUChain::classVariable()
 
     // @@lala = 1
     Declaration *decl = ds.first();
+    QVERIFY(decl->isAutoDeclaration());
     QCOMPARE(decl->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 
     // Check that the @@lala inside Klass is the same as the Base one
