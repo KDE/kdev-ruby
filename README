@@ -27,7 +27,7 @@ We provide a Gemfile that handles all the dependencies. In particular, guard
 and its dependencies will be installed, as well for the assert_same gem, which
 is used to test the parser.
 
-Finally, note that the parser needs a ruby version < 1.9.
+Finally, note that to test the parser it's required a ruby version < 1.9.
 
 == Authors ==
 

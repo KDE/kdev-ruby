@@ -35,10 +35,7 @@ module ::Guard
     #            :tests     - an Array of hashes with the config for each test.
     def initialize(watchers = [], options = {})
       super
-      @opts = {
-        :build_url => '',
-        :tests => [],
-      }.merge(options)
+      @opts = { :build_url => '', :tests => [] }.merge(options)
     end
 
     # Public: It will be called on start. It just shows a message.
