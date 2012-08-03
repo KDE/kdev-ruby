@@ -120,9 +120,26 @@ private:
     QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
 
     /// other stuff.
-    /// TODO: clean this.
 
-    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass = true);
+    /**
+     * This is a helper method that tells us if this is a valid re-declaration.
+     * @param id The identifier of the declaration.
+     * @param range The range of this declaration.
+     * @param isClass Optional parameter, set to false if this is a module. The
+     * default value is true, meaning that this is expected to be a class.
+     * @returns false if we expected this to be a Class/Module and it's
+     * something else, true otherwise.
+     * @note If it returns false, it'll also append a new problem (TypeError).
+     */
+    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
+                            bool isClass = true);
+
+    /**
+     * This is a helper method that iterates over the call args of a method
+     * call in order to update tha type of each parameter accordingly.
+     * @param mc A list of call args.
+     * @param args The arguments of the method that is being called.
+     */
     void visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args);
 
 private:

@@ -778,8 +778,8 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *d
 bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass)
 {
     DUChainReadLocker rlock(DUChain::lock());
-    QList<Declaration *> decls = currentContext()->findDeclarations(id, range.start);
-    debug() << currentContext()->range();
+    QList<Declaration *> decls = currentContext()->findDeclarations(id, range.end, AbstractType::Ptr(NULL),
+                                                                    NULL, DUContext::DontSearchInParent);
 
     foreach (Declaration *d, decls) {
         ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);

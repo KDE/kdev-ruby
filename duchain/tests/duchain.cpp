@@ -897,16 +897,33 @@ void TestDUChain::checkSubClassing()
     QCOMPARE(final->baseClass(), base->indexedType());
 }
 
-void TestDUChain::errorOnInvalidRedeclaration()
+void TestDUChain::errorOnInvalidRedeclaration1()
 {
     QByteArray code("class Klass; end; module Module; end; class Kernel; end");
-    TopDUContext *top = parse(code, "errorOnInvalidRedeclaration");
+    TopDUContext *top = parse(code, "errorOnInvalidRedeclaration1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     QStringList errors;
     errors << "TypeError: Module is not a module"
             << "TypeError: Kernel is not a class";
+    testProblems(top, errors);
+}
+
+void TestDUChain::errorOnInvalidRedeclaration2()
+{
+    QByteArray code("module Klass; end; module Mod; class Klass; end; end");
+    TopDUContext *top = parse(code, "errorOnInvalidRedeclaration2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /*
+     * This test just checks that no problems are being raised, since the
+     * second class Klass is inside the module Mod, so it's not the same
+     * as the first Klass, which is a module.
+     */
+
+    QStringList errors;
     testProblems(top, errors);
 }
 
