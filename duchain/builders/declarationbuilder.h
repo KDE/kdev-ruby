@@ -136,7 +136,7 @@ private:
 
     /**
      * This is a helper method that iterates over the call args of a method
-     * call in order to update tha type of each parameter accordingly.
+     * call in order to update the type of each parameter accordingly.
      * @param mc A list of call args.
      * @param args The arguments of the method that is being called.
      */
