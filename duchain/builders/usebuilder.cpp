@@ -42,20 +42,11 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     mcDepth = 0;
 }
 
-void UseBuilder::startVisiting(RubyAst *node)
-{
-    debug() << currentContext()->url().c_str();
-    debug() << "LALAL : " << node->context->range();
-    UseBuilderBase::startVisiting(node);
-}
-
 void UseBuilder::visitName(RubyAst *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
     Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
-
-    debug() << "UseBuilder says : " << currentContext()->range() << " :: " << node->context->range();
 
     if (!decl || decl->range() == range)
         return;

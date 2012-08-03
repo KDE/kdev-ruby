@@ -802,8 +802,6 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
     DUChainReadLocker rlock(DUChain::lock());
     QList<Declaration *> decls = currentContext()->topContext()->findDeclarations(id);
 
-    debug() << "valid redeclaration ? ";
-
     foreach (Declaration *d, decls) {
         ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
         ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(d);
@@ -811,11 +809,9 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
             const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
             rlock.unlock();
             appendProblem(range, msg);
-            debug() << "FALSE";
             return false;
         }
     }
-    debug() << "TRUE";
     return true;
 }
 

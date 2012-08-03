@@ -230,22 +230,6 @@ void ContextBuilder::visitRequireRelative(RubyAst *node)
     require(node->tree->r, true);
 }
 
-void ContextBuilder::visitInclude(RubyAst *node)
-{
-    Node *n = node->tree;
-    node->tree = n->r;
-    visitNode(node);
-    node->tree = n;
-}
-
-void ContextBuilder::visitExtend(RubyAst *node)
-{
-    Node *n = node->tree;
-    node->tree = n->r;
-    visitNode(node);
-    node->tree = n;
-}
-
 void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
@@ -254,8 +238,6 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
 
     openContext(node, range, DUContext::Class, className);
     currentContext()->setLocalScopeIdentifier(className);
-    wlock.unlock();
-    addImportedContexts();
 }
 
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
@@ -270,18 +252,6 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
     delete last;
 
     return range;
-}
-
-void ContextBuilder::addImportedContexts()
-{
-    if (compilingContexts() && !m_importedParentContexts.isEmpty()) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        foreach (KDevelop::DUContext *imported, m_importedParentContexts) {
-            debug() << "ADDING: " << imported->range() << " TO " << currentContext()->range();
-            currentContext()->addImportedParentContext(imported);
-        }
-        m_importedParentContexts.clear();
-    }
 }
 
 void ContextBuilder::require(Node *node, bool local)

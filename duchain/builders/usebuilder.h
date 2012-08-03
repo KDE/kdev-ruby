@@ -50,7 +50,6 @@ public:
     UseBuilder(EditorIntegrator *editor);
 
 protected:
-    virtual void startVisiting(RubyAst *node);
     /**
      * Re-implemented from Ruby::RubyAstVisitor to extract the uses
      * of variables.

@@ -116,8 +116,6 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitRequire(RubyAst *node);
     virtual void visitRequireRelative(RubyAst *node);
-    virtual void visitInclude(RubyAst *node);
-    virtual void visitExtend(RubyAst *node);
 
     /// Given a @param node, open a context for a class definition.
     void openContextForClassDefinition(RubyAst *node);
@@ -135,9 +133,6 @@ private:
      */
     RangeInRevision rangeForMethodArguments(RubyAst *node);
 
-    /// Add the imported contexts into the current context.
-    void addImportedContexts();
-
     /**
      * Issue a require. The required file will be scheduled for parsing
      * if it's the first time that is loaded.
@@ -149,7 +144,6 @@ private:
 
 private:
     int m_priority;
-    QList<DUContext *> m_importedParentContexts;
     KDevelop::TopDUContextPointer m_builtinsContext;
 };
 
