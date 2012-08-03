@@ -706,32 +706,6 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
     closeDeclaration();
 }
 
-void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
-{
-    KDevelop::Problem *p = new KDevelop::Problem();
-    p->setFinalLocation(getDocumentRange(node));
-    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-    p->setDescription(msg);
-    p->setSeverity(KDevelop::ProblemData::Error);
-    {
-        DUChainWriteLocker lock(DUChain::lock());
-        topContext()->addProblem(ProblemPointer(p));
-    }
-}
-
-void DeclarationBuilder::appendProblem(const RangeInRevision &range, const QString &msg)
-{
-    KDevelop::Problem *p = new KDevelop::Problem();
-    p->setFinalLocation(getDocumentRange(range));
-    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-    p->setDescription(msg);
-    p->setSeverity(KDevelop::ProblemData::Error);
-    {
-        DUChainWriteLocker lock(DUChain::lock());
-        topContext()->addProblem(ProblemPointer(p));
-    }
-}
-
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
 {
     return m_editor->findRange(rb_name_node(node->tree));
@@ -901,13 +875,6 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
         n = n->next;
     }
     delete node;
-}
-
-KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)
-{
-    if (!node)
-        return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(node->value);
 }
 
 void DeclarationBuilder::closeDeclaration()

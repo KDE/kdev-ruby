@@ -21,6 +21,9 @@
  */
 
 
+// KDE
+#include <KLocale>
+
 // KDevelop
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
@@ -111,29 +114,26 @@ KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &ra
     return top;
 }
 
+KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node) const
+{
+    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+}
+
 KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, RubyAst *toRange)
 {
     return m_editor->findRange(fromRange->tree, toRange->tree);
 }
 
-DocumentRange ContextBuilder::getDocumentRange(Node *node)
+DocumentRange ContextBuilder::getDocumentRange(Node *node) const
 {
-    IndexedString ind(m_editor->url());
     SimpleRange range(node->startLine - 1, node->startCol,
                       node->endLine - 1, node->endCol);
-    return DocumentRange(ind, range);
+    return DocumentRange(m_editor->url(), range);
 }
 
-DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range)
+DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range) const
 {
-    IndexedString ind(m_editor->url());
-    SimpleRange rg = range.castToSimpleRange();
-    return DocumentRange(ind, rg);
-}
-
-KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node)
-{
-    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+    return DocumentRange(m_editor->url(), range.castToSimpleRange());
 }
 
 KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
@@ -237,33 +237,49 @@ void ContextBuilder::openContextForClassDefinition(RubyAst *node)
     currentContext()->setLocalScopeIdentifier(className);
 }
 
+void ContextBuilder::appendProblem(Node *node, const QString &msg,
+                                   ProblemData::Severity sev)
+{
+    KDevelop::Problem *p = new KDevelop::Problem();
+    p->setFinalLocation(getDocumentRange(node));
+    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setDescription(msg);
+    p->setSeverity(sev);
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        topContext()->addProblem(ProblemPointer(p));
+    }
+}
+
+void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &msg,
+                                   ProblemData::Severity sev)
+{
+    KDevelop::Problem *p = new KDevelop::Problem();
+    p->setFinalLocation(getDocumentRange(range));
+    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setDescription(msg);
+    p->setSeverity(sev);
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        topContext()->addProblem(ProblemPointer(p));
+    }
+}
+
 RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 {
     if (!node->tree)
         return RangeInRevision();
 
-    RubyAst *last = new RubyAst(node->tree->last, node->context);
-    if (!node->tree->last)
-        last->tree = node->tree;
-    RangeInRevision range = editorFindRange(node, last);
-    delete last;
-
-    return range;
+    RubyAst last(get_last_expr(node->tree), node->context);
+    return editorFindRange(node, &last);
 }
 
 void ContextBuilder::require(Node *node, bool local)
 {
     KUrl path = Loader::getRequiredFile(node, m_editor, local);
     if (path.isEmpty()) {
-        KDevelop::Problem *p = new KDevelop::Problem();
-        p->setFinalLocation(getDocumentRange(node));
-        p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-        p->setDescription("LoadError: cannot load such file");
-        p->setSeverity(KDevelop::ProblemData::Warning);
-        {
-            DUChainWriteLocker wlock(DUChain::lock());
-            topContext()->addProblem(ProblemPointer(p));
-        }
+        QString msg = i18n("LoadError: cannot load such file");
+        appendProblem(node, msg, ProblemData::Warning);
         return;
     }
 

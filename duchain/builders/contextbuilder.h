@@ -93,17 +93,17 @@ protected:
 
     /// And now methods that deal with nodes, documents and ranges.
 
+    /// @returns KDevelop::CursorInRevision at the start of @param node.
+    KDevelop::CursorInRevision startPos(RubyAst *node) const;
+
     /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange);
 
     /// Given a @param node, it @returns a KDevelop::DocumentRange.
-    KDevelop::DocumentRange getDocumentRange(Node *node);
+    KDevelop::DocumentRange getDocumentRange(Node *node) const;
 
     /// Given a @param range, it @returns a KDevelop::DocumentRange.
-    KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range);
-
-    /// @returns KDevelop::CursorInRevision at the start of @param node.
-    KDevelop::CursorInRevision startPos(RubyAst *node);
+    KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
@@ -118,6 +118,24 @@ protected:
 
     /// Given a @param node, open a context for a class definition.
     void openContextForClassDefinition(RubyAst *node);
+
+    /**
+     * Append a new problem that appeared at the given @p node with @p msg
+     * as its description. The @p sev is the severity of the problem, which
+     * is ProblemData::Error by default.
+     * @note that you should call i18n() first.
+     */
+    void appendProblem(Node *node, const QString &msg,
+                       ProblemData::Severity sev = ProblemData::Error);
+
+    /**
+     * Append a new problem that appeared at the given @p range with @p msg
+     * as its description. The @p sev is the severity of the problem, which
+     * is ProblemData::Error by default.
+     * @note that you should call i18n() first.
+     */
+    void appendProblem(const RangeInRevision &range, const QString &msg,
+                       ProblemData::Severity sev = ProblemData::Error);
 
 protected:
     bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.

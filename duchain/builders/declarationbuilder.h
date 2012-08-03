@@ -50,7 +50,6 @@ public:
     virtual ~DeclarationBuilder();
 
 protected:
-    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
     virtual void closeDeclaration();
     virtual void startVisiting(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
@@ -76,8 +75,6 @@ private:
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
                                 KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
-    void appendProblem(Node *node, const QString &msg);
-    void appendProblem(const RangeInRevision &range, const QString &msg);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
     Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     Declaration *m_lastMethodCall;
