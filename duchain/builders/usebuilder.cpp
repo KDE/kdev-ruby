@@ -44,6 +44,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 
 void UseBuilder::startVisiting(RubyAst *node)
 {
+    debug() << currentContext()->url().c_str();
     debug() << "LALAL : " << node->context->range();
     UseBuilderBase::startVisiting(node);
 }

@@ -193,19 +193,23 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
     Node *aux = node->tree;
     NameAst name(node);
+    DUContext *params = NULL;
 
     node->tree = aux->r;
-    RangeInRevision range = rangeForMethodArguments(node);
-    DUContext *params = openContext(node, range, DUContext::Function, &name);
-    visitMethodArguments(node);
-    closeContext();
+    if (node->tree) {
+      RangeInRevision range = rangeForMethodArguments(node);
+      params = openContext(node, range, DUContext::Function, &name);
+      visitMethodArguments(node);
+      closeContext();
+    }
 
     node->tree = aux->l;
     if (node->tree && is_valid(node->tree)) {
         DUContext *body = openContext(node, DUContext::Other, &name);
         if (compilingContexts()) {
             DUChainWriteLocker wlock(DUChain::lock());
-            body->addImportedParentContext(params);
+            if (params)
+              body->addImportedParentContext(params);
             body->setInSymbolTable(false);
         }
         visitBody(node);
