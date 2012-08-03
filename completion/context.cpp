@@ -395,7 +395,6 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("undef", "undef ");
     ADD_KEYWORD2("rescue", "rescue ");
     ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
-    ADD_KEYWORD2("END", "END {\n  %CURSOR%\n}");
 
     // Not really keywords, but who cares? ;)
     ADD_KEYWORD2("include", "include %SELECT%MyModule%ENDSELECT%");
