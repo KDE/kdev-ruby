@@ -44,7 +44,8 @@ public:
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
-    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL) : tree (n), context(ctx)
+    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL)
+        : tree (n), context(ctx), foundProblems(false)
     {
         /* There's nothing to do here! */
     };
@@ -55,6 +56,9 @@ public:
 
     /// The DUContext for this AST.
     KDevelop::DUContext *context;
+
+    /// Used when we find a problem.
+    bool foundProblems;
 };
 
 
