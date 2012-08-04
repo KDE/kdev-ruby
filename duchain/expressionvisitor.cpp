@@ -251,9 +251,8 @@ void ExpressionVisitor::visitSuper(RubyAst *)
     if (!ctx)
         return;
 
-    // TODO: this is a shame, should be using some find* method instead.
-    foreach (Declaration *d, ctx->localDeclarations()) {
-        if (d->toString() == md->toString() && d->type<FunctionType>()) {
+    foreach (Declaration *d, ctx->findLocalDeclarations(md->identifier())) {
+        if (d->type<FunctionType>()) {
             encounter(d->type<FunctionType>()->returnType());
             break;
         }

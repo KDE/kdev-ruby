@@ -1100,16 +1100,16 @@ void TestDUChain::chainedCalls3()
 void TestDUChain::super()
 {
     QByteArray code("class Base; def foo; 'string'; end; end; class Klass < ");
-    code += "Base; def foo; a = super; end; end";
+    code += "Base; def foo; super; end; end";
     TopDUContext *top = parse(code, "super");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     DUContext *ctx = top->localDeclarations().last()->internalContext();
-    ctx = ctx->findDeclarations(QualifiedIdentifier("foo")).first()->internalContext();
-    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("a")).first();
+    Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
     QVERIFY(d);
-    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+    StructureType::Ptr sType = d->type<FunctionType>()->returnType().cast<StructureType>();
+    QCOMPARE(sType->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 
 // Defines a method with an amazing list of arguments
