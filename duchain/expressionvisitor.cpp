@@ -247,6 +247,8 @@ void ExpressionVisitor::visitSuper(RubyAst *)
         return;
 
     StructureType::Ptr type = cDecl->baseClass().abstractType().cast<StructureType>();
+    if (!type)
+        return;
     ctx = type->internalContext(m_ctx->topContext());
     if (!ctx)
         return;
