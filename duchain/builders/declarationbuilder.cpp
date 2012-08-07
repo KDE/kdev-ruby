@@ -67,6 +67,7 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();
     m_injected = false;
+    lastClassModule = NULL;
     DeclarationBuilderBase::startVisiting(node);
 }
 
