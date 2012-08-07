@@ -116,6 +116,7 @@ private slots:
     void singletonClass2();
     void accessPolicyMethodInClass();
     void accessPolicyMethodInModule();
+    void accessPolicyOnBlock();
     void nestedAccessPolicy();
     void checkSubClassing();
     void errorOnInvalidRedeclaration1();

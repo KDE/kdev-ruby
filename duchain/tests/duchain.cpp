@@ -855,6 +855,20 @@ void TestDUChain::accessPolicyMethodInModule()
     QVERIFY(d4->accessPolicy() == Declaration::Public);
 }
 
+void TestDUChain::accessPolicyOnBlock()
+{
+    QByteArray code("class Klass; end; Klass.class_eval { private; def foo; end }");
+    TopDUContext *top = parse(code, "accessPolicyOnBlock");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /*
+     * Do nothing. This test stands to check that the given code does not
+     * crash (access modifier inside a block).
+     */
+    QVERIFY(true);
+}
+
 void TestDUChain::nestedAccessPolicy()
 {
     QByteArray code("class Outer; class Inner; private; def innerFoo; end; ");
@@ -1109,6 +1123,7 @@ void TestDUChain::super()
     Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
     QVERIFY(d);
     StructureType::Ptr sType = d->type<FunctionType>()->returnType().cast<StructureType>();
+    QVERIFY(sType);
     QCOMPARE(sType->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 

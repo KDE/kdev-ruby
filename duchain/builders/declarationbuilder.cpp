@@ -377,6 +377,13 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
     declareVariable(id, type, node);
 }
 
+void DeclarationBuilder::visitBlock(RubyAst *node)
+{
+    m_accessPolicy.push(Declaration::Public);
+    RubyAstVisitor::visitBlock(node);
+    m_accessPolicy.pop();
+}
+
 void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 {
     RubyAstVisitor::visitReturnStatement(node);
