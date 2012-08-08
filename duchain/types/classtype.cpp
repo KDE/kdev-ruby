@@ -56,6 +56,8 @@ ClassType::ClassType(KDevelop::StructureTypeData &data)
 
 void ClassType::addContentType(AbstractType::Ptr typeToAdd)
 {
+    if (!typeToAdd) // TODO: not sure :/
+        return;
     AbstractType::Ptr type = mergeTypes(contentType().abstractType(), typeToAdd);
     d_func_dynamic()->m_contentType = type->indexed();
 }

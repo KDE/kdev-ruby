@@ -9,8 +9,6 @@ set(rubyduchain_SRCS
     builders/usebuilder.cpp
     builders/contextbuilder.cpp
     builders/typebuilder.cpp
-
-    types/objecttype.cpp
     types/classtype.cpp
 
     navigation/declarationnavigationcontext.cpp

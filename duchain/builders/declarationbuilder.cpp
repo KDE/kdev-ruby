@@ -41,7 +41,6 @@
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
-#include <duchain/types/objecttype.h>
 
 
 namespace Ruby
@@ -345,6 +344,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     /* Finally, declare the parameter */
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
+        // TODO: !type
         mType->addArgument(type);
         declareVariable(getIdentifier(node), type, node);
     }
@@ -374,7 +374,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 void DeclarationBuilder::visitVariable(RubyAst *node)
 {
     QualifiedIdentifier id = getIdentifier(node);
-    AbstractType::Ptr type(new ObjectType());
+    AbstractType::Ptr type = getBuiltinsType("Object", currentContext());
     declareVariable(id, type, node);
 }
 
@@ -485,7 +485,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             } else {
                 type = values.at(i);
                 if (!type) // HACK: provisional fix, should be removed in the future
-                    type = new ObjectType();
+                    type = getBuiltinsType("Object", currentContext());
                 debug() << "We have to set the following type: " << type->toString();
                 QualifiedIdentifier id = getIdentifier(aux);
                 declareVariable(id, type, aux);
@@ -601,9 +601,9 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
         if (ctype && ctype->contentType())
             type = ctype->contentType().abstractType();
         else
-            type = AbstractType::Ptr(new ObjectType);
+            type = getBuiltinsType("Object", currentContext());
     } else
-        type = AbstractType::Ptr(new ObjectType);
+        type = getBuiltinsType("Object", currentContext());
 
     node->tree = aux->r;
     for (Node *n = node->tree; n != NULL; n = n->next) {

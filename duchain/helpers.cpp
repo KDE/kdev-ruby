@@ -56,7 +56,7 @@ const QString getName(RubyAst *ast)
 const QByteArray getComment(RubyAst *ast)
 {
     char *m_comment = ast->tree->comment;
-    return (m_comment != NULL) ? QByteArray(m_comment) : QByteArray("");
+    return (m_comment) ? QByteArray(m_comment) : QByteArray("");
 }
 
 Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, DUContextPointer context)

@@ -20,7 +20,6 @@
 
 
 #include <codegen/rubynewclass.h>
-#include <duchain/types/objecttype.h>
 #include <language/codegen/documentchangeset.h>
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
@@ -49,8 +48,8 @@ KDevelop::DocumentChangeSet RubyNewClass::generate()
 
 KDevelop::StructureType::Ptr RubyNewClass::objectType() const
 {
-    /* TODO: let it be ObjectType for now */
-    return KDevelop::StructureType::Ptr(new ObjectType);
+    /* TODO: fix this */
+    return KDevelop::StructureType::Ptr(NULL);
 }
 
 const KDevelop::ProjectBaseItem * RubyNewClass::parentItem() const

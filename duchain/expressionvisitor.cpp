@@ -345,6 +345,7 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 
 ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
+    DUChainReadLocker lock(DUChain::lock());
     ClassType::Ptr ct = ptr.cast<ClassType>();
     if (ct) {
         ExpressionVisitor ev(this);
