@@ -631,6 +631,20 @@ void TestDUChain::aliasedAssignment()
     QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
+void TestDUChain::withMethodCallAndBlock()
+{
+    QByteArray code("a = Class.new do; def foo; b = 0; end; end");
+    TopDUContext *top = parse(code, "withMethodCallAndBlock");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    /*
+     * This test makes sure that the above code does not crash.
+     */
+    QList<Declaration *> decls = top->findDeclarations(QualifiedIdentifier("foo"));
+    QVERIFY(decls.size() == 1);
+}
+
 //END: Assignments
 
 //BEGIN: ClassType

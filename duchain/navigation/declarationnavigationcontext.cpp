@@ -49,7 +49,7 @@ DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer d
 {
     /* There's nothing to do here! */
 }
-
+#include <rubydefs.h>
 void DeclarationNavigationContext::htmlFunction()
 {
     const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(m_declaration.data());

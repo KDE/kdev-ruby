@@ -101,6 +101,7 @@ private slots:
     void unpackArray2();
     void unpackArray3();
     void aliasedAssignment();
+    void withMethodCallAndBlock();
 
     // ClassType
     void assignFromArrayItem1();

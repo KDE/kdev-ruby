@@ -418,6 +418,10 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     for (Node *n = aux->tree; n != NULL; n = n->next) {
         ExpressionVisitor v(currentContext(), m_editor);
         aux->tree = n;
+        lock.unlock();
+        // TODO: improve this
+        DeclarationBuilderBase::visitNode(aux);
+        lock.lock();
         v.visitNode(aux);
         values << v.lastType();
         alias << v.lastAlias();
@@ -553,6 +557,7 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
             QVector<Declaration *> args = argCtx->localDeclarations();
             lock.unlock();
             visitMethodCallArgs(node, args);
+            lock.lock();
         }
     }
 
