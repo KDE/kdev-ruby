@@ -633,16 +633,12 @@ void TestDUChain::aliasedAssignment()
 
 void TestDUChain::withMethodCallAndBlock()
 {
-    QByteArray code("a = Class.new do; def foo; b = 0; end; end");
+    QByteArray code("a = Class.new do; def foo; b = 0; end; end.foo(1, 2)");
     TopDUContext *top = parse(code, "withMethodCallAndBlock");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    /*
-     * This test makes sure that the above code does not crash.
-     */
-    QList<Declaration *> decls = top->findDeclarations(QualifiedIdentifier("foo"));
-    QVERIFY(decls.size() == 1);
+    DOES_NOT_CRASH;
 }
 
 //END: Assignments
@@ -876,11 +872,7 @@ void TestDUChain::accessPolicyOnBlock()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    /*
-     * Do nothing. This test stands to check that the given code does not
-     * crash (access modifier inside a block).
-     */
-    QVERIFY(true);
+    DOES_NOT_CRASH;
 }
 
 void TestDUChain::nestedAccessPolicy()

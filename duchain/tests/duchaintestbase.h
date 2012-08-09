@@ -36,6 +36,12 @@
 #define DO_PRAGMA(x) _Pragma (#x)
 #define PENDING(x) DO_PRAGMA(message ("PENDING: " #x))
 
+/*
+ * This macro is used to annotate that the only purpose of a test is to
+ * check that the code does not crash.
+ */
+#define DOES_NOT_CRASH QVERIFY(true)
+
 
 namespace Ruby
 {

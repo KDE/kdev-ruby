@@ -545,6 +545,15 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
 {
     DUChainReadLocker lock(DUChain::lock());
     Node *aux = node->tree;
+
+    node->tree = aux->l;
+    if (node->tree->kind == token_method_call) {
+        lock.unlock();
+        visitMethodCall(node);
+        lock.lock();
+    }
+    node->tree = aux;
+
     ExpressionVisitor v(currentContext(), m_editor);
     v.visitNode(node);
 
