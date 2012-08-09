@@ -546,6 +546,10 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     DUChainReadLocker lock(DUChain::lock());
     Node *aux = node->tree;
 
+    /*
+     * Handle chained method calls. Take a look at the implementation of
+     * RubyAstVisitor::visitMethodCall() for more details.
+     */
     node->tree = aux->l;
     if (node->tree->kind == token_method_call) {
         lock.unlock();

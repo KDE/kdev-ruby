@@ -449,24 +449,15 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
      * cond -> an optional Ruby block.
      */
 
-    Node *n = node->tree;
-    node->tree = n->l;
-    for (Node *aux = n->l; aux != NULL; aux = aux->next) {
-        visitNode(node);
-        node->tree = aux->next;
-    }
-
-    /* Visit the method arguments */
-    node->tree = n->r;
-    for (Node *aux = n->r; aux != NULL; aux = aux->next) {
-        visitNode(node);
-        node->tree = aux->next;
-    }
-
-    /* Vist method call block */
-    node->tree = n->cond;
-    visitBlock(node);
-    node->tree = n;
+    /*
+     * Note that the l pointer can contain again another method call.
+     * This happens for example here:
+     *  Class.new { def foo(a, b); end }.new.foo(1, 2)
+     * In order to get everything straight, all builders end up
+     * re-implementing this method. This is why this method has no
+     * implementation by default.
+     */
+    Q_UNUSED(node);
 }
 
 void RubyAstVisitor::visitSuper(RubyAst *node)
