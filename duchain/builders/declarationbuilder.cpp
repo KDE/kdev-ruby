@@ -903,6 +903,10 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
                 continue;
         } else if (vd->hasStar()) {
             ClassType::Ptr ct = vd->type<ClassType>();
+            if (!ct) {// TODO: shouldn't happend but it does :(
+                n = n->next;
+                continue;
+            }
             for (int j = rest; j > 0; j--) {
                 ExpressionVisitor av(currentContext(), m_editor);
                 av.visitNode(node);
