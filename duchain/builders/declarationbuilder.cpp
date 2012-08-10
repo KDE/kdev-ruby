@@ -352,6 +352,7 @@ void DeclarationBuilder::visitBlock(RubyAst *node)
 
 void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 {
+    DUChainReadLocker rlock(DUChain::lock());
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
     Node *n = node->tree;
     if (!last || !n)
@@ -367,13 +368,16 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
             type = yieldList[i].type.abstractType();
         else
             type = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+        rlock.unlock();
         declareVariable(getIdentifier(node), type, node);
+        rlock.lock();
     }
 }
 
 void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 {
     RubyAstVisitor::visitReturnStatement(node);
+    DUChainWriteLocker wlock(DUChain::lock());
     if (node->tree->l != NULL) {
         node->tree = node->tree->l;
         if (!hasCurrentType()) {
@@ -590,6 +594,7 @@ void DeclarationBuilder::visitLambda(RubyAst *node)
 
 void DeclarationBuilder::visitForStatement(RubyAst *node)
 {
+    DUChainReadLocker rlock(DUChain::lock());
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     ExpressionVisitor ev(currentContext(), m_editor);
@@ -609,7 +614,9 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
     for (Node *n = node->tree; n != NULL; n = n->next) {
         node->tree = n;
         QualifiedIdentifier id = getIdentifier(node);
+        rlock.unlock();
         declareVariable(id, type, node);
+        rlock.lock();
     }
     node->tree = aux;
 }
@@ -630,6 +637,7 @@ void DeclarationBuilder::visitAccessSpecifier(short int policy)
 
 void DeclarationBuilder::visitYieldStatement(RubyAst *node)
 {
+    DUChainWriteLocker wlock(DUChain::lock());
     MethodDeclaration *mDecl = currentDeclaration<MethodDeclaration>();
     Node *n = node->tree;
     if (mDecl && n->l) {
