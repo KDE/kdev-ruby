@@ -99,7 +99,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         node->tree = node->tree->next;
 
     // And this is the loop that does the dirty job.
-    for (Node *aux = node->tree; aux; aux = aux->next) {
+    for (Node *aux = node->tree; aux && ctx; aux = aux->next) {
         node->tree = aux;
         range = editorFindRange(node, node);
         ev.setContext(ctx);
@@ -133,10 +133,6 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
             }
         } else
             ctx = sType->internalContext(topContext());
-
-        // No context found, we can't go any further.
-        if (!ctx)
-            return;
     }
     m_lastCtx = ctx;
 }

@@ -551,14 +551,9 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     /* Let's take a look at the method arguments */
     DeclarationPointer lastMethod = v.lastDeclaration();
     if (lastMethod) {
-        DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
-        FunctionType::Ptr mtype = lastMethod->type<FunctionType>();
-        if (argCtx && mtype) {
-            QVector<Declaration *> args = argCtx->localDeclarations();
-            lock.unlock();
-            visitMethodCallArgs(node, args);
-            lock.lock();
-        }
+        lock.unlock();
+        visitMethodCallArgs(node, lastMethod);
+        lock.lock();
     }
 
     /* And last but not least, go for the block */
@@ -841,13 +836,32 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
     return true;
 }
 
-void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args)
+void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod)
 {
+    DUChainReadLocker rlock(DUChain::lock());
     RubyAst *node = new RubyAst(mc->tree->r, mc->context);
     VariableDeclaration *vd;
     int total, left = 0, right = 0;
     bool mark = false, starSeen = false;
 
+    DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
+    if (!argCtx || !lastMethod->type<FunctionType>()) {
+        /*
+         * We couldn't get enough info, visit the list of parameters as a
+         * regular list and get out.
+         */
+        for (Node *n = node->tree; n; n = n->next) {
+            node->tree = n;
+            rlock.unlock();
+            DeclarationBuilderBase::visitNode(node);
+            rlock.lock();
+        }
+        delete node;
+        return;
+    }
+
+    QVector<Declaration *> args = argCtx->localDeclarations();
+    rlock.unlock();
     if (args.isEmpty())
         total = 0;
     else {
@@ -919,6 +933,9 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
             continue;
         }
         ExpressionVisitor av(currentContext(), m_editor);
+        wlock.unlock();
+        DeclarationBuilderBase::visitNode(node);
+        wlock.lock();
         av.visitNode(node);
         AbstractType::Ptr last = av.lastType().cast<AbstractType>();
         AbstractType::Ptr original = args.at(i)->abstractType();

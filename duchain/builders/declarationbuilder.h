@@ -176,7 +176,7 @@ private:
      * @param mc A list of call args.
      * @param args The arguments of the method that is being called.
      */
-    void visitMethodCallArgs(RubyAst *mc, const QVector<Declaration *> &args);
+    void visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod);
 
 private:
     EditorIntegrator *m_editor;
