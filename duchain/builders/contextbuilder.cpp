@@ -227,16 +227,6 @@ void ContextBuilder::visitRequire(RubyAst *node, bool relative)
     require(node->tree->r, relative);
 }
 
-void ContextBuilder::openContextForClassDefinition(RubyAst *node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    RangeInRevision range = editorFindRange(node, node);
-    KDevelop::QualifiedIdentifier className(getName(node));
-
-    openContext(node, range, DUContext::Class, className);
-    currentContext()->setLocalScopeIdentifier(className);
-}
-
 void ContextBuilder::appendProblem(Node *node, const QString &msg,
                                    ProblemData::Severity sev)
 {

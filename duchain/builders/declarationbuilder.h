@@ -45,13 +45,27 @@ typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> Decl
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
+    /// Constructor.
     DeclarationBuilder();
+
+    /**
+     * Constructor.
+     * @param editor The EditorIntegrator to be used.
+     */
     DeclarationBuilder(EditorIntegrator *editor);
+
+    /// Destructor.
     virtual ~DeclarationBuilder();
 
 protected:
+    /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
     virtual void closeDeclaration();
+
+    /// Re-implemented from the ContextBuilder.
     virtual void startVisiting(RubyAst *node);
+
+    /// Methods re-implemented from RubyAstVisitor.
+
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
@@ -72,16 +86,16 @@ protected:
     virtual void visitYieldStatement(RubyAst *node);
 
 private:
-    void declareVariable(const KDevelop::QualifiedIdentifier& id, KDevelop::AbstractType::Ptr type, RubyAst *node);
+    void declareVariable(const KDevelop::QualifiedIdentifier &id, KDevelop::AbstractType::Ptr type, RubyAst *node);
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
-                                KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
+                                MethodDeclaration *decl);
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-    Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
-    Declaration *m_lastMethodCall;
-    bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
 
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
+
+    /// Given a @param node, open a context for a class definition.
+    void openContextForClassDefinition(RubyAst *node);
 
     /// @returns the current access policy.
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
@@ -149,6 +163,9 @@ private:
     QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
     bool m_injected;
     bool m_instance;
+    Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
+    Declaration *m_lastMethodCall;
+    bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
 };
 
 } // End of namespace Ruby

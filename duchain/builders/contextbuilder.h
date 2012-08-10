@@ -116,9 +116,6 @@ protected:
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitRequire(RubyAst *node, bool relative = false);
 
-    /// Given a @param node, open a context for a class definition.
-    void openContextForClassDefinition(RubyAst *node);
-
     /**
      * Append a new problem that appeared at the given @p node with @p msg
      * as its description. The @p sev is the severity of the problem, which

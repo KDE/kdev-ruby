@@ -67,6 +67,8 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
     m_unresolvedImports.clear();
     m_injected = false;
     lastClassModule = NULL;
+    m_lastMethodCall = NULL;
+    insideClassModule = false;
     DeclarationBuilderBase::startVisiting(node);
 }
 
@@ -94,6 +96,16 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const R
     if (!res)
         res = openDeclaration<T>(id, range);
     return static_cast<T*>(res);
+}
+
+void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range = editorFindRange(node, node);
+    KDevelop::QualifiedIdentifier className(getName(node));
+
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
 }
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
@@ -533,10 +545,11 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         declareVariable(aid, type, node);
     } else if (decl && decl->isFunctionDeclaration()) {
         DUChainWriteLocker wlock(DUChain::lock());
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
         node->tree = node->tree->l;
         const RangeInRevision & arange = editorFindRange(node, node);
         QualifiedIdentifier aid = getIdentifier(node);
-        aliasMethodDeclaration(aid, arange, decl);
+        aliasMethodDeclaration(aid, arange, md);
     } else
         appendProblem(node->tree, i18n("undefined method `%1'", id.toString()));
 }
@@ -723,7 +736,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
 
 void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
                                                 const RangeInRevision &range,
-                                                Declaration *decl)
+                                                MethodDeclaration *decl)
 {
     MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
     setComment(d->comment());
@@ -760,8 +773,7 @@ void DeclarationBuilder::registerModuleMixin(RubyAst *module, bool include)
         foreach (MethodDeclaration *md, eMethods) {
             if (md->isClassMethod() ^ include) {
                 DUChainWriteLocker wlock(DUChain::lock());
-                Declaration *raw = dynamic_cast<Declaration *>(md);
-                aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
+                aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), md);
             }
         }
     }
