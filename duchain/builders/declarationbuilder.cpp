@@ -62,6 +62,16 @@ DeclarationBuilder::~DeclarationBuilder()
     /* There's nothing to do here! */
 }
 
+void DeclarationBuilder::closeDeclaration()
+{
+    if (currentDeclaration() && lastType()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        currentDeclaration()->setType(lastType());
+    }
+    eventuallyAssignInternalContext();
+    DeclarationBuilderBase::closeDeclaration();
+}
+
 void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();
@@ -70,42 +80,6 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
     m_lastMethodCall = NULL;
     insideClassModule = false;
     DeclarationBuilderBase::startVisiting(node);
-}
-
-template<typename T>
-T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range)
-{
-    DUChainReadLocker rlock(DUChain::lock());
-    Declaration *res = NULL;
-    QList<Declaration *> decls = currentContext()->findDeclarations(id);
-
-    foreach (Declaration *d, decls) {
-        Declaration *fitting = dynamic_cast<T*>(d);
-        if (fitting && (d->topContext() == currentContext()->topContext())) {
-            debug() << "Reopening the following declaration: " << d->toString();
-            openDeclarationInternal(d);
-            d->setRange(range);
-            setEncountered(d);
-            // TODO: register the re-opening
-            res = d;
-            break;
-        } else
-            debug() << "Do not reopen since it's not in the same top context";
-    }
-
-    if (!res)
-        res = openDeclaration<T>(id, range);
-    return static_cast<T*>(res);
-}
-
-void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    RangeInRevision range = editorFindRange(node, node);
-    KDevelop::QualifiedIdentifier className(getName(node));
-
-    openContext(node, range, DUContext::Class, className);
-    currentContext()->setLocalScopeIdentifier(className);
 }
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
@@ -362,6 +336,20 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     }
 }
 
+void DeclarationBuilder::visitVariable(RubyAst *node)
+{
+    QualifiedIdentifier id = getIdentifier(node);
+    AbstractType::Ptr type = getBuiltinsType("Object", currentContext());
+    declareVariable(id, type, node);
+}
+
+void DeclarationBuilder::visitBlock(RubyAst *node)
+{
+    m_accessPolicy.push(Declaration::Public);
+    RubyAstVisitor::visitBlock(node);
+    m_accessPolicy.pop();
+}
+
 void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 {
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
@@ -381,20 +369,6 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
             type = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
         declareVariable(getIdentifier(node), type, node);
     }
-}
-
-void DeclarationBuilder::visitVariable(RubyAst *node)
-{
-    QualifiedIdentifier id = getIdentifier(node);
-    AbstractType::Ptr type = getBuiltinsType("Object", currentContext());
-    declareVariable(id, type, node);
-}
-
-void DeclarationBuilder::visitBlock(RubyAst *node)
-{
-    m_accessPolicy.push(Declaration::Public);
-    RubyAstVisitor::visitBlock(node);
-    m_accessPolicy.pop();
 }
 
 void DeclarationBuilder::visitReturnStatement(RubyAst *node)
@@ -676,6 +650,47 @@ void DeclarationBuilder::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
+KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
+{
+    return m_editor->findRange(rb_name_node(node->tree));
+}
+
+void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range = editorFindRange(node, node);
+    KDevelop::QualifiedIdentifier className(getName(node));
+
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
+}
+
+template<typename T>
+T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    Declaration *res = NULL;
+    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+
+    foreach (Declaration *d, decls) {
+        Declaration *fitting = dynamic_cast<T*>(d);
+        if (fitting && (d->topContext() == currentContext()->topContext())) {
+            debug() << "Reopening the following declaration: " << d->toString();
+            openDeclarationInternal(d);
+            d->setRange(range);
+            setEncountered(d);
+            // TODO: register the re-opening
+            res = d;
+            break;
+        } else
+            debug() << "Do not reopen since it's not in the same top context";
+    }
+
+    if (!res)
+        res = openDeclaration<T>(id, range);
+    return static_cast<T*>(res);
+}
+
 void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
@@ -738,16 +753,10 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
                                                 const RangeInRevision &range,
                                                 MethodDeclaration *decl)
 {
-    MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
-    setComment(d->comment());
+    setComment(decl->comment());
     MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
     alias->setType(decl->type<FunctionType>());
     closeDeclaration();
-}
-
-KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
-{
-    return m_editor->findRange(rb_name_node(node->tree));
 }
 
 void DeclarationBuilder::registerModuleMixin(RubyAst *module, bool include)
@@ -913,16 +922,6 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, const QVector<Declarat
         n = n->next;
     }
     delete node;
-}
-
-void DeclarationBuilder::closeDeclaration()
-{
-    if (currentDeclaration() && lastType()) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        currentDeclaration()->setType(lastType());
-    }
-    eventuallyAssignInternalContext();
-    DeclarationBuilderBase::closeDeclaration();
 }
 
 } // End of namespace Ruby

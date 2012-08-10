@@ -86,16 +86,37 @@ protected:
     virtual void visitYieldStatement(RubyAst *node);
 
 private:
-    void declareVariable(const KDevelop::QualifiedIdentifier &id, KDevelop::AbstractType::Ptr type, RubyAst *node);
-    void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
-                                const KDevelop::RangeInRevision &range,
-                                MethodDeclaration *decl);
+    /// @returns the range of the name of the given @p node.
     KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-
-    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
 
     /// Given a @param node, open a context for a class definition.
     void openContextForClassDefinition(RubyAst *node);
+
+    /**
+     * If it exists a declaration in the current context that has the same id
+     * and range as the given @p id and @p range, then it will re-open this
+     * declaration. Otherwise, it will open a new declaration.
+     * @returns an opened declaration.
+     */
+    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
+
+    /**
+     * Declare a variable in the current context.
+     * @param id The qualified identifier of the new variable declaration.
+     * @param type The type of the new variable declaration.
+     * @param node The node that contains this variable declaration.
+     */
+    void declareVariable(const KDevelop::QualifiedIdentifier &id, KDevelop::AbstractType::Ptr type, RubyAst *node);
+
+    /**
+     * Alias a method declaration.
+     * @param id The id of the new method.
+     * @param range The range of the new method.
+     * @param decl The MethodDeclaration that it's being aliased.
+     */
+    void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
+                                const KDevelop::RangeInRevision &range,
+                                MethodDeclaration *decl);
 
     /// @returns the current access policy.
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
