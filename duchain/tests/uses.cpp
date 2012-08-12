@@ -301,6 +301,27 @@ void TestUseBuilder::super()
     compareUses(d, RangeInRevision(0, 76, 0, 84));
 }
 
+void TestUseBuilder::moduleMixins()
+{
+    //               0         1         2         3         4         5
+    //               0123456789012345678901234567890123456789012345678901234567890
+    QByteArray code("module A; end; class Klass; include Enumerable; extend A; end");
+    TopDUContext *top = parse(code, "moduleMixins");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 55, 0, 56));
+
+    AbstractType::Ptr type = getBuiltinsType(QString("Enumerable"), top);
+    StructureType::Ptr sType = type.cast<StructureType>();
+    QVERIFY(sType);
+    d = sType->declaration(top);
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 36, 0, 46));
+}
+
 //END: Method calls
 
 } // End of namespace Ruby

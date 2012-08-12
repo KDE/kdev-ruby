@@ -102,8 +102,7 @@ protected:
     virtual void visitBlock(RubyAst *node);
     virtual void visitBlockVariables(RubyAst *node);
     virtual void visitRequire(RubyAst *node, bool relative = false);
-    virtual void visitInclude(RubyAst *node);
-    virtual void visitExtend(RubyAst *node);
+    virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitDefined(RubyAst *node);
     virtual void visitTrue(RubyAst *node);
     virtual void visitFalse(RubyAst *node);

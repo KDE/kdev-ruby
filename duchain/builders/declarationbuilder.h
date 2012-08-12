@@ -78,8 +78,7 @@ protected:
     virtual void visitAssignmentStatement(RubyAst *node);
     virtual void visitAliasStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
-    virtual void visitInclude(RubyAst *node);
-    virtual void visitExtend(RubyAst *node);
+    virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitLambda(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
     virtual void visitAccessSpecifier(short int policy);
@@ -133,13 +132,6 @@ private:
     }
 
     /// Module mixins helper methods.
-
-    /**
-     * Register a module mixin.
-     * @param module The include/extend AST.
-     * @param include Set to true if this is an include, false otherwise.
-     */
-    void registerModuleMixin(RubyAst *module, bool include);
 
     /**
      * Get the module declaration that is being mixed-in.

@@ -69,6 +69,7 @@ private slots:
     void chained();
     void fromClassAndAbove();
     void super();
+    void moduleMixins();
 };
 
 }

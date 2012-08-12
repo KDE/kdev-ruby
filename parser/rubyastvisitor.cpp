@@ -518,20 +518,16 @@ void RubyAstVisitor::visitBlockVariables(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitExtend(RubyAst *node)
-{
-    Q_UNUSED(node)
-}
-
-void RubyAstVisitor::visitInclude(RubyAst *node)
-{
-    Q_UNUSED(node)
-}
-
 void RubyAstVisitor::visitRequire(RubyAst *node, bool relative)
 {
     Q_UNUSED(node)
     Q_UNUSED(relative)
+}
+
+void RubyAstVisitor::visitMixin(RubyAst *node, bool include)
+{
+    Q_UNUSED(node);
+    Q_UNUSED(include);
 }
 
 void RubyAstVisitor::visitDefined(RubyAst *node)
@@ -725,9 +721,9 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
         if (name == "require")
             visitRequire(mc);
         else if (name == "include")
-            visitInclude(mc);
+            visitMixin(mc, true);
         else if (name == "extend")
-            visitExtend(mc);
+            visitMixin(mc, false);
         else if (name == "require_relative")
             visitRequire(mc, true);
         else

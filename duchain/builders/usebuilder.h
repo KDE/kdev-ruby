@@ -58,7 +58,13 @@ protected:
      */
     virtual void visitName(RubyAst *node);
 
-    virtual void visitInclude(RubyAst *node);
+    /**
+     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
+     * of an include/extend call.
+     *
+     * @param node The given include/extend call.
+     */
+    virtual void visitMixin(RubyAst *node, bool include);
 
     /**
      * Re-implemented from Ruby::RubyAstVisitor to extract the uses
