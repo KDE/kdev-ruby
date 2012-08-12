@@ -356,13 +356,17 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
     DUChainReadLocker rlock(DUChain::lock());
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
     Node *n = node->tree;
-    if (!last || !n)
+    if (!n)
         return;
 
-    uint i = 0;
-    uint max = last->yieldTypesSize();
+    uint max = 0, i = 0;
+    const YieldType *yieldList = NULL;
+    if (last) {
+        yieldList = last->yieldTypes();
+        max = last->yieldTypesSize();
+    }
+
     AbstractType::Ptr type;
-    const YieldType *yieldList = last->yieldTypes();
     for (Node *aux = n; aux != NULL; aux = aux->next, i++) {
         node->tree = aux;
         if (yieldList && i < max)

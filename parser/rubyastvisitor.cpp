@@ -406,7 +406,7 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
 
     Node *n = node->tree;
     node->tree = n->cond;
-    visitName(node);
+    visitNode(node);
     node->tree = n->l;
     visitBody(node);
     node->tree = n;

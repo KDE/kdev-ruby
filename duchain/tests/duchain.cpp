@@ -327,6 +327,26 @@ void TestDUChain::yield2()
     testUnsureTypes(ut, list);
 }
 
+void TestDUChain::yield3()
+{
+    QByteArray code("foo { |a, b| puts a + b }");
+    TopDUContext *top = parse(code, "yield3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QVERIFY(top->localDeclarations().size() == 2);
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    QCOMPARE(d->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+
+    // b
+    d = top->localDeclarations().last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    QCOMPARE(d->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+}
+
 void TestDUChain::ifStatement()
 {
     QByteArray code("a = if d; 1; elsif b; nil; else; 'asd'; end");

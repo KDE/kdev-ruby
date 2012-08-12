@@ -81,6 +81,7 @@ private slots:
     void aliasGlobal2();
     void yield1();
     void yield2();
+    void yield3();
     void ifStatement();
     void caseStatement();
     void forStatement();
