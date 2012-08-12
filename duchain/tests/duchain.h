@@ -119,7 +119,8 @@ private slots:
     void accessPolicyMethodInModule();
     void accessPolicyOnBlock();
     void nestedAccessPolicy();
-    void checkSubClassing();
+    void checkSubClassing1();
+    void checkSubClassing2();
     void errorOnInvalidRedeclaration1();
     void errorOnInvalidRedeclaration2();
     void instanceVariable();

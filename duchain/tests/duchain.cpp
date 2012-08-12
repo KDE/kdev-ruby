@@ -893,10 +893,10 @@ void TestDUChain::nestedAccessPolicy()
     QVERIFY(dynamic_cast<MethodDeclaration *>(d)->accessPolicy() == Declaration::Public);
 }
 
-void TestDUChain::checkSubClassing()
+void TestDUChain::checkSubClassing1()
 {
     QByteArray code("class Base; end; class Final < Base; end");
-    TopDUContext *top = parse(code, "checkSubClassing");
+    TopDUContext *top = parse(code, "checkSubClassing1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -915,6 +915,31 @@ void TestDUChain::checkSubClassing()
     QCOMPARE(final->internalContext()->localScopeIdentifier(), QualifiedIdentifier("Final"));
     QVERIFY(final->baseClass());
     QCOMPARE(final->baseClass(), base->indexedType());
+}
+
+void TestDUChain::checkSubClassing2()
+{
+    QByteArray code("module A; class B; end; end; class C < A::B; end");
+    TopDUContext *top = parse(code, "checkSubClassing2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // B
+    Declaration *decl = top->localDeclarations().first(); // A
+    decl = decl->internalContext()->localDeclarations().first(); // B
+    QVERIFY(decl);
+    QCOMPARE(decl->internalContext()->childContexts().count(), 0);
+    QCOMPARE(decl->internalContext()->importedParentContexts().count(), 0);
+    QCOMPARE(decl->qualifiedIdentifier(), QualifiedIdentifier("A::B"));
+
+    // C
+    ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(top->localDeclarations().last());
+    QVERIFY(cDecl);
+    QCOMPARE(cDecl->internalContext()->childContexts().count(), 0);
+    QCOMPARE(cDecl->internalContext()->importedParentContexts().count(), 1);
+    QCOMPARE(cDecl->qualifiedIdentifier(), QualifiedIdentifier("C"));
+    QVERIFY(cDecl->baseClass());
+    QCOMPARE(cDecl->baseClass(), decl->indexedType());
 }
 
 void TestDUChain::errorOnInvalidRedeclaration1()

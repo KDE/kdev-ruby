@@ -114,12 +114,13 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     if (node->tree) {
-        QualifiedIdentifier baseId = getIdentifier(node);
-        KDevelop::Declaration *baseDecl = getDeclaration(baseId, range, DUContextPointer(currentContext()));
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        DeclarationPointer baseDecl = ev.lastDeclaration();
         if (!baseDecl)
-            appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
+            debug() << "Base class not found";
         else {
-            baseClass = dynamic_cast<ClassDeclaration *>(baseDecl);
+            baseClass = dynamic_cast<ClassDeclaration *>(baseDecl.data());
             if (!baseClass)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
             else if (baseClass->internalContext())
@@ -480,7 +481,6 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 type = values.at(i);
                 if (!type) // HACK: provisional fix, should be removed in the future
                     type = getBuiltinsType("Object", currentContext());
-                debug() << "We have to set the following type: " << type->toString();
                 QualifiedIdentifier id = getIdentifier(aux);
                 declareVariable(id, type, aux);
             }
