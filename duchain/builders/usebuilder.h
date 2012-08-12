@@ -58,6 +58,8 @@ protected:
      */
     virtual void visitName(RubyAst *node);
 
+    virtual void visitInclude(RubyAst *node);
+
     /**
      * Re-implemented from Ruby::RubyAstVisitor to extract the uses
      * of method calls.

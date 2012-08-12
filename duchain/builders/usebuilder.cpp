@@ -55,6 +55,19 @@ void UseBuilder::visitName(RubyAst *node)
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 
+void UseBuilder::visitInclude(RubyAst *node)
+{
+    Node *aux = node->tree;
+    const RangeInRevision &range = m_editor->findRange(get_last_expr(aux->r));
+
+    ExpressionVisitor ev(currentContext(), m_editor);
+    node->tree = aux->r;
+    ev.visitNode(node);
+    node->tree = aux;
+    if (ev.lastDeclaration())
+        UseBuilderBase::newUse(node, range, ev.lastDeclaration());
+}
+
 void UseBuilder::visitMethodCall(RubyAst *node)
 {
     Node *n = node->tree;

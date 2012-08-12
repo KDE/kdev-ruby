@@ -929,7 +929,7 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, DeclarationPointer las
                 continue;
         } else if (vd->hasStar()) {
             ClassType::Ptr ct = vd->type<ClassType>();
-            if (!ct) {// TODO: shouldn't happend but it does :(
+            if (!ct) {// TODO: shouldn't happen but it does :(
                 n = n->next;
                 continue;
             }
