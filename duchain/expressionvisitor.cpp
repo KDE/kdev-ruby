@@ -25,6 +25,7 @@
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/types/integraltype.h>
 #include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/unsuretype.h>
 
 // Ruby
 #include <rubydefs.h>
@@ -140,6 +141,7 @@ void ExpressionVisitor::visitEncoding(RubyAst *)
 
 void ExpressionVisitor::visitSelf(RubyAst *)
 {
+    DUChainReadLocker lock(DUChain::lock());
     AbstractType::Ptr obj;
     if (m_ctx->owner()) {
         obj = m_ctx->owner()->abstractType();
@@ -414,8 +416,12 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
                 if (rType) {
                     encounter(fType->returnType());
                     ctx = rType->internalContext(ctx->topContext());
-                } else
+                } else {
+                    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(fType->returnType());
+                    if (ut)
+                        encounter<UnsureType>(ut);
                     ctx = NULL;
+                }
             }
         } else {
             encounter(ev.lastType());

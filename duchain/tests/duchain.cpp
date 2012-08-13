@@ -1084,15 +1084,18 @@ void TestDUChain::multipleReturns()
 
 void TestDUChain::implicitReturn()
 {
-    QByteArray code("def foo; 'a'; end");
-    TopDUContext *top = parse(code, "implicitReturn");
+    QByteArray code("class Klass; def item; @list = [1, 'str']; @list[0]; end; end;");
+    code += "a = Klass.new; b = a.item";
+    TopDUContext *top = parse(code, "returnFromInstanceMethod");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    Declaration *decl = top->localDeclarations().first();
-    FunctionType::Ptr ft = decl->type<FunctionType>();
-    StructureType::Ptr st = StructureType::Ptr::dynamicCast(ft->returnType());
-    QCOMPARE(st->qualifiedIdentifier(), QualifiedIdentifier("String"));
+    Declaration *d = top->localDeclarations().last();
+    UnsureType::Ptr ut = d->type<UnsureType>();
+    QVERIFY(ut);
+    QStringList list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
 }
 
 void TestDUChain::mixedExplicitAndImplicitReturn()
