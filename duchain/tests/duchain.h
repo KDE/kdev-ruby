@@ -109,6 +109,7 @@ private slots:
     void assignFromArrayItem2();
     void assignFromHashItem();
     void assignToArrayItem();
+    void arrayInstanceVariable();
 
     // Declarations
     void checkVariableKind();

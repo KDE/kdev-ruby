@@ -737,6 +737,26 @@ void TestDUChain::assignToArrayItem()
     testUnsureTypes(cont, list);
 }
 
+void TestDUChain::arrayInstanceVariable()
+{
+    QByteArray code("class Klass; def foo; @var = [1, 'str']; @var[0]; end; end");
+    TopDUContext *top = parse(code, "arrayInstanceVariable");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    d = d->internalContext()->localDeclarations().first();
+    QVERIFY(d);
+    FunctionType::Ptr fType = d->type<FunctionType>();
+    QVERIFY(fType);
+    UnsureType::Ptr ut = fType->returnType().cast<UnsureType>();
+    QVERIFY(ut);
+    QCOMPARE(ut->typesSize(), (uint) 2);
+    QStringList list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+}
+
 //END: ClassType
 
 //BEGIN: Declarations

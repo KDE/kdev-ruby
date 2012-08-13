@@ -203,11 +203,10 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
     RubyAstVisitor::visitArrayValue(node);
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
-    const CursorInRevision cursor = m_editor->findPosition(child->tree, EditorIntegrator::FrontEdge);
-    QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
-    if (!decls.isEmpty()) {
-        Declaration *d = decls.first();
-        ClassType::Ptr vc = d->abstractType().cast<ClassType>();
+    RangeInRevision range = m_editor->findRange(child->tree);
+    Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    if (decl) {
+        ClassType::Ptr vc = decl->abstractType().cast<ClassType>();
         if (vc)
             encounter(vc->contentType().abstractType());
     }
