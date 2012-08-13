@@ -131,6 +131,16 @@ public:
     enum { Identity = 44 /** The id of this Type. */ };
 
 private:
+    /**
+     * Check whether a module exists or not in one of the selected lists.
+     * @param module The given module.
+     * @param who set to true if the mixers list is to be picked, and set to
+     * false if the moduleMixins list is the one to be picked.
+     * @returns true if the module exists, false otherwise.
+     */
+    bool mixinExists(ModuleMixin module, bool who);
+
+private:
     /// Re-implemented from KDevelop::Declaration.
     virtual KDevelop::Declaration * clonePrivate() const;
     DUCHAIN_DECLARE_DATA(ModuleDeclaration)

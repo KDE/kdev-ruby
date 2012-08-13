@@ -73,7 +73,8 @@ void ModuleDeclaration::addModuleMixin(ModuleMixin module)
 {
     bool wasInSymbolTable = inSymbolTable();
     setInSymbolTable(false);
-    d_func_dynamic()->moduleMixinsList().append(module);
+    if (!mixinExists(module, false))
+        d_func_dynamic()->moduleMixinsList().append(module);
     setInSymbolTable(wasInSymbolTable);
 }
 
@@ -99,13 +100,32 @@ void ModuleDeclaration::addMixer(ModuleMixin module)
 {
     bool wasInSymbolTable = inSymbolTable();
     setInSymbolTable(false);
-    d_func_dynamic()->mixersList().append(module);
+    if (!mixinExists(module, true))
+        d_func_dynamic()->mixersList().append(module);
     setInSymbolTable(wasInSymbolTable);
 }
 
 QString ModuleDeclaration::toString() const
 {
     return "module " + identifier().toString();
+}
+
+bool ModuleDeclaration::mixinExists(ModuleMixin module, bool who)
+{
+    const ModuleMixin *list;
+    uint size;
+    if (who) {
+        list = d_func()->mixers();
+        size = d_func()->mixersSize();
+    } else {
+        list = d_func()->moduleMixins();
+        size = d_func()->moduleMixinsSize();
+    }
+
+    for (uint i = 0; i < size; i++)
+        if (list[i].module == module.module)
+            return true;
+    return false;
 }
 
 KDevelop::Declaration * ModuleDeclaration::clonePrivate() const
