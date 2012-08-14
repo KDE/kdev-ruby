@@ -177,7 +177,7 @@ static void copy_wc_range_ext(struct node * res, struct node * h, struct node * 
 #define discard_pos() pop_pos(parser, NULL)
 #define copy_start(dest, src) ({ dest->startLine = src->startLine; dest->startCol = src->startCol; })
 #define copy_end(dest, src) ({ dest->endLine = src->endLine; dest->endCol = src->endCol; })
-#define copy_range(dest, src1, src2) ({ copy_start(dest, src1); copy_end(dest, src2); })
+#define copy_range(dest, src1, src2) ({ copy_start(dest, src1); copy_end(dest, src2); dest->offset = src2->offset; })
 #define copy_pos(dest, src) copy_range(dest, src, src);
 #define copy_op(op) { parser->aux = strdup(op); parser->name_length = strlen(op);}
 #define CONCAT_STRING     parser->auxiliar.endLine = parser->pos_stack[parser->pos_size - 1].endLine; \
@@ -1963,6 +1963,7 @@ static void fix_pos(struct parser_t * parser, struct node * n)
     copy_start(n, n->l);
     aux = (n->r->last != NULL) ? n->r->last : n->r;
     copy_end(n, aux);
+    n->offset = aux->offset;
   } else if (is_unary(kind) || kind == token_kw_not) {
     pop_pos(parser, n);
     n->endLine = n->l->endLine;
