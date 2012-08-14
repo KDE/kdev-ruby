@@ -853,7 +853,13 @@ primary: literal
     $$ = alloc_cond(token_method_call, $2, $1, NULL);
     copy_range($$, $1, $2);
   }
-  | method_call opt_brace_block { $$ = $1; $$->cond = $2; }
+  | method_call opt_brace_block
+  {
+    $$ = $1;
+    $$->cond = $2;
+    if ($2)
+      copy_end($$, $2);
+  }
   | tLAMBDA lambda
   {
     $$ = alloc_cond(token_method_call, $2, NULL, NULL);
