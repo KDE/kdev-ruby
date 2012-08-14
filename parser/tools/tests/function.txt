@@ -13,7 +13,7 @@ Condition: 51(foo)[15,4:15,7]
 Next statements: 51(b)[19,11:19,12] 
 Root: 
 Condition: 51(foo)[19,4:19,7] 
-66[23,2:23,7] 
+59[23,2:23,7] 
 Next statements: 66[25,2:25,50] 
 Root: 54[23,2:25,50] 55[22,0:26,3] 51(klass)[22,22:22,27] 
 Condition: 51(a)[22,4:22,5] 51[22,4:22,21] 51(append_features)[22,6:22,21] 
