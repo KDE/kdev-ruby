@@ -70,6 +70,7 @@ private slots:
     void fromClassAndAbove();
     void super();
     void moduleMixins();
+    void exprIsCalling();
 };
 
 }

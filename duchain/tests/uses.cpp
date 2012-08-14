@@ -322,6 +322,31 @@ void TestUseBuilder::moduleMixins()
     compareUses(d, RangeInRevision(0, 36, 0, 46));
 }
 
+void TestUseBuilder::exprIsCalling()
+{
+    //               0         1         2
+    //               012345678901234567890123456
+    QByteArray code("a = 0; b = 0; (a - b).to_s");
+    TopDUContext *top = parse(code, "exprIsCalling");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 15, 0, 16));
+
+    // b
+    d = top->localDeclarations().last();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 19, 0, 20));
+
+    // to_s
+    d = getBuiltinDeclaration("Fixnum#to_s", top, d->context());
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 22, 0, 26));
+}
+
 //END: Method calls
 
 } // End of namespace Ruby

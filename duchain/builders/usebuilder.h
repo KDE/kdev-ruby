@@ -44,34 +44,15 @@ class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
 public:
     /**
      * Constructor.
-     *
      * @param editor The EditorIntegrator for this class.
      */
     UseBuilder(EditorIntegrator *editor);
 
 protected:
-    /**
-     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
-     * of variables.
-     *
-     * @param node The given variable.
-     */
+    /// Methods re-implemented from RubyAstVisitor.
+
     virtual void visitName(RubyAst *node);
-
-    /**
-     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
-     * of an include/extend call.
-     *
-     * @param node The given include/extend call.
-     */
     virtual void visitMixin(RubyAst *node, bool include);
-
-    /**
-     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
-     * of method calls.
-     *
-     * @param node The given method call.
-     */
     virtual void visitMethodCall(RubyAst *node);
 
 private:
