@@ -126,7 +126,7 @@ KDevelop::ILanguage * LanguageSupport::language()
     return core()->languageController()->language(name());
 }
 
-KDevelop::ICodeHighlighting* LanguageSupport::codeHighlighting() const
+KDevelop::ICodeHighlighting * LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
 }

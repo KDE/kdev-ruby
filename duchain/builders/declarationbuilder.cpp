@@ -162,11 +162,14 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
     if (ev.lastType()) {
         Declaration *d = ev.lastDeclaration().data();
         if (d) {
+            m_instance = false;
             if (!d->internalContext()) {
-                d = StructureType::Ptr::dynamicCast(ev.lastType())->declaration(topContext());
-                m_instance = true;
-            } else
-                m_instance = false;
+                StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                if (sType) {
+                    d = sType->declaration(topContext());
+                    m_instance = true;
+                }
+            }
             if (d) {
                 lastClassModule = d;
                 insideClassModule = true;

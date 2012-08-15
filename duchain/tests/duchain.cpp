@@ -861,6 +861,16 @@ void TestDUChain::singletonClass2()
     QCOMPARE(type->qualifiedIdentifier(), QualifiedIdentifier("String"));
 }
 
+void TestDUChain::singletonClass3()
+{
+    QByteArray code("a = 0; a = 'str'; class << a; end");
+    TopDUContext *top = parse(code, "singletonClass3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    DOES_NOT_CRASH;
+}
+
 void TestDUChain::accessPolicyMethodInClass()
 {
     QByteArray code("class Klass; def foo; end; protected; def asd; end; ");
