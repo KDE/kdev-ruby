@@ -563,14 +563,12 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
 
     ExpressionVisitor v(currentContext(), m_editor);
     v.visitNode(node);
+    DeclarationPointer lastMethod = v.lastDeclaration();
 
     /* Let's take a look at the method arguments */
-    DeclarationPointer lastMethod = v.lastDeclaration();
-    if (lastMethod) {
-        lock.unlock();
-        visitMethodCallArgs(node, lastMethod);
-        lock.lock();
-    }
+    lock.unlock();
+    visitMethodCallArgs(node, lastMethod);
+    lock.lock();
 
     /* And last but not least, go for the block */
     node->tree = aux->cond;
@@ -850,7 +848,9 @@ void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, DeclarationPointer las
     int total, left = 0, right = 0;
     bool mark = false, starSeen = false;
 
-    DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
+    DUContext *argCtx = NULL;
+    if (lastMethod.data())
+        argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
     if (!argCtx || !lastMethod->type<FunctionType>()) {
         /*
          * We couldn't get enough info, visit the list of parameters as a

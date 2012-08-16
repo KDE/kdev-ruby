@@ -116,8 +116,10 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
     // And this is the loop that does the dirty job.
     for (Node *aux = node->tree; aux && ctx; aux = aux->next) {
         node->tree = aux;
-        if (node->tree->kind != token_object)
+        if (node->tree->kind != token_object) {
+            // i.e. visit "a" and "b" from (a - b).bytesize
             UseBuilderBase::visitNode(node);
+        }
         range = editorFindRange(node, node);
         ev.setContext(ctx);
         ev.visitNode(node);
