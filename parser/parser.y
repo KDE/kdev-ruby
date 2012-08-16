@@ -599,16 +599,12 @@ cname: BASE
   | const
 ;
 
-cpath: tCOLON3 cname { $$ = $2; }
-  | cname { $$ = $1; }
-  | primary tCOLON2 cname
-  {
-    $$ = alloc_node(token_object, $1, $3);
-    copy_range($$, $1, $3);
-  }
+cpath: tCOLON3 cname        { $$ = $2; }
+  | cname                   { $$ = $1; }
+  | primary tCOLON2 cname   { $$ = update_list($1, $3); }
 ;
 
-/* TODO: reswords, push to the stack ?¿ */
+/* TODO: reswords, push to the stack ? */
 fname: base
   | const
   | op
