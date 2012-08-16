@@ -173,7 +173,8 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
                 if (sType) {
                     d = sType->declaration(topContext());
                     m_instance = true;
-                }
+                } else
+                    d = NULL;
             }
             if (d) {
                 lastClassModule = d;
