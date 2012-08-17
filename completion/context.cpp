@@ -165,6 +165,7 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
         default:
             items += standardAccessItems();
             addRubyKeywords();
+            addRubySpecialBuiltins();
     }
 
     if (shouldAddParentItems(fullCompletion))
@@ -396,12 +397,6 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("rescue", "rescue ");
     ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
 
-    // Not really keywords, but who cares? ;)
-    ADD_KEYWORD2("include", "include %SELECT%MyModule%ENDSELECT%");
-    ADD_KEYWORD2("extend", "extend %SELECT%MyModule%ENDSELECT%");
-    ADD_KEYWORD2("require", "require '%CURSOR%'");
-    ADD_KEYWORD2("require_relative", "require_relative '%CURSOR%'");
-
     // More complex constructions
     ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%\n%END%");
@@ -419,6 +414,20 @@ void CodeCompletionContext::addRubyKeywords()
 
     // Group all these keywords into the "Ruby Keyword" group.
     eventuallyAddGroup(i18n("Ruby Keyword"), 800, list);
+}
+
+void CodeCompletionContext::addRubySpecialBuiltins()
+{
+    QList<CompletionTreeItemPointer> list;
+
+    // Not really keywords, but who cares? ;)
+    ADD_KEYWORD2("include", "include %SELECT%MyModule%ENDSELECT%");
+    ADD_KEYWORD2("extend", "extend %SELECT%MyModule%ENDSELECT%");
+    ADD_KEYWORD2("require", "require '%CURSOR%'");
+    ADD_KEYWORD2("require_relative", "require_relative '%CURSOR%'");
+
+    // Group all these special builtins
+    eventuallyAddGroup(i18n("Ruby Builtins"), 800, list);
 }
 
 }

@@ -125,6 +125,7 @@ private:
 
     /// Group adding methods.
     void addRubyKeywords();
+    void addRubySpecialBuiltins();
 
 private:
     CompletionContextType m_kind;
