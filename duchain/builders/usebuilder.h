@@ -52,6 +52,7 @@ protected:
     /// Methods re-implemented from RubyAstVisitor.
 
     virtual void visitName(RubyAst *node);
+    virtual void visitClassName(RubyAst *node);
     virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitMethodCall(RubyAst *node);
 

@@ -401,6 +401,7 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
     /*
      * l -> the body of the class statement. Note that this body is not just
      * a list of "regular" statement, check the visitBody method for more info.
+     * r -> the name of the class.
      * cond -> the superclass node.
      */
 
@@ -409,6 +410,8 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
     visitNode(node);
     node->tree = n->l;
     visitBody(node);
+    node->tree = n->r;
+    visitClassName(node);
     node->tree = n;
 }
 
@@ -433,11 +436,14 @@ void RubyAstVisitor::visitModuleStatement(RubyAst *node)
     /*
      * l -> the body of the class statement. Note that this body is not just
      * a list of "regular" statement, check the visitBody method for more info.
+     * r -> the name of the module.
      */
 
     Node *n = node->tree;
     node->tree = n->l;
     visitBody(node);
+    node->tree = n->r;
+    visitClassName(node);
     node->tree = n;
 }
 
@@ -580,6 +586,11 @@ void RubyAstVisitor::visitSelf(RubyAst *node)
 void RubyAstVisitor::visitAccessSpecifier(short int policy)
 {
     Q_UNUSED(policy)
+}
+
+void RubyAstVisitor::visitClassName(RubyAst *node)
+{
+    Q_UNUSED(node);
 }
 
 void RubyAstVisitor::visitNode(RubyAst *node)

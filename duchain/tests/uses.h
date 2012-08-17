@@ -71,6 +71,9 @@ private slots:
     void super();
     void moduleMixins();
     void exprIsCalling();
+
+    // Others
+    void nestedIdentifier();
 };
 
 }

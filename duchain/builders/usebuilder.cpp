@@ -55,6 +55,27 @@ void UseBuilder::visitName(RubyAst *node)
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 
+void UseBuilder::visitClassName(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    Node *last = get_last_expr(node->tree);
+    DUContext *ctx = currentContext();
+    ExpressionVisitor ev(ctx, m_editor);
+    DeclarationPointer d(NULL);
+
+    for (Node *n = node->tree; n && ctx && n != last; n = n->next) {
+        node->tree = n;
+        ev.setContext(ctx);
+        ev.visitNode(node);
+        d = ev.lastDeclaration();
+        if (d.data()) {
+            UseBuilderBase::newUse(node, editorFindRange(node, node), d);
+            ctx = d->internalContext();
+        } else
+            ctx = NULL;
+    }
+}
+
 void UseBuilder::visitMixin(RubyAst *node, bool include)
 {
     Node *aux = node->tree;

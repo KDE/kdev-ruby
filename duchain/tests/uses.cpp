@@ -349,6 +349,26 @@ void TestUseBuilder::exprIsCalling()
 
 //END: Method calls
 
+//BEGIN: Others
+
+void TestUseBuilder::nestedIdentifier()
+{
+    //               0         1         2         3         4         5         6
+    //               0123456789012345678901234567890123456789012345678901234567890123456789
+    QByteArray code("module Modul; end; class Modul::Klass; end; module Modul::Nodule; end");
+    TopDUContext *top = parse(code, "nestedIdentifier");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QList<RangeInRevision> list;
+    list << RangeInRevision(0, 25, 0, 30) << RangeInRevision(0, 51, 0, 56);
+    compareUses(d, list);
+}
+
+//END: Others
+
 } // End of namespace Ruby
 
 

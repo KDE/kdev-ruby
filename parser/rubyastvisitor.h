@@ -112,6 +112,7 @@ protected:
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
     virtual void visitAccessSpecifier(short policy);
+    virtual void visitClassName(RubyAst *node);
 
 private:
     /**

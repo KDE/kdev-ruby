@@ -172,24 +172,14 @@ void ContextBuilder::startVisiting(RubyAst *node)
 
 void ContextBuilder::visitModuleStatement(RubyAst *node)
 {
-    if (!node->foundProblems) {
-        Node *aux = node->tree;
-        node->tree = aux->l;
-        visitBody(node);
-        node->tree = aux;
-    }
+    if (!node->foundProblems)
+        RubyAstVisitor::visitModuleStatement(node);
 }
 
 void ContextBuilder::visitClassStatement(RubyAst *node)
 {
-    if (!node->foundProblems) {
-        Node *aux = node->tree;
-        node->tree = aux->cond;
-        visitNode(node);
-        node->tree = aux->l;
-        visitBody(node);
-        node->tree = aux;
-    }
+    if (!node->foundProblems)
+        RubyAstVisitor::visitClassStatement(node);
 }
 
 void ContextBuilder::visitMethodStatement(RubyAst *node)
