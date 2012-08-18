@@ -238,7 +238,7 @@ struct node * concat_list(struct node * head, struct node * tail);
  * Auxiliar functions
  */
 
-#if defined (BUILD_TESTS)
+#ifdef BUILD_TESTS
 void print_node(struct node * n);
 void print_errors(struct error_t * errors);
 #endif

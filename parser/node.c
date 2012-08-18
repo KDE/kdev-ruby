@@ -102,7 +102,7 @@ struct node * concat_list(struct node * head, struct node * tail)
  * Auxiliar functions
  */
 
-#if defined (BUILD_TESTS)
+#ifdef BUILD_TESTS
 
 void raw_print(struct node * n)
 {

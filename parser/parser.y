@@ -2947,7 +2947,7 @@ RAst * rb_compile_file(const char * path, const char * contents)
   return result;
 }
 
-#if defined (BUILD_TESTS)
+#ifdef BUILD_TESTS
 
 /*
  * Compile a file like the rb_compile_file function but printing
