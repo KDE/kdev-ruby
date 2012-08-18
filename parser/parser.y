@@ -2947,6 +2947,8 @@ RAst * rb_compile_file(const char * path, const char * contents)
   return result;
 }
 
+#if defined (BUILD_TESTS)
+
 /*
  * Compile a file like the rb_compile_file function but printing
  * things directly to the stdout. This function is used for the tests.
@@ -3000,3 +3002,5 @@ int rb_debug_file(const char * path)
   printf("\n");
   return 1;
 }
+
+#endif

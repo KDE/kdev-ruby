@@ -20,10 +20,12 @@ target_link_libraries( kdev4rubyparser
     ${KDE4_KTEXTEDITOR_LIBS}
 )
 
-# Installing the parser executable and its test suite
-kde4_add_executable( ruby-parser main.c )
-install(DIRECTORY tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Compile & install the tests if needed.
+if((${KDE4_BUILD_TESTS} STREQUAL "ON") OR (${CMAKE_BUILD_TYPE} STREQUAL "debugfull"))
+    add_definitions(-DBUILD_TESTS)
+    kde4_add_executable( ruby-parser main.c )
+    install(DIRECTORY tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(ruby-parser kdev4rubyparser)
+endif((${KDE4_BUILD_TESTS} STREQUAL "ON") OR (${CMAKE_BUILD_TYPE} STREQUAL "debugfull"))
 
-# Building the kdev4rubyparser library
-target_link_libraries(ruby-parser kdev4rubyparser)
 install(TARGETS kdev4rubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

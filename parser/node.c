@@ -102,6 +102,8 @@ struct node * concat_list(struct node * head, struct node * tail)
  * Auxiliar functions
  */
 
+#if defined (BUILD_TESTS)
+
 void raw_print(struct node * n)
 {
   printf("%i", n->kind);
@@ -142,6 +144,8 @@ void print_errors(struct error_t * errors)
     }
   }
 }
+
+#endif
 
 void free_ast(struct node * n)
 {
