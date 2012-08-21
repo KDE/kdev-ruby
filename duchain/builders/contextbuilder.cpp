@@ -145,26 +145,24 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
 
 void ContextBuilder::startVisiting(RubyAst *node)
 {
-    IndexedString doc_url = internalBuiltinsFile();
+    IndexedString builtins = internalBuiltinsFile();
 
-    if (compilingContexts() && m_editor->url() != doc_url) {
-        TopDUContext *internal;
+    if (compilingContexts()) {
+        TopDUContext *top = dynamic_cast<TopDUContext *>(currentContext());
+        Q_ASSERT(top);
+        bool hasImports;
         {
             DUChainReadLocker rlock(DUChain::lock());
-            internal = DUChain::self()->chainForDocument(doc_url);
+            hasImports = !top->importedParentContexts().isEmpty();
         }
-        if (!internal) {
-            m_unresolvedImports.append(doc_url.toUrl());
-            DUChain::self()->updateContextForUrl(doc_url, TopDUContext::AllDeclarationsContextsAndUses);
-        } else {
-            debug() << "Adding kernel context";
+        if (!hasImports && top->url() != builtins) {
             DUChainWriteLocker wlock(DUChain::lock());
-            currentContext()->addImportedParentContext(internal);
-            m_builtinsContext = KDevelop::TopDUContextPointer(internal);
-
-            // include Kernel
-            Declaration *kernel = currentContext()->findDeclarations(QualifiedIdentifier("Kernel")).first();
-            currentContext()->addImportedParentContext(kernel->internalContext());
+            TopDUContext* import = DUChain::self()->chainForDocument(builtins);
+            if (!import) {
+                debug() << "importing the builtins file failed";
+                Q_ASSERT(false);
+            } else
+                top->addImportedParentContext(import);
         }
     }
     RubyAstVisitor::visitCode(node);
