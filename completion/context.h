@@ -128,10 +128,10 @@ private:
     void addRubySpecialBuiltins();
 
 private:
-    CompletionContextType m_kind;
-    QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
     bool m_valid;
+    CompletionContextType m_kind;
     QList<KDevelop::IncludeItem> m_includeItems;
+    QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
 };
 
 } // End of namespace Ruby

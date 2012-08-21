@@ -119,7 +119,7 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
                                              const QString &followingText,
                                              const CursorInRevision &pos, int depth)
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
-    , m_kind(NoMemberAccess), m_valid(true)
+    , m_valid(true), m_kind(NoMemberAccess)
 {
     Q_UNUSED(followingText);
 
@@ -208,8 +208,8 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     AbstractType::Ptr res;
     QString expr = m_text.left(m_text.lastIndexOf(token));
     RubyParser *parser = new RubyParser;
-    EditorIntegrator *e = new EditorIntegrator;
-    ExpressionVisitor *ev = new ExpressionVisitor(m_duContext.data(), e);
+    EditorIntegrator e;
+    ExpressionVisitor ev(m_duContext.data(), &e);
 
     LOCKDUCHAIN;
     parser->setCurrentDocument(KUrl());
@@ -217,12 +217,10 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     RubyAst *ast = parser->parse();
     if (!ast || !ast->tree)
         return AbstractType::Ptr(NULL);
-    ev->visitCode(ast);
-    res = ev->lastType();
+    ev.visitCode(ast);
+    res = ev.lastType();
     parser->freeAst(ast);
     delete parser;
-    delete ev;
-    delete e;
 
     return res;
 }
