@@ -53,9 +53,16 @@ const IndexedString & RubyParser::currentDocument() const
 
 RubyAst * RubyParser::parse()
 {
+    struct options_t opts;
+    struct ast_t *res;
+    RubyAst *ra;
+
     /* Let's call the parser ;) */
-    RAst *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents.data());
-    RubyAst *ra = new RubyAst(res->tree);
+    opts.path = m_currentDocument.str().toAscii().data();
+    opts.contents = m_contents.data();
+    opts.length = m_contents.size();
+    res = rb_compile_file(&opts);
+    ra = new RubyAst(res->tree);
     if (res->errors[0].valid) {
         appendProblem(res->errors[0]);
         if (res->errors[1].valid)
@@ -78,8 +85,8 @@ void RubyParser::freeAst(RubyAst *ast)
 
 QString RubyParser::symbol(Node *node) const
 {
-    int len = node->endCol - node->startCol;
-    return m_contents.mid(node->offset - len, len);
+    int len = node->pos.end_col - node->pos.start_col;
+    return m_contents.mid(node->pos.offset - len, len);
 }
 
 void RubyParser::appendProblem(struct error_t givenError)

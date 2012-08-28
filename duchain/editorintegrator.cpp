@@ -37,9 +37,9 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge)
     Q_ASSERT(node);
 
     if (edge == BackEdge)
-        return KDevelop::CursorInRevision(node->endLine - 1, node->endCol);
+        return KDevelop::CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
     else
-        return KDevelop::CursorInRevision(node->startLine - 1, node->startCol);
+        return KDevelop::CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
 }
 
 KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to) const

@@ -87,7 +87,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
-    const QByteArray &comment = getComment(node);
+    const QByteArray comment; /* TODO */
     ClassDeclaration *baseClass = NULL;
 
     if (!validReDeclaration(id, range)) {
@@ -201,7 +201,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
-    const QByteArray &comment = getComment(node);
+    const QByteArray comment; /* TODO */
 
     if (!validReDeclaration(id, range, false)) {
         node->foundProblems = true;
@@ -239,7 +239,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     DUChainWriteLocker lock(DUChain::lock());
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
-    const QByteArray &comment = getComment(node);
+    const QByteArray comment; /* TODO */
     bool injectedContext = false;
     bool instance = true;
     Node *aux = node->tree;
