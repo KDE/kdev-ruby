@@ -1,10 +1,6 @@
-
- However, now we're talking about a documentation comment.
- We want to store this comment
-
- This is also a documentation comment, store it!
-
- I'm a useful comment
- But this one is not
- Store this comment
- and this one too. 
+25:0 <-> 27:31
+33:0 <-> 35:1
+37:2 <-> 37:24
+42:2 <-> 42:23
+46:0 <-> 46:20
+48:2 <-> 48:21
