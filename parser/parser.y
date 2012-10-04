@@ -1293,7 +1293,7 @@ strings: string
             update_list($1->l, $2);
         $1->pos.end_line = parser->line;
         $1->pos.end_col = parser->column;
-        pop_pos(parser, NULL); // Drop the first position of the last string
+        pop_pos(parser, NULL); /* Drop the first position of the last string */
     }
 ;
 
@@ -1324,7 +1324,7 @@ string_content: tSTRING_CONTENT { $$ = 0; }
         parser->expr_seen = 1;
         lex_strterm = $<term>2;
         $$ = $3;
-        pop_pos(parser, NULL); // '}'
+        pop_pos(parser, NULL); /* '}' */
     }
     | tSTRING_DVAR
     {
@@ -2128,7 +2128,7 @@ static int parse_string(struct parser_t *parser)
         return tSTRING_END;
     }
 
-    if (curs >= parser->length) {
+    if ((unsigned) curs >= parser->length) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
         return tSTRING_END;
