@@ -21,28 +21,32 @@
  */
 
 
-#include <duchain/builders/declarationbuilder.h>
+// KDE
+#include <KLocale>
+
+// KDevelop
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
-#include <duchain/declarations/variabledeclaration.h>
-#include <duchain/declarations/methoddeclaration.h>
-#include <duchain/editorintegrator.h>
-#include <rubydefs.h>
-#include <duchain/types/objecttype.h>
-#include <duchain/types/variablelengthcontainer.h>
 #include <language/duchain/types/unsuretype.h>
-#include <KLocale>
-#include <duchain/helpers.h>
-#include <duchain/expressionvisitor.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/duchainutils.h>
+
+// Ruby
+#include <rubydefs.h>
+#include <duchain/helpers.h>
+#include <duchain/expressionvisitor.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/builders/declarationbuilder.h>
+#include <duchain/declarations/variabledeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 
 
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder()
-    : DeclarationBuilderBase()
+DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
 {
     /* There's nothing to do here! */
 }
@@ -58,504 +62,6 @@ DeclarationBuilder::~DeclarationBuilder()
     /* There's nothing to do here! */
 }
 
-ReferencedTopDUContext DeclarationBuilder::build(const IndexedString &url, RubyAst *node, ReferencedTopDUContext updateContext)
-{
-    return DeclarationBuilderBase::build(url, node, updateContext);
-}
-
-void DeclarationBuilder::startVisiting(RubyAst *node)
-{
-    m_unresolvedImports.clear();
-    DeclarationBuilderBase::startVisiting(node);
-}
-
-void DeclarationBuilder::visitClassStatement(RubyAst *node)
-{
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = getIdentifier(node);
-
-    /* First of all, open the declaration and set the comment */
-    setComment(getComment(node));
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
-    decl->setKind(KDevelop::Declaration::Type);
-    decl->clearBaseClasses();
-    decl->setClassType(ClassDeclarationData::Class);
-    lastClassModule = decl;
-    insideClassModule = true;
-
-    /*
-     * Now let's check for the base class. Ruby does not support multiple
-     * inheritance, and the access is always public.
-     */
-    Node *aux = node->tree;
-    node->tree = node->tree->cond;
-    if (node->tree) {
-        QualifiedIdentifier baseId = getIdentifier(node);
-        KDevelop::Declaration *baseDecl = declarationForNode(baseId, range, DUContextPointer(currentContext()));
-        if (!baseDecl) {
-            appendProblem(node->tree, i18n("NameError: undefined local variable or method `%1'", baseId.toString()));
-        } else {
-            ClassDeclaration *realClass = dynamic_cast<ClassDeclaration *>(baseDecl);
-            if (!realClass || realClass->classType() == ClassDeclarationData::Interface) {
-                appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            } else {
-                BaseClassInstance base;
-                StructureType::Ptr baseType = baseDecl->type<StructureType>();
-                base.baseClass = baseType->indexed();
-                base.access = KDevelop::Declaration::Public;
-                decl->addBaseClass(base);
-            }
-        }
-    }
-    node->tree = aux;
-
-    /*  Setup types and go for the class body */
-    StructureType::Ptr type = StructureType::Ptr(new StructureType());
-    type->setDeclaration(decl);
-    decl->setType(type);
-    openType(type);
-
-    openContextForClassDefinition(node);
-    decl->setInternalContext(currentContext());
-    lock.unlock();
-    DeclarationBuilderBase::visitClassStatement(node);
-    lock.lock();
-    closeContext();
-
-    closeType();
-    closeDeclaration();
-    insideClassModule = false;
-}
-
-void DeclarationBuilder::visitModuleStatement(RubyAst* node)
-{
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = getIdentifier(node);
-
-    setComment(getComment(node));
-    /* TODO: should this get a ModuleDeclaration or so? */
-    ClassDeclaration *decl = openDeclaration<ClassDeclaration>(id, range);
-    decl->setKind(KDevelop::Declaration::Type);
-    decl->clearBaseClasses();
-    decl->setClassType(ClassDeclarationData::Interface);
-    lastClassModule = decl;
-    insideClassModule = true;
-
-    StructureType::Ptr type = StructureType::Ptr(new StructureType());
-    type->setDeclaration(decl);
-    decl->setType(type);
-    openType(type);
-
-    openContextForClassDefinition(node);
-    decl->setInternalContext(currentContext());
-    lock.unlock();
-    DeclarationBuilderBase::visitModuleStatement(node);
-    lock.lock();
-    closeContext();
-
-    closeType();
-    closeDeclaration();
-    insideClassModule = false;
-}
-
-void DeclarationBuilder::visitMethodStatement(RubyAst *node)
-{
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = getIdentifier(node);
-
-    setComment(getComment(node));
-    MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
-    decl->setClassMethod(is_class_method(node->tree));
-    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-
-    openType(type);
-    decl->setInSymbolTable(false);
-    DeclarationBuilderBase::visitMethodStatement(node);
-    closeDeclaration();
-    closeType();
-
-    /*
-     * In Ruby, a method returns the last expression if no return expression
-     * has been fired. Thus, the type of the last expression has to be mixed
-     * into the return type of this method.
-     */
-    if (node->tree->l) {
-        node->tree = get_last_expr(node->tree->l);
-        if (node->tree->kind != token_return) {
-            ExpressionVisitor ev(currentContext(), m_editor);
-            ev.visitNode(node);
-            if (ev.lastType())
-                type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
-        }
-    }
-    decl->setType(type);
-}
-
-void DeclarationBuilder::visitParameter(RubyAst *node)
-{
-    MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(currentDeclaration());
-    ExpressionVisitor ev(currentContext(), m_editor);
-    ev.visitParameter(node);
-    AbstractType::Ptr type = ev.lastType();
-
-    /* Just grab the left side if this is an optional parameter */
-    if (node->tree->l) {
-        Node *aux = node->tree->l;
-        node->tree = node->tree->r;
-        // TODO: for some reason, it assumes that *all* the parameters have this same default value :S
-        mDecl->addDefaultParameter(IndexedString(m_editor->tokenToString(node->tree)));
-        node->tree = aux;
-    }
-
-    /* Finally, declare the parameter */
-    FunctionType::Ptr mType = currentType<FunctionType>();
-    if (mType) {
-        mType->addArgument(type);
-        declareVariable(currentContext(), type, getIdentifier(node), node);
-    }
-}
-
-void DeclarationBuilder::visitBlockVariable(RubyAst *node)
-{
-    /* TODO Type should be inferred from the yield calls from the caller method */
-    AbstractType::Ptr type(new ObjectType());
-
-    // create variable declaration for argument
-    DUChainWriteLocker lock(DUChain::lock());
-    RangeInRevision range = m_editor->findRange(node->tree);
-    openDefinition<VariableDeclaration>(getIdentifier(node), range);
-    currentDeclaration()->setKind(Declaration::Instance);
-    currentDeclaration()->setType(type);
-    DeclarationBuilderBase::visitBlockVariable(node);
-    closeDeclaration();
-}
-
-void DeclarationBuilder::visitVariable(RubyAst *node)
-{
-    QualifiedIdentifier id = getIdentifier(node);
-    AbstractType::Ptr type(new ObjectType());
-    declareVariable(currentContext(), type, id, node);
-}
-
-void DeclarationBuilder::visitReturnStatement(RubyAst *node)
-{
-    RubyAstVisitor::visitReturnStatement(node);
-    if (node->tree->l != NULL) {
-        node->tree = node->tree->l;
-        if (!hasCurrentType()) {
-            appendProblem(node->tree, "Return statement not within function declaration");
-            return;
-        }
-        TypePtr<FunctionType> t = currentType<FunctionType>();
-        ExpressionVisitor ev(currentContext(), m_editor);
-        ev.visitNode(node);
-        AbstractType::Ptr type = mergeTypes(ev.lastType(), t->returnType());
-        t->setReturnType(type);
-    }
-    setLastType(AbstractType::Ptr(0));
-}
-
-void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
-{
-    /*
-     * TODO: this method is under construction. Some ideas:
-     *  - I'm sure that the loops can be merged.
-     *  - The NilClass declaration has to be cached somehow.
-     */
-
-    QList<AbstractType::Ptr> values;
-    QList<DeclarationPointer> declarations;
-    QList<bool> alias;
-
-    debug() << "==== Starting with the assignment statement !!!!";
-    DUChainReadLocker lock(DUChain::lock());
-    RubyAst *aux = new RubyAst(node->tree->r, node->context);
-    for (Node *n = aux->tree; n != NULL; n = n->next) {
-        ExpressionVisitor v(currentContext(), m_editor);
-        aux->tree = n;
-        v.visitNode(aux);
-        values << v.lastType();
-        alias << v.lastAlias();
-        declarations << v.lastDeclaration();
-    }
-    lock.unlock();
-
-    aux->tree = node->tree->l;
-    int i = 0;
-    int rsize = values.length();
-    AbstractType::Ptr type;
-    for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
-        aux->tree = n;
-        if (i < rsize) {
-            if (alias.at(i)) {
-                DUChainWriteLocker wlock(DUChain::lock());
-                RangeInRevision range = getNameRange(aux);
-                QualifiedIdentifier id = getIdentifier(aux);
-                AliasDeclaration *d = openDeclaration<AliasDeclaration>(id, range);
-                d->setAliasedDeclaration(declarations.at(i).data());
-                closeDeclaration();
-            } else {
-                DUChainWriteLocker wlock(DUChain::lock());
-                type = values.at(i);
-                if (!type) // HACK: provisional fix, should be removed in the future
-                    type = new ObjectType();
-                debug() << "We have to set the following type: " << type->toString();
-                QualifiedIdentifier id = getIdentifier(aux);
-                declareVariable(currentContext(), type, id, aux);
-            }
-        } else {
-            DUChainWriteLocker wlock(DUChain::lock());
-            // TODO: the following shows that we need some caching system at the ExpressionVisitor
-            type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
-            QualifiedIdentifier id = getIdentifier(aux);
-            declareVariable(currentContext(), type, id, aux);
-        }
-    }
-    delete aux;
-}
-
-void DeclarationBuilder::visitAliasStatement(RubyAst *node)
-{
-    RubyAst *right = new RubyAst(node->tree->r, node->context);
-    QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
-    DUChainReadLocker lock(DUChain::lock());
-    const RangeInRevision &range = editorFindRange(right, right);
-    KDevelop::Declaration *decl = declarationForNode(id, range, DUContextPointer(currentContext()));
-    lock.unlock();
-
-    if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        // If the global variable on the right is not declared, declare it as nil
-        if (!decl) {
-            // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
-            AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
-            decl = openDefinition<VariableDeclaration>(id, range);
-            decl->setKind(Declaration::Instance);
-            decl->setType(type);
-            eventuallyAssignInternalContext();
-            DeclarationBuilderBase::closeDeclaration();
-        }
-        node->tree = node->tree->l;
-        QualifiedIdentifier aid = getIdentifier(node);
-        AbstractType::Ptr type = decl->abstractType();
-        declareVariable(currentContext(), type, aid, node);
-    } else if (decl && decl->isFunctionDeclaration()) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        node->tree = node->tree->l;
-        const RangeInRevision & arange = editorFindRange(node, node);
-        QualifiedIdentifier aid = getIdentifier(node);
-        aliasMethodDeclaration(aid, arange, decl);
-    } else
-        appendProblem(node->tree, QString("undefined method `" + id.toString() + "'"));
-}
-
-void DeclarationBuilder::visitMethodCall(RubyAst *node)
-{
-    DUChainReadLocker lock(DUChain::lock());
-    ExpressionVisitor v(currentContext(), m_editor);
-    v.visitNode(node);
-
-    /* And now let's take a look at the method arguments */
-    DeclarationPointer lastMethod = v.lastDeclaration();
-    if (lastMethod) {
-        DUContext *argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
-        FunctionType::Ptr mtype = lastMethod->type<FunctionType>();
-        if (argCtx && mtype) {
-            RubyAst *aux = new RubyAst(node->tree->r, node->context);
-            QVector<Declaration *> args = argCtx->localDeclarations();
-            int i = 0;
-            lock.unlock();
-            DUChainWriteLocker wlock(DUChain::lock());
-            for (Node *n = aux->tree; n != NULL; n = n->next, i++) {
-                aux->tree = n;
-                ExpressionVisitor av(currentContext(), m_editor);
-                av.visitNode(aux);
-                AbstractType::Ptr merged = mergeTypes(args.at(i)->abstractType(),
-                                                      av.lastType().cast<AbstractType>());
-                args.at(i)->setType(merged);
-            }
-            wlock.unlock();
-        }
-    }
-}
-
-void DeclarationBuilder::visitInclude(RubyAst *node)
-{
-    RubyAst *module = new RubyAst(node->tree->r, node->context);
-    Declaration *decl = getModuleDeclaration(module);
-
-    if (decl) {
-        QList<MethodDeclaration *> iMethods = getDeclaredMethods(decl);
-        foreach (MethodDeclaration *md, iMethods) {
-            if (!md->isClassMethod()) {
-                Declaration *raw = dynamic_cast<Declaration *>(md);
-                {
-                    DUChainWriteLocker wlock(DUChain::lock());
-                    // TODO: instead of aliasing, register the include
-                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
-                }
-            }
-        }
-    }
-    delete module;
-}
-
-void DeclarationBuilder::visitExtend(RubyAst *node)
-{
-    RubyAst *module = new RubyAst(node->tree->r, node->context);
-    Declaration *decl = getModuleDeclaration(module);
-
-    if (decl) {
-        QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
-        foreach (MethodDeclaration *md, eMethods) {
-            if (md->isClassMethod()) {
-                Declaration *raw = dynamic_cast<Declaration *>(md);
-                {
-                    DUChainWriteLocker wlock(DUChain::lock());
-                    // TODO: instead of aliasing, register the exclude
-                    aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), raw);
-                }
-            }
-        }
-    }
-    delete module;
-}
-
-void DeclarationBuilder::visitLambda(RubyAst *node)
-{
-    Ruby::RubyAstVisitor::visitLambda(node);
-}
-
-void DeclarationBuilder::declareVariable(DUContext *ctx, AbstractType::Ptr type,
-                                         const QualifiedIdentifier &id, RubyAst *node)
-{
-    DUChainWriteLocker wlock(DUChain::lock());
-    const RangeInRevision range = editorFindRange(node, node);
-
-    /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = ctx->findDeclarations(id.first(), startPos(node), 0, DUContext::DontSearchInParent);
-
-    // TODO: Not sure if this is properly working...
-    if (!decs.isEmpty()) {
-        QList<Declaration *>::const_iterator it = decs.constEnd() - 1;
-        for (;; --it) {
-            if (dynamic_cast<VariableDeclaration *>(*it)) {
-                if (!wasEncountered(*it)) {
-                    setEncountered(*it);
-                    (*it)->setRange(range);
-                }
-                if ((*it)->abstractType() && !(*it)->abstractType()->equals(type.unsafeData())) {
-                    if ( IntegralType::Ptr integral = IntegralType::Ptr::dynamicCast((*it)->abstractType()) ) {
-                        if ( integral->dataType() == IntegralType::TypeMixed ) {
-                            // mixed to @p type
-                            (*it)->setType(type);
-                            return;
-                        }
-                    }
-                    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast((*it)->abstractType());
-                    if ( !unsure ) {
-                        unsure = UnsureType::Ptr(new UnsureType());
-                        unsure->addType((*it)->indexedType());
-                    }
-                    unsure->addType(type->indexed());
-                    (*it)->setType(unsure);
-                }
-                return;
-            }
-            if (it == decs.constBegin())
-                break;
-        }
-    }
-
-    VariableDeclaration *dec = openDefinition<VariableDeclaration>(id, range);
-    dec->setKind(Declaration::Instance);
-    dec->setType(type);
-    eventuallyAssignInternalContext();
-    DeclarationBuilderBase::closeDeclaration();
-}
-
-void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
-                                                const RangeInRevision &range,
-                                                Declaration *decl)
-{
-    MethodDeclaration *d = dynamic_cast<MethodDeclaration *>(decl);
-    setComment(d->comment());
-    MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
-    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-    openType(type);
-    alias->setInSymbolTable(false);
-    closeType();
-    closeDeclaration();
-
-    if (!type->returnType()) {
-        /* TODO: return the type of the last statement instead */
-        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeVoid)));
-    }
-    alias->setType(type);
-}
-
-void DeclarationBuilder::appendProblem(Node *node, const QString &msg)
-{
-    KDevelop::Problem *p = new KDevelop::Problem();
-    p->setFinalLocation(getDocumentRange(node));
-    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
-    p->setDescription(msg);
-    p->setSeverity(KDevelop::ProblemData::Error);
-    {
-        DUChainWriteLocker lock(DUChain::lock());
-        topContext()->addProblem(ProblemPointer(p));
-    }
-}
-
-KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
-{
-    return m_editor->findRange(rb_name_node(node->tree));
-}
-
-Declaration * DeclarationBuilder::getModuleDeclaration(const RubyAst *module)
-{
-    /*
-     * NOTE: this is a convenient method that allows us to retrieve the declaration of
-     * a module from an include/extend expression. This is just because the implementation
-     * of the ExpressionVisitor::visitMethodCall is still a bit clunky. Therefore,
-     * this method will eventually be gone.
-     */
-    DUChainReadLocker rlock(DUChain::lock());
-    RubyAst *aux = new RubyAst(module->tree, module->context);
-    DUContext *lastCtx = module->context;
-    Declaration *lastDecl = NULL;
-
-    if (aux->tree->kind == token_method_call)
-        aux->tree = aux->tree->l;
-    for (Node *n = aux->tree; n != NULL; n = n->next) {
-        QualifiedIdentifier id = getIdentifier(aux);
-        QList<Declaration *> list = lastCtx->findDeclarations(id.last());
-        if (!list.empty()) {
-            ClassDeclaration *d = dynamic_cast<ClassDeclaration *>(list.last());
-            if (!d || d->classType() != ClassDeclarationData::Interface) {
-                appendProblem(n, i18n("TypeError: wrong argument type (expected Module)"));
-                return NULL;
-            } else {
-                lastCtx = d->internalContext();
-                lastDecl = d;
-            }
-        }
-        aux->tree = n->next;
-    }
-    delete aux;
-    return lastDecl;
-}
-
-KDevelop::QualifiedIdentifier DeclarationBuilder::identifierForNode(NameAst *node)
-{
-    if (!node)
-        return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(node->value);
-}
-
 void DeclarationBuilder::closeDeclaration()
 {
     if (currentDeclaration() && lastType()) {
@@ -566,4 +72,884 @@ void DeclarationBuilder::closeDeclaration()
     DeclarationBuilderBase::closeDeclaration();
 }
 
+void DeclarationBuilder::startVisiting(RubyAst *node)
+{
+    m_unresolvedImports.clear();
+    m_injected = false;
+    lastClassModule = NULL;
+    m_lastMethodCall = NULL;
+    insideClassModule = false;
+    DeclarationBuilderBase::startVisiting(node);
 }
+
+void DeclarationBuilder::visitClassStatement(RubyAst *node)
+{
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray comment; /* TODO */
+    ClassDeclaration *baseClass = NULL;
+
+    if (!validReDeclaration(id, range)) {
+        node->foundProblems = true;
+        return;
+    }
+
+    /* First of all, open the declaration and set the comment */
+    ClassDeclaration *decl = reopenDeclaration<ClassDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
+    decl->clearBaseClass();
+    decl->clearModuleMixins();
+    decl->setKind(KDevelop::Declaration::Type);
+    m_accessPolicy.push(Declaration::Public);
+    lastClassModule = decl;
+    insideClassModule = true;
+    m_classDeclarations.push(DeclarationPointer(decl));
+
+    /*
+     * Now let's check for the base class. Ruby does not support multiple
+     * inheritance, and the access is always public.
+     */
+    Node *aux = node->tree;
+    node->tree = node->tree->cond;
+    if (node->tree) {
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        DeclarationPointer baseDecl = ev.lastDeclaration();
+        if (!baseDecl)
+            debug() << "Base class not found";
+        else {
+            baseClass = dynamic_cast<ClassDeclaration *>(baseDecl.data());
+            if (!baseClass)
+                appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
+            else if (baseClass->internalContext())
+                decl->setBaseClass(baseClass->indexedType());
+            else
+                debug() << "Error: found a valid base class but with no internal context";
+        }
+    }
+    node->tree = aux;
+
+    /*  Setup types and go for the class body */
+    ClassType::Ptr type = ClassType::Ptr(new ClassType());
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+
+    openContextForClassDefinition(node);
+    if (baseClass && baseClass->internalContext())
+        currentContext()->addImportedParentContext(baseClass->internalContext());
+    decl->setInternalContext(currentContext());
+    DeclarationBuilderBase::visitClassStatement(node);
+    closeContext();
+
+    closeType();
+    closeDeclaration();
+    m_classDeclarations.pop();
+    insideClassModule = false;
+    m_accessPolicy.pop();
+}
+
+void DeclarationBuilder::visitSingletonClass(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Node *aux = node->tree;
+
+    node->tree = node->tree->r;
+    ev.visitNode(node);
+    if (ev.lastType()) {
+        Declaration *d = ev.lastDeclaration().data();
+        if (d) {
+            m_instance = false;
+            if (!d->internalContext()) {
+                StructureType::Ptr sType;
+                UnsureType::Ptr ut = ev.lastType().cast<UnsureType>();
+                if (ut && ut->typesSize() > 0)
+                    sType = ut->types()[0].type<StructureType>();
+                else
+                    sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                if (sType) {
+                    d = sType->declaration(topContext());
+                    m_instance = true;
+                } else
+                    d = NULL;
+            }
+            if (d) {
+                lastClassModule = d;
+                insideClassModule = true;
+                m_classDeclarations.push(DeclarationPointer(d));
+                m_injected = true;
+                injectContext(d->internalContext());
+            }
+        }
+    }
+
+    node->tree = aux;
+    RubyAstVisitor::visitSingletonClass(node);
+    if (m_injected) {
+        closeInjectedContext();
+        m_injected = false;
+        m_classDeclarations.pop();
+        insideClassModule = false;
+    }
+}
+
+void DeclarationBuilder::visitModuleStatement(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray comment; /* TODO */
+
+    if (!validReDeclaration(id, range, false)) {
+        node->foundProblems = true;
+        return;
+    }
+
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
+    decl->clearModuleMixins();
+    decl->clearMixers();
+    decl->setKind(KDevelop::Declaration::Type);
+    m_accessPolicy.push(Declaration::Public);
+    lastClassModule = decl;
+    insideClassModule = true;
+
+    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    type->setDeclaration(decl);
+    decl->setType(type);
+    openType(type);
+
+    openContextForClassDefinition(node);
+    decl->setInternalContext(currentContext());
+    DeclarationBuilderBase::visitModuleStatement(node);
+    closeContext();
+
+    closeType();
+    closeDeclaration();
+    insideClassModule = false;
+    m_accessPolicy.pop();
+}
+
+void DeclarationBuilder::visitMethodStatement(RubyAst *node)
+{
+    DUChainWriteLocker lock(DUChain::lock());
+    RangeInRevision range = getNameRange(node);
+    QualifiedIdentifier id = getIdentifier(node);
+    const QByteArray comment; /* TODO */
+    bool injectedContext = false;
+    bool instance = true;
+    Node *aux = node->tree;
+
+    /*
+     * Check if this is a singleton method. If it is so, we have to determine
+     * what's the context to be injected in order to get everything straight.
+     */
+    node->tree = aux->cond;
+    if (valid_children(node->tree)) {
+        node->tree = node->tree->l;
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        if (ev.lastType()) {
+            Declaration *d = ev.lastDeclaration().data();
+            if (d) {
+                if (!d->internalContext()) {
+                    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                    d = (sType) ? sType->declaration(topContext()) : NULL;
+                    instance = true;
+                } else
+                    instance = false;
+                if (d) {
+                    injectedContext = true;
+                    injectContext(d->internalContext());
+                    node->tree = aux->cond->r;
+                    id = getIdentifier(node);
+                    range = editorFindRange(node, node);
+                }
+            }
+        }
+    }
+    node->tree = aux;
+
+    MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
+    if (!comment.isEmpty())
+        decl->setComment(comment);
+    decl->clearYieldTypes();
+    if (m_injected)
+        decl->setClassMethod(!m_instance);
+    else
+        decl->setClassMethod(!instance);
+    FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
+    if (currentContext()->type() == DUContext::Class)
+        decl->setAccessPolicy(currentAccessPolicy());
+
+    openType(type);
+    decl->setInSymbolTable(false);
+    decl->setType(type);
+    decl->clearDefaultParameters();
+    DeclarationBuilderBase::visitMethodStatement(node);
+    closeDeclaration();
+    eventuallyAssignInternalContext();
+    closeType();
+
+    /*
+     * In Ruby, a method returns the last expression if no return expression
+     * has been fired. Thus, the type of the last expression has to be mixed
+     * into the return type of this method.
+     */
+    node->tree = aux->l;
+    if (node->tree && node->tree->l) {
+        node->tree = get_last_expr(node->tree->l);
+        if (node->tree->kind != token_return) {
+            ExpressionVisitor ev(node->context, m_editor);
+            ev.visitNode(node);
+            if (ev.lastType())
+                type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
+        }
+    }
+    node->tree = aux;
+
+    if (!type->returnType())
+        type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
+    decl->setType(type);
+    decl->setInSymbolTable(true);
+
+    if (injectedContext)
+        closeInjectedContext();
+}
+
+void DeclarationBuilder::visitParameter(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(currentDeclaration());
+    ExpressionVisitor ev(currentContext(), m_editor);
+    ev.visitParameter(node);
+    AbstractType::Ptr type = ev.lastType();
+
+    /* Just grab the left side if this is an optional parameter */
+    if (node->tree->l) {
+        Node *aux = node->tree->l;
+        node->tree = node->tree->r;
+        mDecl->addDefaultParameter(IndexedString(m_editor->tokenToString(node->tree)));
+        node->tree = aux;
+    }
+
+    /* Finally, declare the parameter */
+    FunctionType::Ptr mType = currentType<FunctionType>();
+    if (mType) {
+        // TODO: !type
+        mType->addArgument(type);
+        declareVariable(getIdentifier(node), type, node);
+    }
+}
+
+void DeclarationBuilder::visitVariable(RubyAst *node)
+{
+    QualifiedIdentifier id = getIdentifier(node);
+    AbstractType::Ptr type = getBuiltinsType("Object", currentContext());
+    declareVariable(id, type, node);
+}
+
+void DeclarationBuilder::visitBlock(RubyAst *node)
+{
+    m_accessPolicy.push(Declaration::Public);
+    RubyAstVisitor::visitBlock(node);
+    m_accessPolicy.pop();
+}
+
+void DeclarationBuilder::visitBlockVariables(RubyAst *node)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
+    Node *n = node->tree;
+    if (!n)
+        return;
+
+    uint max = 0, i = 0;
+    const YieldType *yieldList = NULL;
+    if (last) {
+        yieldList = last->yieldTypes();
+        max = last->yieldTypesSize();
+    }
+
+    AbstractType::Ptr type;
+    for (Node *aux = n; aux != NULL; aux = aux->next, i++) {
+        node->tree = aux;
+        if (yieldList && i < max)
+            type = yieldList[i].type.abstractType();
+        else
+            type = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+        rlock.unlock();
+        declareVariable(getIdentifier(node), type, node);
+        rlock.lock();
+    }
+}
+
+void DeclarationBuilder::visitReturnStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitReturnStatement(node);
+    DUChainWriteLocker wlock(DUChain::lock());
+    if (node->tree->l != NULL) {
+        node->tree = node->tree->l;
+        if (!hasCurrentType()) {
+            appendProblem(node->tree, i18n("Return statement not within function declaration"));
+            return;
+        }
+        TypePtr<FunctionType> t = currentType<FunctionType>();
+        if (!t) // the case of: a = -> { return 1 }
+            return;
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        AbstractType::Ptr rType = t->returnType();
+        t->setReturnType(mergeTypes(ev.lastType(), rType));
+    }
+}
+
+void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
+{
+    QList<AbstractType::Ptr> values;
+    QList<DeclarationPointer> declarations;
+    QList<bool> alias;
+
+    debug() << "==== Starting with the assignment statement !!!!";
+    DUChainReadLocker lock(DUChain::lock());
+
+    /* First of all, fetch the types and declaration on the right side */
+    RubyAst *aux = new RubyAst(node->tree->r, node->context);
+    for (Node *n = aux->tree; n != NULL; n = n->next) {
+        ExpressionVisitor v(currentContext(), m_editor);
+        aux->tree = n;
+        lock.unlock();
+        // TODO: improve this
+        DeclarationBuilderBase::visitNode(aux);
+        lock.lock();
+        v.visitNode(aux);
+        values << v.lastType();
+        alias << v.lastAlias();
+        declarations << v.lastDeclaration();
+    }
+    lock.unlock();
+
+    /*
+     * Check if we can unpack. If it's possible, do it and get out! We can
+     * unpack if the following conditions are satisfied:
+     *  - More than 1 expressions on the left side.
+     *  - Just one expression on the right side, which has Array as its type.
+     */
+    int rsize = values.length();
+    if (rsize == 1) {
+        int rest = nodeListSize(node->tree->l);
+        ClassType::Ptr ct = values.first().cast<ClassType>();
+        if (rest > 1 && ct && ct->contentType()) {
+            lock.lock();
+            QualifiedIdentifier qi = ct.unsafeData()->declaration(topContext())->qualifiedIdentifier();
+            lock.unlock();
+            if (qi == QualifiedIdentifier("Array")) {
+                for (Node *n = node->tree->l; n != NULL; n = n->next) {
+                    aux->tree = n;
+                    QualifiedIdentifier id = getIdentifier(aux);
+                    declareVariable(id, ct->contentType().abstractType(), aux);
+                }
+                delete aux;
+                return;
+            }
+        }
+    }
+
+    /*
+     * We cannot unpack, so iterate over the left side expressions
+     * and assign types.
+     */
+    int i = 0;
+    AbstractType::Ptr type;
+    for (Node *n = node->tree->l; n != NULL; n = n->next, i++) {
+        if (n->kind == token_method_call)
+            continue;
+        aux->tree = n;
+        if (has_star(n)) {
+            int rest = nodeListSize(n) - 1;
+            int pack = rsize - i - rest;
+            ClassType::Ptr newType = getBuiltinsType("Array", currentContext()).cast<ClassType>();
+            DUChainWriteLocker wlock(DUChain::lock());
+            for (int j = pack; j > 0; j--, i++)
+                newType->addContentType(values.at(i));
+            wlock.unlock();
+            i--;
+            if (!is_just_a_star(n)) {
+                QualifiedIdentifier id = getIdentifier(aux);
+                declareVariable(id, newType.cast<AbstractType>(), aux);
+            }
+        } else if (i < rsize) {
+            if (alias.at(i)) {
+                DUChainWriteLocker wlock(DUChain::lock());
+                RangeInRevision range = getNameRange(aux);
+                QualifiedIdentifier id = getIdentifier(aux);
+                AliasDeclaration *d = openDeclaration<AliasDeclaration>(id, range);
+                d->setAliasedDeclaration(declarations.at(i).data());
+                closeDeclaration();
+            } else {
+                type = values.at(i);
+                if (!type) // HACK: provisional fix, should be removed in the future
+                    type = getBuiltinsType("Object", currentContext());
+                QualifiedIdentifier id = getIdentifier(aux);
+                declareVariable(id, type, aux);
+            }
+        } else {
+            // TODO: the following shows that we need some caching system at the ExpressionVisitor
+            lock.lock();
+            type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            lock.unlock();
+            QualifiedIdentifier id = getIdentifier(aux);
+            declareVariable(id, type, aux);
+        }
+    }
+    delete aux;
+}
+
+void DeclarationBuilder::visitAliasStatement(RubyAst *node)
+{
+    RubyAst *right = new RubyAst(node->tree->r, node->context);
+    QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
+    const RangeInRevision &range = editorFindRange(right, right);
+    KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
+
+    if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        // If the global variable on the right is not declared, declare it as nil
+        if (!decl) {
+            // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
+            AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            VariableDeclaration *vDecl = openDefinition<VariableDeclaration>(id, range);
+            vDecl->setVariableKind(right->tree);
+            vDecl->setKind(Declaration::Instance);
+            vDecl->setType(type);
+            eventuallyAssignInternalContext();
+            DeclarationBuilderBase::closeDeclaration();
+            decl = vDecl;
+        }
+        node->tree = node->tree->l;
+        QualifiedIdentifier aid = getIdentifier(node);
+        AbstractType::Ptr type = decl->abstractType();
+        declareVariable(aid, type, node);
+    } else if (decl && decl->isFunctionDeclaration()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
+        node->tree = node->tree->l;
+        const RangeInRevision & arange = editorFindRange(node, node);
+        QualifiedIdentifier aid = getIdentifier(node);
+        aliasMethodDeclaration(aid, arange, md);
+    } else
+        appendProblem(node->tree, i18n("undefined method `%1'", id.toString()));
+}
+
+void DeclarationBuilder::visitMethodCall(RubyAst *node)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    Node *aux = node->tree;
+
+    /*
+     * Handle chained method calls. Take a look at the implementation of
+     * RubyAstVisitor::visitMethodCall() for more details.
+     */
+    node->tree = aux->l;
+    if (node->tree->kind == token_method_call) {
+        lock.unlock();
+        visitMethodCall(node);
+        lock.lock();
+    }
+    node->tree = aux;
+
+    ExpressionVisitor v(currentContext(), m_editor);
+    v.visitNode(node);
+    DeclarationPointer lastMethod = v.lastDeclaration();
+
+    /* Let's take a look at the method arguments */
+    lock.unlock();
+    visitMethodCallArgs(node, lastMethod);
+    lock.lock();
+
+    /* And last but not least, go for the block */
+    node->tree = aux->cond;
+    m_lastMethodCall = lastMethod.data();
+    lock.unlock();
+    visitBlock(node);
+    lock.lock();
+    m_lastMethodCall = NULL;
+    node->tree = aux;
+}
+
+void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
+{
+    RubyAst *module = new RubyAst(node->tree->r, node->context);
+    ModuleDeclaration *decl = getModuleDeclaration(module);
+    if (decl) {
+        // Register the Module mixin
+        if (lastClassModule) {
+            ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
+            if (current) {
+                DUChainWriteLocker lock(DUChain::lock());
+                ModuleMixin mixin;
+                mixin.included = include;
+                mixin.module = decl->indexedType();
+                current->addModuleMixin(mixin);
+                mixin.module = current->indexedType();
+                decl->addMixer(mixin);
+            }
+        }
+
+        // Add all the available methods from the mixed in module
+        QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
+        foreach (MethodDeclaration *md, eMethods) {
+            if (md->isClassMethod() ^ include) {
+                DUChainWriteLocker wlock(DUChain::lock());
+                aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), md);
+            }
+        }
+    }
+    delete module;
+}
+
+void DeclarationBuilder::visitLambda(RubyAst *node)
+{
+    // TODO
+    Ruby::RubyAstVisitor::visitLambda(node);
+}
+
+void DeclarationBuilder::visitForStatement(RubyAst *node)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    Node *aux = node->tree;
+    node->tree = node->tree->cond;
+    ExpressionVisitor ev(currentContext(), m_editor);
+
+    ev.visitNode(node);
+    AbstractType::Ptr type = ev.lastType();
+    if (type) {
+        ClassType::Ptr ctype = type.cast<ClassType>();
+        if (ctype && ctype->contentType())
+            type = ctype->contentType().abstractType();
+        else
+            type = getBuiltinsType("Object", currentContext());
+    } else
+        type = getBuiltinsType("Object", currentContext());
+
+    node->tree = aux->r;
+    for (Node *n = node->tree; n != NULL; n = n->next) {
+        node->tree = n;
+        QualifiedIdentifier id = getIdentifier(node);
+        rlock.unlock();
+        declareVariable(id, type, node);
+        rlock.lock();
+    }
+    node->tree = aux;
+}
+
+void DeclarationBuilder::visitAccessSpecifier(short int policy)
+{
+    switch (policy) {
+        case 0:
+            setAccessPolicy(KDevelop::Declaration::Public);
+            break;
+        case 1:
+            setAccessPolicy(KDevelop::Declaration::Protected);
+            break;
+        case 2:
+            setAccessPolicy(KDevelop::Declaration::Private);
+    }
+}
+
+void DeclarationBuilder::visitYieldStatement(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    MethodDeclaration *mDecl = currentDeclaration<MethodDeclaration>();
+    Node *n = node->tree;
+    if (mDecl && n->l) {
+        ExpressionVisitor ev(currentContext(), m_editor);
+        uint i = 0;
+        for (Node *aux = n->l; aux != NULL; aux = aux->next, i++) {
+            node->tree = aux;
+            ev.visitNode(node);
+            YieldType yt = { ev.lastType()->indexed() };
+            mDecl->replaceYieldTypes(yt, i);
+        }
+    }
+    node->tree = n;
+}
+
+KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
+{
+    return m_editor->findRange(rb_name_node(node->tree));
+}
+
+void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range = editorFindRange(node, node);
+    KDevelop::QualifiedIdentifier className(getName(node));
+
+    openContext(node, range, DUContext::Class, className);
+    currentContext()->setLocalScopeIdentifier(className);
+}
+
+template<typename T>
+T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    Declaration *res = NULL;
+    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+
+    foreach (Declaration *d, decls) {
+        Declaration *fitting = dynamic_cast<T*>(d);
+        if (fitting && (d->topContext() == currentContext()->topContext())) {
+            debug() << "Reopening the following declaration: " << d->toString();
+            openDeclarationInternal(d);
+            d->setRange(range);
+            setEncountered(d);
+            // TODO: register the re-opening
+            res = d;
+            break;
+        } else
+            debug() << "Do not reopen since it's not in the same top context";
+    }
+
+    if (!res)
+        res = openDeclaration<T>(id, range);
+    return static_cast<T*>(res);
+}
+
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
+{
+    DUChainWriteLocker wlock(DUChain::lock());
+    RangeInRevision range;
+    Node *aux = node->tree;
+    QualifiedIdentifier rId(id);
+    VariableDeclaration *dec = NULL;
+    bool hintContainer = false;
+
+    /* Take care of the special a[...] case */
+    if (aux->kind == token_array_value) {
+        node->tree = aux->l;
+        rId = getIdentifier(node);
+        hintContainer = true;
+    }
+    range = editorFindRange(node, node);
+
+    if ((is_ivar(node->tree) || is_cvar(node->tree)) && !m_classDeclarations.isEmpty()) {
+        DUContext *internal = m_classDeclarations.last()->internalContext();
+        DUContext *previousCtx = currentContext();
+        injectContext(internal);
+        VariableDeclaration *var = reopenDeclaration<VariableDeclaration>(rId, range);
+        var->setRange(RangeInRevision(internal->range().start, internal->range().start));
+        var->setAutoDeclaration(true);
+        previousCtx->createUse(var->ownIndex(), range);
+        var->setVariableKind(node->tree);
+        var->setKind(Declaration::Instance);
+        var->setType(mergeTypes(var->abstractType(), type));
+        DeclarationBuilderBase::closeDeclaration();
+        closeInjectedContext();
+        node->tree = aux;
+        return;
+    }
+
+    /* Let's check if this variable is already declared */
+    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    if (!decs.isEmpty()) {
+        dec = dynamic_cast<VariableDeclaration *>(decs.last());
+        if (dec) {
+            ClassType::Ptr ct = dec->type<ClassType>();
+            if (ct && hintContainer) {
+                ct->addContentType(type);
+                dec->setType(AbstractType::Ptr::dynamicCast(ct));
+            } else
+                dec->setType(mergeTypes(dec->abstractType(), type));
+            node->tree = aux;
+            return;
+        }
+    }
+
+    dec = openDefinition<VariableDeclaration>(rId, range);
+    dec->setVariableKind(node->tree);
+    dec->setKind(Declaration::Instance);
+    dec->setType(type);
+    DeclarationBuilderBase::closeDeclaration();
+    node->tree = aux;
+}
+
+void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
+                                                const RangeInRevision &range,
+                                                MethodDeclaration *decl)
+{
+    setComment(decl->comment());
+    MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
+    alias->setType(decl->type<FunctionType>());
+    closeDeclaration();
+}
+
+ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
+{
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Declaration *d;
+
+    ev.visitNode(module);
+    d = ev.lastDeclaration().data();
+    if (d) {
+        ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(d);
+        ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
+        if (!cDecl && found)
+            return found;
+        appendProblem(module->tree, i18n("TypeError: wrong argument type (expected Module)"));
+    }
+    return NULL;
+}
+
+QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    QList<MethodDeclaration *> res;
+    DUContext *internal = decl->internalContext();
+    if (!internal)
+        return res;
+
+    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
+    for (int i = 0; i < list.size(); i++) {
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
+        if (md)
+            res << md;
+    }
+    return res;
+}
+
+bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    QList<Declaration *> decls = currentContext()->findDeclarations(id, range.end, AbstractType::Ptr(NULL),
+                                                                    NULL, DUContext::DontSearchInParent);
+
+    foreach (Declaration *d, decls) {
+        ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
+        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(d);
+        if ((cd && !isClass) || (md && !cd && isClass)) {
+            const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
+            rlock.unlock();
+            appendProblem(range, msg);
+            return false;
+        }
+    }
+    return true;
+}
+
+void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    RubyAst *node = new RubyAst(mc->tree->r, mc->context);
+    VariableDeclaration *vd;
+    int total, left = 0, right = 0;
+    bool mark = false, starSeen = false;
+
+    DUContext *argCtx = NULL;
+    if (lastMethod.data())
+        argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
+    if (!argCtx || !lastMethod->type<FunctionType>()) {
+        /*
+         * We couldn't get enough info, visit the list of parameters as a
+         * regular list and get out.
+         */
+        for (Node *n = node->tree; n; n = n->next) {
+            node->tree = n;
+            rlock.unlock();
+            DeclarationBuilderBase::visitNode(node);
+            rlock.lock();
+        }
+        delete node;
+        return;
+    }
+
+    QVector<Declaration *> args = argCtx->localDeclarations();
+    rlock.unlock();
+    if (args.isEmpty())
+        total = 0;
+    else {
+        vd = dynamic_cast<VariableDeclaration *>(args.last());
+        total = args.size() - vd->isBlock();
+    }
+
+    /*
+     * Normal arguments can appear before and/or after a list of opt_args
+     * and a rest_arg. Therefore, these kind of arguments will mark the left
+     * side and the right side. This is important to know because of the
+     * flexibility that Ruby gives to the programmer.
+     */
+    for (int i = 0; i < total; i++) {
+        vd = dynamic_cast<VariableDeclaration *>(args.at(i));
+        if (!vd->hasStar() && !vd->isOpt()) {
+            (mark) ? right++ : left++;
+        } else if (vd->hasStar()) {
+            starSeen = true;
+            mark = true;
+        } else
+            mark = true;
+    }
+
+    /* We have enough info to know if we have to raise an ArgumentError */
+    int nCaller = nodeListSize(node->tree);
+    if (nCaller < (left + right)) {
+        appendProblem(mc->tree, i18n("wrong number of arguments (%1 for %2)"
+                                       " (ArgumentError)", nCaller, left + right));
+        delete node;
+        return;
+    } else if (!starSeen && (total < nCaller)) {
+        appendProblem(mc->tree, i18n("wrong number of arguments (%1 for %2)"
+                                       " (ArgumentError)", nCaller, total));
+        delete node;
+        return;
+    }
+
+    /*
+     * Everything is fine, do the iteration. Note that opt_args and rest_args
+     * will be fed depending on the left and right counters.
+     */
+    int i = 0;
+    int rest = nCaller - left - right;
+    DUChainWriteLocker wlock(DUChain::lock());
+    for (Node *n = node->tree; n; i++) {
+        vd = dynamic_cast<VariableDeclaration *>(args.at(i));
+        node->tree = n;
+        if (vd->isOpt()) {
+            if (rest > 0)
+                rest--;
+            else
+                continue;
+        } else if (vd->hasStar()) {
+            ClassType::Ptr ct = vd->type<ClassType>();
+            if (!ct) {// TODO: shouldn't happen but it does :(
+                n = n->next;
+                continue;
+            }
+            for (int j = rest; j > 0; j--) {
+                ExpressionVisitor av(currentContext(), m_editor);
+                av.visitNode(node);
+                if (av.lastType())
+                    ct->addContentType(av.lastType());
+                node->tree = node->tree->next;
+            }
+            vd->setType(ct);
+            n = node->tree;
+            continue;
+        }
+        ExpressionVisitor av(currentContext(), m_editor);
+        wlock.unlock();
+        DeclarationBuilderBase::visitNode(node);
+        wlock.lock();
+        av.visitNode(node);
+        AbstractType::Ptr last = av.lastType().cast<AbstractType>();
+        AbstractType::Ptr original = args.at(i)->abstractType();
+        args.at(i)->setType(mergeTypes(original, last));
+        n = n->next;
+    }
+    delete node;
+}
+
+} // End of namespace Ruby

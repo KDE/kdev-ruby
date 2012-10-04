@@ -18,34 +18,53 @@
  */
 
 
-#include "classdeclaration.h"
+#include <duchain/declarations/classdeclaration.h>
 
 
 namespace Ruby
 {
 
-RubyClassDeclaration::RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::ClassDeclaration(range, ctx)
+ClassDeclaration::ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
+    : ModuleDeclaration(range, ctx)
 {
-
+    /* There's nothing to do here */
 }
 
-RubyClassDeclaration::RubyClassDeclaration(const KDevelop::ClassDeclaration &rhs)
-    : KDevelop::ClassDeclaration(rhs)
+ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
+    : ModuleDeclaration(rhs)
 {
-
+    m_baseClass = rhs.baseClass();
 }
 
-RubyClassDeclaration::RubyClassDeclaration(KDevelop::ClassDeclarationData &data)
-    : KDevelop::ClassDeclaration(data)
+ClassDeclaration::ClassDeclaration(ModuleDeclarationData &data)
+    : ModuleDeclaration(data)
 {
-
+    /* There's nothing to do here */
 }
 
-RubyClassDeclaration::RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : KDevelop::ClassDeclaration(data, range, ctx)
+void ClassDeclaration::setBaseClass(KDevelop::IndexedType base)
 {
+    m_baseClass = base;
+}
 
+void ClassDeclaration::clearBaseClass()
+{
+    m_baseClass = KDevelop::IndexedType(0);
+}
+
+KDevelop::IndexedType ClassDeclaration::baseClass() const
+{
+    return m_baseClass;
+}
+
+QString ClassDeclaration::toString() const
+{
+    return "class " + identifier().toString();
+}
+
+KDevelop::Declaration * ClassDeclaration::clonePrivate() const
+{
+    return new ClassDeclaration(*this);
 }
 
 } // End of namespace Ruby

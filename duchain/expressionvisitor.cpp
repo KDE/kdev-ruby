@@ -24,14 +24,16 @@
 #include <language/duchain/declaration.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/types/integraltype.h>
+#include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/unsuretype.h>
 
 // Ruby
 #include <rubydefs.h>
+#include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/classdeclaration.h>
-#include <duchain/helpers.h>
 
 
 using namespace KDevelop;
@@ -42,6 +44,7 @@ ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(NULL);
+    m_lastCtx = NULL;
 }
 
 ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
@@ -49,28 +52,55 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
         m_lastDeclaration(NULL), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(NULL);
+    m_lastCtx = NULL;
 }
 
-void ExpressionVisitor::visitVariable(RubyAst *node)
+void ExpressionVisitor::setContext(DUContext *ctx)
 {
-    debug() << "HERE !!! " << node->tree->name;
+    m_ctx = ctx;
+    m_lastType = AbstractType::Ptr(NULL);
+    m_lastDeclaration = NULL;
+    m_alias = false;
+    m_lastCtx = NULL;
+}
+
+void ExpressionVisitor::visitParameter(RubyAst *node)
+{
+    AbstractType::Ptr obj;
+
+    if (is_block_arg(node->tree)) {
+        obj = getBuiltinsType("Proc", m_ctx);
+    } else if (is_rest_arg(node->tree)) {
+        obj = getBuiltinsType("Array", m_ctx);
+        obj.cast<ClassType>();
+    } else if (node->tree->r != NULL) {
+        ExpressionVisitor da(this);
+        Node *n = node->tree;
+        node->tree = node->tree->r;
+        da.visitNode(node);
+        node->tree = n;
+        obj = da.lastType();
+    } else
+        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+    encounter(obj);
 }
 
 void ExpressionVisitor::visitName(RubyAst *node)
 {
-    if (!node->tree) // TODO: clean, it shouldn't happen, but it does :(
+    if (!node->tree)
         return;
+
+    DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
-    const CursorInRevision cursor = m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
-    QList<Declaration *> decls = m_ctx->findDeclarations(id.first(), cursor, 0, DUContext::DontSearchInParent);
-    if (!decls.isEmpty()) {
-        Declaration *d = decls.last();
-        m_alias = dynamic_cast<AliasDeclaration *>(d);
-        m_lastDeclaration = d;
-        encounter(d->abstractType());
-    } else {
+    RangeInRevision range = m_editor->findRange(node->tree);
+    Declaration * decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+
+    if (decl) {
+        m_alias = dynamic_cast<AliasDeclaration *>(decl);
+        m_lastDeclaration = decl;
+        encounter(decl->abstractType());
+    } else
         debug() << "Declaration NOT FOUND";
-    }
 }
 
 void ExpressionVisitor::visitTrue(RubyAst *)
@@ -111,7 +141,13 @@ void ExpressionVisitor::visitEncoding(RubyAst *)
 
 void ExpressionVisitor::visitSelf(RubyAst *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Object", m_ctx);
+    DUChainReadLocker lock(DUChain::lock());
+    AbstractType::Ptr obj;
+    if (m_ctx->owner()) {
+        obj = m_ctx->owner()->abstractType();
+        m_lastDeclaration = DeclarationPointer(m_ctx->owner());
+    } else
+        obj = getBuiltinsType("Object", m_ctx);
     encounter(obj);
 }
 
@@ -151,38 +187,79 @@ void ExpressionVisitor::visitArray(RubyAst *node)
 {
     RubyAstVisitor::visitArray(node);
     AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
-    VariableLengthContainer::Ptr ptr = getContainer(obj, node);
-    encounter<VariableLengthContainer>(ptr);
+    ClassType::Ptr ptr = getContainer(obj, node);
+    encounter<ClassType>(ptr);
 }
 
 void ExpressionVisitor::visitHash(RubyAst *node)
 {
     RubyAstVisitor::visitHash(node);
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
-    VariableLengthContainer::Ptr ptr = getContainer(obj, node, true);
-    encounter<VariableLengthContainer>(ptr);
+    ClassType::Ptr ptr = getContainer(obj, node, true);
+    encounter<ClassType>(ptr);
+}
+
+void ExpressionVisitor::visitArrayValue(RubyAst *node)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    RubyAstVisitor::visitArrayValue(node);
+    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    QualifiedIdentifier id = getIdentifier(child);
+    RangeInRevision range = m_editor->findRange(child->tree);
+    Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    if (decl) {
+        ClassType::Ptr vc = decl->abstractType().cast<ClassType>();
+        if (vc)
+            encounter(vc->contentType().abstractType());
+    }
+    delete child;
 }
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
-    RubyAstVisitor::visitMethodCall(node);
-    // TODO: visit parameters ?
+    DUChainReadLocker rlock(DUChain::lock());
+    Node *n = node->tree;
 
-    Declaration *decl = findDeclarationForCall(node, m_ctx);
-    if (decl) {
-        AbstractType::Ptr type;
-        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(decl);
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
-        m_lastDeclaration = decl;
-        if (md) {
-            // TODO
-        } else if (cd) {
-            type = cd->abstractType();
-            encounter(type);
-        } else
-            debug() << "Found declaration is not callable";
-    } else
-        debug() << "Declaration not found";
+    node->tree = n->l;
+    if (node->tree->kind == token_method_call)
+        visitMethodCall(node);
+    visitMethodCallMembers(node);
+    node->tree = n;
+}
+
+void ExpressionVisitor::visitSuper(RubyAst *)
+{
+    DUChainReadLocker lock(DUChain::lock());
+    ClassDeclaration *cDecl = NULL;
+    DUContext *ctx = m_ctx->parentContext();
+    Declaration *md = m_ctx->owner();
+
+    if (!dynamic_cast<MethodDeclaration *>(md))
+        return;
+
+    while (ctx) {
+        Declaration *d = ctx->owner();
+        cDecl = dynamic_cast<ClassDeclaration *>(d);
+        if (cDecl)
+            break;
+        ctx = ctx->parentContext();
+    }
+    if (!cDecl)
+        return;
+
+    StructureType::Ptr type = cDecl->baseClass().abstractType().cast<StructureType>();
+    if (!type)
+        return;
+    ctx = type->internalContext(m_ctx->topContext());
+    if (!ctx)
+        return;
+
+    foreach (Declaration *d, ctx->findLocalDeclarations(md->identifier())) {
+        if (d->type<FunctionType>()) {
+            encounter(d->type<FunctionType>()->returnType());
+            break;
+        }
+    }
 }
 
 void ExpressionVisitor::visitLambda(RubyAst *node)
@@ -192,33 +269,74 @@ void ExpressionVisitor::visitLambda(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitParameter(RubyAst *node)
+void ExpressionVisitor::visitWhileStatement(RubyAst *)
 {
-    AbstractType::Ptr obj;
-
-    if (is_block_arg(node->tree)) {
-        obj = getBuiltinsType("Proc", m_ctx);
-    } else if (is_rest_arg(node->tree)) {
-        obj = getBuiltinsType("Array", m_ctx);
-        obj.cast<VariableLengthContainer>();
-    } else if (node->tree->r != NULL) {
-        ExpressionVisitor da(this);
-        Node *n = node->tree;
-        node->tree = node->tree->r;
-        da.visitNode(node);
-        node->tree = n;
-        obj = da.lastType();
-    } else
-        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+    AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
     encounter(obj);
 }
 
-TypePtr<AbstractType> ExpressionVisitor::getBuiltinsType(const QString &desc, DUContext *ctx)
+void ExpressionVisitor::visitForStatement(RubyAst *node)
 {
-    QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
-    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
-    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
-    return type;
+    ExpressionVisitor ev(this);
+    Node *n = node->tree;
+    node->tree = n->l;
+    RubyAstVisitor::visitNode(node);
+    node->tree = n->cond;
+    ev.visitNode(node);
+    node->tree = n;
+    encounter(ev.lastType());
+}
+
+void ExpressionVisitor::visitBinary(RubyAst *node)
+{
+    Node *n = node->tree;
+    node->tree = node->tree->l;
+    ExpressionVisitor ev(this);
+    ev.visitNode(node);
+    AbstractType::Ptr left = ev.lastType();
+    node->tree = n->r;
+    ev.visitNode(node);
+    node->tree = n;
+    encounter(mergeTypes(left, ev.lastType()));
+}
+
+void ExpressionVisitor::visitBoolean(RubyAst *)
+{
+    AbstractType::Ptr truthy = getBuiltinsType("TrueClass", m_ctx);
+    AbstractType::Ptr falsy = getBuiltinsType("FalseClass", m_ctx);
+    encounter(mergeTypes(truthy, falsy));
+}
+
+void ExpressionVisitor::visitIfStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitIfStatement(node);
+    Node *aux = node->tree;
+    node->tree = aux->l;
+    ExpressionVisitor::visitLastStatement(node);
+    AbstractType::Ptr res = lastType();
+
+    for (Node *n = aux->r; n != NULL; n = n->r) {
+        node->tree = n;
+        ExpressionVisitor::visitLastStatement(node);
+        res = mergeTypes(res, lastType());
+    }
+    encounter(res);
+    node->tree = aux;
+}
+
+void ExpressionVisitor::visitCaseStatement(RubyAst *node)
+{
+    RubyAstVisitor::visitCaseStatement(node);
+    Node *aux = node->tree;
+    AbstractType::Ptr res;
+
+    for (Node *n = aux->l; n != NULL; n = n->r) {
+        node->tree = n->l;
+        ExpressionVisitor::visitLastStatement(node);
+        res = mergeTypes(res, lastType());
+    }
+    encounter(res);
+    node->tree = aux;
 }
 
 template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
@@ -226,63 +344,95 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
     encounter(AbstractType::Ptr::staticCast(type));
 }
 
-VariableLengthContainer::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
+ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
-    VariableLengthContainer::Ptr vc = ptr.cast<VariableLengthContainer>(); // BUG: this is always returning NULL, why ?
-    if (vc) {
+    DUChainReadLocker lock(DUChain::lock());
+    ClassType::Ptr ct = ptr.cast<ClassType>();
+    if (ct) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
         for (Node *n = ast->tree; n != NULL; n = n->next) {
-            (hasKey) ? ev.visitBinary(ast) : ev.visitNode(ast);
-            vc->addContentType(ev.lastType());
+            if (hasKey) {
+                Node *aux = ast->tree;
+                ast->tree = ast->tree->r;
+                ev.visitNode(ast);
+                ast->tree = aux;
+            } else
+                ev.visitNode(ast);
+            ct->addContentType(ev.lastType());
             ast->tree = n->next;
         }
         delete ast;
     } else
         kWarning() << "Something went wrong! Fix code...";
-    return vc;
+    return ct;
 }
 
-Declaration * ExpressionVisitor::findDeclarationForCall(RubyAst *ast, DUContext *ctx)
+void ExpressionVisitor::visitLastStatement(RubyAst *node)
 {
-    DUChainReadLocker lock(DUChain::lock());
-    DUContext *lastCtx = ctx;
-    QList<Declaration *> stack, aux;
-    RubyAst *left = new RubyAst(ast->tree->l, ast->context);
+    if (!node->tree)
+        return;
 
-    for (Node *n = ast->tree->l; n != NULL; n = n->next) {
-        left->tree = n;
-        QualifiedIdentifier id = getIdentifier(left);
-        aux = lastCtx->findDeclarations(id.last());
-        aux << findInternalDeclaration(lastCtx, id.last()); // TODO: clean this
-        if (!aux.empty() && aux.last()) {
-            stack << aux.last();
-            if (aux.last()->internalContext())
-                lastCtx = aux.last()->internalContext();
-        } else
-            debug() << "Something went wrong : " << getIdentifier(left).toString();
+    Node *n = node->tree;
+    if (n->last)
+        node->tree = n->last;
+    ExpressionVisitor::visitNode(node);
+    node->tree = n;
+}
+
+void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
+{
+    RangeInRevision range;
+    DUContext *ctx = (m_lastCtx) ? m_lastCtx : m_ctx;
+    ExpressionVisitor ev(this);
+
+    /*
+     * Go to the next element since we're coming from a recursion and we've
+     * already checked its children nodes.
+     */
+    if (node->tree->kind == token_method_call)
+        node->tree = node->tree->next;
+
+    // And this is the loop that does the dirty job.
+    for (Node *aux = node->tree; aux; aux = aux->next) {
+        node->tree = aux;
+        range = m_editor->findRange(node->tree);
+        ev.setContext(ctx);
+        ev.visitNode(node);
+        m_lastDeclaration = ev.lastDeclaration().data();
+        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+
+        /*
+         * If this is a StructureType, it means that we're in a case like;
+         * "A::B::" and therefore the next context should be A::B.
+         */
+        if (!sType) {
+            // It's not a StructureType, therefore it's a variable or a method.
+            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            if (!fType)
+                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : NULL;
+            else {
+                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                if (rType) {
+                    encounter(fType->returnType());
+                    ctx = rType->internalContext(ctx->topContext());
+                } else {
+                    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(fType->returnType());
+                    if (ut)
+                        encounter<UnsureType>(ut);
+                    ctx = NULL;
+                }
+            }
+        } else {
+            encounter(ev.lastType());
+            ctx = sType->internalContext(ctx->topContext());
+        }
+
+        // No context found, we can't go any further.
+        if (!ctx)
+            return;
     }
-
-    // TODO: should be handled in a more formal way
-    if (stack.size() > 1 && stack.last()->identifier().toString() == "new")
-        return stack.at(stack.size() - 2);
-    return (!stack.isEmpty()) ? stack.last() : NULL;
-}
-
-const QualifiedIdentifier ExpressionVisitor::getIdentifier(const RubyAst *ast)
-{
-    NameAst nameAst(ast);
-    QualifiedIdentifier name = QualifiedIdentifier(nameAst.value);
-    return name;
-}
-
-Declaration * ExpressionVisitor::findInternalDeclaration(DUContext *ctx, const KDevelop::Identifier &id)
-{
-    DUChainReadLocker lock(DUChain::lock());
-    foreach (Declaration *d, ctx->localDeclarations())
-        if (d->identifier() == id)
-            return d;
-    return NULL;
+    m_lastCtx = ctx;
 }
 
 } // End of namespace Ruby

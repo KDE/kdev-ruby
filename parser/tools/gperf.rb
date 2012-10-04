@@ -40,6 +40,7 @@ end
 # Check if exists gperf on your system
 unless exists? 'gperf'
   puts 'You need gperf to run this script'
+  exit
 end
 
 # Let's execute gperf with the appropiate arguments.

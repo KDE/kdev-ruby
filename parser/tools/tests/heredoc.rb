@@ -55,3 +55,7 @@ modul_eval(<<-asd, __FILE__, __LINE__ + 1)
     #{val}
   end
 asd
+
+<<here
+àà #{asd}
+here

@@ -22,30 +22,62 @@
 #define RUBY_CLASSDECLARATION_H
 
 
-#include <language/duchain/classdeclaration.h>
 #include <duchain/duchainexport.h>
-
-/*
- * WARNING: This file is under development.
- */
+#include <duchain/declarations/moduledeclaration.h>
 
 
 namespace Ruby
 {
-    
-class KDEVRUBYDUCHAIN_EXPORT RubyClassDeclaration : public KDevelop::ClassDeclaration
+
+/**
+ * @class ClassDeclaration
+ *
+ * This is class represents a class declaration. It's a subclass of the
+ * ModuleDeclaration. This way, it has access of the moduleMixins list from
+ * the ModuleDeclaration class.
+ */
+class KDEVRUBYDUCHAIN_EXPORT ClassDeclaration : public ModuleDeclaration
 {
 public:
-    RubyClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-    RubyClassDeclaration(const ClassDeclaration &rhs);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data);
-    RubyClassDeclaration(KDevelop::ClassDeclarationData &data, const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-};
+    /**
+     * Constructor.
+     * @param range The range of this declaration.
+     * @param ctx The context of this declaration.
+     */
+    ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
 
-typedef RubyClassDeclaration ClassDeclaration;
+    /// Copy constructor.
+    ClassDeclaration(const ClassDeclaration &rhs);
+
+    /**
+     * Copy constructor.
+     * @param data The data to be copied.
+     */
+    ClassDeclaration(ModuleDeclarationData &data);
+
+    /// Set the type @p base as the new base class for this class declaration.
+    void setBaseClass(KDevelop::IndexedType base);
+
+    /// Invalidate the current base class.
+    void clearBaseClass();
+
+    /// @returns the base class for this class declaration.
+    KDevelop::IndexedType baseClass() const;
+
+    /// Re-implemented from ModuleDeclaration.
+    QString toString() const;
+
+    enum { Identity = 46 /** The id of this Type. */ };
+
+private:
+    /// Re-implemented from KDevelop::Declaration.
+    virtual KDevelop::Declaration * clonePrivate() const;
+
+private:
+    KDevelop::IndexedType m_baseClass;
+};
 
 } // End of namespace Ruby
 
 
-#endif // CLASSDECLARATION_H
-
+#endif // RUBY_CLASSDECLARATION_H

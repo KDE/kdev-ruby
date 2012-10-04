@@ -19,7 +19,7 @@
 
 
 require 'test/unit'
-require File.dirname(__FILE__) + '/assert_same/init'
+require 'assert_same/init'
 
 CDIR = "#{File.dirname(__FILE__)}/tests/comments"
 

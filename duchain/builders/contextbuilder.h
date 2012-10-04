@@ -25,15 +25,11 @@
 #define CONTEXTBUILDER_H
 
 
-/*
- * TODO: This file is still under construction.
- */
-
-
+// KDevelop
 #include <language/duchain/builders/abstractcontextbuilder.h>
-#include <language/duchain/topducontext.h>
+
+// Ruby
 #include <duchain/duchainexport.h>
-#include <parser/rubyast.h>
 #include <parser/rubyastvisitor.h>
 
 
@@ -43,71 +39,128 @@ namespace Ruby
 class EditorIntegrator;
 typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
 
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder: public ContextBuilderBase, public RubyAstVisitor
+/**
+ * @class ContextBuilder
+ *
+ * The ContextBuilder is a convenient class to handle contexts on the AST.
+ * The other builders have this class as a base class.
+ */
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public RubyAstVisitor
 {
 public:
+    /// Constructor
     ContextBuilder();
+
+    /// Destructor
     virtual ~ContextBuilder();
 
-    void setEditor(EditorIntegrator *editor);
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
+    /// Re-implemented from KDevelop::AbstractContextBuilder.
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, RubyAst *node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
-    
-    inline bool hasUnresolvedImports() const
+
+    /// @returns a QList of unresolved imports.
+    inline const QList<KUrl> unresolvedImports() const
     {
-        return !m_unresolvedImports.isEmpty();
+        return m_unresolvedImports;
     }
 
-    QList<KUrl> m_unresolvedImports;
-    int m_priority;
+    /// Set the priority of the build to the given @p priority.
+    inline void setPriority(int priority)
+    {
+        m_priority = priority;
+    }
 
 protected:
+    /// Set the given @p editor as the EditorIntegrator for this class.
+    void setEditor(EditorIntegrator *editor);
+
+    /**
+     * @returns the editor used by the builder.
+     * @note Used by KDevelop::AbstractContextBuilder.
+     */
     EditorIntegrator * editor() const;
 
-    virtual KDevelop::DUContext* newContext(const KDevelop::RangeInRevision &range);
-    virtual KDevelop::TopDUContext* newTopContext(const KDevelop::RangeInRevision &range,
-                                                  KDevelop::ParsingEnvironmentFile *file = 0);
+    /**
+     * The following are methods re-implemented from
+     * KDevelop::AbstractContextBuilder that deal with contexts and nodes.
+     */
 
-    virtual void startVisiting(RubyAst *node);
-    virtual void setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx);
-    virtual KDevelop::DUContext* contextFromNode(RubyAst *node);
+    virtual void setContextOnNode(RubyAst *node, DUContext *ctx);
+    virtual KDevelop::DUContext * contextFromNode(RubyAst *node);
+    virtual KDevelop::DUContext * newContext(const RangeInRevision &range);
+    virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
+                                                   ParsingEnvironmentFile *file = 0);
 
+    /// And now methods that deal with nodes, documents and ranges.
+
+    /// @returns KDevelop::CursorInRevision at the start of @param node.
+    KDevelop::CursorInRevision startPos(RubyAst *node) const;
+
+    /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange);
-    KDevelop::CursorInRevision startPos(RubyAst *node);
 
+    /// Given a @param node, it @returns a KDevelop::DocumentRange.
+    KDevelop::DocumentRange getDocumentRange(Node *node) const;
+
+    /// Given a @param range, it @returns a KDevelop::DocumentRange.
+    KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range) const;
+
+    /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
 
-    /* Re-implementing from RubyAstVistor */
-    virtual void visitClassStatement(RubyAst *node);
+    /// Methods re-implemented from RubyAstVisitor or mere helpers.
+
+    virtual void startVisiting(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
+    virtual void visitClassStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitRequire(RubyAst *node);
-    virtual void visitRequireRelative(RubyAst *node);
+    virtual void visitRequire(RubyAst *node, bool relative = false);
 
-    void openContextForClassDefinition(RubyAst *node);
-    KDevelop::DocumentRange getDocumentRange(Node *node);
+    /**
+     * Append a new problem that appeared at the given @p node with @p msg
+     * as its description. The @p sev is the severity of the problem, which
+     * is ProblemData::Error by default.
+     * @note that you should call i18n() first.
+     */
+    void appendProblem(Node *node, const QString &msg,
+                       ProblemData::Severity sev = ProblemData::Error);
 
-    const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
+    /**
+     * Append a new problem that appeared at the given @p range with @p msg
+     * as its description. The @p sev is the severity of the problem, which
+     * is ProblemData::Error by default.
+     * @note that you should call i18n() first.
+     */
+    void appendProblem(const RangeInRevision &range, const QString &msg,
+                       ProblemData::Severity sev = ProblemData::Error);
 
 protected:
-
-    bool m_mapAst;
-    bool m_reportErrors;
+    bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.
     EditorIntegrator *m_editor;
-    KDevelop::ReferencedTopDUContext m_topContext;
-    KDevelop::TopDUContextPointer m_builtinsContext;
+    QList<KUrl> m_unresolvedImports;
 
 private:
+    /**
+     * @returns the range that contains the method arguments
+     * contained in @param node.
+     */
     RangeInRevision rangeForMethodArguments(RubyAst *node);
-    void addImportedContexts();
+
+    /**
+     * Issue a require. The required file will be scheduled for parsing
+     * if it's the first time that is loaded.
+     *
+     * @param node The node with the require call.
+     * @param local True if this is a require_relative, false otherwise.
+     */
     void require(Node *node, bool local);
 
 private:
-    QList<KDevelop::DUContext *> m_importedParentContexts;
+    int m_priority;
+    KDevelop::TopDUContextPointer m_builtinsContext;
 };
 
 } // End of namespace Ruby
 
 
 #endif // CONTEXTBUILDER_H
-

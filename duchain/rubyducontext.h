@@ -82,7 +82,7 @@ public:
     virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl = 0,
                                             KDevelop::TopDUContext *topContext = 0,
                                             const QString &htmlPrefix = QString(),
-                                            const QString &htmlSufix = QString()) const;
+                                            const QString &htmlSuffix = QString()) const;
 
 public:
     enum { Identity = BaseContext::Identity + 41 };

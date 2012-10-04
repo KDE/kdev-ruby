@@ -25,73 +25,163 @@
 #define DECLARATIONBUILDER_H
 
 
-/*
- * TODO: This class is under construction.
- */
-
-
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/builders/typebuilder.h>
-#include <parser/rubyast.h>
-#include <duchain/declarations/classdeclaration.h>
 
-
-namespace KDevelop {
-    class Declaration;
-}
 
 namespace Ruby
 {
-class EditorIntegrator;
+
+class ModuleDeclaration;
+class MethodDeclaration;
 
 typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
 
+/**
+ * @class DeclarationBuilder
+ *
+ * The DeclarationBuilder iterates a RubyAst to build declarations.
+ */
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
+    /// Constructor.
     DeclarationBuilder();
+
+    /**
+     * Constructor.
+     * @param editor The EditorIntegrator to be used.
+     */
     DeclarationBuilder(EditorIntegrator *editor);
+
+    /// Destructor.
     virtual ~DeclarationBuilder();
 
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString& url, RubyAst * node,
-        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
-
 protected:
-    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *node);
+    /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
     virtual void closeDeclaration();
+
+    /// Re-implemented from the ContextBuilder.
     virtual void startVisiting(RubyAst *node);
+
+    /// Methods re-implemented from RubyAstVisitor.
+
     virtual void visitClassStatement(RubyAst *node);
+    virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
     virtual void visitParameter(RubyAst *node);
     virtual void visitVariable(RubyAst *node);
-    virtual void visitBlockVariable(RubyAst *node);
+    virtual void visitBlock(RubyAst *node);
+    virtual void visitBlockVariables(RubyAst *node);
     virtual void visitReturnStatement(RubyAst *node);
     virtual void visitAssignmentStatement(RubyAst *node);
     virtual void visitAliasStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
-    virtual void visitInclude(RubyAst *node);
-    virtual void visitExtend(RubyAst *node);
+    virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitLambda(RubyAst *node);
+    virtual void visitForStatement(RubyAst *node);
+    virtual void visitAccessSpecifier(short int policy);
+    virtual void visitYieldStatement(RubyAst *node);
 
 private:
-    void declareVariable(KDevelop::DUContext *ctx, KDevelop::AbstractType::Ptr type,
-                        const KDevelop::QualifiedIdentifier& id, RubyAst *node);
+    /// @returns the range of the name of the given @p node.
+    KDevelop::RangeInRevision getNameRange(const RubyAst *node);
+
+    /// Given a @param node, open a context for a class definition.
+    void openContextForClassDefinition(RubyAst *node);
+
+    /**
+     * If it exists a declaration in the current context that has the same id
+     * and range as the given @p id and @p range, then it will re-open this
+     * declaration. Otherwise, it will open a new declaration.
+     * @returns an opened declaration.
+     */
+    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
+
+    /**
+     * Declare a variable in the current context.
+     * @param id The qualified identifier of the new variable declaration.
+     * @param type The type of the new variable declaration.
+     * @param node The node that contains this variable declaration.
+     */
+    void declareVariable(const KDevelop::QualifiedIdentifier &id, KDevelop::AbstractType::Ptr type, RubyAst *node);
+
+    /**
+     * Alias a method declaration.
+     * @param id The id of the new method.
+     * @param range The range of the new method.
+     * @param decl The MethodDeclaration that it's being aliased.
+     */
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
-                                KDevelop::Declaration *decl); // TODO: change to MethodDeclaration
-    void appendProblem(Node* node, const QString &msg);
-    KDevelop::RangeInRevision getNameRange(const RubyAst *node);
-    Declaration *getModuleDeclaration(const RubyAst *module); // NOTE: read comment at the implementation of this method
-    Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
-    bool insideClassModule;
+                                MethodDeclaration *decl);
+
+    /// @returns the current access policy.
+    inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
+    {
+        if (m_accessPolicy.isEmpty())
+            return KDevelop::Declaration::Public;
+        return m_accessPolicy.top();
+    }
+
+    /// Sets the current access policy to the given @p policy.
+    inline void setAccessPolicy(KDevelop::Declaration::AccessPolicy policy)
+    {
+        m_accessPolicy.top() = policy;
+    }
+
+    /// Module mixins helper methods.
+
+    /**
+     * Get the module declaration that is being mixed-in.
+     * @param module The include/extend AST.
+     * @returns the ModuleDeclaration that is being mixed-in.
+     */
+    ModuleDeclaration * getModuleDeclaration(RubyAst *module);
+
+    /**
+     * @returns the declared methods inside the given declaration @p decl,
+     * which is a class or a module.
+     * @note This method already acquires a read lock for the DUChain.
+     */
+    QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
+
+    /// other stuff.
+
+    /**
+     * This is a helper method that tells us if this is a valid re-declaration.
+     * @param id The identifier of the declaration.
+     * @param range The range of this declaration.
+     * @param isClass Optional parameter, set to false if this is a module. The
+     * default value is true, meaning that this is expected to be a class.
+     * @returns false if we expected this to be a Class/Module and it's
+     * something else, true otherwise.
+     * @note If it returns false, it'll also append a new problem (TypeError).
+     */
+    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
+                            bool isClass = true);
+
+    /**
+     * This is a helper method that iterates over the call args of a method
+     * call in order to update the type of each parameter accordingly.
+     * @param mc A list of call args.
+     * @param lastMethod The last encountered method call.
+     */
+    void visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod);
 
 private:
     EditorIntegrator *m_editor;
+    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
+    QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
+    bool m_injected;
+    bool m_instance;
+    Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
+    Declaration *m_lastMethodCall;
+    bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
 };
 
 } // End of namespace Ruby
 
 
 #endif // DECLARATIONBUILDER_H
-

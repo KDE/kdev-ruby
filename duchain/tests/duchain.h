@@ -25,6 +25,7 @@
 
 #include <duchain/tests/duchaintestbase.h>
 
+
 namespace KDevelop {
     class UnsureType;
 }
@@ -32,7 +33,10 @@ namespace KDevelop {
 namespace Ruby
 {
 
-/// The DUChain test suite.
+/**
+ * @class TestDUChain
+ * The DUChain test suite.
+ */
 class TestDUChain : public DUChainTestBase
 {
     Q_OBJECT
@@ -48,26 +52,42 @@ protected:
 private:
     /**
      * Given an unsure @p type, compare its possible types with the given
-     * @p list of class identifiers. Note that the order *does* matter.
+     * @p list of class identifiers.
+     * @note that the order of the @p list items is important.
      */
-    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, QList<QString> list);
+    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, const QStringList &list);
+
+    /**
+     * Given a top context @p ctx, get all the encountered problems and
+     * compare their descriptions to the given @p list of problem descriptions.
+     * @note that the order of the @p list items is important.
+     */
+    void testProblems(KDevelop::TopDUContext *ctx, const QStringList &list);
 
 private slots:
     // Builtin classes
     void numeric();
     void range();
     void stringAndRegexp();
-    void booleanAndNilAndSelf();
+    void booleanAndNil();
     void lineFileEncoding();
     void symbol();
     void lambda();
+    void self();
 
-    // Simple Statements
+    // Statements
     void alias();
     void aliasGlobal1();
     void aliasGlobal2();
+    void yield1();
+    void yield2();
+    void yield3();
+    void ifStatement();
+    void caseStatement();
+    void forStatement();
 
     // Assignments
+    void simpleUnsure();
     void multipleAssignment1();
     void multipleAssignment2();
     void multipleAssignmentLeft();
@@ -75,33 +95,64 @@ private slots:
     void multipleAssignmentRight2();
     void multipleAssignmentStar();
     void multipleAssignmentNamedStar();
-    void unpackArray();
+    void starAtTheBeginning();
+    void starAtTheEnd();
+    void emptyStar();
+    void unpackArray1();
+    void unpackArray2();
+    void unpackArray3();
     void aliasedAssignment();
+    void withMethodCallAndBlock();
 
-    // Variable Length Container
+    // ClassType
     void assignFromArrayItem1();
     void assignFromArrayItem2();
     void assignFromHashItem();
     void assignToArrayItem();
+    void arrayInstanceVariable();
 
     // Declarations
-    void methodDeclaration();
+    void checkVariableKind();
+    void instanceClassMethodDeclaration();
+    void singletonMethods();
+    void singletonClass1();
+    void singletonClass2();
+    void singletonClass3();
+    void accessPolicyMethodInClass();
+    void accessPolicyMethodInModule();
+    void accessPolicyOnBlock();
+    void nestedAccessPolicy();
+    void checkSubClassing1();
+    void checkSubClassing2();
+    void errorOnInvalidRedeclaration1();
+    void errorOnInvalidRedeclaration2();
+    void instanceVariable();
+    void classVariable();
 
     // Returning values
     void multipleReturns();
     void implicitReturn();
     void mixedExplicitAndImplicitReturn();
 
-    // Method Calls
-    void callingtoNew();
-    void setMethodArgumentTypes1();
-    void setMethodArgumentTypes2();
+    // Methods
+    void callingToInstanceMethod();
+    void chainedCalls1();
+    void chainedCalls2();
+    void chainedCalls3();
+    void super();
+    void guessArgumentsType1();
+    void guessArgumentsType2();
+    void guessArgumentsType3();
+    void showErrorOnTooFewArguments();
+    void showErrorOnTooManyArguments();
+    void hashArgument();
     void setUnsureArgument();
 
     // Include & Extend
     void include1();
     void include2();
-    void extend1();
+    void extend();
+    void problemOnInvalidMixin();
 };
 
 } // End of namespace Ruby

@@ -3,14 +3,13 @@ set(rubyduchain_SRCS
     editorintegrator.cpp
     rubyducontext.cpp
     helpers.cpp
+    loader.cpp
 
     builders/declarationbuilder.cpp
     builders/usebuilder.cpp
     builders/contextbuilder.cpp
     builders/typebuilder.cpp
-
-    types/objecttype.cpp
-    types/variablelengthcontainer.cpp
+    types/classtype.cpp
 
     navigation/declarationnavigationcontext.cpp
     navigation/navigationwidget.cpp
@@ -19,6 +18,7 @@ set(rubyduchain_SRCS
     declarations/classdeclaration.cpp
     declarations/methoddeclaration.cpp
     declarations/variabledeclaration.cpp
+    declarations/moduledeclaration.cpp
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})

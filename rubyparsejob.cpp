@@ -137,15 +137,19 @@ void ParseJob::run()
      * And finally we do all the work if parsing was successful. Otherwise,
      * we have to add a new problem
      */
-    if (ast != NULL && ast->tree != NULL) {
+    if (ast) {
+        // Empty document, do nothing
+        if (!ast->tree)
+            return;
+
         if (abortRequested())
             return abortJob();
 
         EditorIntegrator editor;
         editor.setParseSession(m_parser);
         DeclarationBuilder builder(&editor);
-        builder.m_priority = parsePriority(); // TODO: clean this
-        m_duContext = builder.build(editor.url(), ast, m_duContext);
+        builder.setPriority(parsePriority());
+        m_duContext = builder.build(editor.url(), ast, toUpdate);
         setDuChain(m_duContext);
 
         if (abortRequested())
@@ -161,13 +165,13 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        bool needsReparse = builder.hasUnresolvedImports();
-        if (needsReparse) {
+        const QList<KUrl> unresolvedImports = builder.unresolvedImports();
+        if (!unresolvedImports.isEmpty()) {
             // TODO: review this ! Right now this is shamelessly taken from the Python plugin.
 
             // check whether one of the imports is queued for parsing, this is to avoid deadlocks
             bool dependencyInQueue = false;
-            foreach ( const KUrl& url, builder.m_unresolvedImports ) {
+            foreach (const KUrl &url, unresolvedImports) {
                 dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
                 if ( dependencyInQueue ) {
                     break;

@@ -18,13 +18,15 @@
  */
 
 
-#include <duchain/declarations/methoddeclaration.h>
 #include <language/duchain/duchainregister.h>
+#include <duchain/declarations/methoddeclaration.h>
+#include <duchain/helpers.h>
 
 
 namespace Ruby
 {
 REGISTER_DUCHAIN_ITEM(MethodDeclaration);
+DEFINE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
 
 MethodDeclaration::MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
@@ -56,6 +58,55 @@ bool MethodDeclaration::isClassMethod() const
 void MethodDeclaration::setClassMethod(const bool isClass)
 {
     d_func_dynamic()->classMethod = isClass;
+}
+
+KDevelop::Declaration::AccessPolicy MethodDeclaration::accessPolicy() const
+{
+    return d_func()->m_accessPolicy;
+}
+
+void MethodDeclaration::setAccessPolicy(const KDevelop::Declaration::AccessPolicy &policy)
+{
+    d_func_dynamic()->m_accessPolicy = policy;
+}
+
+void MethodDeclaration::clearYieldTypes()
+{
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->yieldTypesList().clear();
+    setInSymbolTable(wasInSymbolTable);
+}
+
+void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
+{
+    bool wasInSymbolTable = inSymbolTable();
+
+    setInSymbolTable(false);
+    if (n < d_func()->yieldTypesSize()) {
+        IndexedType old = d_func_dynamic()->yieldTypesList()[n].type;
+        YieldType res;
+        AbstractType::Ptr merged = mergeTypes(old.abstractType(), yield.type.abstractType());
+        res.type = merged.unsafeData()->indexed();
+        d_func_dynamic()->yieldTypesList()[n] = res;
+    } else
+        d_func_dynamic()->yieldTypesList().append(yield);
+    setInSymbolTable(wasInSymbolTable);
+}
+
+const YieldType* MethodDeclaration::yieldTypes() const
+{
+    return d_func()->yieldTypes();
+}
+
+uint MethodDeclaration::yieldTypesSize()
+{
+    return d_func()->yieldTypesSize();
+}
+
+KDevelop::Declaration* MethodDeclaration::clonePrivate() const
+{
+    return new MethodDeclaration(*this);
 }
 
 } // End of namespace Ruby

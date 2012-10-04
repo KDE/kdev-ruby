@@ -33,6 +33,7 @@
 #include <duchain/tests/benchmarks.h>
 #include <parser/rubyparser.h>
 
+
 QTEST_MAIN(Ruby::Benchmarks)
 
 namespace Ruby

@@ -22,12 +22,20 @@
 #define R_METHOD_DECLARATION_H
 
 
-#include <language/duchain/functiondeclaration.h>
 #include <duchain/duchainexport.h>
+#include <language/duchain/appendedlist.h>
+#include <language/duchain/functiondeclaration.h>
 
 
 namespace Ruby
 {
+
+/// Struct used in the appended list.
+struct KDEVRUBYDUCHAIN_EXPORT YieldType {
+    KDevelop::IndexedType type;
+};
+
+KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
 /**
  * @class MethodDeclarationData
@@ -41,7 +49,7 @@ public:
     MethodDeclarationData()
         : KDevelop::FunctionDeclarationData(), classMethod(false)
     {
-        /* There's nothing to do here */
+        initializeAppendedLists();
     }
 
     /**
@@ -51,11 +59,27 @@ public:
     MethodDeclarationData(const MethodDeclarationData &rhs)
         : KDevelop::FunctionDeclarationData(rhs)
     {
+        initializeAppendedLists();
+        copyListsFrom(rhs);
         classMethod = rhs.classMethod;
+    }
+
+    /// Destructor
+    ~MethodDeclarationData()
+    {
+        freeAppendedLists();
     }
 
     /// True if this is a Class method
     bool classMethod;
+
+    /// The access policy for this method.
+    KDevelop::Declaration::AccessPolicy m_accessPolicy;
+
+    /// The list of yield types.
+    START_APPENDED_LISTS_BASE(MethodDeclarationData, KDevelop::DeclarationData);
+    APPENDED_LIST_FIRST(MethodDeclarationData, YieldType, yieldTypes);
+    END_APPENDED_LISTS(MethodDeclarationData, yieldTypes);
 };
 
 /**
@@ -94,7 +118,37 @@ public:
     /// @returns true if this is a class method, false otherwise.
     bool isClassMethod() const;
 
+    /// Set the access policy to this methods according to the given @p policy.
+    void setAccessPolicy(const KDevelop::Declaration::AccessPolicy &policy);
+
+    /// @returns the access policy for this method.
+    KDevelop::Declaration::AccessPolicy accessPolicy() const;
+
+    /// Clear the list of yield types.
+    void clearYieldTypes();
+
+    /// @returns the size of the yield types list.
+    uint yieldTypesSize();
+
+    /// @returns the list of the yield types
+    const YieldType * yieldTypes() const;
+
+    /**
+     * Replace the nth element of the yield list with the given one. If the
+     * given n is greater or equal than the size of the list, the element will
+     * be appended instead.
+     * @param yield The new yield type.
+     * @param n The index on the yield list where the given element should be
+     * placed.
+     */
+    void replaceYieldTypes(YieldType yield, uint n);
+
     enum { Identity = 42 /** The id of this Type. */ };
+
+
+private:
+    /// Re-implemented from KDevelop::Declaration.
+    virtual KDevelop::Declaration * clonePrivate() const;
 
 private:
     DUCHAIN_DECLARE_DATA(MethodDeclaration)

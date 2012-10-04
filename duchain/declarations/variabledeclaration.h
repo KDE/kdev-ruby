@@ -23,33 +23,109 @@
 
 
 #include <language/duchain/declaration.h>
+#include <language/duchain/declarationdata.h>
+#include <parser/node.h>
 #include <duchain/duchainexport.h>
 
-
-/*
- * WARNING: This file is under development.
- */
-/*
- * TODO
- *  - Define a set of variable kinds
- */
 
 namespace Ruby
 {
 
-class KDEVRUBYDUCHAIN_EXPORT RubyVariableDeclaration : public KDevelop::Declaration
+/**
+ * @class VariableDeclarationData
+ * Private data structure for VariableDeclaration.
+ */
+class KDEVRUBYDUCHAIN_EXPORT VariableDeclarationData : public KDevelop::DeclarationData
 {
 public:
-    RubyVariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
-    RubyVariableDeclaration(const RubyVariableDeclaration &rhs);
-    RubyVariableDeclaration(KDevelop::DeclarationData &data);
-    RubyVariableDeclaration(KDevelop::DeclarationData &data, const KDevelop::RangeInRevision &range);
+    /// Constructor
+    VariableDeclarationData() : KDevelop::DeclarationData(), m_kind(2)
+    {
+        /* There's nothing to do here */
+    }
+
+    /// Copy constructor.
+    VariableDeclarationData(const VariableDeclarationData &rhs)
+        : KDevelop::DeclarationData(rhs)
+    {
+        m_kind = rhs.m_kind;
+    }
+
+    /// Destructor.
+    ~VariableDeclarationData()
+    {
+        /* There's nothing to do here */
+    }
+
+public:
+    /// The kind of a variable declaration (i.e. constant, ivar, ...)
+    int m_kind;
 };
 
-typedef RubyVariableDeclaration VariableDeclaration;
+/**
+ * @class VariableDeclaration
+ *
+ * Represents the declaration of a variable in ruby.
+ */
+class KDEVRUBYDUCHAIN_EXPORT VariableDeclaration : public KDevelop::Declaration
+{
+public:
+    /**
+     * Constructor.
+     * @param range The range of this declaration.
+     * @param ctx The context of this declaration.
+     */
+    VariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext *context);
+
+    /**
+     * Constructor.
+     * @param data The data to be copied.
+     * @param range The range of this declaration.
+     */
+    VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range);
+
+    /// Copy constructor
+    VariableDeclaration(const VariableDeclaration &rhs);
+
+    /// Copy constructor.
+    VariableDeclaration(VariableDeclarationData &data);
+
+    /**
+     * Copy constructor.
+     * @param data The data to be copied.
+     */
+    VariableDeclaration(KDevelop::DeclarationData &data);
+
+    /// Given a @p node, set the variable kind.
+    void setVariableKind(const Node *node);
+
+    /// Force the variable kind to the given @p kind.
+    void setVariableKind(int kind);
+
+    /// @returns the kind of this variable declaration.
+    int variableKind() const;
+
+    // Helper methods
+
+    inline bool isNormal() const { return d_func()->m_kind < 3; }
+    inline bool isGlobal() const { return d_func()->m_kind == 3; }
+    inline bool isIvar() const { return d_func()->m_kind == 4; }
+    inline bool isCvar() const { return d_func()->m_kind == 5; }
+    inline bool isConstant() const { return d_func()->m_kind == 6; }
+
+    // Arguments
+
+    inline bool hasStar() const { return d_func()->m_kind == 1; }
+    inline bool isBlock() const { return d_func()->m_kind == 2; }
+    inline bool isOpt() const { return d_func()->m_kind == 3; }
+
+    enum { Identity = 47 /** The id of this Type. */ };
+
+private:
+    DUCHAIN_DECLARE_DATA(VariableDeclaration)
+};
 
 } // End of namespace: Ruby
 
 
 #endif // RUBY_VARIABLEDECLARATION_H
-

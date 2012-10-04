@@ -41,25 +41,24 @@ class RubyAst
 public:
     /**
      * Constructor.
-     *
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
-    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL) : tree (n), context(ctx)
+    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL)
+        : tree (n), context(ctx), foundProblems(false)
     {
         /* There's nothing to do here! */
     };
     
 public:
-    /**
-     * The tree of this AST.
-     */
+    /// The tree of this AST.
     Node *tree;
 
-    /**
-     * The DUContext for this AST.
-     */
+    /// The DUContext for this AST.
     KDevelop::DUContext *context;
+
+    /// Used when we find a problem.
+    bool foundProblems;
 };
 
 
@@ -74,7 +73,6 @@ class NameAst : public RubyAst
 public:
     /**
      * Constructor.
-     *
      * @param ast the RubyAst this class extends.
      */
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
@@ -90,9 +88,7 @@ public:
     };
 
 public:
-    /**
-     * The QString that represents this class.
-     */
+    /// The QString that represents this class.
     QString value;
 };
 

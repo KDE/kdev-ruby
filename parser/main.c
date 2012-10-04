@@ -1,6 +1,6 @@
 /* This file is part of KDevelop
  *
- * Copyright (C) 2010  Miquel Sabaté <mikisabate@gmail.com>
+ * Copyright (C) 2010 Miquel Sabaté <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include "node.h"
 
+
 extern int rb_debug_file(const char *);
 
 /*
@@ -31,14 +32,19 @@ extern int rb_debug_file(const char *);
  */
 void fetch_comments(struct node *tree)
 {
-  if (!tree)
-    return;
-  if (tree->comment != NULL)
-    printf("%s", tree->comment);
+    struct pos_t *cm;
+    if (!tree)
+        return;
 
-  fetch_comments(tree->l);
-  fetch_comments(tree->r);
-  fetch_comments(tree->next);
+    cm = tree->comment;
+    if (cm) {
+        printf("%i:%i <-> %i:%i\n", cm->start_line, cm->start_col,
+                                    cm->end_line, cm->end_col);
+    }
+
+    fetch_comments(tree->l);
+    fetch_comments(tree->r);
+    fetch_comments(tree->next);
 }
 
 
@@ -47,26 +53,29 @@ void fetch_comments(struct node *tree)
  * used to perform all the tests. Please, take a look at the README file
  * for more info.
  */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
-  RAst *ast;
+    struct ast_t *ast;
+    struct options_t opts;
 
-  switch (argc) {
-    case 2:
-      return rb_debug_file(argv[argc - 1]);
-    case 3:
-      ast = rb_compile_file(argv[argc - 2], NULL);
-      if (ast->errors[0].valid) {
-        print_errors(ast->errors);
-        printf("This is unexpected...\n");
-        exit(1);
-      }
-      fetch_comments(ast->tree);
-      rb_free(ast);
-      break;
-    default:
-      printf("Usage: ruby-parser file [opt]\n\n");
-      printf("KDevelop Ruby parser debugging utility\n");
-  }
-  return 0;
+    switch (argc) {
+        case 2:
+            return rb_debug_file(argv[argc - 1]);
+        case 3:
+            opts.path = argv[argc - 2];
+            opts.contents = NULL;
+            ast = rb_compile_file(&opts);
+            if (ast->errors[0].valid) {
+                print_errors(ast->errors);
+                printf("This is unexpected...\n");
+                exit(1);
+            }
+            fetch_comments(ast->tree);
+            rb_free(ast);
+            break;
+        default:
+            printf("Usage: ruby-parser file [opt]\n\n");
+            printf("KDevelop Ruby parser debugging utility\n");
+    }
+    return 0;
 }

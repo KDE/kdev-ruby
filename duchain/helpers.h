@@ -55,58 +55,60 @@ using namespace KDevelop;
     KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst *ast);
 
     /**
-     * Given a RubyAst, return the documentation comment.
-     *
-     * @param ast The given RubyAst.
-     * @return a QByteArray containing the documentation comment for a
-     * class/module/method definition if it's available. It will return
-     * an empty QByteArray otherwise, or if the AST does not represent
-     * the situations described above.
-     */
-    KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(RubyAst *ast);
-
-    /**
      * Find the declaration for a specified node. If no declaration was found,
      * it will return NULL.
      *
      * @param id The qualified identifier that identifies our node.
      * @param range The range for this node.
      * @param context A pointer to the DUContext of this node.
+     * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                                           const RangeInRevision &range,
-                                                           DUContextPointer context);
+    KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
+                                                        const RangeInRevision &range,
+                                                        DUContextPointer context);
 
     /**
-     * Get the url of the file specified by a require statement.
+     * Get the required builtin type.
      *
-     * @param node The node containing the file to be required.
-     * @param editor The EditorIntegrator from the current builder.
-     * @param local Set to true if the required file is relative to the current
-     * document (used for the require_relative statement).
-     * @return a KUrl containing the path to the required file.
+     * @param desc The name of the builtin type.
+     * @param ctx The context where this type is available.
+     * @returns a TypePtr< AbstractType > containing the required type or null
+     * if it was not found.
+     * @note This method already acquires a read lock for the DUChain.
+     * TODO: this method highlights the importance of having a class that deal
+     * with builtin classes in an optimal way.
      */
-    KDEVRUBYDUCHAIN_EXPORT KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
+    KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx);
 
     /**
-     * @return the list of urls available from ruby through $:
+     * Get the context of the Class class.
+     *
+     * @param ctx The current context.
+     * @returns a KDevelop::DUContext containing the Class class.
+     * @note This method already acquires a read lock for the DUChain.
+     * TODO: this method highlights the importance of having a class that deal
+     * with builtin classes in an optimal way.
      */
-    KDEVRUBYDUCHAIN_EXPORT QList<KUrl> getSearchPaths();
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(DUContext *ctx);
 
     /**
-     * @returns the declared methods inside the given declaration @p decl,
-     * which is a class or a module.
+     * @returns true if the given @p type is useful, and false otherwise.
      */
-    KDEVRUBYDUCHAIN_EXPORT QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
-
-    /// TODO
     KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(AbstractType::Ptr type);
 
-    /// TODO
+    /**
+     * @returns a new type which is a merge of the two given types @p type
+     * and @p newType.
+     */
     KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
+
+    /// @returns the number of nodes that are next to the given @p node.
+    KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
+
+    /// @returns the QualifiedIdentifier of the given @p ast.
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
 
 } // End of namespace Ruby
 
 
 #endif /* RUBYDUCHAINHELPERS_H_ */
-

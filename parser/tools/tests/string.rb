@@ -54,3 +54,5 @@ asd'
 a = 'asd
 asdasd
 asdasdasdasd'
+
+b = "asd #{c.foo}" "aaa #{a} "

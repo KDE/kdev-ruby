@@ -25,11 +25,11 @@
 
 #include <duchain/tests/duchaintestbase.h>
 
-class QIODevice;
 
 namespace Ruby
 {
 /**
+ * @class Benchmarks
  * Benchmark some parts of this plugin.
  */
 class Benchmarks : public DUChainTestBase
@@ -37,15 +37,11 @@ class Benchmarks : public DUChainTestBase
     Q_OBJECT
 
 public:
-    /**
-     * Constructor.
-     */
+    /// Constructor.
     Benchmarks();
 
 private:
-    /**
-     * @returns the builtins file as a QIODevice opened in ReadOnly mode.
-     */
+    /// @returns the builtins file as a QIODevice opened in ReadOnly mode.
     QIODevice * getBuiltinsFile();
 
 private slots:

@@ -40,14 +40,10 @@ namespace Ruby
 class KDEVRUBYPARSER_EXPORT RubyAstVisitor
 {
 public:
-    /**
-     * Constructor.
-     */
+    /// Constructor.
     RubyAstVisitor();
 
-    /**
-     * Destructor.
-     */
+    /// Destructor.
     virtual ~RubyAstVisitor();
 
     /**
@@ -67,6 +63,8 @@ public:
     void visitNode(RubyAst *node);
 
 protected:
+    /// And the following is a list of virtual methods that can be overriden.
+
     virtual void visitVariable(RubyAst *node);
     virtual void visitName(RubyAst *node);
     virtual void visitString(RubyAst *node);
@@ -99,13 +97,12 @@ protected:
     virtual void visitSingletonClass(RubyAst *node);
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
+    virtual void visitSuper(RubyAst *node);
     virtual void visitLambda(RubyAst *node);
     virtual void visitBlock(RubyAst *node);
-    virtual void visitBlockVariable(RubyAst *node);
-    virtual void visitRequire(RubyAst *node);
-    virtual void visitRequireRelative(RubyAst *node);
-    virtual void visitInclude(RubyAst *node);
-    virtual void visitExtend(RubyAst *node);
+    virtual void visitBlockVariables(RubyAst *node);
+    virtual void visitRequire(RubyAst *node, bool relative = false);
+    virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitDefined(RubyAst *node);
     virtual void visitTrue(RubyAst *node);
     virtual void visitFalse(RubyAst *node);
@@ -114,6 +111,8 @@ protected:
     virtual void visitFile(RubyAst *node);
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
+    virtual void visitAccessSpecifier(short policy);
+    virtual void visitClassName(RubyAst *node);
 
 private:
     /**
@@ -152,4 +151,3 @@ private:
 
 
 #endif // RUBYASTVISITOR_H
-

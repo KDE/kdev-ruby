@@ -29,7 +29,10 @@
 namespace Ruby
 {
 
-/// Test the UseBuilder class from the DUChain.
+/**
+ * @class TestUseBuilder
+ * Test the UseBuilder class from the DUChain.
+ */
 class TestUseBuilder : public DUChainTestBase
 {
     Q_OBJECT
@@ -42,9 +45,8 @@ protected:
     virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
 
 private:
-    /**
-     */
-    void compareUses(KDevelop::Declaration *dec, KDevelop::RangeInRevision range);
+    /// Compare the uses of the given declaration @p dec with the given @p range.
+    void compareUses(KDevelop::Declaration *dec, const KDevelop::RangeInRevision &range);
 
     /**
      * Let's compare the uses of the given declaration @p dec with the given
@@ -53,11 +55,25 @@ private:
     void compareUses(KDevelop::Declaration *dec, QList<KDevelop::RangeInRevision> ranges);
 
 private slots:
-    // Interpolation
+    // Basic stuff
     void stringInterpolation();
-
-    // Simple statements
     void alias();
+    void assignment();
+    void checkSubClassing();
+    void checkMethodArgumentsContext();
+    void instanceVariable();
+    void classVariable();
+
+    // Method calls
+    void builtinUses();
+    void chained();
+    void fromClassAndAbove();
+    void super();
+    void moduleMixins();
+    void exprIsCalling();
+
+    // Others
+    void nestedIdentifier();
 };
 
 }

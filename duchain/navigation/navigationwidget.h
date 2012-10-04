@@ -22,14 +22,8 @@
 #define NAVIGATIONWIDGET_H
 
 
-#include <language/duchain/navigation/abstractnavigationwidget.h>
 #include <duchain/duchainexport.h>
-
-
-/*
- * TODO: I find interesting the way that the PHP plugin
- * handles "magic" constants :D
- */
+#include <language/duchain/navigation/abstractnavigationwidget.h>
 
 
 namespace KDevelop { struct IncludeItem; }
@@ -89,11 +83,10 @@ public:
      *
      * @param decl The given Include item.
      */
-    static QString shortDescription(KDevelop::IncludeItem &item);
+    static QString shortDescription(const KDevelop::IncludeItem &item);
 };
 
 } // End of namespace Ruby
 
 
 #endif // NAVIGATIONWIDGET_H
-

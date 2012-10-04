@@ -28,6 +28,7 @@
 
 namespace Ruby
 {
+class ModuleDeclaration;
 
 /**
  * @class DeclarationNavigationContext
@@ -51,6 +52,13 @@ public:
                                  KDevelop::AbstractNavigationContext *prevContext = 0);
 
 protected:
+    /**
+     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
+     * because the default implementation assumes that default arguments
+     * are always at the end, and in Ruby this is not true.
+     */
+    virtual void htmlFunction();
+
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
      * we can improve the html to be rendered with Ruby-specific stuff.
@@ -77,16 +85,21 @@ protected:
      */
     virtual QString declarationKind(KDevelop::DeclarationPointer decl);
 
+private:
     /**
-     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
-     * we can add some extra information about the identified type.
+     * Add to the html all the info about module mixins that can be extracted
+     * from the given declaration @p decl.
      */
-    virtual void htmlIdentifiedType(KDevelop::AbstractType::Ptr type,
-                                    const KDevelop::IdentifiedType *idType);
+    void addModuleMixins(ModuleDeclaration *decl);
+
+    /**
+     * Add to the html all the modules/classes that extend/include the
+     * given module declaration @p decl.
+     */
+    void addMixers(ModuleDeclaration *decl);
 };
 
 }
 
 
 #endif /* DECLARATIONNAVIGATIONWIDGET_H */
-

@@ -44,23 +44,34 @@ class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
 public:
     /**
      * Constructor.
-     *
      * @param editor The EditorIntegrator for this class.
      */
     UseBuilder(EditorIntegrator *editor);
 
 protected:
-    /**
-     * Re-implemented from Ruby::RubyAstVisitor to extract the uses
-     * of variables.
-     *
-     * @param node The given variable.
-     */
+    /// Methods re-implemented from RubyAstVisitor.
+
     virtual void visitName(RubyAst *node);
+    virtual void visitClassName(RubyAst *node);
+    virtual void visitMixin(RubyAst *node, bool include);
+    virtual void visitMethodCall(RubyAst *node);
+
+private:
+    /// @internal Visit the method call members from the given @p node.
+    void visitMethodCallMembers(RubyAst *node);
+
+private:
+    /// Used at the method call visitor to keep track of the last context.
+    DUContext *m_lastCtx;
+
+    /**
+     * The method call visitor uses this to track the depth of
+     * the recursion level.
+     */
+    int mcDepth;
 };
 
 } // End of namespace Ruby
 
 
 #endif // USEBUILDER_H
-

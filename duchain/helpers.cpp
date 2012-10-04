@@ -34,6 +34,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/types/classtype.h>
 
 
 namespace Ruby
@@ -52,15 +53,7 @@ const QString getName(RubyAst *ast)
     return QString(rb_name_node(ast->tree)->name);
 }
 
-const QByteArray getComment(RubyAst *ast)
-{
-    char *m_comment = ast->tree->comment;
-    return (m_comment != NULL) ? QByteArray(m_comment) : QByteArray("");
-}
-
-Declaration *declarationForNode(const QualifiedIdentifier &id,
-                                const RangeInRevision &range,
-                                DUContextPointer context)
+Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, DUContextPointer context)
 {
     QList<Declaration *> decls;
 
@@ -75,82 +68,31 @@ Declaration *declarationForNode(const QualifiedIdentifier &id,
             decls = context->topContext()->findDeclarations(id, range.end);
         else
             decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
-        if (!decls.length()) {
+        if (decls.isEmpty()) {
             decls = context->findLocalDeclarations(id.last(), range.end);
-            if (!decls.length())
+            if (decls.isEmpty())
                 decls = context->findDeclarations(id.last(), range.end);
         }
     }
     return (decls.length()) ? decls.last() : NULL;
 }
 
-KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
+TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
 {
-    QList<KUrl> searchPaths;
-    QString name("");
-
-    // TODO: by now take a look at the current directory if this is not a string
-    // TODO: instead of the current directory, pick the project root directory
-    if (node->kind != token_string) {
-        searchPaths << editor->url().toUrl().directory();
-    } else {
-        name = editor->tokenToString(node);
-        name.replace("'", ""); // remove surrounding '
-        if (!name.endsWith(".rb"))
-            name += ".rb";
-        if (local)
-            searchPaths << editor->url().toUrl().directory();
-        else
-            searchPaths << getSearchPaths();
-    }
-
-    foreach (const KUrl &path, searchPaths) {
-        QString url = path.path(KUrl::AddTrailingSlash) + name;
-        QFile script(url);
-        QFileInfo info(url);
-        if (script.exists() && !info.isDir()) {
-            KUrl res(url);
-            res.cleanPath();
-            return res;
-        }
-    }
-
-    return KUrl();
+    DUChainReadLocker lock(DUChain::lock());
+    QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
+    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
+    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
+    return type;
 }
 
-QList<KUrl> getSearchPaths()
+DUContext * getClassContext(DUContext *ctx)
 {
-    // TODO: Cache, cache, cache !!!
-    QList<KUrl> paths;
-
-    QStringList code;
-    code << "ruby" << "-e" << "puts $:";
-    QProcess ruby;
-    ruby.start("/usr/bin/env", code);
-    ruby.waitForFinished();
-    QList<QByteArray> rpaths = ruby.readAllStandardOutput().split('\n');
-    rpaths.removeAll("");
-    foreach (const QString &s, rpaths)
-        paths << s;
-
-    return paths;
-}
-
-QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl)
-{
-    DUChainReadLocker rlock(DUChain::lock());
-    QList<MethodDeclaration *> res;
-    DUContext *internal = decl->internalContext();
-    if (!internal)
-        return res;
-
-    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
-    for (int i = 0; i < list.size(); i++) {
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
-        if (md)
-            res << md;
-    }
-    return res;
+    DUChainReadLocker lock(DUChain::lock());
+    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
+    if (klass)
+        return klass->declaration(ctx->topContext())->internalContext();
+    return NULL;
 }
 
 bool isUsefulType(AbstractType::Ptr type)
@@ -168,6 +110,7 @@ bool isUsefulType(AbstractType::Ptr type)
 
 AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 {
+    DUChainReadLocker lock(DUChain::lock()); // TODO: not sure about this
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(type);
     UnsureType::Ptr newUnsure = UnsureType::Ptr::dynamicCast(newType);
     UnsureType::Ptr res;
@@ -187,6 +130,7 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
             cloned->addType(type->indexed());
         res = cloned;
     } else {
+        // TODO: There're some cases that this code crashes
         unsure = UnsureType::Ptr(new UnsureType());
         if (isUsefulType(type))
             unsure->addType(type->indexed());
@@ -198,6 +142,19 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
     if (res->typesSize() == 1)
         return res->types()[0].abstractType();
     return AbstractType::Ptr::staticCast(res);
+}
+
+int nodeListSize(Node *node)
+{
+    int i = 0;
+    for (Node *n = node; n != NULL; n = n->next, i++);
+    return i;
+}
+
+const QualifiedIdentifier getIdentifier(const RubyAst *ast)
+{
+    NameAst nameAst(ast);
+    return KDevelop::QualifiedIdentifier(nameAst.value);
 }
 
 } // End of namespace Ruby

@@ -46,7 +46,7 @@ DUChainTestBase::DUChainTestBase()
     /* There's nothing to do here */
 }
 
-TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
+TopDUContext * DUChainTestBase::parse(const QByteArray &code, const QString &id)
 {
     KUrl url = "/tmp/kdevruby_" + id + ".rb";
     QFile f(url.path());
@@ -65,6 +65,19 @@ TopDUContext *DUChainTestBase::parse(const QByteArray &code, const QString &id)
     }
     return DUChain::self()->waitForUpdate(KDevelop::IndexedString(url),
                                             static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
+}
+
+Declaration * DUChainTestBase::getBuiltinDeclaration(const QString &name, TopDUContext *top, DUContext *ctx)
+{
+    QStringList list = name.split("#");
+    DUContext *context = (ctx) ? ctx : top->childContexts().first();
+    AbstractType::Ptr type = getBuiltinsType(list.first(), context);
+    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
+    Declaration *d = sType->declaration(top);
+
+    QualifiedIdentifier id(list.first() + "::" + list.last());
+    QList<Declaration *> decls = d->internalContext()->findDeclarations(id);
+    return (decls.isEmpty()) ? NULL : decls.last();
 }
 
 void DUChainTestBase::initTestCase()

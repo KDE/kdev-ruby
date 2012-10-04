@@ -45,10 +45,6 @@ target_link_libraries(kdevrubylanguagesupport
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
-
-
-########### install files ###############
-
 install(FILES kdevrubysupport.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES kdevrubysupport.rc DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport)
 install(DIRECTORY documentation DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport)

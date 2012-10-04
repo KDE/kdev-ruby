@@ -59,7 +59,7 @@ QString NavigationWidget::shortDescription(KDevelop::Declaration *decl)
     return ctx->html(true);
 }
 
-QString NavigationWidget::shortDescription(KDevelop::IncludeItem &item)
+QString NavigationWidget::shortDescription(const KDevelop::IncludeItem &item)
 {
     NavigationContextPointer ctx(new IncludeNavigationContext(item, TopDUContextPointer()));
     return ctx->html(true);
@@ -67,4 +67,3 @@ QString NavigationWidget::shortDescription(KDevelop::IncludeItem &item)
 
 
 } // End of namespace Ruby
-
