@@ -37,8 +37,10 @@ void fetch_comments(struct node *tree)
         return;
 
     cm = tree->comment;
-    if (cm)
-        printf("%i:%i <-> %i:%i\n", cm->start_line, cm->start_col, cm->end_line, cm->end_col);
+    if (cm) {
+        printf("%i:%i <-> %i:%i\n", cm->start_line, cm->start_col,
+                                    cm->end_line, cm->end_col);
+    }
 
     fetch_comments(tree->l);
     fetch_comments(tree->r);

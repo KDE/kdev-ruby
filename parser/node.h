@@ -205,7 +205,7 @@ typedef struct node Node;
  *
  * @param opts The options passed to the parser. If the pointer to the
  * contents of the file is set to NULL, then the parser will try to retrieve
- * the contents on its own, by taking the path member as a valid path.
+ * the contents on its own by taking the path member as a valid path.
  * @return an AST that represents the code.
  */
 struct ast_t * rb_compile_file(struct options_t *opts);
@@ -267,7 +267,7 @@ void free_errors(struct error_t *errors);
  */
 
 #define get_last_expr(n) ((n->last) ? n->last : n)
-#define is_valid(n) (n->pos.start_line >= 0)
+#define is_valid(n) (n->startLine >= 0)
 #define is_rest_arg(n) (n->flags == 1)
 #define is_block_arg(n) (n->flags == 2)
 #define is_global_var(n) (n->flags == 3)

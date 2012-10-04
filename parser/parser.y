@@ -32,14 +32,9 @@
 
 #include "node.h"
 
-/* TODO: what was the STACK_SIZE back then ? */
-#define STACK_SIZE 128
-/* buffer size for heredocs and code blocks inside strings
-     let's say it has place for about 2k lines of utf8-encoded
-     code for now */
-#define STRING_BSIZE 320000
-/* buffer size for other tokens that are not strings */
-#define TOK_BSIZE 128
+
+#define STACK_SIZE 256
+#define BSIZE STACK_SIZE
 
 /* Flags used by the lexer */
 struct flags_t {
@@ -78,6 +73,17 @@ struct flags_t {
 #define POP_COND() parser->cond_seen = 0;
 
 
+/* This structure represents a string/heredoc/regexp term. */
+/* TODO: I'm sure it can be simplified */
+struct term_t {
+    int token;
+    char *word;
+    int length;
+    unsigned char term;
+    unsigned char can_embed : 1;
+    unsigned char was_mcall : 1;
+};
+
 /*
  * This structure defines the parser. It contains the AST, some
  * flags used for internal reasons and some info about the
@@ -102,6 +108,7 @@ struct parser_t {
     int paren_nest;
     int lpar_beg;
     int expr_mid;
+    struct term_t lex_strterm;
 
     /* Errors on the file */
     struct error_t errors[2];
@@ -132,6 +139,8 @@ struct parser_t {
 #define yyparse ruby_yyparse
 #define YYLEX_PARAM parser
 
+#define lex_strterm parser->lex_strterm
+
 
 /* yy's functions */
 static int yylex(void *, void *);
@@ -145,10 +154,6 @@ static void yyerror(struct parser_t *, const char *);
 
 static void pop_stack(struct parser_t *parser, struct node *n);
 #define POP_STACK pop_stack(parser, yyval.n)
-static void pop_string(struct parser_t *parser, struct node *n);
-#define POP_STR pop_string(parser, yyval.n)
-static void push_string(struct parser_t *parser, char *buffer);
-static void multiple_string(struct parser_t *parser, struct node *n);
 static void push_last_comment(struct parser_t *parser);
 static void pop_comment(struct parser_t *parser, struct node *n);
 
@@ -173,17 +178,22 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 
 %pure_parser
 %parse-param { struct parser_t *parser }
-%union { struct node *n; int num; }
+%union {
+    struct node *n;
+    int num;
+    struct term_t term;
+}
 
 /* Tokens */
 %token <n> tCLASS tMODULE tDEF tUNDEF tBEGIN tRESCUE tENSURE tEND tIF tUNLESS
 %token <n> tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
-%token <n> tALIAS tDEFINED upBEGIN upEND tHEREDOC tTRUE tFALSE tNIL tENCODING
-%token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA STRING
-%token <n> REGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG tHERE_PAR
+%token <n> tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING
+%token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
+%token <n> tREGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
 %token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
+%token tSTRING_BEG tSTRING_CONTENT tSTRING_DBEG tSTRING_DEND tSTRING_END tSTRING_DVAR
 
 /* Types */
 %type <n> singleton strings string regexp literal numeric cpath rescue_arg
@@ -200,6 +210,8 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %type <n> fsym variable symbol operation operation2 operation3 other_vars
 %type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg
 %type <n> brace_block cmd_brace_block f_bad_arg sym opt_brace_block
+
+%type <n> string_contents string_content string_dvar
 
 /* precedence table */
 %nonassoc tLOWEST
@@ -734,7 +746,6 @@ aref_args: none
 ;
 
 paren_args: '(' opt_call_args rparen { $$ = $2; }
-    | '(' tHERE_PAR { $$ = ALLOC_N(token_heredoc, NULL, NULL); }
 ;
 
 opt_paren_args : none | paren_args
@@ -816,15 +827,9 @@ primary: literal
     }
     | tLBRACE assoc_list '}'
     {
-        pop_pos(parser, parser->last_pos);
-        $$ = ALLOC_N(token_hash, $2, NULL);
-        if ($2 != NULL && $2->last != NULL) {
-            if ($2->last->pos.end_line >= parser->last_pos->pos.end_line) {
-                copy_end($$, $2->last);
-            } else {
-                copy_end($$, parser->last_pos);
-            }
-        }
+        $$ = alloc_node(token_hash, $2, NULL);
+        pop_pos(parser, $$);
+        pop_start(parser, $$);
     }
     | tRETURN { $$ = ALLOC_N(token_return, NULL, NULL); }
     | tYIELD '(' call_args rparen
@@ -1277,18 +1282,71 @@ literal: numeric | symbol
 
 strings: string
     {
-        $$ = ALLOC_N(token_string, NULL, NULL); POP_STR;
-        multiple_string(parser, $$);
+        $$ = alloc_node(lex_strterm.token, $1, NULL);
+        pop_start(parser, $$);
+        $$->pos.end_line = parser->line;
+        $$->pos.end_col = parser->column;
     }
-    | tHEREDOC { $$ = ALLOC_N(token_heredoc, NULL, NULL);     }
+    | strings string
+    {
+        if ($1->l != NULL)
+            update_list($1->l, $2);
+        $1->pos.end_line = parser->line;
+        $1->pos.end_col = parser->column;
+        pop_pos(parser, NULL); // Drop the first position of the last string
+    }
 ;
 
-string: STRING
-    | tBACKTICK
-    | string STRING { CONCAT_STRING; pop_pos(parser, NULL); }
+string: tCHAR { $$ = 0; }
+    | tSTRING_BEG string_contents tSTRING_END { $$ = $2; }
 ;
 
-regexp: REGEXP { $$ = ALLOC_N(token_regexp, NULL, NULL); POP_STR; }
+string_contents: /* none */ { $$ = 0; }
+    | string_contents string_content
+    {
+        if ($1 != NULL)
+            $$ = update_list($1, $2);
+        else
+            $$ = $2;
+    }
+;
+
+string_content: tSTRING_CONTENT { $$ = 0; }
+    | tSTRING_DBEG
+    {
+        parser->expr_seen = 0;
+        $<term>$ = lex_strterm;
+        lex_strterm.term = 0;
+        lex_strterm.was_mcall = 0;
+    }
+    compstmt '}'
+    {
+        parser->expr_seen = 1;
+        lex_strterm = $<term>2;
+        $$ = $3;
+        pop_pos(parser, NULL); // '}'
+    }
+    | tSTRING_DVAR
+    {
+        $<term>$ = lex_strterm;
+        lex_strterm.term = 0;
+        lex_strterm.was_mcall = 0;
+        parser->expr_seen = 0;
+    }
+    string_dvar
+    {
+        lex_strterm = $<term>2;
+        $$ = $3;
+    }
+;
+
+string_dvar: backref
+    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
+    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
+;
+
+regexp: tREGEXP { $$ = ALLOC_N(token_regexp, NULL, NULL); }
 ;
 
 symbol: tSYMBEG sym
@@ -1303,8 +1361,8 @@ symbol: tSYMBEG sym
 
 sym: fname
     | strings
-    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
     | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
     | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
 ;
 
@@ -1313,10 +1371,10 @@ numeric: NUMERIC    { $$ = ALLOC_N(token_numeric, NULL, NULL); }
 ;
 
 variable: base
-    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
     | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
-    | const
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
     | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
+    | const
     | other_vars
 ;
 
@@ -1554,57 +1612,62 @@ none : /* none */ { $$ = NULL; }
 #define cannot_be_heredoc (parser->class_seen || parser->expr_seen || parser->dot_seen)
 
 
-static void init_parser(struct parser_t * p)
+static void init_parser(struct parser_t * parser)
 {
-    p->ast = NULL;
-    p->opts_given = 0;
-    p->blob = NULL;
-    p->cursor = 0;
-    p->eof_reached = 0;
-    p->expr_seen = 0;
-    p->class_seen = 0;
-    p->dot_seen = 0;
-    p->last_is_paren = 0;
-    p->cond_seen = 0;
-    p->special_arg = 0;
-    p->cmd_arg = 0;
-    p->brace_arg = 0;
-    p->in_def = 0;
-    p->in_alias = 0;
-    p->symbeg = 0;
-    p->mcall = 0;
-    p->expr_mid = 0;
-    p->lpar_beg = 0;
-    p->paren_nest = 0;
-    p->error_index = 0;
-    p->def_seen = 0;
-    p->sp = 0;
-    p->line = 1;
-    p->column = 0;
-    p->name = NULL;
-    p->string_names = NULL;
-    p->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
-    p->stack_scale = 0;
-    p->pos_size = 0;
-    p->last_pos = NULL;
-    p->call_args = 0;
-    p->auxiliar.end_line = -1;
-    p->errors[0].valid = 0;
-    p->errors[1].valid = 0;
-    p->last_comment = NULL;
-    p->comment_index = 0;
+    parser->ast = NULL;
+    parser->opts_given = 0;
+    parser->blob = NULL;
+    parser->cursor = 0;
+    parser->eof_reached = 0;
+    parser->expr_seen = 0;
+    parser->class_seen = 0;
+    parser->dot_seen = 0;
+    parser->last_is_paren = 0;
+    parser->cond_seen = 0;
+    parser->special_arg = 0;
+    parser->cmd_arg = 0;
+    parser->brace_arg = 0;
+    parser->in_def = 0;
+    parser->in_alias = 0;
+    parser->symbeg = 0;
+    parser->mcall = 0;
+    parser->expr_mid = 0;
+    parser->lpar_beg = 0;
+    parser->paren_nest = 0;
+    parser->error_index = 0;
+    parser->def_seen = 0;
+    parser->sp = 0;
+    parser->line = 1;
+    parser->column = 0;
+    parser->name = NULL;
+    parser->string_names = NULL;
+    parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
+    parser->stack_scale = 0;
+    parser->pos_size = 0;
+    parser->last_pos = NULL;
+    parser->call_args = 0;
+    parser->auxiliar.end_line = -1;
+    parser->errors[0].valid = 0;
+    parser->errors[1].valid = 0;
+    parser->last_comment = NULL;
+    parser->comment_index = 0;
+    lex_strterm.term = 0;
+    lex_strterm.word = NULL;
+    lex_strterm.was_mcall = 0;
 }
 
-static void free_parser(struct parser_t *p)
+static void free_parser(struct parser_t *parser)
 {
     int index;
 
-    for (index = 0; index < p->sp; index++)
-        free(p->stack[index]);
-    if (p->pos_stack != NULL)
-        free(p->pos_stack);
-    if (!p->opts_given)
-        free(p->blob);
+    for (index = 0; index < parser->sp; index++)
+        free(parser->stack[index]);
+    if (parser->pos_stack != NULL)
+        free(parser->pos_stack);
+    if (!parser->opts_given)
+        free(parser->blob);
+    if (lex_strterm.word)
+        free(lex_strterm.word);
 /*     if (p->last_comment != NULL) */
 /*         free(p->last_comment); */
 }
@@ -1701,92 +1764,112 @@ static int is_valid_identifier(const char *c)
     return 0;
 }
 
-static int push_string_var(struct parser_t *p, int *curs, char **ch, int oax)
+static void parse_heredoc_identifier(struct parser_t *parser)
 {
-    char *c = *ch;
-    int diff = *curs - p->cursor - oax + 2;
-    struct pos_t tp = { p->line, p->line, p->column + diff, -1, 0 };
-    int possible_error = *curs + 1;
-    char buffer[STRING_BSIZE];
-    char * ptr = buffer;
-    int step = 0; /* How many bytes the actual utf8 character has */
-    int ax = 0; /* Used to properly update the column when utf8 chars appear */
-    int i = 0;
-
-    c += 2;
-    *curs += 2;
-    while (*c != '}') {
-        step = utf8_charsize(c);
-        ax += step - 1;
-        i++;
-        while (step-- > 0) {
-            *ptr++ = *c++;
-            (*curs)++;
-        }
-        if ((unsigned int) *curs >= p->length || *c == '"') {
-            p->column = possible_error;
-            yyerror(p, "expecting '}' token in string");
-            *curs = p->length + 1; /* So we can force curs >= len error */
-            break;
-        }
-    }
-    *ch = c;
-    *ptr = '\0';
-    p->column -= ax;
-    tp.end_col = tp.start_col + i;
-    push_pos(p, tp);
-    push_string(p, buffer);
-    return i;
-}
-
-static int parse_heredoc(struct parser_t *p, char *c, int *curs)
-{
-    char buffer[STRING_BSIZE], aux[STRING_BSIZE];
+    char *buffer = (char *) malloc(BSIZE * sizeof(char));
+    int count = BSIZE, scale = 0;
+    int curs = parser->cursor;
+    int original = curs;
+    char *c = parser->blob + curs;
     unsigned char quote_seen = 0, term = ' ';
     unsigned char dash_seen = 0;
-    int i, l = 0, spaces = 0;
-    int len = p->length;
+    int i, len = parser->length;
 
     /* Check for <<- case */
     if (*(c + 2) == '-') {
         dash_seen = 1;
         c += 3;
-        (*curs)++;
-    } else
+        curs += 3;
+    } else {
         c += 2;
+        curs += 2;
+    }
     if (*c == '\'' || *c == '"') {
         term = *c;
-        c++; (*curs)++;
+        c++; curs++;
         quote_seen = 1;
     }
-    for (i = 0; (is_identchar(c) || *c == term) && *curs <= len; (*curs)++, ++l)
+    for (i = 0; (is_identchar(c) || *c == term) && curs <= len; curs++, --count) {
+        if (!count) {
+            scale++;
+            buffer = (char *) realloc(buffer, (BSIZE << scale) * sizeof(char));
+        }
         buffer[i++] = *c++;
+    }
     buffer[i - quote_seen] = '\0';
-    if (quote_seen && *(c - 1) != term)
-        yyerror(p, "unterminated here document identifier");
-    l -= quote_seen;
+    if (quote_seen) {
+        i--;
+        if (*(c - 1) != term) {
+            free(buffer);
+            yyerror(parser, "unterminated here document identifier");
+            return;
+        }
+    }
 
-    for (i = 0; *curs <= len; i++, c++, (*curs)++) {
+    parser->column += curs - original;
+    parser->cursor = curs;
+    lex_strterm.term = 1;
+    lex_strterm.can_embed = dash_seen;
+    lex_strterm.word = buffer;
+    lex_strterm.length = i;
+    lex_strterm.was_mcall = parser->mcall;
+}
+
+static int parse_heredoc(struct parser_t *parser)
+{
+    int i, spaces, cols, buff_l = lex_strterm.length;
+    int curs = parser->cursor;
+    int original = curs;
+    int len = parser->length;
+    char *c = parser->blob + curs;
+    char *aux = (char *) malloc(sizeof(char) * buff_l);
+    int ax = 0;
+
+    for (i = 0, spaces = 0; curs <= len; i++, c++, curs++, cols++) {
         /* Ignore initial spaces if dash seen */
-        if (i == 0 && dash_seen)
-            for (; isspace(*c) && *c != '\n' && *curs <= len; c++, (*curs)++, spaces++);
+        if (i == 0 && lex_strterm.can_embed)
+            for (; isspace(*c) && *c != '\n' && curs <= len; c++, curs++, spaces++);
+        if (*c == '#') {
+            curs++;
+            i++;
+            c++;
+            switch (*c) {
+                case '$':
+                case '@':
+                    parser->cursor = curs;
+                    parser->column = i - ax;
+                    return tSTRING_DVAR;
+                case '{':
+                    parser->cursor = curs + 1;
+                    parser->column = cols + spaces + 2 - ax;
+                    return tSTRING_DBEG;
+            }
+        }
         aux[i] = *c;
         if (*c == '\n') {
-            p->line++;
-            aux[i + 1] = '\0';
-            if (!strncmp(buffer, aux, l) && (l == i)) {
-                p->line--;
-                p->column = i + spaces;
-                return tHEREDOC;
+            cols = -1;
+            parser->line++;
+            if ((buff_l == i) && !strncmp(lex_strterm.word, aux, buff_l)) {
+                parser->line--;
+                parser->column = i + spaces - ax;
+                parser->cursor += curs - original;
+                c = parser->blob + parser->cursor;
+                free(lex_strterm.word);
+                free(aux);
+                lex_strterm.word = NULL;
+                return tSTRING_END;
             }
             spaces = 0;
             i = -1;
-        }
-        if (i > l)
+        } else
+            ax += utf8_charsize(c) - 1;
+        if (i > buff_l)
             i = -1;
     }
-    sprintf(aux, "Can't find string \"%s\" anywhere before EOF", buffer);
-    yyerror(p, aux);
+
+    free(lex_strterm.word);
+    free(aux);
+    lex_strterm.word = NULL;
     return token_invalid;
 }
 
@@ -1802,17 +1885,20 @@ static char closing_char(char c)
     }
 }
 
-/*
- * Let's guess the kind depending on the character after the
- * %-character of expressions like %W
- */
-static int guess_kind(char c)
+static int guess_kind(struct parser_t *parser, char c)
 {
-    if (!isalpha(c) || to_upper(c) == 'Q' || c == 'x')
-        return STRING;
-    else if (to_upper(c) == 'W')
-        return ARRAY;
-    return REGEXP;
+    if (!isalpha(c))
+        return token_string;
+
+    switch (c) {
+        case 'Q': case 'q': case 'x': return token_string;
+        case 'W': case 'w': return token_array;
+        case 's': return token_symbol;
+        case 'r': return token_regexp;
+        default:
+            yyerror(parser, "unknown type of %string");
+            return 0;
+    }
 }
 
 /* Push name to the stack */
@@ -1830,35 +1916,6 @@ static void pop_stack(struct parser_t *parser, struct node *n)
     parser->stack[0] = parser->stack[1];
     parser->stack[1] = NULL;
     parser->sp--;
-}
-
-/* Push a string variable */
-static void push_string(struct parser_t *parser, char *buffer)
-{
-    struct node * new_node = alloc_node(token_object, NULL, NULL);
-
-    new_node->name = strdup(buffer);
-    pop_pos(parser, new_node);
-    if (!parser->string_names)
-        parser->string_names = new_node;
-    else
-        parser->string_names = update_list(parser->string_names, new_node);
-}
-
-/* Pop a list of string variables */
-static void pop_string(struct parser_t *parser, struct node *n)
-{
-    n->l = parser->string_names;
-    parser->string_names = NULL;
-}
-
-static void multiple_string(struct parser_t *parser, struct node *n)
-{
-    if (parser->auxiliar.end_line > 0) {
-        n->pos.end_line = parser->auxiliar.end_line;
-        n->pos.end_col = parser->auxiliar.end_col;
-        parser->auxiliar.end_line = -1;
-    }
 }
 
 static void push_pos(struct parser_t *parser, struct pos_t tokp)
@@ -2053,40 +2110,55 @@ static int parse_comment(struct parser_t *parser, char *c, int curs)
     return c - cc;
 }
 
-static int parse_string(struct parser_t *p, char *c, int curs)
+static int parse_string(struct parser_t *parser)
 {
-    int step = 0; /* How many bytes the actual utf8 character has */
-    int ax = 0; /* Used to properly update the column when utf8 chars appear */
-    int extra, i;
-    int len = p->length;
-    int init = curs;
-    char term = *c;
-    unsigned char vars = (term == '"' || term == '`' || term == '/');
+    int curs = parser->cursor;
+    char *c = parser->blob + curs;
+    int diff = 1;
 
-    curs++; c++;
-    for (extra = 0, i = p->column + 2; *c != term; i++) {
-        for (; *c == '\\' && (*(c + 1) == term || *(c + 1) == '\\'); c += 2, curs += 2, i += 2);
-        if (*c == term)
-            break;
-        if (*c == '\n') {
-            p->line++;
-            extra += i;
-            i = 0;
-        }
-        if (vars && *c == '#' && *(c + 1) == '{')
-            i += push_string_var(p, &curs, &c, ax) + 2;
-        step = utf8_charsize(c);
-        ax += step - 1;
-        for (; step-- > 0; c++, curs++);
-        if (curs >= len) {
-            yyerror(p, "unterminated string meets end of file");
-            break;
+    if (*c == '\\' && (*(c + 1) == lex_strterm.term || *(c + 1) == '\\')) {
+        parser->cursor += 2;
+        parser->column += 2;
+        return tSTRING_CONTENT;
+    }
+
+    if (*c == lex_strterm.term) {
+        parser->cursor++;
+        parser->column++;
+        return tSTRING_END;
+    }
+
+    if (curs >= parser->length) {
+        parser->eof_reached = 1;
+        yyerror(parser, "unterminated string meets end of file");
+        return tSTRING_END;
+    }
+
+    if (lex_strterm.can_embed && *c == '#') {
+        c++;
+        curs++;
+        switch (*c) {
+            case '$':
+            case '@':
+                parser->cursor = curs;
+                parser->column += 1;
+                return tSTRING_DVAR;
+            case '{':
+                parser->cursor = curs + 1;
+                parser->column += 2;
+                return tSTRING_DBEG;
         }
     }
-    curs++;
-    p->column -= ax + extra;
-    p->expr_seen = 1;
-    return curs - init;
+
+    if (*c == '\n') {
+        parser->line++;
+        parser->column = -1;
+    } else
+        diff = utf8_charsize(c);
+
+    parser->column++;
+    parser->cursor = curs + diff;
+    return tSTRING_CONTENT;
 }
 
 static int parse_word(struct parser_t *p, char *c, int curs, char *buffer)
@@ -2141,7 +2213,7 @@ static int parse_re_options(struct parser_t *p, char *c, int curs)
 static int parser_yylex(struct parser_t *parser)
 {
     int t = token_invalid;
-    char buffer[TOK_BSIZE];
+    char buffer[BSIZE];
     char *c;
     int curs, len;
     unsigned char space_seen;
@@ -2150,9 +2222,37 @@ static int parser_yylex(struct parser_t *parser)
     curs = parser->cursor;
     len = parser->length;
     c = parser->blob + curs;
-    space_seen = *c;
+
+    /* String/Regexp/Heredoc parsing */
+    if (lex_strterm.term) {
+        if (lex_strterm.token == token_heredoc)
+            t = parse_heredoc(parser);
+        else
+            t = parse_string(parser);
+        if (t == tSTRING_END) {
+            if (lex_strterm.token == token_regexp) {
+                c++;
+                curs = parser->cursor;
+                if (isalpha(*c)) {
+                    int diff = parse_re_options(parser, c, curs);
+                    curs += diff;
+                    parser->column += diff;
+                }
+                parser->cursor = curs;
+            }
+            lex_strterm.term = 0;
+            parser->expr_seen = 1;
+        }
+        return t;
+    } else if (lex_strterm.token == token_heredoc && lex_strterm.was_mcall) {
+        lex_strterm.was_mcall = 0;
+        lex_strterm.token = 0;
+        parser->mcall = 0;
+        return ')';
+    }
 
     /* Ignore whitespaces and backslashes */
+    space_seen = *c;
     for (; isspace(*c) || *c == '\\'; ++c, ++curs, parser->column++, parser->cursor++) {
         if (*c == '\n') {
             if (!parser->expr_seen) {
@@ -2419,14 +2519,12 @@ static int parser_yylex(struct parser_t *parser)
                 } else {
                     tokp.start_line = parser->line;
                     tokp.start_col = parser->column;
-                    t = parse_heredoc(parser, c, &curs);
-                    tokp.end_line = parser->line;
-                    tokp.end_col = parser->column;
-                    parser->expr_seen = 1;
-                    if (parser->mcall) {
-                        t = tHERE_PAR;
-                        parser->mcall = 0;
-                    }
+                    parse_heredoc_identifier(parser);
+                    c = parser->blob + parser->cursor;
+                    lex_strterm.token = token_heredoc;
+                    t = tSTRING_BEG;
+                    push_pos(parser, tokp);
+                    return t;
                 }
             }
         } else if (*(c + 1) == '=') {
@@ -2548,22 +2646,20 @@ static int parser_yylex(struct parser_t *parser)
             parser->auxiliar.start_col = parser->column;
         }
     } else if (*c == '/') {
-        curs++;
         if (!parser->expr_seen) {
-            int diff;
             tokp.start_line = parser->line;
             tokp.start_col = parser->column;
-            diff = parse_string(parser, c, curs) - 1;
-            tokp.end_line = parser->line;
-            curs += diff;
-            c += diff;
-            if (isalpha(*(c + 1)))
-                curs += parse_re_options(parser, c, curs) - 1;
-            t = REGEXP;
-        } else if (*(c + 1) == '=') {
+            lex_strterm.term = *c;
+            lex_strterm.can_embed = 1;
+            lex_strterm.token = token_regexp;
+            t = tSTRING_BEG;
             curs++;
+        } else if (*(c + 1) == '=') {
+            curs += 2;
             t = tOP_ASGN;
+            parser->expr_seen = 0;
         } else {
+            curs++;
             t = '/';
             parser->expr_seen = 0;
         }
@@ -2573,54 +2669,15 @@ static int parser_yylex(struct parser_t *parser)
             curs++;
             t = tOP_ASGN;
         } else if (is_shortcut(*(c + 1))) {
-            int catalan = 1;
-            int kind = guess_kind(*(c + 1));
-            unsigned char is_simple = !isalpha(*(c + 1));
-            char open, close;
-            int ax = 0;
-            int step = 0;
-
-            tokp.start_line = tokp.end_line = parser->line;
+            int to_add = 2 - !isalpha(*(c + 1));
+            lex_strterm.token = guess_kind(parser, *(c + 1));
+            curs += to_add;
+            c += to_add;
+            tokp.start_line = parser->line;
             tokp.start_col = parser->column;
-            curs += 2 - is_simple;
-            c += 3 - is_simple;
-            open = *(c - 1);
-            close = closing_char(*(c - 1));
-            while (catalan != -1) {
-                if (*c == '#' && *(c + 1) == '{') {
-                    push_string_var(parser, &curs, &c, 0);
-                    ++curs;
-                    ++c;
-                }
-                if (*c == close) {
-                    --catalan;
-                    if (!catalan)
-                        break;
-                } else if (*c == open)
-                    ++catalan;
-                if (curs >= len) {
-                    yyerror(parser, "unterminated string meets end of file");
-                    t = token_invalid;
-                    break;
-                }
-
-                /* We read the next char here, at the end of the loop */
-                step = utf8_charsize(c);
-                ax += step - 1;
-                parser->column -= step - 1;
-                for (; step-- > 0; c++, curs++);
-                if (*c == '\n') {
-                    tokp.end_line++;
-                    parser->line++;
-                    parser->cursor = curs + 1;
-                }
-            }
-            /* Don't overwrite token kind if an error occurred */
-            if (!catalan) {
-                t = kind;
-                ++curs;
-            }
-            parser->expr_seen = 1;
+            lex_strterm.term = closing_char(*c);
+            lex_strterm.can_embed = 1;
+            t = tSTRING_BEG;
         } else {
             t = '%';
             parser->expr_seen = 0;
@@ -2701,7 +2758,7 @@ static int parser_yylex(struct parser_t *parser)
                 tokp.start_line = tokp.end_line = parser->line;
                 tokp.start_col = parser->column;
                 tokp.end_col = tokp.start_col + 2;
-                t = STRING;
+                t = tCHAR;
                 parser->expr_seen = 1;
             } else
                 t = '?';
@@ -2710,15 +2767,19 @@ static int parser_yylex(struct parser_t *parser)
     } else if (*c == '\'') {
         tokp.start_line = parser->line;
         tokp.start_col = parser->column;
-        curs += parse_string(parser, c, curs);
-        tokp.end_line = parser->line;
-        t = STRING;
+        lex_strterm.term = *c;
+        lex_strterm.can_embed = 0;
+        lex_strterm.token = token_string;
+        t = tSTRING_BEG;
+        curs++;
     } else if (*c == '"') {
         tokp.start_line = parser->line;
         tokp.start_col = parser->column;
-        curs += parse_string(parser, c, curs);
-        tokp.end_line = parser->line;
-        t = STRING;
+        lex_strterm.term = *c;
+        lex_strterm.can_embed = 1;
+        lex_strterm.token = token_string;
+        t = tSTRING_BEG;
+        curs++;
     } else if (*c == '(') {
         parser->paren_nest++;
         parser->cmd_arg = 0;
@@ -2771,9 +2832,11 @@ static int parser_yylex(struct parser_t *parser)
         } else {
             tokp.start_line = parser->line;
             tokp.start_col = parser->column;
-            curs += parse_string(parser, c, curs);
-            tokp.end_line = parser->line;
-            t = tBACKTICK;
+            lex_strterm.term = *c;
+            lex_strterm.can_embed = 1;
+            lex_strterm.token = token_string;
+            t = tSTRING_BEG;
+            curs++;
         }
     } else if (*c == '~') {
         curs++;
@@ -2851,16 +2914,18 @@ static int yylex(void *lval, void *p)
  * Error handling. Take the formmated string s and append the error
  * string to the list of errors p->errors.
  */
-static void yyerror(struct parser_t *p, const char *s)
+static void yyerror(struct parser_t *parser, const char *s)
 {
-    if (p->error_index < 1) {
-        p->errors[p->error_index].msg = strdup(s);
-        p->errors[p->error_index].line = p->line;
-        p->errors[p->error_index].col = p->column;
-        p->errors[p->error_index].valid = 1;
-        p->error_index++;
+    if (parser->error_index < 1) {
+        parser->errors[parser->error_index].msg = strdup(s);
+        parser->errors[parser->error_index].line = parser->line;
+        parser->errors[parser->error_index].col = parser->column;
+        parser->errors[parser->error_index].valid = 1;
+        parser->error_index++;
     }
-    p->eof_reached = 1;
+    if (lex_strterm.word)
+        free(lex_strterm.word);
+    parser->eof_reached = 1;
 }
 
 /*
