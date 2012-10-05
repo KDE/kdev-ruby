@@ -87,8 +87,8 @@ void ParseJob::run()
     KDevelop::UrlParseLock urlLock(document());
     if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Rescheduled)) {
         DUChainReadLocker lock(DUChain::lock());
-        static const IndexedString langString("Ruby");                                                                      
-        foreach(const ParsingEnvironmentFilePointer &file, 
+        static const IndexedString langString("Ruby");
+        foreach(const ParsingEnvironmentFilePointer &file,
                 DUChain::self()->allEnvironmentFiles(document())) {
             if (file->language() != langString)
                 continue;
@@ -230,4 +230,3 @@ void ParseJob::run()
 
 
 #include "rubyparsejob.moc"
-

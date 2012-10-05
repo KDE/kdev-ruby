@@ -45,7 +45,7 @@ public:
      * @param ctx the KDevelop::DUContext associated with it.
      */
     RubyAst(Node *n, KDevelop::DUContext *ctx = NULL)
-        : tree (n), context(ctx), foundProblems(false)
+        : tree(n), context(ctx), foundProblems(false)
     {
         /* There's nothing to do here! */
     };

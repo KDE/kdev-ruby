@@ -53,16 +53,9 @@ const IndexedString & RubyParser::currentDocument() const
 
 RubyAst * RubyParser::parse()
 {
-    struct options_t opts;
-    struct ast_t *res;
-    RubyAst *ra;
-
     /* Let's call the parser ;) */
-    opts.path = m_currentDocument.str().toAscii().data();
-    opts.contents = m_contents.data();
-    opts.length = m_contents.size();
-    res = rb_compile_file(&opts);
-    ra = new RubyAst(res->tree);
+    struct ast_t *res = rb_compile_file(m_currentDocument.str().toAscii(), m_contents);
+    RubyAst *ra = new RubyAst(res->tree);
     if (res->errors[0].valid) {
         appendProblem(res->errors[0]);
         if (res->errors[1].valid)

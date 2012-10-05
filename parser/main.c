@@ -56,15 +56,12 @@ void fetch_comments(struct node *tree)
 int main(int argc, char *argv[])
 {
     struct ast_t *ast;
-    struct options_t opts;
 
     switch (argc) {
         case 2:
             return rb_debug_file(argv[argc - 1]);
         case 3:
-            opts.path = argv[argc - 2];
-            opts.contents = NULL;
-            ast = rb_compile_file(&opts);
+            ast = rb_compile_file(argv[argc - 2], NULL);
             if (ast->errors[0].valid) {
                 print_errors(ast->errors);
                 printf("This is unexpected...\n");
