@@ -130,11 +130,6 @@ module ::Guard
   end
 end
 
-# Only 1.8.x is supported :(
-unless RUBY_VERSION < '1.9'
-  puts 'Error: Right now this script only accepts Ruby 1.8.x :('
-  exit
-end
 
 #
 # And now let's use the infrastructure created above :)
@@ -147,10 +142,9 @@ build_url += '/' unless build_url.end_with? '/'
 # For each component (Completion, Parser, DUChain) specify the relative url
 # and how to execute each test.
 cp = { :url => 'completion/tests/', :execs => './completion' }
-parser = { :url => 'parser/tools/', :execs => 'ruby parser_test.rb' }
 duchain = { :url => 'duchain/tests/', :execs => ['./duchain', './uses'] }
 
 # And finally we can setup the watchers.
-guard 'kdev', :build_url => build_url, :tests => [cp, parser, duchain] do
+guard 'kdev', :build_url => build_url, :tests => [cp, duchain] do
   watch /.*/
 end
