@@ -130,7 +130,8 @@ struct parser_t {
     unsigned long length;
     unsigned long line;
     unsigned long column;
-    char *name;
+    unsigned char content_given : 1;
+    const char *name;
     char *blob;
 };
 
@@ -1613,6 +1614,7 @@ none : /* none */ { $$ = NULL; }
 
 static void init_parser(struct parser_t * parser)
 {
+    parser->content_given = 0;
     parser->ast = NULL;
     parser->blob = NULL;
     parser->cursor = 0;
@@ -1664,8 +1666,8 @@ static void free_parser(struct parser_t *parser)
         free(parser->pos_stack);
     if (lex_strterm.word)
         free(lex_strterm.word);
-    free(parser->blob);
-    free(parser->name);
+    if (!parser->content_given)
+        free(parser->blob);
 /*     if (p->last_comment != NULL) */
 /*         free(p->last_comment); */
 }
@@ -2937,20 +2939,21 @@ static void copy_error(struct ast_t *ast, int index, struct error_t p)
     ast->errors[index].msg = p.msg;
 }
 
-struct ast_t * rb_compile_file(const char *path, const char *contents)
+struct ast_t * rb_compile_file(struct options_t *opts)
 {
     struct parser_t p;
     struct ast_t *result;
 
     /* Initialize parser */
     init_parser(&p);
-    p.name = strdup(path);
-    if (!contents) {
-        if (!retrieve_source(&p, path))
+    p.name = opts->path;
+    if (!opts->contents) {
+        if (!retrieve_source(&p, opts->path))
             return NULL;
     } else {
-        p.length = strlen(contents);
-        p.blob = strdup(contents);
+        p.content_given = 1;
+        p.length = strlen(opts->contents);
+        p.blob = opts->contents;
     }
 
     /* Let's parse */

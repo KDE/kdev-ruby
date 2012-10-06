@@ -188,17 +188,25 @@ struct node {
  */
 typedef struct node Node;
 
+/**
+ * This struct contains all the options that may be passed
+ * to the parser.
+ */
+struct options_t {
+    const char *path;
+    char *contents;
+};
+
 
 /* Interface to the parser */
 
 /**
  * Generate the AST of a given ruby file.
  *
- * @param path The path of the file to be compiled.
- * @param contents The contents of the file to be compiled.
+ * @param opts The options passed to the parser.
  * @return an AST that represents the code.
  */
-struct ast_t * rb_compile_file(const char *path, const char *contents);
+struct ast_t * rb_compile_file(struct options_t *opts);
 
 /**
  * Free an ast_t.
