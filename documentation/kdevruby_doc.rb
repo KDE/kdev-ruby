@@ -1,7 +1,7 @@
-#
+##
 # This file is part of KDevelop
-# Author:: Copyright (C) 2012  Miquel Sabaté (mikisabate@gmail.com)
-# License::
+#
+# Copyright (C) 2012 Miquel Sabaté <mikisabate@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+
 
 #!/usr/bin/env ruby
 
@@ -24,18 +24,18 @@
 require 'rdoc/rdoc'
 
 
-##
 # Re-open the RDoc::RDoc class in order to re-implement some key methods.
 class RDoc::RDoc
-  ##
-  # Constructor. Just call super and create a dummy value for @options.
+  # Public: Just call super and create a dummy value for @options.
   def initialize
     super
     @options = RDoc::Options.new
   end
 
-  ##
-  # Re-implemented from RDoc::RDoc. Parse the files from the given +directory+.
+  # Public: Re-implemented from RDoc::RDoc. Parse all the files from
+  # a directory.
+  #
+  # directory - a String containing the path to the directory.
   def parse_files(directory)
     files = get_files_from directory
     @stats = RDoc::Stats.new files.size, @options.verbosity
@@ -43,10 +43,11 @@ class RDoc::RDoc
     files.each { |f| top_levels << parse_file(f) }
   end
 
-  ##
-  # Re-implemented from RDoc::RDoc. Given a file +name+, parse it.
+  # Public: Parse a file.
   #
-  # @return *RDoc::TopLevel* that represents the parsed file.
+  # name - a String containing the path to the file to be parsed.
+  #
+  # Returns a RDoc::TopLevel that represents the parsed file.
   def parse_file(name)
     content = IO.read name
     top_level = RDoc::TopLevel.new name
@@ -60,9 +61,11 @@ class RDoc::RDoc
 
   private
 
-  ##
-  # @internal
-  # @return *Array* containing all the files inside the directory +d+.
+  # Internal: Get the files from the given directory.
+  #
+  # d - A String containing the given directory.
+  #
+  # Returns an Array containing all the files inside the given directory.
   def get_files_from(d)
     files = []
     Dir.glob(File.join(d, "*.{c, rb}")).each { |f| files << f if File.file? f }
@@ -70,21 +73,21 @@ class RDoc::RDoc
   end
 end
 
-##
 # Re-open the File class so we can print the results of the RDoc::TopLevel's
 # into files in an easier way.
 class File
-  ##
-  # Print the given +comment+.
+  # Public: Print a comment.
+  #
+  # comment - A String containing the comment.
   def print_comment(comment)
     return if comment.empty?
     puts '##'
     puts comment.split("\n").each { |c| c.insert(0, '# ') << "\n" }.join
   end
 
-  ##
-  # Print the given +hash+ of modules that we can retrieve by
-  # calling RDoc::TopLevel#modules_hash.
+  # Print the modules from the given parameter.
+  #
+  # hash - A Hash retrieved from RDoc::TopLevel#modules_hash.
   def print_modules(hash)
     hash.each do |o|
       next if o.empty?
@@ -98,9 +101,9 @@ class File
     end
   end
 
-  ##
-  # Print the given +hash+ of classes that we can retrieve by
-  # calling RDoc::TopLevel#classes_hash.
+  # Public: Print the classes from the given parameter.
+  #
+  # hash - A Hash retrieved from RDoc::TopLevel#class_hash.
   def print_classes(hash)
     hash.each do |o|
       next if o.empty?
@@ -124,9 +127,10 @@ class File
     end
   end
 
-  ##
-  # From the given +method+ and the given string +str+ ,
-  # print everything we can guess from it.
+  # Public: Guess everything we can from the given parameters and print it.
+  #
+  # method - a RDoc::MethodAttr object containing the info of the method.
+  # str    - a String containing the signature of the method.
   def print_method_string(method, str)
     print_comment method.comment
 
@@ -188,8 +192,9 @@ class File
     end
   end
 
-  ##
-  # Print all the methods contained inside the given +hash+.
+  # Public: Print the methods from the given parameter.
+  #
+  # hash - A Hash retrieved from RDoc::TopLevel#methods_hash.
   def print_methods(hash)
     hash.each do |m|
       method = m.last
@@ -202,8 +207,12 @@ class File
 
   private
 
-  ##
-  # Filter some issues on the +name+ of this method.
+  # Internal: The following are some methods to clean typos
+  # from Ruby's documentation.
+
+  # Clean the given name.
+  #
+  # name - A String containing the name to clean.
   def filter_name(name)
     name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
     name.gsub!('enc or nil', 'enc_or_nil')
@@ -211,8 +220,9 @@ class File
     name
   end
 
-  ##
-  # Given the string +res+ , fix typos from documentation by hand.
+  # Internal: Fix random typos from the documentation by hand.
+  #
+  # res - A String containing the documentation to clean.
   def fix_typos(res)
     res.gsub!(/,\s*,/, ',')
     res.gsub!('"ext_enc:int_enc"', 'enc')
@@ -223,8 +233,9 @@ class File
     res
   end
 
-  ##
-  # Clean the given string +str+ from reserved words.
+  # Internal: Clean the given string from reserved words.
+  #
+  # str - The given string.
   def strip_reserved(str)
     str.gsub(/module/, 'modul').gsub(/class/, 'klass').gsub(/end/, '_end')
   end

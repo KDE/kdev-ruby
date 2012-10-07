@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+
 
 #!/usr/bin/env ruby
 
@@ -32,31 +32,20 @@
 # Only execute this script if the user provided a name
 exit if ARGV[0].nil?
 
-exec("cd .. && ./ruby-parser tests/#{ARGV[0]} > tools/fancy.txt") if fork.nil?
-Process.wait
+translate = [
+  'whitespace', 'comment', 'plus', 'minus', 'mul', 'pow', 'div', 'mod', 'bit_and', 'bit_or', 'bit_xor',
+  'kw_and', 'kw_or', 'kw_not', 'or', 'and', 'lshift', 'rshift', 'neg', 'not', 'unary_plus',
+  'unay_minus', 'assign', 'op_assign', 'assoc', 'cmp', 'eq', 'neq', 'eqq', 'match', 'nmatch',
+  'greater', 'geq', 'lesser', 'leq', 'dot2', 'dot3', 'ternary', 'if', 'unless', 'while',
+  'until', 'case', 'when', 'BEGIN', 'END', 'for', 'begin', 'rescue_arg', 'rescue', 'ensure',
+  'object', 'numeric', 'symbol', 'body', 'function', 'module', 'class', 'singleton_class', 'super', 'string',
+  'regexp', 'key', 'array', 'hash', 'block', 'method_call', 'heredoc', 'break', 'redo', 'retry',
+  'next', 'return', 'yield', 'alias', 'defined', 'undef', 'array_value', '__END__', 'true', 'false',
+  'nil', 'self', '__ENCODING__', '__FILE__', '__LINE__'
+]
 
-# Array of available tokens
-translate = ['whitespace', 'comment', 'plus', 'minus', 'product', 'exp',
-             'divide', 'module', 'bit_and', 'bit_or', 'bit_xor', 'keyword_and',
-             'keyword_or', 'keyword_not', 'logical_or', 'logical_and',
-             'left_shift', 'right_shift', 'negate', 'logical_not',
-             'unary_plus', 'unary_minus', 'assign', 'operation_assign',
-             'assoc', 'compare', 'equal?', 'not_equal?', 'within_equal',
-             'match', 'not_match', 'greater', 'greater_equal', 'lesser',
-             'lesser_equal', 'dot2', 'dot3', 'ternary', 'if', 'unless', 'while',
-             'until', 'case', 'when', 'BEGIN', 'END', 'for', 'exception',
-             'rescue_arg', 'rescue', 'ensure', 'object', 'numeric', 'symbol',
-             'body', 'function', 'module', 'class', 'singleton_class',
-             'superclass', 'string', 'regexp', 'key', 'array', 'hash',
-             'block', 'method_call', 'heredoc', 'break', 'redo', 'retry',
-             'next', 'return', 'yield', 'alias', 'defined?', 'undef',
-             'array_value', 'backtick']
-
-
-# This piece of code really does to job
-IO.foreach('fancy.txt') do |line|
-  print '-- Blank line --' if line == "\n"
-  line = line.gsub(/[0-9]+(\[)/) { |m| translate[m.to_i] + "[" }
-  puts line.gsub(/[0-9]+(\()/) { |m| translate[m.to_i] + "(" }
+output = `../ruby-parser tests/#{ARGV.first}.rb`
+output.split("\n").each do |l|
+  line = l.gsub(/[0-9]+(\[)/) 	{ |m| "#{translate[m.to_i]}[" }
+  puts line.gsub(/[0-9]+(\()/)	{ |m| "#{translate[m.to_i]}(" }
 end
-exec 'rm -rf fancy.txt'
