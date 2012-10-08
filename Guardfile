@@ -144,7 +144,13 @@ build_url += '/' unless build_url.end_with? '/'
 cp = { :url => 'completion/tests/', :execs => './completion' }
 duchain = { :url => 'duchain/tests/', :execs => ['./duchain', './uses'] }
 
-# And finally we can setup the watchers.
+# Setting up the Guard::KDev watcher for DUChain and CodeCompletion.
 guard 'kdev', :build_url => build_url, :tests => [cp, duchain] do
   watch /.*/
+end
+
+# And now let's turn the Guard::RSpec watcher on for the parser.
+rspec_paths = File.join(ARGV.last, 'parser/tools')
+guard 'rspec', :cli => '-c -f doc', :spec_paths => rspec_paths do
+  watch(/parser\/(.*)$/) { "#{rspec_paths}/parser_spec.rb" }
 end
