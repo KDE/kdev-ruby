@@ -34,8 +34,8 @@ extern "C" {
  */
 enum node_t {
     token_invalid = -1,
-    token_whitespace = 0,
-    token_comment = 1,
+    token_whitespace = 0,   /* Not used anymore */
+    token_comment = 1,      /* Not used anymore */
     token_plus,
     token_minus,
     token_mul,
