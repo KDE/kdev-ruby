@@ -141,6 +141,7 @@ struct error_t {
 struct ast_t {
     struct node *tree;
     struct error_t *errors;
+    unsigned char unrecoverable : 1;
 };
 
 /**

@@ -33,6 +33,7 @@
 #include "node.h"
 
 
+#define YYERROR_VERBOSE 1
 #define STACK_SIZE 256
 #define BSIZE STACK_SIZE
 
@@ -124,6 +125,7 @@ struct parser_t {
     struct error_t *errors;
     struct error_t *last_error;
     unsigned char warning : 1;
+    unsigned char unrecoverable : 1;
 
     /* Stack of names */
     char *stack[2];
@@ -254,7 +256,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 
 top_compstmt: top_stmt
     {
-        if (parser->errors) {
+        if (parser->unrecoverable) {
             free_ast(parser->ast);
             parser->ast = NULL;
         } else
@@ -1581,7 +1583,14 @@ operation3: base
     | op { $$ = alloc_node(token_object, NULL, NULL); $$->name = parser->aux; }
 ;
 
-label: tKEY { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
+label: tKEY
+    {
+        if (parser->version < ruby19) {
+            yywarning("This syntax is only available in Ruby 1.9.x or higher.");
+        }
+        $$ = ALLOC_N(token_symbol, NULL, NULL);
+        POP_STACK;
+    }
 ;
 
 super: tSUPER { $$ = ALLOC_N(token_super, NULL, NULL); }
@@ -1678,6 +1687,7 @@ static void init_parser(struct parser_t * parser)
     parser->errors = NULL;
     parser->last_error = NULL;
     parser->warning = 0;
+    parser->unrecoverable = 0;
     parser->last_comment = NULL;
     parser->comment_index = 0;
     lex_strterm.term = 0;
@@ -2840,6 +2850,9 @@ static int parser_yylex(struct parser_t *parser)
             COND_PUSH(0);
             CMDARG_PUSH(0);
             t = tLAMBEG; /* this is a lambda ->() {} construction */
+            if (parser->version < ruby19) {
+                yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
+            }
         } else if (!parser->expr_seen || COND_P())
             t = tLBRACE; /* smells like hash */
         else if (parser->brace_arg)
@@ -2968,7 +2981,12 @@ static void yyerror(struct parser_t *parser, const char *s)
     else
         parser->errors = e;
     parser->last_error = e;
-    parser->eof_reached = 1;
+    parser->last_error->next = NULL;
+
+    if (!e->warning) {
+        parser->eof_reached = 1;
+        parser->unrecoverable = 1;
+    }
 }
 
 struct ast_t * rb_compile_file(struct options_t *opts)
@@ -2992,6 +3010,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
     /* Let's parse */
     result = (struct ast_t *) malloc(sizeof(struct ast_t));
     result->tree = NULL;
+    result->unrecoverable = 1;
     for (;;) {
         yyparse(&p);
         if (p.ast != NULL) {
@@ -3002,6 +3021,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
         }
         if (p.eof_reached) {
             result->errors = p.errors;
+            result->unrecoverable = p.unrecoverable;
             break;
         }
     }
@@ -3015,16 +3035,16 @@ struct ast_t * rb_compile_file(struct options_t *opts)
  * Compile a file like the rb_compile_file function but printing
  * things directly to the stdout. This function is used for the tests.
  */
-int rb_debug_file(const char *path)
+int rb_debug_file(struct options_t *opts)
 {
     struct parser_t p;
     int index;
 
     /* Set up parser */
     init_parser(&p);
-    p.name = strdup(path);
-    p.version = ruby20;
-    if (!retrieve_source(&p, path))
+    p.name = strdup(opts->path);
+    p.version = opts->version;
+    if (!retrieve_source(&p, p.name))
         return 0;
 
     printf("Resulting AST's:");

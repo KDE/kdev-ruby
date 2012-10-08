@@ -36,6 +36,16 @@ describe 'Parser' do
 
   it 'test: `comments\'' do
     expected = File.read "#{base}/tests/comments/expected.txt"
-    `#{parser} #{base}/tests/comments/test.rb true`.should == expected
+    `#{parser} #{base}/tests/comments/test.rb 2`.should == expected
+  end
+
+  context 'Ruby versions:' do
+    it '1.8.x -> 1.9.x transition' do
+      output = `#{parser} #{base}/tests/errors/from18to19.rb 0`.split("\n")
+      output.first.should == 'Line: 1, Column: 8; This syntax is only available in Ruby 1.9.x or higher.'
+      output.last.should == 'Line: 2, Column: 3; "->" syntax is only available in Ruby 1.9.x or higher.'
+    end
+
+    pending '1.9.x -> 2.0.x transition'
   end
 end

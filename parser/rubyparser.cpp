@@ -68,7 +68,7 @@ RubyAst * RubyParser::parse()
     /* Let's call the parser ;) */
     struct ast_t *res = rb_compile_file(&opts);
     RubyAst *ra = new RubyAst(res->tree);
-    if (res->errors) {
+    if (res->unrecoverable) {
         for (aux = res->errors; aux; aux = aux->next)
             appendProblem(aux);
         rb_free(res);

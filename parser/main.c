@@ -23,7 +23,7 @@
 #include "node.h"
 
 
-extern int rb_debug_file(const char *);
+extern int rb_debug_file(struct options_t *opts);
 
 /*
  * This is a recursive function that steps over the AST to fetch
@@ -60,22 +60,23 @@ int main(int argc, char *argv[])
 
     switch (argc) {
         case 2:
-            return rb_debug_file(argv[argc - 1]);
+            opts.path = argv[argc - 1];
+            opts.version = ruby20;
+            return rb_debug_file(&opts);
         case 3:
             opts.path = argv[argc - 2];
             opts.contents = NULL;
-            opts.version = ruby20;
+            opts.version = atoi(argv[argc - 1]);
             ast = rb_compile_file(&opts);
             if (ast->errors) {
                 print_errors(ast->errors);
-                printf("This is unexpected...\n");
                 exit(1);
             }
             fetch_comments(ast->tree);
             rb_free(ast);
             break;
         default:
-            printf("Usage: ruby-parser file [opt]\n\n");
+            printf("Usage: ruby-parser file [ruby-version]\n\n");
             printf("KDevelop Ruby parser debugging utility\n");
     }
     return 0;
