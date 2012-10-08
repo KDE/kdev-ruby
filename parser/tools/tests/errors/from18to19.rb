@@ -1,2 +1,6 @@
 a = { b: 'asd' }
--> { puts 'Hello World!' } 
+-> { puts 'Hello World!' }
+3.times do|y;x|
+  puts "Looping #{y}"
+  x = y
+end

@@ -1121,7 +1121,13 @@ block_param_def : '|' opt_bv_decl '|'   { $$ = $2;      }
 ;
 
 opt_bv_decl: none
-    | ';' bv_decls { $$ = $2; }
+    | ';' bv_decls
+    {
+        if (parser->version < ruby19) {
+            yywarning("Block local variables are only available in Ruby 1.9.x or higher.");
+        }
+        $$ = $2;
+    }
 ;
 
 bv_decls: bvar

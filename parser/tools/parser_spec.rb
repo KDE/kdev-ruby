@@ -24,6 +24,7 @@ end
 
 describe 'Parser' do
   base = File.dirname(__FILE__)
+
   files = Dir[File.join(base, 'tests/*.rb')]
   files.each do |file|
     name = file.match(/.*\/(.+)+\.rb$/)[1]
@@ -41,9 +42,12 @@ describe 'Parser' do
 
   context 'Ruby versions:' do
     it '1.8.x -> 1.9.x transition' do
-      output = `#{parser} #{base}/tests/errors/from18to19.rb 0`.split("\n")
-      output.first.should == 'Line: 1, Column: 8; This syntax is only available in Ruby 1.9.x or higher.'
-      output.last.should == 'Line: 2, Column: 3; "->" syntax is only available in Ruby 1.9.x or higher.'
+      output = `#{parser} #{base}/tests/errors/from18to19.rb 0`
+      output.should == <<-HEREDOC.gsub(/^\s+/, '')
+        Line: 1, Column: 8; This syntax is only available in Ruby 1.9.x or higher.
+        Line: 2, Column: 3; "->" syntax is only available in Ruby 1.9.x or higher.
+        Line: 3, Column: 15; Block local variables are only available in Ruby 1.9.x or higher.
+      HEREDOC
     end
 
     pending '1.9.x -> 2.0.x transition'
