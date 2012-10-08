@@ -44,7 +44,6 @@ struct flags_t {
     unsigned char dot_seen : 1;
     unsigned char last_is_paren : 1;
     unsigned char special_arg : 1;
-    unsigned char cmd_arg : 1;
     unsigned char brace_arg : 1;
     unsigned char def_seen : 1;
     unsigned char in_alias : 1;
@@ -58,7 +57,6 @@ struct flags_t {
 #define dot_seen lexer_flags.dot_seen
 #define last_is_paren lexer_flags.last_is_paren
 #define special_arg lexer_flags.special_arg
-#define cmd_arg lexer_flags.cmd_arg
 #define brace_arg lexer_flags.brace_arg
 #define def_seen lexer_flags.def_seen
 #define in_alias lexer_flags.in_alias
@@ -80,10 +78,6 @@ struct flags_t {
 #define CMDARG_POP()    BITSTACK_POP(parser->cmdarg_stack)
 #define CMDARG_LEXPOP() BITSTACK_LEXPOP(parser->cmdarg_stack)
 #define CMDARG_P()      BITSTACK_SET_P(parser->cmdarg_stack)
-
-/* TODO: change */
-#define PUSH_CLASS() parser->class_seen = 1;
-#define POP_CLASS() parser->class_seen = 0;
 
 
 /* This structure represents a string/heredoc/regexp term. */
@@ -118,6 +112,7 @@ struct parser_t {
     /* Flags used by the parser */
     struct flags_t lexer_flags;
     unsigned int cond_stack;
+    unsigned int cmdarg_stack;
     int in_def;
     int paren_nest;
     int lpar_beg;
@@ -786,7 +781,15 @@ call_args: command
     | block_arg
 ;
 
-command_args: { parser->cmd_arg = 1; } call_args { $$ = $2; }
+command_args:
+    {
+        $<num>$ = parser->cmdarg_stack;
+        CMDARG_PUSH(1);
+    } call_args
+    {
+        parser->cmdarg_stack = $<num>$;
+        $$ = $2;
+    }
 ;
 
 block_arg: tAMPER arg { $$ = $2; }
@@ -925,8 +928,15 @@ primary: literal
         pop_comment(parser, $$);
         pop_start(parser, $$);
     }
-    | tCLASS { PUSH_CLASS(); } opt_terms tLSHIFT { POP_CLASS(); } expr
-        term bodystmt tEND
+    | tCLASS
+    {
+        parser->class_seen = 1;
+    }
+    opt_terms tLSHIFT
+    {
+        parser->class_seen = 0;
+    }
+    expr term bodystmt tEND
     {
         $$ = ALLOC_N(token_singleton_class, $8, $6);
         pop_comment(parser, $$);
@@ -1640,8 +1650,8 @@ static void init_parser(struct parser_t * parser)
     parser->dot_seen = 0;
     parser->last_is_paren = 0;
     parser->cond_stack = 0;
+    parser->cmdarg_stack = 0;
     parser->special_arg = 0;
-    parser->cmd_arg = 0;
     parser->brace_arg = 0;
     parser->in_def = 0;
     parser->in_alias = 0;
@@ -2297,7 +2307,7 @@ static int parser_yylex(struct parser_t *parser)
     } else if (*c == '\n') {
         t = EOL;
         parser->dot_seen = 0;
-        parser->cmd_arg = 0;
+        CMDARG_PUSH(0);
         parser->column = -1; /* So it's correct after curs++ */
         parser->in_alias = 0;
         parser->line++;
@@ -2428,7 +2438,7 @@ static int parser_yylex(struct parser_t *parser)
                         parser->in_alias = 1;
                         break;
                     case tEND:
-                        parser->cmd_arg = 0;
+                        CMDARG_PUSH(0);
                         break;
                     case tRETURN:
                         parser->expr_mid = 2;
@@ -2464,7 +2474,7 @@ static int parser_yylex(struct parser_t *parser)
         unsigned char should_store = 1;
         curs++;
         parser->paren_nest++;
-        parser->cmd_arg = 0;
+        CMDARG_PUSH(0);
         if (parser->dot_seen || parser->def_seen) {
             if (*(c + 1) == ']') {
                 ++curs;
@@ -2493,6 +2503,8 @@ static int parser_yylex(struct parser_t *parser)
         parser->paren_nest--;
         parser->expr_seen = 1;
         parser->brace_arg = 1;
+        CMDARG_LEXPOP();
+        COND_LEXPOP();
         t = ']';
         curs++;
     } else if (*c == '=') {
@@ -2801,14 +2813,16 @@ static int parser_yylex(struct parser_t *parser)
         curs++;
     } else if (*c == '(') {
         parser->paren_nest++;
-        parser->cmd_arg = 0;
+        /*CMDARG_PUSH(0);*/
         if (parser->special_arg) {
             COND_PUSH(0);
+            CMDARG_PUSH(0);
             parser->special_arg = 0;
             t = '(';
         } else if (!parser->expr_seen || COND_P())
             t = tLPAREN;
         else {
+            CMDARG_PUSH(0);
             COND_PUSH(0);
             t = '(';
         }
@@ -2817,6 +2831,8 @@ static int parser_yylex(struct parser_t *parser)
         parser->paren_nest--;
         curs++;
         parser->expr_seen = 1;
+        CMDARG_LEXPOP();
+        COND_LEXPOP();
         if (!parser->paren_nest)
             parser->mcall = 0;
         t = ')';
@@ -2825,6 +2841,7 @@ static int parser_yylex(struct parser_t *parser)
             parser->lpar_beg = 0;
             parser->paren_nest--;
             COND_PUSH(0);
+            CMDARG_PUSH(0);
             t = tLAMBEG; /* this is a lambda ->() {} construction */
         } else if (!parser->expr_seen || COND_P())
             t = tLBRACE; /* smells like hash */
@@ -2832,9 +2849,9 @@ static int parser_yylex(struct parser_t *parser)
             t = tLBRACE_ARG; /* block (expr) */
         else {
             COND_PUSH(0);
+            CMDARG_PUSH(0);
             t = '{'; /* block (primary) */
         }
-        parser->cmd_arg = 0;
         tokp.start_line = tokp.end_line = parser->line;
         tokp.start_col = parser->column;
         curs++;
@@ -2843,7 +2860,8 @@ static int parser_yylex(struct parser_t *parser)
         tokp.start_col = parser->column;
         parser->expr_seen = 1;
         parser->brace_arg = 1;
-        parser->cmd_arg = 0;
+        CMDARG_LEXPOP();
+        COND_LEXPOP();
         curs++;
         t = '}';
     } else if (*c == ',') {
@@ -2884,8 +2902,8 @@ static int parser_yylex(struct parser_t *parser)
             t = tDO_LAMBDA;
         } else if (COND_P()) {
             t = tDO_COND;
-        } else if (parser->cmd_arg || !parser->expr_seen || parser->brace_arg) {
-            parser->cmd_arg = 0;
+        } else if (CMDARG_P() || !parser->expr_seen || parser->brace_arg) {
+            CMDARG_PUSH(0);
             t = tDO_BLOCK;
         } else
             t = tDO;
