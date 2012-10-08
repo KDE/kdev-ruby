@@ -118,6 +118,7 @@ struct parser_t {
     int lpar_beg;
     int expr_mid;
     struct term_t lex_strterm;
+    enum ruby_version version;
 
     /* Errors on the file */
     struct error_t *errors;
@@ -155,6 +156,7 @@ struct parser_t {
 /* yy's functions */
 static int yylex(void *, void *);
 static void yyerror(struct parser_t *, const char *);
+#define yywarning(msg) { parser->warning = 1; yyerror(parser, (msg)); parser->warning = 0;}
 
 /* The static functions below deal with stacks. */
 
@@ -2977,6 +2979,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
     /* Initialize parser */
     init_parser(&p);
     p.name = opts->path;
+    p.version = opts->version;
     if (!opts->contents) {
         if (!retrieve_source(&p, opts->path))
             return NULL;
@@ -3020,6 +3023,7 @@ int rb_debug_file(const char *path)
     /* Set up parser */
     init_parser(&p);
     p.name = strdup(path);
+    p.version = ruby20;
     if (!retrieve_source(&p, path))
         return 0;
 

@@ -74,6 +74,11 @@ public:
     const IndexedString & currentDocument() const;
 
     /**
+     * Set the version of the Ruby interpreter.
+     */
+    void setRubyVersion(enum ruby_version version);
+
+    /**
      * This method parses the current document.
      *
      * @return the generated Ast.
@@ -117,6 +122,7 @@ public:
 private:
     IndexedString m_currentDocument;
     QByteArray m_contents;
+    enum ruby_version m_version;
 };
 
 

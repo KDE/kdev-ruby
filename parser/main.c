@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
         case 3:
             opts.path = argv[argc - 2];
             opts.contents = NULL;
+            opts.version = ruby20;
             ast = rb_compile_file(&opts);
             if (ast->errors) {
                 print_errors(ast->errors);

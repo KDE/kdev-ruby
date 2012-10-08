@@ -190,12 +190,23 @@ struct node {
 typedef struct node Node;
 
 /**
+ * This is a convenient enum to store the version of the
+ * Ruby version.
+ */
+enum ruby_version {
+    ruby18 = 0, /* 1.8.x branch */
+    ruby19 = 1, /* 1.9.x branch */
+    ruby20 = 2, /* 2.0.x branch */
+};
+
+/**
  * This struct contains all the options that may be passed
  * to the parser.
  */
 struct options_t {
     const char *path;
     char *contents;
+    enum ruby_version version;
 };
 
 

@@ -29,6 +29,7 @@ namespace Ruby
 RubyParser::RubyParser()
 {
     m_contents = NULL;
+    m_version = ruby20;
 }
 
 RubyParser::~RubyParser()
@@ -46,6 +47,11 @@ void RubyParser::setCurrentDocument(const KUrl &fileName)
     m_currentDocument = IndexedString(fileName);
 }
 
+void RubyParser::setRubyVersion(enum ruby_version version)
+{
+    m_version = version;
+}
+
 const IndexedString & RubyParser::currentDocument() const
 {
     return m_currentDocument;
@@ -57,6 +63,7 @@ RubyAst * RubyParser::parse()
     struct error_t *aux;
     opts.path = m_currentDocument.str().toAscii();
     opts.contents = m_contents.data();
+    opts.version = m_version;
 
     /* Let's call the parser ;) */
     struct ast_t *res = rb_compile_file(&opts);
