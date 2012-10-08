@@ -120,8 +120,9 @@ struct parser_t {
     struct term_t lex_strterm;
 
     /* Errors on the file */
-    struct error_t errors[2];
-    int error_index;
+    struct error_t *errors;
+    struct error_t *last_error;
+    unsigned char warning : 1;
 
     /* Stack of names */
     char *stack[2];
@@ -251,7 +252,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 
 top_compstmt: top_stmt
     {
-        if (parser->errors[0].valid == 1) {
+        if (parser->errors) {
             free_ast(parser->ast);
             parser->ast = NULL;
         } else
@@ -1660,7 +1661,6 @@ static void init_parser(struct parser_t * parser)
     parser->expr_mid = 0;
     parser->lpar_beg = 0;
     parser->paren_nest = 0;
-    parser->error_index = 0;
     parser->def_seen = 0;
     parser->sp = 0;
     parser->line = 1;
@@ -1673,8 +1673,9 @@ static void init_parser(struct parser_t * parser)
     parser->last_pos = NULL;
     parser->call_args = 0;
     parser->auxiliar.end_line = -1;
-    parser->errors[0].valid = 0;
-    parser->errors[1].valid = 0;
+    parser->errors = NULL;
+    parser->last_error = NULL;
+    parser->warning = 0;
     parser->last_comment = NULL;
     parser->comment_index = 0;
     lex_strterm.term = 0;
@@ -2953,27 +2954,19 @@ static int yylex(void *lval, void *p)
  */
 static void yyerror(struct parser_t *parser, const char *s)
 {
-    if (parser->error_index < 1) {
-        parser->errors[parser->error_index].msg = strdup(s);
-        parser->errors[parser->error_index].line = parser->line;
-        parser->errors[parser->error_index].col = parser->column;
-        parser->errors[parser->error_index].valid = 1;
-        parser->error_index++;
-    }
-    if (lex_strterm.word)
-        free(lex_strterm.word);
-    parser->eof_reached = 1;
-}
+    struct error_t *e = (struct error_t *) malloc(sizeof(struct error_t));
 
-/*
- * Copy errors to the RubyAst structure.
- */
-static void copy_error(struct ast_t *ast, int index, struct error_t p)
-{
-    ast->errors[index].valid = p.valid;
-    ast->errors[index].line = p.line;
-    ast->errors[index].col = p.col;
-    ast->errors[index].msg = p.msg;
+    e->msg = strdup(s);
+    e->line = parser->line;
+    e->column = parser->column;
+    e->warning = parser->warning;
+    e->next = e;
+    if (parser->errors)
+        parser->last_error->next = e;
+    else
+        parser->errors = e;
+    parser->last_error = e;
+    parser->eof_reached = 1;
 }
 
 struct ast_t * rb_compile_file(struct options_t *opts)
@@ -3005,8 +2998,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
                 update_list(result->tree, p.ast);
         }
         if (p.eof_reached) {
-            copy_error(result, 0, p.errors[0]);
-            copy_error(result, 1, p.errors[1]);
+            result->errors = p.errors;
             break;
         }
     }
@@ -3053,7 +3045,7 @@ int rb_debug_file(const char *path)
             p.ast = NULL;
         }
         if (p.eof_reached) {
-            if (p.errors[0].valid)
+            if (p.errors)
                 print_errors(p.errors);
             break;
         }

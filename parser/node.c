@@ -134,16 +134,12 @@ void print_node(struct node *n)
     }
 }
 
-void print_errors(struct error_t *errors)
+void print_errors(struct error_t *e)
 {
-    if (errors[0].valid == 1) {
-        printf("Line: %i, Column: %i; %s\n", errors[0].line,
-               errors[0].col, errors[0].msg);
-        if (errors[1].valid == 1) {
-            printf("Line: %i, Column: %i; %s\n", errors[1].line,
-                   errors[1].col, errors[1].msg);
-        }
-    }
+    struct error_t *aux;
+
+    for (aux = e; aux; aux = aux->next)
+        printf("Line: %i, Column: %i; %s\n", aux->line, aux->column, aux->msg);
 }
 
 #endif
@@ -165,13 +161,12 @@ void free_ast(struct node *n)
     free(n);
 }
 
-void free_errors(struct error_t *errors)
+void free_errors(struct ast_t *ra)
 {
-    if (errors[0].valid == 1) {
-        free(errors[0].msg);
-        if (errors[1].valid == 1)
-            free(errors[1].msg);
-    }
+    struct error_t *aux;
+
+    for (aux = ra->errors; aux; aux = aux->next)
+        free(aux->msg);
 }
 
 /*
@@ -181,7 +176,7 @@ void free_errors(struct error_t *errors)
 void rb_free(struct ast_t *ra)
 {
     free_ast(ra->tree);
-    free_errors(ra->errors);
+    free_errors(ra);
     free(ra);
 }
 

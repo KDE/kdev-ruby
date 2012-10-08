@@ -124,12 +124,13 @@ enum node_t {
 
 
 /**
- * This structure stores errors on the parsing.
+ * This structure stores errors/warnings on the parsing.
  */
 struct error_t {
     char *msg;
-    int line, col;
-    unsigned char valid;
+    int line, column;
+    unsigned char warning : 1;
+    struct error_t *next;
 };
 
 /**
@@ -139,7 +140,7 @@ struct error_t {
  */
 struct ast_t {
     struct node *tree;
-    struct error_t errors[2];
+    struct error_t *errors;
 };
 
 /**
@@ -257,7 +258,7 @@ void print_errors(struct error_t *errors);
 #endif
 
 void free_ast(struct node *n);
-void free_errors(struct error_t *errors);
+void free_errors(struct ast_t *ra);
 
 
 /*

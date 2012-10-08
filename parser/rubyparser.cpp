@@ -54,20 +54,20 @@ const IndexedString & RubyParser::currentDocument() const
 RubyAst * RubyParser::parse()
 {
     struct options_t opts;
+    struct error_t *aux;
     opts.path = m_currentDocument.str().toAscii();
     opts.contents = m_contents.data();
 
     /* Let's call the parser ;) */
     struct ast_t *res = rb_compile_file(&opts);
     RubyAst *ra = new RubyAst(res->tree);
-    if (res->errors[0].valid) {
-        appendProblem(res->errors[0]);
-        if (res->errors[1].valid)
-            appendProblem(res->errors[1]);
+    if (res->errors) {
+        for (aux = res->errors; aux; aux = aux->next)
+            appendProblem(aux);
         rb_free(res);
         return NULL;
     } else {
-        free_errors(res->errors);
+        free_errors(res);
         free(res);
         m_problems.clear();
     }
@@ -86,18 +86,21 @@ QString RubyParser::symbol(Node *node) const
     return m_contents.mid(node->pos.offset - len, len);
 }
 
-void RubyParser::appendProblem(struct error_t givenError)
+void RubyParser::appendProblem(struct error_t *error)
 {
-    int col = (givenError.col > 0) ? givenError.col - 1 : 0;
+    int col = (error->column > 0) ? error->column - 1 : 0;
     ProblemPointer problem(new Problem);
 
-    SimpleCursor cursor(givenError.line - 1, col);
+    SimpleCursor cursor(error->line - 1, col);
     SimpleRange range(cursor, cursor);
     DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
-    problem->setDescription(QString(givenError.msg));
+    problem->setDescription(QString(error->msg));
     problem->setSource(KDevelop::ProblemData::Parser);
-    problem->setSeverity(KDevelop::ProblemData::Error);
+    if (error->warning)
+        problem->setSeverity(KDevelop::ProblemData::Error);
+    else
+        problem->setSeverity(KDevelop::ProblemData::Warning);
     m_problems << problem;
 }
 

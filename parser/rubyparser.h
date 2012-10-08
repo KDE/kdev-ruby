@@ -104,13 +104,12 @@ public:
 
 private:
     /**
-     * @internal called when there are errors in the current
-     * document and we want to append one of them in a list of
-     * ProblemPointer's.
+     * @internal called when there are errors in the current document and we
+     * want to append one of them in a list of ProblemPointer's.
      *
-     * @param givenError the error provided to this method.
+     * @param error the error provided to this method.
      */
-    void appendProblem(struct error_t givenError);
+    void appendProblem(struct error_t *error);
 
 public:
     QList<KDevelop::ProblemPointer> m_problems;

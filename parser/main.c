@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
             opts.path = argv[argc - 2];
             opts.contents = NULL;
             ast = rb_compile_file(&opts);
-            if (ast->errors[0].valid) {
+            if (ast->errors) {
                 print_errors(ast->errors);
                 printf("This is unexpected...\n");
                 exit(1);
