@@ -23,18 +23,19 @@ def parser
 end
 
 describe 'Parser' do
-  files = Dir[File.join(File.dirname(__FILE__), 'tests/*.rb')]
+  base = File.dirname(__FILE__)
+  files = Dir[File.join(base, 'tests/*.rb')]
   files.each do |file|
     name = file.match(/.*\/(.+)+\.rb$/)[1]
 
     it "test: `#{name}'" do
-      expected = File.read "tests/#{name}.txt"
-      `#{parser} tests/#{name}.rb`.should == expected
+      expected = File.read "#{base}/tests/#{name}.txt"
+      `#{parser} #{base}/tests/#{name}.rb`.should == expected
     end
   end
 
   it 'test: `comments\'' do
-    expected = File.read 'tests/comments/expected.txt'
-    `#{parser} tests/comments/test.rb true`.should == expected
+    expected = File.read "#{base}/tests/comments/expected.txt"
+    `#{parser} #{base}/tests/comments/test.rb true`.should == expected
   end
 end
