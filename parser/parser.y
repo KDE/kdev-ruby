@@ -2040,13 +2040,13 @@ static void pop_comment(struct parser_t *parser, struct node *n)
 static void fix_pos(struct parser_t *parser, struct node *n)
 {
     int kind;
-    struct node * aux;
+    struct node *aux;
 
-    if (n == NULL)
+    if (!n)
         return;
 
     kind = n->kind;
-    if (has_operators(kind) && kind != token_hash) {
+    if (has_operators(kind)) {
         copy_start(n, n->l);
         aux = (n->r->last != NULL) ? n->r->last : n->r;
         copy_end(n, aux);
@@ -2055,12 +2055,6 @@ static void fix_pos(struct parser_t *parser, struct node *n)
         pop_pos(parser, n);
         n->pos.end_line = n->l->pos.end_line;
         n->pos.end_col = n->l->pos.end_col;
-    } else if (kind == token_hash) {
-        pop_pos(parser, n);
-        if (n->l != NULL) {
-            n->pos.end_line = n->l->pos.end_line;
-            n->pos.end_col = n->l->pos.end_col;
-        }
     } else {
         pop_pos(parser, n);
         parser->last_pos = n;
