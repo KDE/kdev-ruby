@@ -1562,9 +1562,6 @@ f_arg: f_arg_item
 
 f_kw: label arg
     {
-        if (parser->version < ruby20) {
-            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
-        }
         $$ = alloc_node(token_object, $1, $2);
         $$->flags = 4;
         copy_range($$, $1, $2);
@@ -1573,9 +1570,6 @@ f_kw: label arg
 
 f_block_kw: label primary
     {
-        if (parser->version < ruby20) {
-            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
-        }
         $$ = alloc_node(token_object, $1, $2);
         $$->flags = 4;
         copy_range($$, $1, $2);
@@ -1671,6 +1665,9 @@ assoc: arg tASSOC arg
     }
     | label arg
     {
+        if (parser->version < ruby19) {
+            yywarning("This syntax is only available in Ruby 1.9.x or higher.");
+        }
         $$ = alloc_node(token_object, $1, $2);
         copy_range($$, $1, $2);
     }
@@ -1698,9 +1695,6 @@ operation3: base
 
 label: tKEY
     {
-        if (parser->version < ruby19) {
-            yywarning("This syntax is only available in Ruby 1.9.x or higher.");
-        }
         $$ = ALLOC_N(token_symbol, NULL, NULL);
         POP_STACK;
     }
