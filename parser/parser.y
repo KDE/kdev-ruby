@@ -2352,6 +2352,8 @@ static int parse_re_options(struct parser_t *p, char *c, int curs)
     return curs - init;
 }
 
+#define IS_SPCARG(c) (CMDARG_P() && space_seen && !isspace(c))
+
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
@@ -2477,7 +2479,7 @@ static int parser_yylex(struct parser_t *parser)
             }
             for (; (curs < len) && isdigit(*c); c++, curs++);
         }
-        parser->expr_seen =    1;
+        parser->expr_seen = 1;
         parser->dot_seen = 0;
         t = (has_point) ? FLOAT : NUMERIC;
     } else if (*c == '$') {
@@ -2781,15 +2783,17 @@ static int parser_yylex(struct parser_t *parser)
             t = tOP_ASGN;
         } else if (*(c + 1) == '*') {
             ++curs;
-            parser->expr_seen = 0;
             if (*(c + 2) == '=') {
                 ++curs;
                 t = tOP_ASGN;
+                parser->expr_seen = 0;
             } else {
                 if (!parser->expr_seen)
                     t = tDSTAR;
-                else
+                else {
                     t = tPOW;
+                    parser->expr_seen = 0;
+                }
             }
         } else {
             if (!parser->expr_seen || parser->dot_seen)
