@@ -83,7 +83,7 @@ struct node * create_list(struct node *head, struct node *tail)
 
 struct node * update_list(struct node *head, struct node *tail)
 {
-    if (tail == NULL)
+    if (!tail)
         return head;
     (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
     tail->next = NULL;
@@ -93,8 +93,10 @@ struct node * update_list(struct node *head, struct node *tail)
 
 struct node * concat_list(struct node *head, struct node *tail)
 {
+    if (!tail)
+        return head;
     (head->last == NULL) ? (head->next = tail) : (head->last->next = tail);
-    head->last = tail->last;
+    head->last = (tail->last) ? tail->last : tail;
     return head;
 }
 

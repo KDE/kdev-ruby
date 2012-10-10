@@ -202,7 +202,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %token <n> tCLASS tMODULE tDEF tUNDEF tBEGIN tRESCUE tENSURE tEND tIF tUNLESS
 %token <n> tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
-%token <n> tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING
+%token <n> tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING tDSTAR
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
 %token <n> tREGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
@@ -224,7 +224,8 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %type <n> fsym variable symbol operation operation2 operation3 other_vars
 %type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg
 %type <n> brace_block cmd_brace_block f_bad_arg sym opt_brace_block
-
+%type <n> opt_args_tail args_tail f_kwarg block_args_tail opt_block_args_tail
+%type <n> f_kw f_block_kw f_block_kwarg f_kwrest
 %type <n> string_contents string_content string_dvar
 
 /* precedence table */
@@ -654,7 +655,7 @@ op: '|' { copy_op("|"); } | '^' { copy_op("^"); } | '&' { copy_op("&"); }
     | tSTAR { copy_op("*"); } | '/' { copy_op("/"); } | '%' { copy_op("%"); }
     | tPOW { copy_op("**"); } | tAREF { copy_op("[]"); } | '`' { copy_op("`");}
     | tUPLUS { copy_op("+"); discard_pos(); } | tASET { copy_op("[]="); }
-    | tUMINUS { copy_op("-");discard_pos(); }
+    | tUMINUS { copy_op("-");discard_pos(); } | tDSTAR { copy_op("**"); }
     | '!' { copy_op("!"); discard_pos(); } | '~' { copy_op("~"); discard_pos(); }
 ;
 
@@ -1064,51 +1065,70 @@ f_margs: f_marg_list { $$ = $1; }
     }
 ;
 
-block_param: f_arg ',' f_block_optarg ',' f_rest_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, concat_list($3, update_list($5, $6)));
-    }
-    | f_arg ',' f_block_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
-    }
-    | f_arg ',' f_block_optarg opt_f_block_arg
+block_args_tail: f_block_kwarg ',' f_kwrest opt_f_block_arg
     {
         $$ = concat_list($1, update_list($3, $4));
     }
-    | f_arg ',' f_block_optarg ',' f_arg opt_f_block_arg
+    | f_block_kwarg opt_f_block_arg
+    {
+        $$ = update_list($1, $2);
+    }
+    | f_kwrest opt_f_block_arg
+    {
+        $$ = update_list($1, $2);
+    }
+    | f_block_arg { $$ = $1; }
+;
+
+opt_block_args_tail: ',' block_args_tail { $$ = $2; }
+    | /* none */ { $$ = 0; }
+;
+
+block_param: f_arg ',' f_block_optarg ',' f_rest_arg opt_block_args_tail
     {
         $$ = concat_list($1, concat_list($3, update_list($5, $6)));
     }
-    | f_arg ',' f_rest_arg opt_f_block_arg
+    | f_arg ',' f_block_optarg ',' f_rest_arg ',' f_arg opt_block_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
+    }
+    | f_arg ',' f_block_optarg opt_block_args_tail
+    {
+        $$ = concat_list($1, update_list($3, $4));
+    }
+    | f_arg ',' f_block_optarg ',' f_arg opt_block_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+    }
+    | f_arg ',' f_rest_arg opt_block_args_tail
     {
         $$ = update_list($1, update_list($3, $4));
     }
     | f_arg ',' { $$ = $1; }
-    | f_arg ',' f_rest_arg ',' f_arg opt_f_block_arg
+    | f_arg ',' f_rest_arg ',' f_arg opt_block_args_tail
     {
         $$ = concat_list($1, concat_list($3, update_list($5, $6)));
     }
-    | f_arg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_block_optarg ',' f_rest_arg opt_f_block_arg
+    | f_arg opt_block_args_tail { $$ = update_list($1, $2); }
+    | f_block_optarg ',' f_rest_arg opt_block_args_tail
     {
         $$ = concat_list($1, update_list($3, $4));
     }
-    | f_block_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
+    | f_block_optarg ',' f_rest_arg ',' f_arg opt_block_args_tail
     {
         $$ = concat_list($1, create_list($3, update_list($5, $6)));
     }
-    | f_block_optarg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_block_optarg ',' f_arg opt_f_block_arg
+    | f_block_optarg opt_block_args_tail { $$ = update_list($1, $2); }
+    | f_block_optarg ',' f_arg opt_block_args_tail
     {
         $$ = concat_list($1, update_list($3, $4));
     }
-    | f_rest_arg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_rest_arg ',' f_arg opt_f_block_arg
+    | f_rest_arg opt_block_args_tail { $$ = update_list($1, $2); }
+    | f_rest_arg ',' f_arg opt_block_args_tail
     {
         $$ = create_list($1, update_list($3, $4));
     }
-    | f_block_arg
+    | block_args_tail
 ;
 
 opt_block_param : none
@@ -1436,50 +1456,90 @@ f_arglist: '(' f_args rparen    { $$ = $2; }
     | f_args term               { $$ = $1; }
 ;
 
-f_args: f_arg ',' f_optarg ',' f_rest_arg opt_f_block_arg
+args_tail: f_kwarg ',' f_kwrest opt_f_block_arg
     {
-        $$ = concat_list($1, concat_list($3, update_list($5, $6)));
-    }
-    | f_arg ',' f_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, concat_list($3, create_list($5, update_list($7, $8))));
-    }
-    | f_arg ',' f_optarg opt_f_block_arg
-    {
+        if (parser->version < ruby20) {
+            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
+        }
         $$ = concat_list($1, update_list($3, $4));
     }
-    | f_arg ',' f_optarg ',' f_arg opt_f_block_arg
+    | f_kwarg opt_f_block_arg
     {
-        $$ = concat_list($1, concat_list($3, update_list($5, $6)));
+        if (parser->version < ruby20) {
+            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
+        }
+        $$ = update_list($1, $2);
     }
-    | f_arg ',' f_rest_arg opt_f_block_arg
+    | f_kwrest opt_f_block_arg
     {
-        $$ = concat_list($1, update_list($3, $4));
-    }
-    | f_arg ',' f_rest_arg ',' f_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, concat_list($3, update_list($5, $6)));
-    }
-    | f_arg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_optarg ',' f_rest_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, update_list($3, $4));
-    }
-    | f_optarg ',' f_rest_arg ',' f_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, create_list($3, update_list($5, $6)));
-    }
-    | f_optarg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_optarg ',' f_arg opt_f_block_arg
-    {
-        $$ = concat_list($1, update_list($3, $4));
-    }
-    | f_rest_arg opt_f_block_arg { $$ = update_list($1, $2); }
-    | f_rest_arg ',' f_arg opt_f_block_arg
-    {
-        $$ = create_list($1, update_list($3, $4));
+        if (parser->version < ruby20) {
+            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
+        }
+        $$ = update_list($1, $2);
     }
     | f_block_arg
+    {
+        $$ = $1;
+    }
+;
+
+opt_args_tail: ',' args_tail    { $$ = $2; }
+    | /* none */                { $$ = 0;  }
+;
+
+f_args: f_arg ',' f_optarg ',' f_rest_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, concat_list($5, $6)));
+    }
+    | f_arg ',' f_optarg ',' f_rest_arg ',' f_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, create_list($5, concat_list($7, $8))));
+    }
+    | f_arg ',' f_optarg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, $4));
+    }
+    | f_arg ',' f_optarg ',' f_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, concat_list($5, $6)));
+    }
+    | f_arg ',' f_rest_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, $4));
+    }
+    | f_arg ',' f_rest_arg ',' f_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, concat_list($5, $6)));
+    }
+    | f_arg opt_args_tail
+    {
+        $$ = concat_list($1, $2);
+    }
+    | f_optarg ',' f_rest_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, $4));
+    }
+    | f_optarg ',' f_rest_arg ',' f_arg opt_args_tail
+    {
+        $$ = concat_list($1, create_list($3, concat_list($5, $6)));
+    }
+    | f_optarg opt_args_tail
+    {
+        $$ = concat_list($1, $2);
+    }
+    | f_optarg ',' f_arg opt_args_tail
+    {
+        $$ = concat_list($1, concat_list($3, $4));
+    }
+    | f_rest_arg opt_args_tail
+    {
+        $$ = concat_list($1, $2);
+    }
+    | f_rest_arg ',' f_arg opt_args_tail
+    {
+        $$ = create_list($1, concat_list($3, $4));
+    }
+    | args_tail
     | none
 ;
 
@@ -1498,6 +1558,46 @@ f_arg_item: f_norm_arg
 
 f_arg: f_arg_item
     | f_arg ',' f_arg_item { $$ = update_list($1, $3); }
+;
+
+f_kw: label arg
+    {
+        if (parser->version < ruby20) {
+            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
+        }
+        $$ = alloc_node(token_object, $1, $2);
+        $$->flags = 4;
+        copy_range($$, $1, $2);
+    }
+;
+
+f_block_kw: label primary
+    {
+        if (parser->version < ruby20) {
+            yywarning("Keyword arguments are only available in Ruby 2.0.x or higher.");
+        }
+        $$ = alloc_node(token_object, $1, $2);
+        $$->flags = 4;
+        copy_range($$, $1, $2);
+    }
+;
+
+f_block_kwarg: f_block_kw               { $$ = $1; }
+    | f_block_kwarg ',' f_block_kw      { $$ = update_list($1, $3); }
+;
+
+f_kwarg: f_kw           { $$ = $1; }
+    | f_kwarg ',' f_kw  { $$ = update_list($1, $3); }
+;
+
+kwrest_mark: tPOW | tDSTAR
+;
+
+f_kwrest: kwrest_mark base
+    {
+        $$ = $2;
+        $$->flags = 5;
+    }
 ;
 
 f_opt: base '=' arg { $$ = ALLOC_N(token_assign, $1, $3); $1->flags = 3; }
@@ -1573,6 +1673,13 @@ assoc: arg tASSOC arg
     {
         $$ = alloc_node(token_object, $1, $2);
         copy_range($$, $1, $2);
+    }
+    | tDSTAR arg
+    {
+        if (parser->version < ruby20) {
+            yywarning("tDSTAR token is only available in Ruby 2.0.x or higher.");
+        }
+        $$ = $2;
     }
 ;
 
@@ -2678,8 +2785,12 @@ static int parser_yylex(struct parser_t *parser)
             if (*(c + 2) == '=') {
                 ++curs;
                 t = tOP_ASGN;
-            } else
-                t = tPOW;
+            } else {
+                if (!parser->expr_seen)
+                    t = tDSTAR;
+                else
+                    t = tPOW;
+            }
         } else {
             if (!parser->expr_seen || parser->dot_seen)
                 t = tSTAR;
