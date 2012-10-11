@@ -5,7 +5,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -32,10 +32,10 @@ module ::Guard
     # options  - a Hash with the available options:
     #            :build_url - a String representing the absolute path to the
     #                         build dir.
-    #            :tests     - an Array of hashes with the config for each test.
+    #            :tests     - a Hash of hashes with the config for each test.
     def initialize(watchers = [], options = {})
       super
-      @opts = { :build_url => '', :tests => [] }.merge(options)
+      @opts = { :build_url => '', :tests => {} }.merge(options)
     end
 
     # Public: It will be called on start. It just shows a message.
@@ -45,61 +45,73 @@ module ::Guard
       UI.info "Watching everything inside: #{@opts[:build_url]}"
     end
 
-    # Public: It will be called when some watched file has changed. It runs
-    # all the tests again.
+    # Public: It will be called when some watched file has changed. 
     #
-    # paths - An Array containing the path of the files that have changed.
+    # paths - An Array of strings that identify which tests
+    # should be run again.
     #
     # Returns nothing.
     def run_on_changes(paths)
-      run_all
+      @failed = 0
+      tests = {}
+      paths.each { |k| tests[k.to_sym] = @opts[:tests][k.to_sym] }
+      run_required(tests)
     end
 
     # Public: Run all the tests and notify the user (console and libnotify).
     #
     # Returns nothing.
     def run_all
-      @results = []
+      run_required(@opts[:tests])
+    end
+
+    private
+
+    # Internal: Run the required tests.
+    #
+    # tests - A Hash of hashes containing all the info of the tests that
+    # have to be run in this iteration.
+    #
+    # Returns nothing.
+    def run_required(tests)
+      @results = {}
       @failed = 0
-      @opts[:tests].each do |t|
-        name = t[:url].match(/^\w+\//)[0].chop.capitalize
-        UI.info "Running tests for #{name}..."
-        t[:execs] = [t[:execs]] if t[:execs].is_a? String
-        run_tests name, t[:url], t[:execs]
+      tests.each do |k, v|
+        UI.info "Running the tests for the #{k.to_s.capitalize}..."
+        v[:execs] = [v[:execs]] if v[:execs].is_a? String
+        run_tests k, v[:url], v[:execs]
       end
 
       notify!
     end
 
-    private
-
     # Internal: Run all the tests of a certain component.
     #
-    # name  - A String with the name of the component.
+    # key   - A Symbol that is the identifier of the test.
     # url   - A String with the relative url of the component's test directory.
     # tests - An Array of strings where each string is the command to be
     #         executed in order to run the test.
     #
     # Returns nothing.
-    def run_tests(name, url, tests)
+    def run_tests(key, url, tests)
       base = @opts[:build_url] + url
       tests.each do |t|
         UI.info "Executing the following command: '#{t}' in #{base}"
         Dir.chdir base
         output = `#{t}`
-        append_results name, output, t.start_with?('./')
+        append_results key, output, t.start_with?('./')
       end
     end
 
     # Internal: Append the results of an execution to the @results array.
     #
-    # name       - A String with the name of the component.
+    # key        - A Symbol that is the identifier of the test.
     # text       - A String with the output of the execution.
     # executable - A Boolean that tells us whether this execution comes from
     #              an executable file or not.
     #
     # Returns nothing.
-    def append_results(name, text, executable)
+    def append_results(key, text, executable)
       total, win = 0, 0
       if executable
         text.match /Totals: (\d+) passed, (\d+) failed/
@@ -109,8 +121,8 @@ module ::Guard
         line.match /^(\d+) tests, (\d+) assertions/
         total, win = $1.to_i, $2.to_i
       end
-      @failed = total - win
-      @results << "#{name} -> OK: #{win}, Failed: #{@failed}"
+      @results[key] = [win, total - win]
+      @failed += 1
     end
 
     # Internal: Notify the user by printing the results to the console.
@@ -118,9 +130,12 @@ module ::Guard
     #
     # Returns nothing.
     def notify!
-      puts "\n************************************************"
-      @results.each { |r| puts r }
-      puts "************************************************\n"
+      puts "\n****************************************"
+      @results.each do |k, v|
+        puts "#{k.to_s.capitalize}: Passed: #{v.first}, Failed: #{v.last}"
+      end
+      puts "****************************************\n"
+
       if @failed > 0
         ::Guard::Notifier.notify('Some tests are failing !', :image => :failed)
       else
@@ -139,14 +154,17 @@ end
 build_url = File.join File.expand_path(File.dirname(__FILE__)), ARGV.last
 build_url += '/' unless build_url.end_with? '/'
 
-# For each component (Completion, Parser, DUChain) specify the relative url
+# For each component (Completion, DUChain) specify the relative url
 # and how to execute each test.
-cp = { :url => 'completion/tests/', :execs => './completion' }
-duchain = { :url => 'duchain/tests/', :execs => ['./duchain', './uses'] }
+tests = {
+    :completion => { :url => 'completion/tests/', :execs => './completion' },
+    :duchain => { :url => 'duchain/tests/', :execs => ['./duchain', './uses'] }
+}
 
 # Setting up the Guard::KDev watcher for DUChain and CodeCompletion.
-guard 'kdev', :build_url => build_url, :tests => [cp, duchain] do
-  watch /.*/
+guard 'kdev', :build_url => build_url, :tests => tests do
+  watch(%r{^duchain/*})         { [:duchain, :completion] }
+  watch(%r{^completion/*})      { [:completion] }
 end
 
 # And now let's turn the Guard::RSpec watcher on for the parser.
