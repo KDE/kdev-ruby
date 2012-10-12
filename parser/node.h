@@ -235,6 +235,22 @@ void rb_free(struct ast_t *ra);
  */
 struct node * rb_name_node(struct node *n);
 
+/**
+ * Free the node of an ast_t. Note that this function is already called
+ * by the rb_free function.
+ *
+ * @param n The root node.
+ */
+void free_ast(struct node *n);
+
+/**
+ * Free the errors of an ast_t. Note that this function is already called
+ * by the rb_free function.
+ *
+ * @param ra the ast_t containing the errors to be freed.
+ */
+void free_errors(struct ast_t *ra);
+
 /*
  * There are three ways to allocate a node. The simplest one is
  * alloc_node. If the node has also a conditional expression, we
@@ -260,17 +276,12 @@ struct node * concat_list(struct node *head, struct node *tail);
     (tail->last == NULL) ? update_list(head, tail) : create_list(head, tail)
 
 
-/*
- * Auxiliar functions
- */
+/* Debugging utilities */
 
 #ifdef BUILD_TESTS
 void print_node(struct node *n);
 void print_errors(struct error_t *errors);
 #endif
-
-void free_ast(struct node *n);
-void free_errors(struct ast_t *ra);
 
 
 /*
