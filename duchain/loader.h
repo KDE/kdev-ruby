@@ -73,8 +73,11 @@ public:
     static QList<IncludeItem> getFilesInSearchPath(const QString &url, const KUrl &relative = KUrl());
 
 private:
-    /// @returns the list of urls available from ruby through $:
-    static QPair<QList<KUrl>, QList<KUrl> > getSearchPaths();
+    /**
+     * Fill the m_urlCache attribute with the urls available from Ruby
+     * through $:
+     */
+    static void fillUrlCache();
 
     /// @returns true if the url cache has been filled with search paths.
     static inline bool urlsCached()

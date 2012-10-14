@@ -51,9 +51,9 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
         if (local)
             searchPaths << editor->url().toUrl().directory();
         else {
-            const QPair<QList<KUrl>, QList<KUrl> > &p = getSearchPaths();
-            searchPaths << p.first;
-            gemPaths << p.second;
+            fillUrlCache();
+            searchPaths << m_urlCache.first;
+            gemPaths << m_urlCache.second;
         }
     }
 
@@ -99,8 +99,8 @@ QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &
 
     if (relative.isEmpty()) {
         // TODO: handle the gem path properly
-        QPair<QList<KUrl>, QList<KUrl> > pair = getSearchPaths();
-        paths = pair.first + pair.second;
+        fillUrlCache();
+        paths = m_urlCache.first + m_urlCache.second;
     } else
         paths << relative;
 
@@ -125,31 +125,29 @@ QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &
     return res;
 }
 
-QPair<QList<KUrl>, QList<KUrl> > Loader::getSearchPaths()
+void Loader::fillUrlCache()
 {
-    if (urlsCached())
-        return m_urlCache;
-
-    QList<KUrl> paths;
-    QList<KUrl> gpaths;
-
-    QStringList code;
-    code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
+    int it;
     QProcess ruby;
+    QStringList code;
+    QList<QByteArray> rpaths, epaths;
+
+    if (urlsCached())
+        return;
+    m_urlCache.first = QList<KUrl>();
+    m_urlCache.second = QList<KUrl>();
+
+    code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
     ruby.start("/usr/bin/env", code);
     ruby.waitForFinished();
-    QList<QByteArray> rpaths = ruby.readAllStandardOutput().split('\n');
-    QList<QByteArray> epaths = ruby.readAllStandardError().split('\n');
-    rpaths.removeAll("");
-    epaths.removeAll("");
-    foreach (const QString &s, rpaths)
-        paths << s;
-    foreach (const QString &s, epaths)
-        gpaths << s;
+    rpaths = ruby.readAllStandardOutput().split('\n');
+    epaths = ruby.readAllStandardError().split('\n');
 
-    m_urlCache.first = paths;
-    m_urlCache.second = gpaths;
-    return QPair<QList<KUrl>, QList<KUrl> >(paths, gpaths);
+    /* For both rpaths and epaths, the last item is empty */
+    for (it = 0; it < rpaths.size() - 1; it++)
+        m_urlCache.first << KUrl(rpaths.at(it));
+    for (it = 0; it < epaths.size() - 1; it++)
+        m_urlCache.second << KUrl(epaths.at(it));
 }
 
 } // End of namespace Ruby
