@@ -35,25 +35,40 @@ QPair<QList<KUrl>, QList<KUrl> > Loader::m_urlCache;
 KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
     QList<KUrl> searchPaths;
-    QList<KUrl> gemPaths;
     QString name(""), base("");
 
+    /* Get the name of the file and update the cache of search paths. */
     name = editor->tokenToString(node);
     name.replace("'", ""); // remove surrounding '
     base = name;
     if (!name.endsWith(".rb"))
         name += ".rb";
-    if (local)
-        searchPaths << editor->url().toUrl().directory();
-    else {
+    searchPaths << editor->url().toUrl().directory();
+    if (!local) {
         fillUrlCache();
         searchPaths << m_urlCache.first;
-        gemPaths << m_urlCache.second;
     }
 
+    /* Check first in the standard search path */
+    foreach (const KUrl &path, searchPaths) {
+        QString url = path.path(KUrl::AddTrailingSlash) + name;
+        QFile script(url);
+        QFileInfo info(url);
+        if (script.exists() && !info.isDir()) {
+            KUrl res(url);
+            res.cleanPath();
+            return res;
+        }
+    }
+    if (local)
+        return KUrl();
+
+    /*
+     * This is not a local search and we haven't found it yet, go for the gems.
+     */
     QStringList filter;
     filter << base + "*";
-    foreach (const KUrl &path, gemPaths) {
+    foreach (const KUrl &path, m_urlCache.second) {
         QString basePath = path.path(KUrl::AddTrailingSlash) + "gems/";
         QDir dir(basePath);
         QStringList list = dir.entryList(filter, QDir::Dirs);
@@ -68,17 +83,6 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
                 res.cleanPath();
                 return res;
             }
-        }
-    }
-
-    foreach (const KUrl &path, searchPaths) {
-        QString url = path.path(KUrl::AddTrailingSlash) + name;
-        QFile script(url);
-        QFileInfo info(url);
-        if (script.exists() && !info.isDir()) {
-            KUrl res(url);
-            res.cleanPath();
-            return res;
         }
     }
 

@@ -1341,6 +1341,7 @@ strings: string
         pop_start(parser, $$);
         $$->pos.end_line = parser->line;
         $$->pos.end_col = parser->column;
+        $$->pos.offset = parser->cursor;
     }
     | strings string
     {
@@ -1348,6 +1349,8 @@ strings: string
             update_list($1->l, $2);
         $1->pos.end_line = parser->line;
         $1->pos.end_col = parser->column;
+        $1->pos.offset = parser->cursor;
+        $$ = $1;
         pop_pos(parser, NULL); /* Drop the first position of the last string */
     }
 ;
