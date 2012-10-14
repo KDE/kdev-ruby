@@ -50,15 +50,22 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     }
 
     /* Check first in the standard search path */
+    int i = 0;
     foreach (const KUrl &path, searchPaths) {
         QString url = path.path(KUrl::AddTrailingSlash) + name;
         QFile script(url);
         QFileInfo info(url);
         if (script.exists() && !info.isDir()) {
+            /* Sort the cache to break this loop sooner next time. */
+            if (i > 1) {
+                m_urlCache.first.prepend(m_urlCache.first.at(i - 1));
+                m_urlCache.first.removeAt(i);
+            }
             KUrl res(url);
             res.cleanPath();
             return res;
         }
+        i++;
     }
     if (local)
         return KUrl();
