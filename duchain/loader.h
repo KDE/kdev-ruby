@@ -51,7 +51,8 @@ public:
     /**
      * Get the url of the file specified by a require statement.
      *
-     * @param node The node containing the file to be required.
+     * @param node The node containing the file to be required. Note that the
+     * node's kind *must* be token_string.
      * @param editor The EditorIntegrator from the current builder.
      * @param local Set to true if the required file is relative to the current
      * document (used for the require_relative statement).
@@ -86,6 +87,11 @@ private:
     }
 
 private:
+    /**
+     * The cache of search paths. The first element is the list of search paths
+     * for the Ruby standard library. The second element is the list of search
+     * paths for the gems.
+     */
     static QPair<QList<KUrl>, QList<KUrl> > m_urlCache;
 };
 

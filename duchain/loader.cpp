@@ -38,23 +38,17 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     QList<KUrl> gemPaths;
     QString name(""), base("");
 
-    // TODO: by now take a look at the current directory if this is not a string
-    // TODO: instead of the current directory, pick the project root directory
-    if (node->kind != token_string) {
+    name = editor->tokenToString(node);
+    name.replace("'", ""); // remove surrounding '
+    base = name;
+    if (!name.endsWith(".rb"))
+        name += ".rb";
+    if (local)
         searchPaths << editor->url().toUrl().directory();
-    } else {
-        name = editor->tokenToString(node);
-        name.replace("'", ""); // remove surrounding '
-        base = name;
-        if (!name.endsWith(".rb"))
-            name += ".rb";
-        if (local)
-            searchPaths << editor->url().toUrl().directory();
-        else {
-            fillUrlCache();
-            searchPaths << m_urlCache.first;
-            gemPaths << m_urlCache.second;
-        }
+    else {
+        fillUrlCache();
+        searchPaths << m_urlCache.first;
+        gemPaths << m_urlCache.second;
     }
 
     QStringList filter;

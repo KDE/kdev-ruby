@@ -254,6 +254,10 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 
 void ContextBuilder::require(Node *node, bool local)
 {
+    /* If this is not a string, don't even care about it. */
+    if (node->kind != token_string)
+        return;
+
     KUrl path = Loader::getRequiredFile(node, m_editor, local);
     if (path.isEmpty()) {
         QString msg = i18n("LoadError: cannot load such file");
