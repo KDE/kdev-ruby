@@ -72,6 +72,16 @@ void DeclarationBuilder::closeDeclaration()
     DeclarationBuilderBase::closeDeclaration();
 }
 
+void DeclarationBuilder::closeContext()
+{
+    if (currentContext()->type() == DUContext::Function) {
+        Q_ASSERT(currentDeclaration<AbstractFunctionDeclaration>());
+        currentDeclaration<AbstractFunctionDeclaration>()->setInternalFunctionContext(currentContext());
+    }
+
+    DeclarationBuilderBase::closeContext();
+}
+
 void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();

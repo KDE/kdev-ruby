@@ -60,6 +60,7 @@ public:
 protected:
     /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
     virtual void closeDeclaration();
+    virtual void closeContext();
 
     /// Re-implemented from the ContextBuilder.
     virtual void startVisiting(RubyAst *node);
