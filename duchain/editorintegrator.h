@@ -90,6 +90,8 @@ public:
     KDevelop::IndexedString url() const;
 
     /**
+     * Implemented to make the AbstractUseBuilder happy.
+     *
      * @return Get the parse session for this EditorIntegrator.
      */
     RubyParser *parseSession() const;

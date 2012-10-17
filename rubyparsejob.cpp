@@ -226,7 +226,7 @@ void ParseJob::run()
     }
 }
 
-} // End of namespace ruby
+} // End of namespace Ruby
 
 
 #include "rubyparsejob.moc"

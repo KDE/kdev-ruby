@@ -73,18 +73,17 @@ K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby",
 namespace Ruby
 {
 
-LanguageSupport * LanguageSupport::m_self = 0;
+LanguageSupport * LanguageSupport::m_self = NULL;
 
-LanguageSupport::LanguageSupport(QObject * parent, const QVariantList &)
+LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
     , KDevelop::ILanguageSupport()
-    , m_highlighting(0)
     , m_builtinsLoaded(false)
     , m_railsSwitchers(new Ruby::RailsSwitchers(this))
-    , m_viewsQuickOpenDataProvider(0)
-    , m_testsQuickOpenDataProvider(0)
-    , m_rubyFileLaunchConfiguration(0)
-    , m_rubyCurrentFunctionLaunchConfiguration(0)
+    , m_viewsQuickOpenDataProvider(NULL)
+    , m_testsQuickOpenDataProvider(NULL)
+    , m_rubyFileLaunchConfiguration(NULL)
+    , m_rubyCurrentFunctionLaunchConfiguration(NULL)
 {
     m_builtinsLoaded = false;
     m_builtinsLock.lockForWrite();
@@ -116,7 +115,7 @@ QString LanguageSupport::name() const
     return "Ruby";
 }
 
-KDevelop::ParseJob * LanguageSupport::createParseJob(const KUrl & url)
+KDevelop::ParseJob * LanguageSupport::createParseJob(const KUrl &url)
 {
     return new ParseJob(url);
 }

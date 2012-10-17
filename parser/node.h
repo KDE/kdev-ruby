@@ -191,8 +191,7 @@ struct node {
 typedef struct node Node;
 
 /**
- * This is a convenient enum to store the version of the
- * Ruby version.
+ * This is a convenient enum to store the version of Ruby to be used.
  */
 enum ruby_version {
     ruby18 = 0, /* 1.8.x branch */

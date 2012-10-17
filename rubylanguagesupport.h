@@ -167,7 +167,7 @@ private Q_SLOTS:
     void runCurrentTestFunction();
 
 private:
-    static LanguageSupport* m_self;
+    static LanguageSupport *m_self;
     Ruby::Highlighting *m_highlighting;
     bool m_builtinsLoaded;
     QReadWriteLock m_builtinsLock;

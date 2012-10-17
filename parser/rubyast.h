@@ -41,6 +41,7 @@ class RubyAst
 public:
     /**
      * Constructor.
+     *
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
@@ -73,6 +74,7 @@ class NameAst : public RubyAst
 public:
     /**
      * Constructor.
+     *
      * @param ast the RubyAst this class extends.
      */
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
