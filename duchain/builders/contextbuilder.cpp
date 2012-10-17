@@ -260,13 +260,15 @@ void ContextBuilder::require(Node *node, bool local)
 
     KUrl path = Loader::getRequiredFile(node, m_editor, local);
     if (path.isEmpty()) {
-        QString msg = i18n("LoadError: cannot load such file");
+        QString msg = i18n("LoadError: cannot load such file: %1", path.pathOrUrl());
         appendProblem(node, msg, ProblemData::Warning);
         return;
     }
 
+    const IndexedString indexedPath(path);
+
     DUChainWriteLocker lock(DUChain::lock());
-    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(IndexedString(path));
+    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(indexedPath);
     lock.unlock();
 
     if (!ctx) {
@@ -274,11 +276,11 @@ void ContextBuilder::require(Node *node, bool local)
          * Schedule the required file for parsing, and schedule the current one
          * for reparsing after that is done.
          */
-        m_unresolvedImports.append(path);
-        if (KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(path))
-            KDevelop::ICore::self()->languageController()->backgroundParser()->removeDocument(path);
+        m_unresolvedImports.append(indexedPath);
+        if (KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(indexedPath))
+            KDevelop::ICore::self()->languageController()->backgroundParser()->removeDocument(indexedPath);
         KDevelop::ICore::self()->languageController()->backgroundParser()
-                                    ->addDocument(path, TopDUContext::ForceUpdate, m_priority - 1,
+                                    ->addDocument(indexedPath, TopDUContext::ForceUpdate, m_priority - 1,
                                                     0, ParseJob::FullSequentialProcessing);
         return;
     } else {

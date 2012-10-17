@@ -165,13 +165,13 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        const QList<KUrl> unresolvedImports = builder.unresolvedImports();
+        const QVector<IndexedString> unresolvedImports = builder.unresolvedImports();
         if (!unresolvedImports.isEmpty()) {
             // TODO: review this ! Right now this is shamelessly taken from the Python plugin.
 
             // check whether one of the imports is queued for parsing, this is to avoid deadlocks
             bool dependencyInQueue = false;
-            foreach (const KUrl &url, unresolvedImports) {
+            foreach (const IndexedString &url, unresolvedImports) {
                 dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
                 if ( dependencyInQueue ) {
                     break;
@@ -182,7 +182,7 @@ void ParseJob::run()
             // the document was already rescheduled, but there's many cases where this might still happen)
             if ( ! ( minimumFeatures() & Rescheduled ) && dependencyInQueue ) {
                 DUChainWriteLocker lock(DUChain::lock());
-                KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document().toUrl(),
+                KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document(),
                                      static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled), parsePriority(),
                                      0, ParseJob::FullSequentialProcessing);
             }

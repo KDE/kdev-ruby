@@ -58,8 +58,8 @@ public:
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, RubyAst *node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
 
-    /// @returns a QList of unresolved imports.
-    inline const QList<KUrl> unresolvedImports() const
+    /// @returns a list of unresolved imports.
+    inline const QVector<IndexedString> unresolvedImports() const
     {
         return m_unresolvedImports;
     }
@@ -137,7 +137,7 @@ protected:
 protected:
     bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.
     EditorIntegrator *m_editor;
-    QList<KUrl> m_unresolvedImports;
+    QVector<IndexedString> m_unresolvedImports;
 
 private:
     /**
