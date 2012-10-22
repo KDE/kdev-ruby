@@ -130,7 +130,6 @@ struct parser_t {
     /* Stack of names */
     char *stack[2];
     char *aux; /* TODO: free */
-    struct node *string_names;
     int sp;
 
     /* The last allocated comment + the comment stack    */
@@ -1787,7 +1786,6 @@ static void init_parser(struct parser_t * parser)
     parser->line = 1;
     parser->column = 0;
     parser->name = NULL;
-    parser->string_names = NULL;
     parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
     parser->stack_scale = 0;
     parser->pos_size = 0;

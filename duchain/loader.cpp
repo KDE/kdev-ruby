@@ -74,14 +74,12 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
      * This is not a local search and we haven't found it yet, go for the gems.
      */
     QStringList filter;
-    filter << base + "*";
+    filter << base[0] + "*";
     foreach (const KUrl &path, m_urlCache.second) {
-        QString basePath = path.path(KUrl::AddTrailingSlash) + "gems/";
+        QString basePath = path.path(KUrl::AddTrailingSlash);
         QDir dir(basePath);
         QStringList list = dir.entryList(filter, QDir::Dirs);
         foreach (const QString &inside, list) {
-            // TODO: right now it assumes that the /lib directory exists. Even
-            // though this is a pretty standard situation, it's not necessarily true.
             QString url = basePath + inside + "/lib/" + name;
             QFile script(url);
             QFileInfo info(url);
@@ -152,7 +150,7 @@ void Loader::fillUrlCache()
     for (it = 0; it < rpaths.size() - 1; it++)
         m_urlCache.first << KUrl(rpaths.at(it));
     for (it = 0; it < epaths.size() - 1; it++)
-        m_urlCache.second << KUrl(epaths.at(it));
+        m_urlCache.second << KUrl(epaths.at(it) + "/gems");
 }
 
 } // End of namespace Ruby
