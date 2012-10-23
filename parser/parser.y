@@ -2272,7 +2272,7 @@ static int parse_string(struct parser_t *parser)
     if ((unsigned) curs >= parser->length) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
-        return tSTRING_END;
+        return -1;
     }
 
     if (lex_strterm.can_embed && *c == '#') {
