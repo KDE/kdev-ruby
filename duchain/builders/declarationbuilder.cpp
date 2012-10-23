@@ -197,7 +197,9 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
     }
 
     node->tree = aux;
+    m_accessPolicy.push(Declaration::Public);
     RubyAstVisitor::visitSingletonClass(node);
+    m_accessPolicy.pop();
     if (m_injected) {
         closeInjectedContext();
         m_injected = false;
