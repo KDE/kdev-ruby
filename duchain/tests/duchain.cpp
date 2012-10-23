@@ -871,6 +871,14 @@ void TestDUChain::singletonClass3()
     DOES_NOT_CRASH;
 }
 
+void TestDUChain::singletonMethodVisibility()
+{
+    QByteArray code("class << Foo; private; def foo; end; end");
+    TopDUContext *top = parse(code, "singletonMethodVisibility");
+
+    DOES_NOT_CRASH;
+}
+
 void TestDUChain::accessPolicyMethodInClass()
 {
     QByteArray code("class Klass; def foo; end; protected; def asd; end; ");

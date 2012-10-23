@@ -118,6 +118,7 @@ private slots:
     void singletonClass1();
     void singletonClass2();
     void singletonClass3();
+    void singletonMethodVisibility();
     void accessPolicyMethodInClass();
     void accessPolicyMethodInModule();
     void accessPolicyOnBlock();
