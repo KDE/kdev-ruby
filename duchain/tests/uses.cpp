@@ -347,6 +347,21 @@ void TestUseBuilder::exprIsCalling()
     compareUses(d, RangeInRevision(0, 22, 0, 26));
 }
 
+void TestUseBuilder::stringCalling()
+{
+    //               0         1         2         3
+    //               0123456789012345678901234567890123456789
+    QByteArray code("calling = 0; `String is #{calling}`.foo");
+    TopDUContext *top = parse(code, "stringCalling");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // calling
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 26, 0, 33));
+}
+
 //END: Method calls
 
 //BEGIN: Others
