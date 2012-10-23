@@ -309,17 +309,14 @@ void ExpressionVisitor::visitBoolean(RubyAst *)
 
 void ExpressionVisitor::visitIfStatement(RubyAst *node)
 {
-    RubyAstVisitor::visitIfStatement(node);
     Node *aux = node->tree;
     node->tree = aux->l;
     ExpressionVisitor::visitLastStatement(node);
     AbstractType::Ptr res = lastType();
+    node->tree = aux->r;
+    ExpressionVisitor::visitLastStatement(node);
+    res = mergeTypes(res, lastType());
 
-    for (Node *n = aux->r; n != NULL; n = n->r) {
-        node->tree = n;
-        ExpressionVisitor::visitLastStatement(node);
-        res = mergeTypes(res, lastType());
-    }
     encounter(res);
     node->tree = aux;
 }
