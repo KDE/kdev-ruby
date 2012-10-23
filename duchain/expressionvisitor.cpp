@@ -202,7 +202,6 @@ void ExpressionVisitor::visitHash(RubyAst *node)
 void ExpressionVisitor::visitArrayValue(RubyAst *node)
 {
     DUChainReadLocker lock(DUChain::lock());
-    RubyAstVisitor::visitArrayValue(node);
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
     RangeInRevision range = m_editor->findRange(child->tree);
@@ -323,7 +322,6 @@ void ExpressionVisitor::visitIfStatement(RubyAst *node)
 
 void ExpressionVisitor::visitCaseStatement(RubyAst *node)
 {
-    RubyAstVisitor::visitCaseStatement(node);
     Node *aux = node->tree;
     AbstractType::Ptr res;
 
