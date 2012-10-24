@@ -170,15 +170,29 @@ private:
      */
     void visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod);
 
+    /**
+     * @returns true if we're inside a class/module, false otherwise.
+     */
+    inline bool insideClassModule() const
+    {
+        return m_classDeclarations.size() > 0;
+    }
+
+    /**
+     * @returns the last class/module.
+     */
+    inline Declaration * lastClassModule() const
+    {
+        return m_classDeclarations.top().data();
+    }
+
 private:
     EditorIntegrator *m_editor;
     QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
-    QStack<DeclarationPointer> m_classDeclarations; // TODO: there's probably a more fancy way to achieve this ...
+    QStack<DeclarationPointer> m_classDeclarations;
     bool m_injected;
     bool m_instance;
-    Declaration *lastClassModule; // TODO: pair it with insideClassModule and give it a proper name. TODO: by default point to the Kernel module
     Declaration *m_lastMethodCall;
-    bool insideClassModule; // TODO: maybe it can be removed because of m_classDeclarations ?
 };
 
 } // End of namespace Ruby

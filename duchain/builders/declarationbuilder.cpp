@@ -86,9 +86,7 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
 {
     m_unresolvedImports.clear();
     m_injected = false;
-    lastClassModule = NULL;
     m_lastMethodCall = NULL;
-    insideClassModule = false;
     DeclarationBuilderBase::startVisiting(node);
 }
 
@@ -113,8 +111,6 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->clearModuleMixins();
     decl->setKind(KDevelop::Declaration::Type);
     m_accessPolicy.push(Declaration::Public);
-    lastClassModule = decl;
-    insideClassModule = true;
     m_classDeclarations.push(DeclarationPointer(decl));
 
     /*
@@ -157,7 +153,6 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     closeType();
     closeDeclaration();
     m_classDeclarations.pop();
-    insideClassModule = false;
     m_accessPolicy.pop();
 }
 
@@ -187,8 +182,6 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
                     d = NULL;
             }
             if (d) {
-                lastClassModule = d;
-                insideClassModule = true;
                 m_classDeclarations.push(DeclarationPointer(d));
                 m_injected = true;
                 injectContext(d->internalContext());
@@ -204,7 +197,6 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
         closeInjectedContext();
         m_injected = false;
         m_classDeclarations.pop();
-        insideClassModule = false;
     }
 }
 
@@ -227,8 +219,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     decl->clearMixers();
     decl->setKind(KDevelop::Declaration::Type);
     m_accessPolicy.push(Declaration::Public);
-    lastClassModule = decl;
-    insideClassModule = true;
+    m_classDeclarations.push(DeclarationPointer(decl));
 
     StructureType::Ptr type = StructureType::Ptr(new StructureType());
     type->setDeclaration(decl);
@@ -242,8 +233,8 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 
     closeType();
     closeDeclaration();
-    insideClassModule = false;
     m_accessPolicy.pop();
+    m_classDeclarations.pop();
 }
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
@@ -599,8 +590,8 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
     ModuleDeclaration *decl = getModuleDeclaration(module);
     if (decl) {
         // Register the Module mixin
-        if (lastClassModule) {
-            ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule);
+        if (insideClassModule()) {
+            ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule());
             if (current) {
                 DUChainWriteLocker lock(DUChain::lock());
                 ModuleMixin mixin;
