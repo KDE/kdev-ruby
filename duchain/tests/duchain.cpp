@@ -202,7 +202,7 @@ void TestDUChain::lambda()
 
 void TestDUChain::self()
 {
-    QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self");
+    QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self; def foo; self; end");
     TopDUContext *top = parse(code, "self");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
@@ -219,9 +219,15 @@ void TestDUChain::self()
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
 
     // c
-    d = top->localDeclarations().last();
+    d = top->localDeclarations().at(1);
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
     QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
+
+    // Return type for foo
+    d = top->localDeclarations().last();
+    AbstractType::Ptr rType = d->type<FunctionType>()->returnType();
+    StructureType::Ptr structT = rType.cast<StructureType>();
+    QCOMPARE(structT->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 //END: Builtin classes

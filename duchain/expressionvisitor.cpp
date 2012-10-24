@@ -143,10 +143,23 @@ void ExpressionVisitor::visitSelf(RubyAst *)
 {
     DUChainReadLocker lock(DUChain::lock());
     AbstractType::Ptr obj;
-    if (m_ctx->owner()) {
-        obj = m_ctx->owner()->abstractType();
-        m_lastDeclaration = DeclarationPointer(m_ctx->owner());
-    } else
+    DUContext *ctx = m_ctx;
+
+    Declaration *decl = ctx->owner();
+    while (decl) {
+        if (dynamic_cast<ModuleDeclaration *>(decl)) {
+            obj = ctx->owner()->abstractType();
+            m_lastDeclaration = DeclarationPointer(ctx->owner());
+            break;
+        }
+
+        ctx = ctx->parentContext();
+        if (!ctx)
+            break;
+        decl = ctx->owner();
+    }
+
+    if (!ctx || !decl)
         obj = getBuiltinsType("Object", m_ctx);
     encounter(obj);
 }
