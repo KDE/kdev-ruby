@@ -254,12 +254,8 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 
 %%
 
-top_compstmt: top_stmt
-    {
-        parser->ast = $1;
-        YYACCEPT;
-    }
-    | term { $$ = 0; YYACCEPT; }
+top_compstmt: top_stmt  { parser->ast = $1; YYACCEPT; }
+    | term              { $$ = 0; YYACCEPT; }
 ;
 
 top_stmt: none
@@ -1933,22 +1929,26 @@ static void parse_heredoc_identifier(struct parser_t *parser)
         c++; curs++;
         quote_seen = 1;
     }
-    for (i = 0; (is_identchar(c) || *c == term) && curs <= len; curs++, --count) {
+
+    for (i = 0; curs <= len; curs++, --count) {
+        /* If quote was seen, anything except the term is accepted */
+        if (quote_seen) {
+            if (*c == term || !is_utf8_graph(c))
+                break;
+        } else if (!is_identchar(c))
+            break;
+        if (curs > len) {
+            free(buffer);
+            yyerror(parser, "unterminated here document identifier");
+            return;
+        }
         if (!count) {
             scale++;
             buffer = (char *) realloc(buffer, (BSIZE << scale) * sizeof(char));
         }
         buffer[i++] = *c++;
     }
-    buffer[i - quote_seen] = '\0';
-    if (quote_seen) {
-        i--;
-        if (*(c - 1) != term) {
-            free(buffer);
-            yyerror(parser, "unterminated here document identifier");
-            return;
-        }
-    }
+    buffer[i] = '\0';
 
     parser->column += curs - original;
     parser->cursor = curs;
