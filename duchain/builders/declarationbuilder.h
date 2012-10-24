@@ -80,7 +80,6 @@ protected:
     virtual void visitAliasStatement(RubyAst *node);
     virtual void visitMethodCall(RubyAst *node);
     virtual void visitMixin(RubyAst *node, bool include);
-    virtual void visitLambda(RubyAst *node);
     virtual void visitForStatement(RubyAst *node);
     virtual void visitAccessSpecifier(short int policy);
     virtual void visitYieldStatement(RubyAst *node);

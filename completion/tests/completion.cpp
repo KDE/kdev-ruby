@@ -146,7 +146,7 @@ void TestCompletion::checkSubclassing()
 
     {
         RubyCompletionTester tester(top, "obj = Klass.new; obj.");
-        shouldContain(tester.names, QStringList() << "somewhere" << "over" << "the", true);
+        shouldContain(tester.names, QStringList() << "somewhere" << "over", true);
     }
 }
 

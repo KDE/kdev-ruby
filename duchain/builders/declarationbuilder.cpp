@@ -624,12 +624,6 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
     delete module;
 }
 
-void DeclarationBuilder::visitLambda(RubyAst *node)
-{
-    // TODO
-    Ruby::RubyAstVisitor::visitLambda(node);
-}
-
 void DeclarationBuilder::visitForStatement(RubyAst *node)
 {
     DUChainReadLocker rlock(DUChain::lock());
