@@ -69,7 +69,7 @@ void Benchmarks::declarationBuilder()
     const QByteArray &contents = getBuiltinsFile()->readAll();
     RubyParser *parser = new RubyParser();
     parser->setContents(contents);
-    parser->setCurrentDocument(internalBuiltinsFile().str());
+    parser->setCurrentDocument(internalBuiltinsFile());
     RubyAst * ast = parser->parse();
     EditorIntegrator editor;
     editor.setParseSession(parser);

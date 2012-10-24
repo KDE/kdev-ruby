@@ -90,7 +90,7 @@ public:
      * @return the ParseJob that is going to be used by the Background
      * parser to parse the given @p url.
      */
-    virtual KDevelop::ParseJob * createParseJob(const KUrl &url);
+    virtual KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url);
 
     /**
      * @return the language for this support.
@@ -167,7 +167,6 @@ private Q_SLOTS:
     void runCurrentTestFunction();
 
 private:
-    static LanguageSupport *m_self;
     Ruby::Highlighting *m_highlighting;
     bool m_builtinsLoaded;
     QReadWriteLock m_builtinsLock;

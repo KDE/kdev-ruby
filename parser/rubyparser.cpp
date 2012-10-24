@@ -42,9 +42,9 @@ void RubyParser::setContents(const QByteArray &contents)
     m_contents = contents;
 }
 
-void RubyParser::setCurrentDocument(const KUrl &fileName)
+void RubyParser::setCurrentDocument(const IndexedString &fileName)
 {
-    m_currentDocument = IndexedString(fileName);
+    m_currentDocument = fileName;
 }
 
 void RubyParser::setRubyVersion(enum ruby_version version)

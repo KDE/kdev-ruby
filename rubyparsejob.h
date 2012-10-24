@@ -50,7 +50,7 @@ public:
      *
      * @param url the url of the file to parse.
      */
-    ParseJob(const KUrl &url);
+    ParseJob(const KDevelop::IndexedString &url, KDevelop::ILanguageSupport *languageSupport);
 
     /**
      * Destructor.
@@ -69,17 +69,7 @@ private:
      */
     LanguageSupport * ruby() const;
 
-    /**
-     * @return true if highlighting can be applied, false otherwise.
-     */
-    inline bool canHighlight() const;
-
 private:
-    /**
-     * Url of the current document.
-     */
-    KUrl m_url;
-
     /**
      * Ruby parser.
      */

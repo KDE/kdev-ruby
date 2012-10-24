@@ -29,7 +29,6 @@
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/icore.h>
 #include <language/backgroundparser/backgroundparser.h>
-#include <language/interfaces/icodehighlighting.h>
 #include <language/backgroundparser/urlparselock.h>
 #include <language/duchain/duchainutils.h>
 
@@ -49,12 +48,11 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-ParseJob::ParseJob(const KUrl &url)
-    : KDevelop::ParseJob(url)
+ParseJob::ParseJob(const KDevelop::IndexedString& url, ILanguageSupport* languageSupport)
+    : KDevelop::ParseJob(url, languageSupport)
     , m_parser (new RubyParser)
     , m_duContext (NULL)
 {
-    m_url = url;
 }
 
 ParseJob::~ParseJob()
@@ -64,13 +62,7 @@ ParseJob::~ParseJob()
 
 LanguageSupport * ParseJob::ruby() const
 {
-    return LanguageSupport::self();
-}
-
-inline bool ParseJob::canHighlight() const
-{
-    return ruby() && ruby()->codeHighlighting() &&
-        ICore::self()->languageController()->backgroundParser()->trackerForUrl(document());
+    return dynamic_cast<LanguageSupport*>(languageSupport());
 }
 
 void ParseJob::run()
@@ -85,24 +77,9 @@ void ParseJob::run()
     }
 
     KDevelop::UrlParseLock urlLock(document());
-    if (!(minimumFeatures() & TopDUContext::ForceUpdate || minimumFeatures() & Rescheduled)) {
-        DUChainReadLocker lock(DUChain::lock());
-        static const IndexedString langString("Ruby");
-        foreach(const ParsingEnvironmentFilePointer &file,
-                DUChain::self()->allEnvironmentFiles(document())) {
-            if (file->language() != langString)
-                continue;
-            if (!file->needsUpdate() && file->featuresSatisfied(minimumFeatures())) {
-                debug() << "Already up to date" << document().str();
-                setDuChain(file->topContext());
-                if (canHighlight()) {
-                    lock.unlock();
-                    ruby()->codeHighlighting()->highlightDUChain(duChain());
-                }
-                return;
-            }
-            break;
-        }
+    static const IndexedString langString("Ruby");
+    if (!(minimumFeatures() & Rescheduled) && !isUpdateRequired(langString)) {
+        return;
     }
 
     QReadLocker parseLock(ruby()->language()->parseLock());
@@ -116,7 +93,7 @@ void ParseJob::run()
      * are converted in utf8 format always.
      */
     m_parser->setContents(contents().contents);
-    m_parser->setCurrentDocument(m_url);
+    m_parser->setCurrentDocument(document());
     RubyAst * ast = m_parser->parse();
 
     /* Setting up the TopDUContext features */
@@ -201,8 +178,7 @@ void ParseJob::run()
         }
         m_parser->freeAst(ast);
 
-        if (canHighlight())
-            ruby()->codeHighlighting()->highlightDUChain(m_duContext);
+        highlightDUChain();
         debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
@@ -213,7 +189,6 @@ void ParseJob::run()
             m_duContext->clearProblems();
         } else {
             ParsingEnvironmentFile *file = new ParsingEnvironmentFile(document());
-            static const IndexedString langString("Ruby");
             file->setLanguage(langString);
             m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
             DUChain::self()->addDocumentChain(m_duContext);

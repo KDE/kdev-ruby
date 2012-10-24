@@ -238,7 +238,7 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     ExpressionVisitor ev(m_duContext.data(), &e);
 
     LOCKDUCHAIN;
-    parser->setCurrentDocument(KUrl());
+    parser->setCurrentDocument(IndexedString());
     parser->setContents(expr.toUtf8());
     RubyAst *ast = parser->parse();
     if (!ast || !ast->tree)

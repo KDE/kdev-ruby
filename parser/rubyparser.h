@@ -66,7 +66,7 @@ public:
      *
      * @param fileName the name of the current document.
      */
-    void setCurrentDocument(const KUrl &fileName);
+    void setCurrentDocument(const IndexedString &fileName);
 
     /**
      * @return the name of the current document.

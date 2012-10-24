@@ -73,8 +73,6 @@ K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby",
 namespace Ruby
 {
 
-LanguageSupport * LanguageSupport::m_self = NULL;
-
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
     , KDevelop::ILanguageSupport()
@@ -90,7 +88,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
 
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
     setXMLFile("kdevrubysupport.rc");
-    m_self = this;
     m_highlighting = new Ruby::Highlighting(this);
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
@@ -105,19 +102,14 @@ LanguageSupport::~LanguageSupport()
     /* There's nothing to do here! */
 }
 
-LanguageSupport * LanguageSupport::self()
-{
-    return m_self;
-}
-
 QString LanguageSupport::name() const
 {
     return "Ruby";
 }
 
-KDevelop::ParseJob * LanguageSupport::createParseJob(const KUrl &url)
+KDevelop::ParseJob * LanguageSupport::createParseJob(const KDevelop::IndexedString &url)
 {
-    return new ParseJob(url);
+    return new ParseJob(url, this);
 }
 
 KDevelop::ILanguage * LanguageSupport::language()
