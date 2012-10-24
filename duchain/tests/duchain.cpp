@@ -409,6 +409,16 @@ void TestDUChain::simpleUnsure()
     testUnsureTypes(unsure, list);
 }
 
+void TestDUChain::unsureHash()
+{
+    // this test (when run separately from other tests) crashes
+    // when storing Hash of unsure (Bar::Foo, String) in the item repository
+    QByteArray code("class Bar; class Foo; end; x = [ Foo.new, 'test' ]; end");
+    TopDUContext *top = parse(code, "unsureTypeStorage");
+
+    DOES_NOT_CRASH;
+}
+
 void TestDUChain::multipleAssignment1()
 {
     QByteArray code("a, b = 1, 'a'");

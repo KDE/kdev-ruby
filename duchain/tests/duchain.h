@@ -88,6 +88,7 @@ private slots:
 
     // Assignments
     void simpleUnsure();
+    void unsureHash();
     void multipleAssignment1();
     void multipleAssignment2();
     void multipleAssignmentLeft();
