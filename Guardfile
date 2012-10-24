@@ -168,7 +168,7 @@ guard 'kdev', :build_url => build_url, :tests => tests do
 end
 
 # And now let's turn the Guard::RSpec watcher on for the parser.
-rspec_paths = File.join(ARGV.last, 'parser/tools')
+rspec_paths = File.join(build_url, 'parser/tools')
 guard 'rspec', :cli => '-c -f doc', :spec_paths => rspec_paths do
   watch(/parser\/(.*)$/) { "#{rspec_paths}/parser_spec.rb" }
 end
