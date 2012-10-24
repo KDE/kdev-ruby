@@ -83,7 +83,7 @@ bool ClassType::equals(const AbstractType *rhs) const
     if (!KDevelop::StructureType::equals(rhs)) {
         return false;
     }
-    return true;
+
     if (const ClassType *rhsClass = dynamic_cast<const ClassType *>(rhs)) {
         return rhsClass->contentType() == contentType();
     }
