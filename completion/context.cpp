@@ -54,6 +54,9 @@ namespace Ruby
 const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend").split(' ').toSet();
 const int MEMBER_STRINGS_MAX = 7; // include
 
+/**
+ * It compresses the given @p text by removing spaces.
+ */
 void compressText(QString &text)
 {
     for (int i = text.length() - 1; i >= 0; --i) {
@@ -63,18 +66,30 @@ void compressText(QString &text)
     }
 }
 
-QString getEndingFromSet(const QString &str, const QSet<QString> &set, int maxMatchLen)
+/**
+ * Get the ending string from the set of members for the given text.
+ *
+ * @param str The completion context text.
+ * @returns the required ending string.
+ */
+QString getEndingFromSet(const QString &str)
 {
     QString end;
 
-    for (int i = qMin(str.length(), maxMatchLen); i > 0; --i) {
+    for (int i = qMin(str.length(), MEMBER_STRINGS_MAX); i > 0; --i) {
         end = str.right(i);
-        if (set.contains(end))
+        if (MEMBER_STRINGS.contains(end))
             return end;
     }
     return QString();
 }
 
+/**
+ * Ugly method that tells if the given text is inside a class.
+ *
+ * @param text The given text.
+ * @returns true if we're inside a class, false otherwise.
+ */
 bool insideClass(const QString &text)
 {
     int idx = text.lastIndexOf("<");
@@ -83,6 +98,12 @@ bool insideClass(const QString &text)
     return  (classIdx != -1 && (classIdx > semicolon));
 }
 
+/**
+ * Returns the last n lines from the given text.
+ *
+ * @param str The given text.
+ * @param n The number of lines to retrieve.
+ */
 QString lastNLines(const QString &str, int n)
 {
     int curNewLine = str.lastIndexOf('\n');
@@ -100,9 +121,15 @@ QString lastNLines(const QString &str, int n)
     return str.mid(nthLine + 1);
 }
 
+/**
+ * Guess the access kind depending on the given parameter.
+ *
+ * @param original The original text from the completion context.
+ * @returns the proper CodeCompletionContext::CompletionContextType.
+ */
 CodeCompletionContext::CompletionContextType findAccessKind(const QString &original)
 {
-    QString text = getEndingFromSet(original, MEMBER_STRINGS, MEMBER_STRINGS_MAX);
+    QString text = getEndingFromSet(original);
 
     if (text == ".")
         return CodeCompletionContext::MemberAccess;
