@@ -256,11 +256,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 
 top_compstmt: top_stmt
     {
-        if (parser->unrecoverable) {
-            free_ast(parser->ast);
-            parser->ast = NULL;
-        } else
-            parser->ast = $1;
+        parser->ast = $1;
         YYACCEPT;
     }
     | term { $$ = 0; YYACCEPT; }
