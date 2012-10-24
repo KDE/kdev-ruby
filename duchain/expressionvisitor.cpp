@@ -157,9 +157,8 @@ void ExpressionVisitor::visitRange(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitString(RubyAst *node)
+void ExpressionVisitor::visitString(RubyAst *)
 {
-    RubyAstVisitor::visitString(node);
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
     encounter(obj);
 }
@@ -185,7 +184,6 @@ void ExpressionVisitor::visitSymbol(RubyAst *)
 
 void ExpressionVisitor::visitArray(RubyAst *node)
 {
-    RubyAstVisitor::visitArray(node);
     AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node);
     encounter<ClassType>(ptr);
@@ -193,7 +191,6 @@ void ExpressionVisitor::visitArray(RubyAst *node)
 
 void ExpressionVisitor::visitHash(RubyAst *node)
 {
-    RubyAstVisitor::visitHash(node);
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node, true);
     encounter<ClassType>(ptr);
@@ -261,9 +258,8 @@ void ExpressionVisitor::visitSuper(RubyAst *)
     }
 }
 
-void ExpressionVisitor::visitLambda(RubyAst *node)
+void ExpressionVisitor::visitLambda(RubyAst *)
 {
-    RubyAstVisitor::visitLambda(node);
     AbstractType::Ptr obj = getBuiltinsType("Proc", m_ctx);
     encounter(obj);
 }
