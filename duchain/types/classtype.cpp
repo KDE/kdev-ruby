@@ -80,6 +80,18 @@ uint ClassType::hash() const
         ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 );
 }
 
+bool ClassType::equals(const AbstractType* rhs) const
+{
+    if (!KDevelop::StructureType::equals(rhs)) {
+        return false;
+    }
+    return true;
+    if (const ClassType* rhsClass = dynamic_cast<const ClassType*>(rhs)) {
+        return rhsClass->contentType() == contentType();
+    }
+    return false;
+}
+
 QString ClassType::toString() const
 {
     QString prefix = KDevelop::StructureType::toString();
