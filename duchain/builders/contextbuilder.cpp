@@ -44,7 +44,7 @@ namespace Ruby
 
 ContextBuilder::ContextBuilder()
 {
-    /* There's nothing to do here! */
+    m_mapAst = false;
 }
 
 ContextBuilder::~ContextBuilder()
