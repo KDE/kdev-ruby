@@ -155,7 +155,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
 
         // Mark a new use if possible
-        if (last)
+        if (last && node->tree->kind != token_self)
             UseBuilderBase::newUse(node, range, DeclarationPointer(last));
 
         /*
