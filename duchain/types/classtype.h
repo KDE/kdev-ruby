@@ -39,7 +39,7 @@ class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
     /// Default constructor.
-    ClassTypeData() : KDevelop::StructureTypeData(), m_contentType(0)
+    ClassTypeData() : KDevelop::StructureTypeData()
     {
         /* There's nothing to do here! */
     }
@@ -50,13 +50,6 @@ public:
     {
         /* There's nothing to do here! */
     }
-
-    /// Copy constructor. @param rhs data to copy.
-    ClassTypeData(const StructureTypeData &rhs)
-        : KDevelop::StructureTypeData(rhs), m_contentType(0)
-    {
-        /* There's nothing to do here */
-    };
 
     /// The type of the content.
     KDevelop::IndexedType m_contentType;
@@ -88,7 +81,7 @@ public:
      * Copy constructor.
      * @param data data to copy.
      */
-    ClassType(KDevelop::StructureTypeData &data);
+    ClassType(ClassTypeData &data);
 
     /// Add the given type @p typeToAdd to the contents.
     void addContentType(AbstractType::Ptr typeToAdd);

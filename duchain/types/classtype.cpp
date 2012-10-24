@@ -48,7 +48,7 @@ ClassType::ClassType(const ClassType &rhs)
     /* There's nothing to do here */
 }
 
-ClassType::ClassType(KDevelop::StructureTypeData &data)
+ClassType::ClassType(ClassTypeData &data)
     : KDevelop::StructureType(data)
 {
     /* There's nothing to do here */
