@@ -69,9 +69,7 @@ const IndexedType & ClassType::contentType() const
 
 AbstractType* ClassType::clone() const
 {
-    ClassType *n = new ClassType(*this);
-    DUChainReadLocker lock(DUChain::lock());
-    return n;
+    return new ClassType(*this);
 }
 
 uint ClassType::hash() const
