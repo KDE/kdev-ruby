@@ -61,13 +61,7 @@ void DeclarationNavigationContext::htmlFunction()
         return;
     }
 
-    if (type->returnType()) {
-        IntegralType::Ptr it = type->returnType().cast<IntegralType>();
-        if (!it || it->dataType() != IntegralType::TypeNull)
-            eventuallyMakeTypeLinks(type->returnType());
-    }
-    modifyHtml() += ' ' + nameHighlight(Qt::escape(prettyIdentifier(m_declaration).toString()));
-
+    modifyHtml() += nameHighlight(Qt::escape(prettyIdentifier(m_declaration).toString()));
     if (type->arguments().size() > 0) {
         bool first = true;
         int nDef = 0;
@@ -81,7 +75,6 @@ void DeclarationNavigationContext::htmlFunction()
                 first = false;
 
                 VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(d);
-                eventuallyMakeTypeLinks(vd->abstractType());
                 if (vd->hasStar())
                     modifyHtml() += " *";
                 else if (vd->isBlock())
