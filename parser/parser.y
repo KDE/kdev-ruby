@@ -3071,7 +3071,7 @@ static int parser_yylex(struct parser_t *parser)
 static int yylex(void *lval, void *p)
 {
     struct parser_t * parser = (struct parser_t *) p;
-    int ret;
+    int ret = token_invalid;
     (void) lval; /* like Q_UNUSED */
 
     /* This parser does not like comments inside the grammar */

@@ -159,6 +159,7 @@ void ParseJob::run()
                 && document() != internalBuiltinsFile())
         {
             UseBuilder useBuilder(&editor);
+            useBuilder.setPriority(parsePriority());
             useBuilder.buildUses(ast);
         }
 
