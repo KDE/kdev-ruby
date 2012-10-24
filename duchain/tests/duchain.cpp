@@ -396,6 +396,19 @@ void TestDUChain::forStatement()
     testUnsureTypes(ut, list);
 }
 
+void TestDUChain::hereDoc()
+{
+    // heredoc should be a string and should not be parsed as ruby code
+    QByteArray code("execute <<EOS\n\
+foo (\n\
+EOS\n\
+");
+    TopDUContext *top = parse(code, "hereDoc");
+
+    DOES_NOT_CRASH;
+}
+
+
 //END: Statements
 
 //BEGIN: Assignments
