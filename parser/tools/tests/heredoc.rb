@@ -59,3 +59,7 @@ asd
 <<here
 àà #{asd}
 here
+
+<<'.,.,'\n\
+  smth\n\
+.,.,\n\
