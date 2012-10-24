@@ -181,8 +181,6 @@ void TestCompletion::fileChoose()
         RubyCompletionTester tester(top, "require_relative '");
         shouldContain(tester.names, QStringList() << "kdevruby_completion_fileChoose.rb");
     }
-
-    PENDING("Test for the require of a gem");
 }
 
 } // End of namespace Ruby

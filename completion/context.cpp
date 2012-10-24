@@ -121,13 +121,12 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
     , m_valid(true), m_kind(NoMemberAccess)
 {
-    Q_UNUSED(followingText);
-
     if (!m_duContext) {
         m_valid = false;
         return;
     }
 
+    m_following = followingText;
     if (doRequireCompletion())
         return;
 
@@ -198,7 +197,7 @@ bool CodeCompletionContext::doRequireCompletion()
     }
     line = line.mid(idx + 1);
 
-    m_includeItems = Loader::getFilesInSearchPath(line, relative);
+    m_includeItems = Loader::getFilesInSearchPath(line, m_following, relative);
     m_kind = FileChoose;
     return true;
 }

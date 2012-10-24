@@ -94,16 +94,24 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     return KUrl();
 }
 
-QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const KUrl &relative)
+QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative)
 {
     int number = 0;
     QList<IncludeItem> res;
     QList<KUrl> paths;
 
     if (relative.isEmpty()) {
-        // TODO: handle the gem path properly
         fillUrlCache();
-        paths = m_urlCache.first + m_urlCache.second;
+        paths = m_urlCache.first;
+
+        /* Gem paths need some extra work :P */
+        foreach (const KUrl &path, m_urlCache.second) {
+            QString basePath = path.path(KUrl::AddTrailingSlash);
+            QDir dir(basePath);
+            QStringList list = dir.entryList(QStringList() << hint + "*");
+            foreach (const QString &inside, list)
+                paths << basePath + inside + "/lib/";
+        }
     } else
         paths << relative;
 

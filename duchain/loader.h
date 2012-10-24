@@ -65,13 +65,14 @@ public:
      * (UNIX) hidden files, backup files (that end with ~) and .so files.
      *
      * @param url the url where to search.
+     * @param hint The following text on the Completion context.
      * @param relative the absolute path of the directory that contains the
      * current file. If set, all the items returned are relative to the given
      * path.
      * @returns a list of IncludeItem's containing all the files/directories
      * that fit the given parameters.
      */
-    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const KUrl &relative = KUrl());
+    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative = KUrl());
 
 private:
     /**

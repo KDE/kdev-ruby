@@ -129,6 +129,7 @@ private:
 
 private:
     bool m_valid;
+    QString m_following;
     CompletionContextType m_kind;
     QList<KDevelop::IncludeItem> m_includeItems;
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
