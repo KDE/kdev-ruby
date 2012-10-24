@@ -1801,6 +1801,7 @@ static void init_parser(struct parser_t * parser)
     lex_strterm.term = 0;
     lex_strterm.word = NULL;
     lex_strterm.was_mcall = 0;
+    lex_strterm.token = token_invalid;
 }
 
 static void free_parser(struct parser_t *parser)
