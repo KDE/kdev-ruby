@@ -405,6 +405,13 @@ EOS\n\
 ");
     TopDUContext *top = parse(code, "hereDoc");
 
+    QByteArray code2("\
+<<'.,.,'\n\
+  smth\n\
+.,.,\n\
+");
+    TopDUContext *top2 = parse(code2, "hereDoc");
+
     DOES_NOT_CRASH;
 }
 
