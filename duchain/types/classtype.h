@@ -99,7 +99,7 @@ public:
     virtual QString toString() const;
 
     /// @returns true if @p rhs is the same as this type
-    virtual bool equals(const AbstractType* rhs) const;
+    virtual bool equals(const AbstractType *rhs) const;
 
     /// @returns the container's type as a string.
     QString containerToString() const;

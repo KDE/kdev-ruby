@@ -408,7 +408,7 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("case", "case %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("when", "when %SELECT%condition%ENDSELECT%");
     ADD_KEYWORD2("begin", "begin\n  %CURSOR%\n%END%");
-    ADD_KEYWORD2("do", "do |%CURSOR%|\n%END%");
+    ADD_KEYWORD2("do", "do %SELECT%||%ENDSELECT%\n%END%");
 
     // Group all these keywords into the "Ruby Keyword" group.
     eventuallyAddGroup(i18n("Ruby Keyword"), 800, list);
