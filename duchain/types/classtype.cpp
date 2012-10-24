@@ -77,7 +77,6 @@ AbstractType* ClassType::clone() const
 uint ClassType::hash() const
 {
     return StructureType::hash() +
-        ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 ) +
         ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 );
 }
 
