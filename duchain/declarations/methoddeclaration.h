@@ -48,6 +48,7 @@ public:
     /// Constructor.
     MethodDeclarationData()
         : KDevelop::FunctionDeclarationData(), classMethod(false)
+        , m_accessPolicy(KDevelop::Declaration::Public)
     {
         initializeAppendedLists();
     }
@@ -62,6 +63,7 @@ public:
         initializeAppendedLists();
         copyListsFrom(rhs);
         classMethod = rhs.classMethod;
+        m_accessPolicy = rhs.m_accessPolicy;
     }
 
     /// Destructor
@@ -144,7 +146,6 @@ public:
     void replaceYieldTypes(YieldType yield, uint n);
 
     enum { Identity = 42 /** The id of this Type. */ };
-
 
 private:
     /// Re-implemented from KDevelop::Declaration.
