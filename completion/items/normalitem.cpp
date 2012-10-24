@@ -58,22 +58,13 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
         case CodeCompletionModel::Postfix:
             return QVariant();
         case CodeCompletionModel::Prefix: {
-            MethodDeclaration *mDec = dynamic_cast<MethodDeclaration *>(dec);
-            if (mDec) {
-                FunctionType::Ptr ftype = mDec->type<FunctionType>();
-                if (ftype && ftype->returnType())
-                    return ftype->returnType()->toString();
-                else
-                    return "<no type>";
-            } else {
-                ClassDeclaration *classDec = dynamic_cast<ClassDeclaration *>(dec);
-                ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
-                if (classDec)
-                    return "class";
-                else if (moDec)
-                    return "module";
-            }
-            return dec->abstractType()->toString();
+            ClassDeclaration *classDec = dynamic_cast<ClassDeclaration *>(dec);
+            ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
+            if (classDec)
+                return "class";
+            else if (moDec)
+                return "module";
+            return "";
         }
         case CodeCompletionModel::Arguments:
             if (FunctionType::Ptr fType = dec->type<FunctionType>())
