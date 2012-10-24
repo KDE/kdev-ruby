@@ -366,9 +366,6 @@ void CodeCompletionContext::addRubyKeywords()
     QList<CompletionTreeItemPointer> list;
 
     // TODO: pick user's indentation level
-    // TODO: statement modifiers
-    // TODO: be careful with the 4 kinds of tDO's
-    // TODO: complete | | from bracket blocks ?
     // TODO: unindent things like rescue, ensure,...
 
     // "Ultra-simple" statements. Some of them may not be *that* useful.
@@ -395,12 +392,21 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("rescue", "rescue ");
     ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
 
-    // More complex constructions
-    ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");
-    ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%\n%END%");
+    // Take care of complex statements that can be just statement modifiers
+    if (lastNLines(m_text, 1).isEmpty()) {
+        ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%\n%END%");
+        ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%\n%END%");
+        ADD_KEYWORD2("while", "while %SELECT%condition%ENDSELECT%\n%END%");
+        ADD_KEYWORD2("until", "until %SELECT%condition%ENDSELECT%\n%END%");
+    } else {
+        ADD_KEYWORD2("if", "if %SELECT%condition%ENDSELECT%");
+        ADD_KEYWORD2("unless", "unless %SELECT%condition%ENDSELECT%");
+        ADD_KEYWORD2("while", "while %SELECT%condition%ENDSELECT%");
+        ADD_KEYWORD2("until", "until %SELECT%condition%ENDSELECT%");
+    }
+
+    // Complex constructions
     ADD_KEYWORD2("elsif", "elsif %SELECT%condition%ENDSELECT%");
-    ADD_KEYWORD2("while", "while %SELECT%condition%ENDSELECT%\n%END%");
-    ADD_KEYWORD2("until", "until %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("for", "for %SELECT%condition%ENDSELECT% in \n%END%");
     ADD_KEYWORD2("def", "def %SELECT%name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("class", "class %SELECT%Name%ENDSELECT%\n%END%");
