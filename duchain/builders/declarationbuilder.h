@@ -92,15 +92,24 @@ private:
     void openContextForClassDefinition(RubyAst *node);
 
     /**
-     * If it exists a declaration in the current context that has the same id
-     * and range as the given @p id and @p range, then it will re-open this
-     * declaration. Otherwise, it will open a new declaration.
+     * Open or re-open if already exists a declaration in the current context.
+     *
+     * @param id The qualified identifier for the declaration.
+     * @param range The range in which the declaration is contained.
      * @returns an opened declaration.
      */
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
 
     /**
+     * Specialized version of the more generic reopenDeclaration for
+     * MethodDeclaration's. It takes an extra argument @p classMethod. Set to
+     * true to specify that a class method is being opened, set to false otherwise.
+     */
+    MethodDeclaration * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool classMethod);
+
+    /**
      * Declare a variable in the current context.
+     *
      * @param id The qualified identifier of the new variable declaration.
      * @param type The type of the new variable declaration.
      * @param node The node that contains this variable declaration.
@@ -109,6 +118,7 @@ private:
 
     /**
      * Alias a method declaration.
+     *
      * @param id The id of the new method.
      * @param range The range of the new method.
      * @param decl The MethodDeclaration that it's being aliased.

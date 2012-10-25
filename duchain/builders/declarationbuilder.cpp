@@ -277,14 +277,12 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     }
     node->tree = aux;
 
-    MethodDeclaration *decl = reopenDeclaration<MethodDeclaration>(id, range);
+    bool isClassMethod = (m_injected) ? !m_instance : !instance;
+    MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
-    if (m_injected)
-        decl->setClassMethod(!m_instance);
-    else
-        decl->setClassMethod(!instance);
+    decl->setClassMethod(isClassMethod);
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     if (currentContext()->type() == DUContext::Class)
         decl->setAccessPolicy(currentAccessPolicy());
@@ -715,6 +713,31 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const R
     if (!res)
         res = openDeclaration<T>(id, range);
     return static_cast<T*>(res);
+}
+
+MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool classMethod)
+{
+    DUChainReadLocker rlock(DUChain::lock());
+    Declaration *res = NULL;
+    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+
+    foreach (Declaration *d, decls) {
+        MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
+        if (method && (d->topContext() == currentContext()->topContext())) {
+            if (method->isClassMethod() == classMethod) {
+                debug() << "Reopening the following method: " << d->toString();
+                openDeclarationInternal(method);
+                method->setRange(range);
+                setEncountered(method);
+                res = d;
+                break;
+            }
+        }
+    }
+
+    if (!res)
+        res = openDeclaration<MethodDeclaration>(id, range);
+    return static_cast<MethodDeclaration *>(res);
 }
 
 void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
