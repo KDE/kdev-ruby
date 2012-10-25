@@ -277,11 +277,11 @@ void ContextBuilder::require(Node *node, bool local)
          * for reparsing after that is done.
          */
         m_unresolvedImports.append(indexedPath);
-        if (KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(indexedPath))
-            KDevelop::ICore::self()->languageController()->backgroundParser()->removeDocument(indexedPath);
-        KDevelop::ICore::self()->languageController()->backgroundParser()
-                                    ->addDocument(indexedPath, TopDUContext::ForceUpdate, m_priority - 1,
-                                                    0, ParseJob::FullSequentialProcessing);
+        BackgroundParser *backgroundParser = KDevelop::ICore::self()->languageController()->backgroundParser();
+        if (backgroundParser->isQueued(indexedPath))
+            backgroundParser->removeDocument(indexedPath);
+        backgroundParser->addDocument(indexedPath, TopDUContext::ForceUpdate,
+            m_priority - 1, 0, ParseJob::FullSequentialProcessing);
         return;
     } else {
         lock.lock();
