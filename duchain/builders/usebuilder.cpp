@@ -41,6 +41,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_editor = editor;
     m_lastCtx = NULL;
     mcDepth = 0;
+    classMethod = false;
 }
 
 void UseBuilder::visitName(RubyAst *node)
@@ -190,7 +191,8 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
 
 void UseBuilder::visitRequire(RubyAst *node, bool relative)
 {
-    // do nothing, only context builder will resolve requires
+    Q_UNUSED(node);
+    Q_UNUSED(relative);
 }
 
 

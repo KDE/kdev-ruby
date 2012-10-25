@@ -52,6 +52,7 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     : m_ctx(parent->m_ctx), m_editor(parent->m_editor),
         m_lastDeclaration(NULL), m_alias(false)
 {
+    m_anotherDeclaration = NULL;
     m_lastType = AbstractType::Ptr(NULL);
     m_lastCtx = NULL;
 }
@@ -61,6 +62,7 @@ void ExpressionVisitor::setContext(DUContext *ctx)
     m_ctx = ctx;
     m_lastType = AbstractType::Ptr(NULL);
     m_lastDeclaration = NULL;
+    m_anotherDeclaration = NULL;
     m_alias = false;
     m_lastCtx = NULL;
 }
