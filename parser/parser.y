@@ -2294,6 +2294,9 @@ static int parse_string(struct parser_t *parser)
                 parser->cursor = curs + 1;
                 parser->column += 2;
                 return tSTRING_DBEG;
+            default:
+                c--;
+                curs--;
         }
     }
 
