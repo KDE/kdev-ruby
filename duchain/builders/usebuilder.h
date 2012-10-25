@@ -70,6 +70,12 @@ private:
      * the recursion level.
      */
     int mcDepth;
+
+    /**
+     * Used in the method call to tell if the previous recursion level
+     * consisted of a class/module.
+     */
+    bool classMethod;
 };
 
 } // End of namespace Ruby

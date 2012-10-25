@@ -43,6 +43,7 @@ namespace Ruby
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
 {
+    m_anotherDeclaration = NULL;
     m_lastType = AbstractType::Ptr(NULL);
     m_lastCtx = NULL;
 }
@@ -93,11 +94,15 @@ void ExpressionVisitor::visitName(RubyAst *node)
     DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
-    Declaration * decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
-    if (decl) {
+    m_anotherDeclaration = NULL;
+    if (decls.size() > 0) {
+        Declaration *decl = decls.last();
         m_alias = dynamic_cast<AliasDeclaration *>(decl);
         m_lastDeclaration = decl;
+        if (decls.size() > 1)
+            m_anotherDeclaration = decls.first();
         encounter(decl->abstractType());
     } else
         debug() << "Declaration NOT FOUND";

@@ -30,6 +30,7 @@
 #include <duchain/expressionvisitor.h>
 #include <duchain/builders/usebuilder.h>
 #include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/methoddeclaration.h>
 
 
 namespace Ruby
@@ -102,6 +103,7 @@ void UseBuilder::visitMethodCall(RubyAst *node)
         visitMethodCall(node);
         mcDepth--;
     }
+    classMethod = false;
     visitMethodCallMembers(node);
     if (!mcDepth)
         m_lastCtx = NULL;
@@ -153,6 +155,15 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         }
         last = ev.lastDeclaration().data();
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+
+        /* Handle the difference between instance & class methods */
+        MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(last);
+        if (mDecl && (mDecl->isClassMethod() != classMethod) && ev.anotherDeclaration())
+            last = ev.anotherDeclaration().data();
+        if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
+            classMethod = true;
+        else
+            classMethod = false;
 
         // Mark a new use if possible
         if (last && node->tree->kind != token_self)
