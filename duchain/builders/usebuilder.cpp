@@ -177,4 +177,10 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
     m_lastCtx = ctx;
 }
 
+void UseBuilder::visitRequire(RubyAst* node, bool relative)
+{
+    // do nothing, only context builder will resolve requires
+}
+
+
 } // End of namespace Ruby

@@ -55,6 +55,7 @@ protected:
     virtual void visitClassName(RubyAst *node);
     virtual void visitMixin(RubyAst *node, bool include);
     virtual void visitMethodCall(RubyAst *node);
+    virtual void visitRequire(RubyAst* node, bool relative = false);
 
 private:
     /// @internal Visit the method call members from the given @p node.
