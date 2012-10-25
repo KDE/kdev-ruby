@@ -820,7 +820,6 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
         ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
         if (!cDecl && found)
             return found;
-        appendProblem(module->tree, i18n("TypeError: wrong argument type (expected Module)"));
     }
     return NULL;
 }

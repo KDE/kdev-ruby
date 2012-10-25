@@ -1748,7 +1748,7 @@ none : /* none */ { $$ = NULL; }
 #define is_special_method(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
                                                                 buffer[1] == '_' && buffer[strlen(buffer) - 2] == '_' && \
                                                                 buffer[strlen(buffer) - 1] == '_')
-#define cannot_be_heredoc (parser->class_seen || parser->expr_seen || parser->dot_seen)
+#define maybe_heredoc (!parser->class_seen && !parser->dot_seen)
 
 
 static void init_parser(struct parser_t * parser)
@@ -1904,7 +1904,7 @@ static int is_valid_identifier(const char *c)
     return 0;
 }
 
-static void parse_heredoc_identifier(struct parser_t *parser)
+static int parse_heredoc_identifier(struct parser_t *parser)
 {
     char *buffer = (char *) malloc(BSIZE * sizeof(char));
     int count = BSIZE, scale = 0;
@@ -1924,10 +1924,18 @@ static void parse_heredoc_identifier(struct parser_t *parser)
         c += 2;
         curs += 2;
     }
-    if (*c == '\'' || *c == '"') {
+    if (*c == '\'' || *c == '"' || *c == '`') {
         term = *c;
         c++; curs++;
         quote_seen = 1;
+    }
+
+    if (!quote_seen && !is_identchar(c)) {
+        if (dash_seen) {
+            curs--;
+            c--;
+        }
+        return 0;
     }
 
     for (i = 0; curs <= len; curs++, --count) {
@@ -1940,7 +1948,7 @@ static void parse_heredoc_identifier(struct parser_t *parser)
         if (curs > len) {
             free(buffer);
             yyerror(parser, "unterminated here document identifier");
-            return;
+            return 0;
         }
         if (!count) {
             scale++;
@@ -1957,6 +1965,7 @@ static void parse_heredoc_identifier(struct parser_t *parser)
     lex_strterm.word = buffer;
     lex_strterm.length = i;
     lex_strterm.was_mcall = parser->mcall;
+    return 1;
 }
 
 static int parse_heredoc(struct parser_t *parser)
@@ -2658,19 +2667,20 @@ static int parser_yylex(struct parser_t *parser)
                 curs++;
                 t = tOP_ASGN;
             } else {
-                if (cannot_be_heredoc) {
-                    parser->expr_seen = 0;
-                    t = tLSHIFT;
-                } else {
+                if (maybe_heredoc) {
                     tokp.start_line = parser->line;
                     tokp.start_col = parser->column;
-                    parse_heredoc_identifier(parser);
-                    c = parser->blob + parser->cursor;
-                    lex_strterm.token = token_heredoc;
-                    t = tSTRING_BEG;
-                    push_pos(parser, tokp);
-                    return t;
+                    if (parse_heredoc_identifier(parser)) {
+                        c = parser->blob + parser->cursor;
+                        lex_strterm.token = token_heredoc;
+                        t = tSTRING_BEG;
+                        push_pos(parser, tokp);
+                        return t;
+                    }
                 }
+                tokp.start_line = tokp.start_col = -1;
+                parser->expr_seen = 0;
+                t = tLSHIFT;
             }
         } else if (*(c + 1) == '=') {
             curs++;
