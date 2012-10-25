@@ -22,6 +22,7 @@
 //BEGIN Includes
 // Qt + KDE
 #include <QtCore/QTimer>
+#include <QtCore/QProcess>
 #include <KAction>
 #include <KActionCollection>
 
@@ -95,6 +96,17 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     setupQuickOpen();
 
     QTimer::singleShot(0, this, SLOT(updateBuiltins()));
+
+    /* Retrieving Ruby version */
+    QProcess ruby;
+    ruby.start("/usr/bin/env", QStringList() << "ruby" << "--version");
+    ruby.waitForFinished();
+    QString output = ruby.readAllStandardOutput().split(' ')[1];
+    QStringList version = output.split('.');
+    if (version[0] == "1") {
+        m_version = (version[1] == "8") ? ruby18 : ruby19;
+    } else
+        m_version = ruby20;
 }
 
 LanguageSupport::~LanguageSupport()
@@ -137,6 +149,11 @@ bool LanguageSupport::builtinsLoaded() const
 QReadWriteLock * LanguageSupport::builtinsLock()
 {
     return &m_builtinsLock;
+}
+
+enum ruby_version LanguageSupport::version() const
+{
+    return m_version;
 }
 
 void LanguageSupport::createNewClass()

@@ -94,6 +94,7 @@ void ParseJob::run()
      */
     m_parser->setContents(contents().contents);
     m_parser->setCurrentDocument(document());
+    m_parser->setRubyVersion(ruby()->version());
     RubyAst * ast = m_parser->parse();
 
     /* Setting up the TopDUContext features */
@@ -127,6 +128,12 @@ void ParseJob::run()
         DeclarationBuilder builder(&editor);
         builder.setPriority(parsePriority());
         m_duContext = builder.build(editor.url(), ast, toUpdate);
+
+        // Add warnings
+        DUChainWriteLocker wlock(DUChain::lock());
+        foreach (ProblemPointer p, m_parser->m_problems)
+            m_duContext->addProblem(p);
+        wlock.unlock();
         setDuChain(m_duContext);
 
         if (abortRequested())
@@ -166,13 +173,12 @@ void ParseJob::run()
         if (abortRequested())
             return abortJob();
 
-        {
-            DUChainWriteLocker lock(DUChain::lock());
-            m_duContext->setFeatures(newFeatures);
-            KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
-            file->setModificationRevision(contents().modification);
-            KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
-        }
+        wlock.lock();
+        m_duContext->setFeatures(newFeatures);
+        KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
+        file->setModificationRevision(contents().modification);
+        KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
+        wlock.unlock();
         m_parser->freeAst(ast);
 
         highlightDUChain();

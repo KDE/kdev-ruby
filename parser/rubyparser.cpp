@@ -74,9 +74,11 @@ RubyAst * RubyParser::parse()
         rb_free(res);
         return NULL;
     } else {
+        m_problems.clear();
+        for (aux = res->errors; aux; aux = aux->next)
+            appendProblem(aux);
         free_errors(res);
         free(res);
-        m_problems.clear();
     }
     return ra;
 }

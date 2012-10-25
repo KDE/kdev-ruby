@@ -282,9 +282,8 @@ void ContextBuilder::require(Node *node, bool local)
         backgroundParser->addDocument(indexedPath, TopDUContext::ForceUpdate,
             m_priority - 1, 0, ParseJob::FullSequentialProcessing);
         return;
-    } else {
+    } else
         currentContext()->addImportedParentContext(ctx);
-    }
 }
 
 } // End of namespace Ruby

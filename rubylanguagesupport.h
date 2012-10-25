@@ -32,6 +32,8 @@
 #include <language/duchain/indexedstring.h>
 #include <language/duchain/topducontext.h>
 
+#include <parser/node.h>
+
 
 class KConfigGroup;
 
@@ -119,6 +121,11 @@ public:
     QReadWriteLock * builtinsLock();
 
     /**
+     * @return the version of Ruby to be picked.
+     */
+    enum ruby_version version() const;
+
+    /**
      * Setup the actions defined by this plugin.
      */
     virtual void createActionsForMainWindow(Sublime::MainWindow* window, QString& xmlFile,
@@ -170,6 +177,7 @@ private:
     Ruby::Highlighting *m_highlighting;
     bool m_builtinsLoaded;
     QReadWriteLock m_builtinsLock;
+    enum ruby_version m_version;
 
     RailsSwitchers *m_railsSwitchers;
     RailsDataProvider *m_viewsQuickOpenDataProvider;
