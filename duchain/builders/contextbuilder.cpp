@@ -267,9 +267,8 @@ void ContextBuilder::require(Node *node, bool local)
 
     const IndexedString indexedPath(path);
 
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(indexedPath);
-    lock.unlock();
 
     if (!ctx) {
         /*
@@ -284,7 +283,6 @@ void ContextBuilder::require(Node *node, bool local)
             m_priority - 1, 0, ParseJob::FullSequentialProcessing);
         return;
     } else {
-        lock.lock();
         currentContext()->addImportedParentContext(ctx);
     }
 }
