@@ -1,0 +1,10 @@
+[General]
+Name=Basic
+Comment=Basic Ruby Class
+Category=Class/Ruby/Basic
+Files=Definition
+
+[Definition]
+Name=Definition
+File=class.rb
+OutputFile={{ name }}.rb
