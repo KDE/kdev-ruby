@@ -20,13 +20,13 @@ add_subdirectory(duchain)
 add_subdirectory(navigation)
 add_subdirectory(completion)
 add_subdirectory(app_templates)
+add_subdirectory(file_templates)
 
 set(kdevrubylanguagesupport_PART_SRCS
     rubyparsejob.cpp
     rubyhighlighting.cpp
     rubylanguagesupport.cpp
 
-    codegen/rubyrefactoring.cpp
     codegen/rubynewclass.cpp
 )
 

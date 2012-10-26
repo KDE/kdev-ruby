@@ -53,11 +53,11 @@
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
 #include <rubyhighlighting.h>
+#include <codegen/rubynewclass.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
-#include <codegen/rubyrefactoring.h>
 //END Includes
 
 
@@ -134,13 +134,6 @@ KDevelop::ICodeHighlighting * LanguageSupport::codeHighlighting() const
     return m_highlighting;
 }
 
-ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context *ctx)
-{
-    KDevelop::ContextMenuExtension cm;
-    RubyRefactoring::self().doContextMenu(cm, ctx);
-    return cm;
-}
-
 bool LanguageSupport::builtinsLoaded() const
 {
     return m_builtinsLoaded;
@@ -154,11 +147,6 @@ QReadWriteLock * LanguageSupport::builtinsLock()
 enum ruby_version LanguageSupport::version() const
 {
     return m_version;
-}
-
-void LanguageSupport::createNewClass()
-{
-    RubyRefactoring::self().createNewClass(0);
 }
 
 void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
@@ -312,10 +300,6 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow* /*window*/
     action->setText(i18n("Run Current Test Function"));
     action->setShortcut(Qt::META | Qt::SHIFT | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
-
-    action = actions.addAction("ruby_new_class");
-    action->setText(i18n("Create New Ruby Class"));
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(createNewClass()));
 }
 
 void LanguageSupport::setupQuickOpen()
@@ -329,6 +313,12 @@ void LanguageSupport::setupQuickOpen()
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
     }
 }
+
+KDevelop::ICreateClassHelper* LanguageSupport::createClassHelper() const
+{
+    return new RubyClassHelper;
+}
+
 
 } // End of namespace Ruby
 

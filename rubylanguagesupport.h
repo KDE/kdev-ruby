@@ -105,12 +105,6 @@ public:
     virtual KDevelop::ICodeHighlighting * codeHighlighting() const;
 
     /**
-     * Override from KDevelop::IPlugin so it can @return an extension
-     * of the context menu.
-     */
-    KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *ctx);
-
-    /**
      * @return true if the builtins file is loaded, false otherwise.
      */
     bool builtinsLoaded() const;
@@ -130,6 +124,8 @@ public:
      */
     virtual void createActionsForMainWindow(Sublime::MainWindow* window, QString& xmlFile,
                                             KActionCollection& actions);
+
+    virtual KDevelop::ICreateClassHelper* createClassHelper() const;
 private:
     /**
      * @internal Find or create a launch for a the given @p name.
@@ -156,9 +152,6 @@ private:
     void setupQuickOpen();
 
 public slots:
-    /// The slot for the Create New Class dialog.
-    void createNewClass();
-
     /// Get notified by background parser when the builtins file is loaded.
     void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
 

@@ -22,72 +22,31 @@
 #ifndef RUBY_NEWCLASS_H
 #define RUBY_NEWCLASS_H
 
+#include <KUrl>
 
-#include <project/projectmodel.h>
-#include <language/duchain/types/structuretype.h>
-#include <language/codegen/createclass.h>
-#include <language/codegen/overridespage.h>
-
-
-/*
- * TODO: under construction
- */
-
+#include <language/duchain/declaration.h>
+#include <language/interfaces/icreateclasshelper.h>
+#include <language/codegen/templateclassgenerator.h>
 
 
 namespace Ruby
 {
 
-class RubyNewClass : public KDevelop::ClassGenerator
-{
+class RubyClassHelper: public KDevelop::ICreateClassHelper {
 public:
-    RubyNewClass(KDevelop::ProjectBaseItem* parentItem);
+    RubyClassHelper();
+    virtual ~RubyClassHelper();
+
+    virtual KDevelop::TemplateClassGenerator* createGenerator(const KUrl& baseUrl);
+    virtual QList< KDevelop::DeclarationPointer > defaultMethods(const QString& name) const;
+};
+
+class RubyNewClass : public KDevelop::TemplateClassGenerator {
+public:
+    RubyNewClass(KUrl url);
     virtual KDevelop::DocumentChangeSet generate();
 
-    virtual KDevelop::StructureType::Ptr objectType() const;
-
-    const KDevelop::ProjectBaseItem * parentItem() const;
-
-private:
-    KDevelop::ProjectBaseItem *m_parentItem;
 };
-
-class RubyNewClassAssistant : public KDevelop::CreateClassAssistant
-{
-public:
-    RubyNewClassAssistant(QWidget *parent, RubyNewClass *gen, KUrl baseUrl = KUrl());
-
-    virtual KDevelop::ClassIdentifierPage * newIdentifierPage();
-    virtual KDevelop::OverridesPage * newOverridesPage();
-};
-
-/*
- * TODO: We need to subclass the IdentifierPage so we can implement the
- * following ideas:
- *      -> In ruby multiple inheritance is not allowed.
- *      -> The user might want to add include's/extend's
- */
-
-/*
- * TODO: The tree should be populated with the methods from the superclass, the
- * included/extended methods and the methods from the Class class.
- */
-class RubyOverridesPage : public KDevelop::OverridesPage
-{
-  Q_OBJECT
-
-public:
-    RubyOverridesPage(KDevelop::ClassGenerator *gen, QWidget *parent);
-
-    virtual void populateOverrideTree(const QList<KDevelop::DeclarationPointer> & baseList);
-};
-
-/*
- * TODO: for the other pages:
- *      - In the license page it seems that there's only licenses with C++ comments.
- *      - In the output page, it makes no sense to output two files.
- */
-
 
 }
 
