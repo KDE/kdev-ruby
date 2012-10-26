@@ -1979,7 +1979,7 @@ static int parse_heredoc(struct parser_t *parser)
     int original = curs;
     int len = parser->length;
     char *c = parser->blob + curs;
-    char *aux = (char *) malloc(sizeof(char) * buff_l);
+    char aux[buff_l];
     int ax = 0;
 
     for (i = 0, spaces = 0; curs <= len; i++, c++, curs++, cols++) {
@@ -2012,7 +2012,6 @@ static int parse_heredoc(struct parser_t *parser)
                 parser->cursor += curs - original;
                 c = parser->blob + parser->cursor;
                 free(lex_strterm.word);
-                free(aux);
                 lex_strterm.word = NULL;
                 return tSTRING_END;
             }
@@ -2020,12 +2019,11 @@ static int parse_heredoc(struct parser_t *parser)
             i = -1;
         } else
             ax += utf8_charsize(c) - 1;
-        if (i > buff_l)
+        if (i >= buff_l)
             i = -1;
     }
 
     free(lex_strterm.word);
-    free(aux);
     lex_strterm.word = NULL;
     return token_invalid;
 }
