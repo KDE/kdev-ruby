@@ -293,7 +293,6 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     decl->clearDefaultParameters();
     DeclarationBuilderBase::visitMethodStatement(node);
     closeDeclaration();
-    eventuallyAssignInternalContext();
     closeType();
 
     /*
