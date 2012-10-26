@@ -1354,11 +1354,7 @@ string: tCHAR
     | tSTRING_BEG string_contents tSTRING_END { $$ = $2; }
 ;
 
-string_contents: /* none */
-    {
-        lex_strterm.token = token_string;
-        $$ = 0;
-    }
+string_contents: /* none */ { $$ = 0; }
     | string_contents string_content
     {
         if ($1 != NULL)
