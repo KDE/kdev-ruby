@@ -195,17 +195,16 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     }
 
     node->tree = aux->l;
-    if (node->tree && is_valid(node->tree)) {
-        DUContext *body = openContext(node, DUContext::Other, &name);
-        if (compilingContexts()) {
-            DUChainWriteLocker wlock(DUChain::lock());
-            if (params)
-              body->addImportedParentContext(params);
-            body->setInSymbolTable(false);
-        }
-        visitBody(node);
-        closeContext();
+    DUContext *body = openContext(node, DUContext::Other, &name);
+    if (compilingContexts()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        if (params)
+            body->addImportedParentContext(params);
+        body->setInSymbolTable(false);
     }
+    if (node->tree && is_valid(node->tree))
+        visitBody(node);
+    closeContext();
     node->tree = aux;
 }
 
