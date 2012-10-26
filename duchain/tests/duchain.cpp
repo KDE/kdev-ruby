@@ -34,7 +34,6 @@
 #include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
 #include <duchain/declarations/methoddeclaration.h>
-#include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 
@@ -988,14 +987,14 @@ void TestDUChain::checkSubClassing1()
     DUChainWriteLocker lock(DUChain::lock());
 
     // Base
-    ClassDeclaration *base = dynamic_cast<ClassDeclaration *>(top->localDeclarations().first());
+    ModuleDeclaration *base = dynamic_cast<ModuleDeclaration *>(top->localDeclarations().first());
     QVERIFY(base);
     QCOMPARE(base->internalContext()->childContexts().count(), 0);
     QCOMPARE(base->internalContext()->importedParentContexts().count(), 0);
     QCOMPARE(base->internalContext()->localScopeIdentifier(), QualifiedIdentifier("Base"));
 
     // Final
-    ClassDeclaration *final = dynamic_cast<ClassDeclaration *>(top->localDeclarations().last());
+    ModuleDeclaration *final = dynamic_cast<ModuleDeclaration *>(top->localDeclarations().last());
     QVERIFY(final);
     QCOMPARE(final->internalContext()->childContexts().count(), 0);
     QCOMPARE(final->internalContext()->importedParentContexts().count(), 1);
@@ -1020,7 +1019,7 @@ void TestDUChain::checkSubClassing2()
     QCOMPARE(decl->qualifiedIdentifier(), QualifiedIdentifier("A::B"));
 
     // C
-    ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(top->localDeclarations().last());
+    ModuleDeclaration *cDecl = dynamic_cast<ModuleDeclaration *>(top->localDeclarations().last());
     QVERIFY(cDecl);
     QCOMPARE(cDecl->internalContext()->childContexts().count(), 0);
     QCOMPARE(cDecl->internalContext()->importedParentContexts().count(), 1);
@@ -1505,18 +1504,6 @@ void TestDUChain::extend()
     QCOMPARE(md->moduleMixinsSize(), 0u);
     QCOMPARE(md->mixersSize(), 1u);
     QCOMPARE(md->mixers()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
-}
-
-void TestDUChain::problemOnInvalidMixin()
-{
-    QByteArray code("class Lala; end; class Klass; include Lala; end");
-    TopDUContext *top = parse(code, "problemOnInvalidMixin");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    QStringList list;
-    list << "TypeError: wrong argument type (expected Module)";
-    testProblems(top, list);
 }
 
 //END: Include & Extend
