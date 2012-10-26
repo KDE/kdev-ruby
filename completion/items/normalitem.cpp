@@ -26,7 +26,7 @@
 
 // Ruby
 #include <duchain/navigation/navigationwidget.h>
-#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <completion/items/normalitem.h>
 #include <completion/helpers.h>
@@ -58,12 +58,9 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
         case CodeCompletionModel::Postfix:
             return QVariant();
         case CodeCompletionModel::Prefix: {
-            ClassDeclaration *classDec = dynamic_cast<ClassDeclaration *>(dec);
             ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
-            if (classDec)
-                return "class";
-            else if (moDec)
-                return "module";
+            if (moDec)
+                return (moDec->isModule()) ? "module" : "class";
             return "";
         }
         case CodeCompletionModel::Arguments:

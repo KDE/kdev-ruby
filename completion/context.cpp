@@ -31,7 +31,7 @@
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
-#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <completion/context.h>
 #include <completion/items/keyworditem.h>
@@ -327,9 +327,11 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
-    foreach (DeclarationPair d, decls)
-        if (dynamic_cast<ClassDeclaration *>(d.first))
+    foreach (DeclarationPair d, decls) {
+        ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(d.first);
+        if (mDecl && !mDecl->isModule())
             ADD_NORMAL(d.first, d.second);
+    }
     return list;
 }
 

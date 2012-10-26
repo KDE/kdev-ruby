@@ -50,7 +50,7 @@ class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::Declaratio
 {
 public:
     /// Constructor.
-    ModuleDeclarationData()
+    ModuleDeclarationData() : isModule(true)
     {
         initializeAppendedLists();
     }
@@ -61,6 +61,8 @@ public:
     {
         initializeAppendedLists();
         copyListsFrom(rhs);
+        isModule = rhs.isModule;
+        baseClass = rhs.baseClass;
     }
 
     /// Destructor.
@@ -69,10 +71,17 @@ public:
         freeAppendedLists();
     }
 
+    // List of module mixins.
     START_APPENDED_LISTS_BASE(ModuleDeclarationData, KDevelop::DeclarationData);
     APPENDED_LIST_FIRST(ModuleDeclarationData, ModuleMixin, moduleMixins);
     APPENDED_LIST(ModuleDeclarationData, ModuleMixin, mixers, moduleMixins);
     END_APPENDED_LISTS(ModuleDeclarationData, mixers);
+
+    /// True if it's a module, false if it's a class.
+    bool isModule;
+
+    /// The base class type (if this is actually a class).
+    KDevelop::IndexedType baseClass;
 };
 
 /**
@@ -133,6 +142,24 @@ public:
     /// Add a new module mix-in @p module to the mixers list.
     void addMixer(ModuleMixin module);
 
+    /// @returns true if this is a module, false if it's a class.
+    bool isModule() const;
+
+    /**
+     * Set @p isModule to true if this is a module declaration, set to false
+     * if this is a class declaration.
+     */
+    void setIsModule(bool isModule);
+
+    /// Set the type @p base as the new base class for this class declaration.
+    void setBaseClass(KDevelop::IndexedType base);
+
+    /// Invalidate the current base class.
+    void clearBaseClass();
+
+    /// @returns the base class for this class declaration.
+    KDevelop::IndexedType baseClass() const;
+
     /// Re-implemented from KDevelop::Declaration.
     QString toString() const;
 
@@ -141,6 +168,7 @@ public:
 private:
     /**
      * Check whether a module exists or not in one of the selected lists.
+     *
      * @param module The given module.
      * @param who set to true if the mixers list is to be picked, and set to
      * false if the moduleMixins list is the one to be picked.

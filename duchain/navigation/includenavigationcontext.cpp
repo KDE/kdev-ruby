@@ -23,7 +23,7 @@
 
 // Ruby
 #include <duchain/navigation/includenavigationcontext.h>
-#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 
@@ -59,12 +59,8 @@ QString IncludeNavigationContext::declarationKind(KDevelop::DeclarationPointer d
         return (md->isClassMethod()) ? "Class method" : "Instance method";
 
     const ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(decl.data());
-    if (mDecl) {
-        ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(decl.data());
-        if (cDecl)
-            return "Class";
-        return "Module";
-    }
+    if (mDecl)
+        return (mDecl->isModule()) ? "Module": "Class";
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 

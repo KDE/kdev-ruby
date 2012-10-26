@@ -33,7 +33,7 @@
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/declarations/methoddeclaration.h>
-#include <duchain/declarations/classdeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 
 
 using namespace KDevelop;
@@ -246,7 +246,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
 void ExpressionVisitor::visitSuper(RubyAst *)
 {
     DUChainReadLocker lock(DUChain::lock());
-    ClassDeclaration *cDecl = NULL;
+    ModuleDeclaration *mDecl = NULL;
     DUContext *ctx = m_ctx->parentContext();
     Declaration *md = m_ctx->owner();
 
@@ -255,15 +255,15 @@ void ExpressionVisitor::visitSuper(RubyAst *)
 
     while (ctx) {
         Declaration *d = ctx->owner();
-        cDecl = dynamic_cast<ClassDeclaration *>(d);
-        if (cDecl)
+        mDecl = dynamic_cast<ModuleDeclaration *>(d);
+        if (mDecl && !mDecl->isModule())
             break;
         ctx = ctx->parentContext();
     }
-    if (!cDecl)
+    if (!mDecl || mDecl->isModule())
         return;
 
-    StructureType::Ptr type = cDecl->baseClass().abstractType().cast<StructureType>();
+    StructureType::Ptr type = mDecl->baseClass().abstractType().cast<StructureType>();
     if (!type)
         return;
     ctx = type->internalContext(m_ctx->topContext());

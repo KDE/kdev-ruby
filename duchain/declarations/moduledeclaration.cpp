@@ -33,7 +33,7 @@ DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData& data, const KDevelop::RangeInRevision& range)
     : KDevelop::Declaration(data, range)
 {
-
+    /* There's nothing to do here */
 }
 
 ModuleDeclaration::ModuleDeclaration(const ModuleDeclaration &rhs)
@@ -45,7 +45,7 @@ ModuleDeclaration::ModuleDeclaration(const ModuleDeclaration &rhs)
 ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData &data)
     : KDevelop::Declaration(data)
 {
-
+    /* There's nothing to do here */
 }
 
 ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *context)
@@ -110,9 +110,37 @@ void ModuleDeclaration::addMixer(ModuleMixin module)
     setInSymbolTable(wasInSymbolTable);
 }
 
+bool ModuleDeclaration::isModule() const
+{
+    return d_func()->isModule;
+}
+
+void ModuleDeclaration::setIsModule(bool isModule)
+{
+    d_func_dynamic()->isModule = isModule;
+}
+
+void ModuleDeclaration::setBaseClass(KDevelop::IndexedType base)
+{
+    d_func_dynamic()->baseClass = base;
+}
+
+void ModuleDeclaration::clearBaseClass()
+{
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->baseClass = KDevelop::IndexedType(0);
+    setInSymbolTable(wasInSymbolTable);
+}
+
+KDevelop::IndexedType ModuleDeclaration::baseClass() const
+{
+    return d_func()->baseClass;
+}
+
 QString ModuleDeclaration::toString() const
 {
-    return "module " + identifier().toString();
+    return ((isModule()) ? "module " : "class ") + identifier().toString();
 }
 
 bool ModuleDeclaration::mixinExists(ModuleMixin module, bool who)
