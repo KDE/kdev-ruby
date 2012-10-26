@@ -38,10 +38,6 @@ m = `ls #{dir}`
 
 %x[ ls ]
 
-# The following are not strings, but symbols
-:"asdasd"
-:'symbol'
-
 # Weird way to declare a char :D
 c = ?a
 c = ?\n

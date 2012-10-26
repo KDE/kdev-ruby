@@ -2605,10 +2605,11 @@ static int parser_yylex(struct parser_t *parser)
         curs++;
         parser->paren_nest++;
         CMDARG_PUSH(0);
-        if (parser->dot_seen || parser->def_seen) {
+        if (parser->dot_seen || parser->def_seen || parser->symbeg) {
             if (*(c + 1) == ']') {
                 ++curs;
                 should_store = 0;
+                parser->symbeg = 0;
                 if (*(c + 2) == '=') {
                     ++curs;
                     t = tASET;
