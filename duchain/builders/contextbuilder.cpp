@@ -195,8 +195,8 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     }
 
     node->tree = aux->l;
+    DUContext *body = openContext(node, DUContext::Other, &name);
     if (node->tree && is_valid(node->tree)) {
-        DUContext *body = openContext(node, DUContext::Other, &name);
         if (compilingContexts()) {
             DUChainWriteLocker wlock(DUChain::lock());
             if (params)
@@ -204,8 +204,8 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
             body->setInSymbolTable(false);
         }
         visitBody(node);
-        closeContext();
     }
+    closeContext();
     node->tree = aux;
 }
 
