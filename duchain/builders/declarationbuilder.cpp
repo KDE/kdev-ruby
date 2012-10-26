@@ -821,11 +821,8 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
 
     ev.visitNode(module);
     d = ev.lastDeclaration().data();
-    if (d) {
-        ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
-        return found;
-    }
-    return NULL;
+    ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
+    return found;
 }
 
 QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
