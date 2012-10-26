@@ -24,37 +24,42 @@
 namespace Ruby
 {
 
-ClassDeclaration::ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
-    : ModuleDeclaration(range, ctx)
+ClassDeclaration::ClassDeclaration(ClassDeclarationData& data, const KDevelop::RangeInRevision& range)
+    : ModuleDeclaration(data, range)
 {
     /* There's nothing to do here */
 }
 
-ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
-    : ModuleDeclaration(rhs)
+ClassDeclaration::ClassDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
+    : ModuleDeclaration(*new ClassDeclarationData, range)
 {
-    m_baseClass = rhs.baseClass();
+    d_func_dynamic()->setClassId(this);
+    if (ctx)
+        setContext(ctx);
 }
 
-ClassDeclaration::ClassDeclaration(ModuleDeclarationData &data)
-    : ModuleDeclaration(data)
+ClassDeclaration::ClassDeclaration(const ClassDeclaration &rhs)
+    : ModuleDeclaration(*new ClassDeclarationData(*rhs.d_func()))
 {
     /* There's nothing to do here */
 }
 
 void ClassDeclaration::setBaseClass(KDevelop::IndexedType base)
 {
-    m_baseClass = base;
+    d_func_dynamic()->m_baseClass = base;
 }
 
 void ClassDeclaration::clearBaseClass()
 {
-    m_baseClass = KDevelop::IndexedType(0);
+    bool wasInSymbolTable = inSymbolTable();
+    setInSymbolTable(false);
+    d_func_dynamic()->m_baseClass = KDevelop::IndexedType(0);
+    setInSymbolTable(wasInSymbolTable);
 }
 
 KDevelop::IndexedType ClassDeclaration::baseClass() const
 {
-    return m_baseClass;
+    return d_func()->m_baseClass;
 }
 
 QString ClassDeclaration::toString() const

@@ -86,6 +86,14 @@ class KDEVRUBYDUCHAIN_EXPORT ModuleDeclaration : public KDevelop::Declaration
 public:
     /**
      * Constructor.
+     *
+     * @param data The data for this ModuleDeclaration.
+     * @param range The range of this declaration.
+     */
+    ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range);
+
+    /**
+     * Constructor.
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */

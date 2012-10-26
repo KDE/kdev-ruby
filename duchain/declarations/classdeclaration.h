@@ -30,6 +30,38 @@ namespace Ruby
 {
 
 /**
+ * @class ClassDeclarationData
+ *
+ * The data for the ClassDeclaration class.
+ */
+class KDEVRUBYDUCHAIN_EXPORT ClassDeclarationData : public ModuleDeclarationData
+{
+public:
+    /// Constructor
+    ClassDeclarationData() : ModuleDeclarationData()
+    {
+        /* There's nothing to do here */
+    }
+
+    /// Copy constructor.
+    ClassDeclarationData(const ClassDeclarationData &rhs)
+        : ModuleDeclarationData(rhs)
+    {
+        m_baseClass = rhs.m_baseClass;
+    }
+
+    /// Destructor.
+    ~ClassDeclarationData()
+    {
+        /* There's nothing to do here */
+    }
+
+public:
+    /// The base class for this class.
+    KDevelop::IndexedType m_baseClass;
+};
+
+/**
  * @class ClassDeclaration
  *
  * This is class represents a class declaration. It's a subclass of the
@@ -39,6 +71,8 @@ namespace Ruby
 class KDEVRUBYDUCHAIN_EXPORT ClassDeclaration : public ModuleDeclaration
 {
 public:
+    ClassDeclaration(ClassDeclarationData &data, const KDevelop::RangeInRevision &range);
+
     /**
      * Constructor.
      * @param range The range of this declaration.
@@ -48,12 +82,6 @@ public:
 
     /// Copy constructor.
     ClassDeclaration(const ClassDeclaration &rhs);
-
-    /**
-     * Copy constructor.
-     * @param data The data to be copied.
-     */
-    ClassDeclaration(ModuleDeclarationData &data);
 
     /// Set the type @p base as the new base class for this class declaration.
     void setBaseClass(KDevelop::IndexedType base);
@@ -74,7 +102,7 @@ private:
     virtual KDevelop::Declaration * clonePrivate() const;
 
 private:
-    KDevelop::IndexedType m_baseClass;
+    DUCHAIN_DECLARE_DATA(ClassDeclaration)
 };
 
 } // End of namespace Ruby
