@@ -1986,7 +1986,7 @@ static int parse_heredoc(struct parser_t *parser)
         /* Ignore initial spaces if dash seen */
         if (i == 0 && lex_strterm.can_embed)
             for (; isspace(*c) && *c != '\n' && curs <= len; c++, curs++, spaces++);
-        if (*c == '#') {
+        if (*c == '#' && *(c - 1) != '\\') {
             curs++;
             i++;
             c++;
