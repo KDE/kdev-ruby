@@ -44,6 +44,7 @@ m = `ls #{dir}`
 
 # Weird way to declare a char :D
 c = ?a
+c = ?\n
 c = ?-
 a = b ?1 : c
 a = (b) ?1 : c

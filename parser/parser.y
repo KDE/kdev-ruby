@@ -1346,11 +1346,19 @@ strings: string
     }
 ;
 
-string: tCHAR { $$ = 0; }
+string: tCHAR
+    {
+        lex_strterm.token = token_string;
+        $$ = 0;
+    }
     | tSTRING_BEG string_contents tSTRING_END { $$ = $2; }
 ;
 
-string_contents: /* none */ { $$ = 0; }
+string_contents: /* none */
+    {
+        lex_strterm.token = token_string;
+        $$ = 0;
+    }
     | string_contents string_content
     {
         if ($1 != NULL)
@@ -2918,10 +2926,12 @@ static int parser_yylex(struct parser_t *parser)
         curs++;
         if (!isspace(*(c + 1))) {
             if (!parser->expr_seen) {
+                if (*(c + 1) == '\\')
+                    curs++;
                 curs++;
                 tokp.start_line = tokp.end_line = parser->line;
                 tokp.start_col = parser->column;
-                tokp.end_col = tokp.start_col + 2;
+                tokp.end_col = tokp.start_col + 2 + (*(c + 1) == '\\');
                 t = tCHAR;
                 parser->expr_seen = 1;
             } else
