@@ -39,7 +39,6 @@
 #include <duchain/builders/declarationbuilder.h>
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
-#include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 
 
@@ -96,7 +95,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment; /* TODO */
-    ClassDeclaration *baseClass = NULL;
+    ModuleDeclaration *baseClass = NULL;
 
     if (!validReDeclaration(id, range)) {
         node->foundProblems = true;
@@ -104,9 +103,10 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     }
 
     /* First of all, open the declaration and set the comment */
-    ClassDeclaration *decl = reopenDeclaration<ClassDeclaration>(id, range);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
     if (!comment.isEmpty())
         decl->setComment(comment);
+    decl->setIsModule(false);
     decl->clearBaseClass();
     decl->clearModuleMixins();
     decl->setKind(KDevelop::Declaration::Type);
@@ -126,10 +126,10 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
         if (!baseDecl)
             debug() << "Base class not found";
         else {
-            baseClass = dynamic_cast<ClassDeclaration *>(baseDecl.data());
+            baseClass = dynamic_cast<ModuleDeclaration *>(baseDecl.data());
             if (!baseClass)
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            else if (baseClass->internalContext())
+            else if (baseClass->internalContext() && !baseClass->isModule())
                 decl->setBaseClass(baseClass->indexedType());
             else
                 debug() << "Error: found a valid base class but with no internal context";
@@ -215,6 +215,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
     if (!comment.isEmpty())
         decl->setComment(comment);
+    decl->setIsModule(true);
     decl->clearModuleMixins();
     decl->clearMixers();
     decl->setKind(KDevelop::Declaration::Type);
@@ -815,9 +816,8 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
     ev.visitNode(module);
     d = ev.lastDeclaration().data();
     if (d) {
-        ClassDeclaration *cDecl = dynamic_cast<ClassDeclaration *>(d);
         ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
-        if (!cDecl && found)
+        if (found && found->isModule())
             return found;
     }
     return NULL;
@@ -848,8 +848,7 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
 
     foreach (Declaration *d, decls) {
         ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
-        ClassDeclaration *cd = dynamic_cast<ClassDeclaration *>(d);
-        if ((cd && !isClass) || (md && !cd && isClass)) {
+        if (md && (md->isModule() == isClass)) {
             const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
             rlock.unlock();
             appendProblem(range, msg);

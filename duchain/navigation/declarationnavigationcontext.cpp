@@ -31,7 +31,6 @@
 
 // Ruby
 #include <duchain/helpers.h>
-#include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
@@ -98,34 +97,25 @@ void DeclarationNavigationContext::htmlClass()
 {
     StructureType::Ptr klass = m_declaration->abstractType().cast<StructureType>();
     Q_ASSERT(klass);
-    ClassDeclaration *classDecl = dynamic_cast<ClassDeclaration *>(klass->declaration(m_topContext.data()));
     ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(klass->declaration(m_topContext.data()));
 
-    if (classDecl) {
-        /* Write class type */
-        modifyHtml() += "class ";
+    if (mDecl) {
+        if (mDecl->isModule()) {
+            modifyHtml() += "module ";
+            eventuallyMakeTypeLinks(m_declaration->abstractType());
+        } else {
+            modifyHtml() += "class ";
+            eventuallyMakeTypeLinks(m_declaration->abstractType());
 
-        /* Write identifier */
-        eventuallyMakeTypeLinks(m_declaration->abstractType());
-        /* Write inheritance */
-        if (classDecl->baseClass()) {
-            AbstractType::Ptr base = classDecl->baseClass().abstractType();
-            modifyHtml() += " is a subclass of ";
-            eventuallyMakeTypeLinks(base);
+            if (mDecl->baseClass()) {
+                AbstractType::Ptr base = mDecl->baseClass().abstractType();
+                modifyHtml() += " is a subclass of ";
+                eventuallyMakeTypeLinks(base);
+            }
         }
         modifyHtml() += " ";
-    } else if (mDecl) {
-        modifyHtml() += "module ";
-        /* Write identifier */
-        eventuallyMakeTypeLinks(m_declaration->abstractType());
-        modifyHtml() += " ";
-        // Add the modules/classes that include/extend this module.
-        addMixers(mDecl);
-    }
-
-    // Both classes and modules can have a valid module mix-in list.
-    if (mDecl)
         addModuleMixins(mDecl);
+    }
 }
 
 void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPointer declaration,

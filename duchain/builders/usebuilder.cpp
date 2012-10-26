@@ -29,8 +29,8 @@
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/builders/usebuilder.h>
-#include <duchain/declarations/classdeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 
 
 namespace Ruby
@@ -148,8 +148,8 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         ev.setContext(ctx);
         ev.visitNode(node);
         if (!ev.lastType()) {
-            ClassDeclaration *cdecl = dynamic_cast<ClassDeclaration *>(ctx->owner());
-            if (cdecl) {
+            ModuleDeclaration *cdecl = dynamic_cast<ModuleDeclaration *>(ctx->owner());
+            if (cdecl && !cdecl->isModule()) {
                 ev.setContext(getClassContext(currentContext()));
                 ev.visitNode(node);
             }
