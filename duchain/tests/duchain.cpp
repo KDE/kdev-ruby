@@ -1506,6 +1506,18 @@ void TestDUChain::extend()
     QCOMPARE(md->mixers()[0].module.type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
 }
 
+void TestDUChain::problemOnInvalidMixin()
+{
+    QByteArray code("class Lala; end; class Klass; include Lala; end");
+    TopDUContext *top = parse(code, "problemOnInvalidMixin");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    QStringList list;
+    list << "TypeError: wrong argument type (expected Module)";
+    testProblems(top, list);
+}
+
 //END: Include & Extend
 
 } // End of namespace Ruby

@@ -587,6 +587,12 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
     RubyAst *module = new RubyAst(node->tree->r, node->context);
     ModuleDeclaration *decl = getModuleDeclaration(module);
     if (decl) {
+        // Report an error if we're completely sure that this is not a module.
+        if (!decl->isModule()) {
+            appendProblem(node->tree->r, i18n("TypeError: wrong argument type (expected Module)"));
+            return;
+        }
+
         // Register the Module mixin
         if (insideClassModule()) {
             ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule());
@@ -817,8 +823,7 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
     d = ev.lastDeclaration().data();
     if (d) {
         ModuleDeclaration *found = dynamic_cast<ModuleDeclaration *>(d);
-        if (found && found->isModule())
-            return found;
+        return found;
     }
     return NULL;
 }
