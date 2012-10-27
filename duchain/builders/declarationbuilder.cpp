@@ -127,12 +127,10 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
             debug() << "Base class not found";
         else {
             baseClass = dynamic_cast<ModuleDeclaration *>(baseDecl.data());
-            if (!baseClass)
+            if (!baseClass || baseClass->isModule())
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            else if (baseClass->internalContext() && !baseClass->isModule())
+            else if (baseClass->internalContext())
                 decl->setBaseClass(baseClass->indexedType());
-            else
-                debug() << "Error: found a valid base class but with no internal context";
         }
     }
     node->tree = aux;

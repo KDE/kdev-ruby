@@ -1028,6 +1028,28 @@ void TestDUChain::checkSubClassing2()
     QCOMPARE(cDecl->baseClass(), decl->indexedType());
 }
 
+void TestDUChain::checkSubClassingErrors()
+{
+    QStringList errors;
+    errors << "TypeError: wrong argument type (expected Class)";
+
+    {
+        QByteArray code("module A; end; class B < A; end;");
+        TopDUContext *top = parse(code, "checkSubClassingErrors");
+        DUChainReleaser releaser(top);
+        DUChainWriteLocker lock(DUChain::lock());
+        testProblems(top, errors);
+    }
+
+    {
+        QByteArray code("A = 0; class B < A; end;");
+        TopDUContext *top = parse(code, "checkSubClassingErrors");
+        DUChainReleaser releaser(top);
+        DUChainWriteLocker lock(DUChain::lock());
+        testProblems(top, errors);
+    }
+}
+
 void TestDUChain::errorOnInvalidRedeclaration1()
 {
     QByteArray code("class Klass; end; module Module; end; class Kernel; end");
