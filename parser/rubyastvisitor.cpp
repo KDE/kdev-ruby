@@ -619,6 +619,19 @@ void RubyAstVisitor::visitRescueArg(RubyAst *node)
     Node *n = node->tree;
     node->tree = n->l;
     visitStatements(node);
+    node->tree = n;
+}
+
+void RubyAstVisitor::visitEnsure(RubyAst *node)
+{
+    /*
+     * l -> The inner statements.
+     */
+    
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
+    node->tree = n;
 }
 
 void RubyAstVisitor::visitNode(RubyAst *node)
@@ -697,6 +710,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_symbol: case token_key: visitSymbol(node); break;
         case token_rescue: visitRescue(node); break;
         case token_rescue_arg: visitRescueArg(node); break;
+        case token_ensure: visitEnsure(node); break;
         case token_break: case token__end__: case token_next:
         case token_redo: case token_retry:
             return;

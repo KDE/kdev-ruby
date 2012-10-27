@@ -115,6 +115,7 @@ protected:
     virtual void visitClassName(RubyAst *node);
     virtual void visitRescue(RubyAst *node);
     virtual void visitRescueArg(RubyAst *node);
+    virtual void visitEnsure(RubyAst *node);
 
 private:
     /**
