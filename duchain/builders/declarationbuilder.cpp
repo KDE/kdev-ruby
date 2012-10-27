@@ -497,9 +497,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
                 declareVariable(id, type, aux);
             }
         } else {
-            // TODO: the following shows that we need some caching system at the ExpressionVisitor
             lock.lock();
-            type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
+            type = getBuiltinsType("NilClass", currentContext());
             lock.unlock();
             QualifiedIdentifier id = getIdentifier(aux);
             declareVariable(id, type, aux);
@@ -519,7 +518,6 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         DUChainWriteLocker wlock(DUChain::lock());
         // If the global variable on the right is not declared, declare it as nil
         if (!decl) {
-            // TODO: NilClass should be cached, since it's already heavily used in other parts of the builder
             AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
             VariableDeclaration *vDecl = openDefinition<VariableDeclaration>(id, range);
             vDecl->setVariableKind(right->tree);
