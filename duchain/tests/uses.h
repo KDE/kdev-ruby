@@ -63,6 +63,7 @@ private slots:
     void checkMethodArgumentsContext();
     void instanceVariable();
     void classVariable();
+    void exceptions();
 
     // Method calls
     void builtinUses();

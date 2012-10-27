@@ -195,6 +195,26 @@ void TestUseBuilder::classVariable()
     compareUses(decl, list);
 }
 
+void TestUseBuilder::exceptions()
+{
+    //               0         1         2         3         4         5         6
+    //               012345678901234567890123456789012345678901234567890123456789012
+    QByteArray code("def defas; a = 1; 1 / 0; rescue ZeroDivisionError; puts a; end");
+    TopDUContext *top = parse(code, "exceptions");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // a
+    Declaration *decl = top->localDeclarations().first();
+    Declaration *a = decl->internalContext()->localDeclarations().first();
+    compareUses(a, RangeInRevision(0, 56, 0, 57));
+
+    // ZeroDivisionError
+    QualifiedIdentifier id("ZeroDivisionError");
+    Declaration *zero = decl->topContext()->findDeclarations(id).first();
+    compareUses(zero, RangeInRevision(0, 32, 0, 49));
+}
+
 //END: Basic stuff
 
 //BEGIN: Method calls
