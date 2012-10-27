@@ -39,7 +39,8 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
 
     /* Get the name of the file and update the cache of search paths. */
     name = editor->tokenToString(node);
-    name.replace("'", ""); // remove surrounding '
+    if (name.startsWith("'") || name.startsWith("\""))
+        name.replace(name[0], ""); // remove surrounding '
     base = name;
     if (!name.endsWith(".rb"))
         name += ".rb";
