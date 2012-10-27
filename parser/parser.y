@@ -2605,7 +2605,7 @@ static int parser_yylex(struct parser_t *parser)
                 if (*c == ':' && *(c + 1) != ':') {
                     t = tKEY;
                     parser->expr_seen = 0;
-                    ++curs;    
+                    ++curs;
                     push_stack(parser, buffer);
                 }
             } else if (is_special_method(buffer)) {
