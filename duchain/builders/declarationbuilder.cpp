@@ -676,6 +676,26 @@ void DeclarationBuilder::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
+void DeclarationBuilder::visitRescueArg(RubyAst *node)
+{
+    AbstractType::Ptr type(NULL);
+    ModuleDeclaration *mDecl = NULL;
+    Node *n = node->tree;
+    node->tree = n->l;
+
+    for (node->tree = n->l; node->tree; node->tree = node->tree->next) {
+        ExpressionVisitor ev(currentContext(), m_editor);
+        ev.visitNode(node);
+        mDecl = dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data());
+        if (mDecl)
+            type = mergeTypes(type, mDecl->indexedType().abstractType());
+    }
+
+    node->tree = n->r;
+    const QualifiedIdentifier &id = getIdentifier(node);
+    declareVariable(id, type, node);
+}
+
 KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
 {
     return m_editor->findRange(rb_name_node(node->tree));

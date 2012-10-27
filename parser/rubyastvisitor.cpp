@@ -593,6 +593,34 @@ void RubyAstVisitor::visitClassName(RubyAst *node)
     Q_UNUSED(node);
 }
 
+void RubyAstVisitor::visitRescue(RubyAst *node)
+{
+    /*
+     * l -> rescue arg.
+     * r -> list of inner statement.
+     */
+
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitNode(node);
+    node->tree = n->r;
+    visitStatements(node);
+    node->tree = n;
+}
+
+void RubyAstVisitor::visitRescueArg(RubyAst *node)
+{
+    /*
+     * l -> Left part of the rescue argument, could be a list.
+     * r -> Right part of the rescue argument, only the DeclarationBuilder
+     * wants to access this part.
+     */
+
+    Node *n = node->tree;
+    node->tree = n->l;
+    visitStatements(node);
+}
+
 void RubyAstVisitor::visitNode(RubyAst *node)
 {
     Node *n = node->tree;
@@ -667,6 +695,8 @@ void RubyAstVisitor::visitNode(RubyAst *node)
         case token_encoding: visitEncoding(node); break;
         case token_self: visitSelf(node); break;
         case token_symbol: case token_key: visitSymbol(node); break;
+        case token_rescue: visitRescue(node); break;
+        case token_rescue_arg: visitRescueArg(node); break;
         case token_break: case token__end__: case token_next:
         case token_redo: case token_retry:
             return;

@@ -202,8 +202,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
             body->addImportedParentContext(params);
         body->setInSymbolTable(false);
     }
-    if (node->tree && is_valid(node->tree))
-        visitBody(node);
+    visitBody(node);
     closeContext();
     node->tree = aux;
 }

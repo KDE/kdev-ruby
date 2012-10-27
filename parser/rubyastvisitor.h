@@ -113,6 +113,8 @@ protected:
     virtual void visitSelf(RubyAst *node);
     virtual void visitAccessSpecifier(short policy);
     virtual void visitClassName(RubyAst *node);
+    virtual void visitRescue(RubyAst *node);
+    virtual void visitRescueArg(RubyAst *node);
 
 private:
     /**

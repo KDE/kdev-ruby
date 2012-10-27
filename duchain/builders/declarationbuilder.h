@@ -83,6 +83,7 @@ protected:
     virtual void visitForStatement(RubyAst *node);
     virtual void visitAccessSpecifier(short int policy);
     virtual void visitYieldStatement(RubyAst *node);
+    virtual void visitRescueArg(RubyAst *node);
 
 private:
     /// @returns the range of the name of the given @p node.
