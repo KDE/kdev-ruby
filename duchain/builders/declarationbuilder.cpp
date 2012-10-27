@@ -794,7 +794,12 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
         previousCtx->createUse(var->ownIndex(), range);
         var->setVariableKind(node->tree);
         var->setKind(Declaration::Instance);
-        var->setType(mergeTypes(var->abstractType(), type));
+        AbstractType::Ptr atype = mergeTypes(var->abstractType(), type);
+        UnsureType::Ptr utype = atype.cast<UnsureType>();
+        if (!utype || utype->typesSize() > 0)
+            var->setType(atype);
+        else
+            var->setType(getBuiltinsType("Object", currentContext()));
         DeclarationBuilderBase::closeDeclaration();
         closeInjectedContext();
         node->tree = aux;
