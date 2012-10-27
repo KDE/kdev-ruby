@@ -683,6 +683,11 @@ void DeclarationBuilder::visitRescueArg(RubyAst *node)
     Node *n = node->tree;
     node->tree = n->l;
 
+    /* If there's no rescue variable, don't even care. */
+    if (!n->r)
+        return;
+
+    /* Get the type of the exception list. */
     for (node->tree = n->l; node->tree; node->tree = node->tree->next) {
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);

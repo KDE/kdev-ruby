@@ -86,6 +86,7 @@ private slots:
     void caseStatement();
     void forStatement();
     void hereDoc();
+    void exceptions();
 
     // Assignments
     void simpleUnsure();

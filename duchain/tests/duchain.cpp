@@ -407,6 +407,30 @@ EOS\n\
     DOES_NOT_CRASH;
 }
 
+void TestDUChain::exceptions()
+{
+    QByteArray code("begin; 1 / 0; rescue ZeroDivisionError, LoadError => e; end");
+
+    {
+        TopDUContext *top = parse(code, "exceptions");
+        DUChainReleaser releaser(top);
+        DUChainWriteLocker lock(DUChain::lock());
+        Declaration *d = top->localDeclarations().first();
+        QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("e"));
+        UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->abstractType());
+        QStringList list;
+        list << "ZeroDivisionError" << "LoadError";
+        testUnsureTypes(unsure, list);
+    }
+
+    {
+        code = "begin; 1 / 0; rescue ZeroDivisionError, LoadError; end";
+        TopDUContext *top = parse(code, "exceptions");
+        DUChainReleaser releaser(top);
+        DUChainWriteLocker lock(DUChain::lock());
+        DOES_NOT_CRASH;
+    }
+}
 
 //END: Statements
 
