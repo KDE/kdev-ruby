@@ -92,6 +92,11 @@ struct term_t {
     unsigned char was_mcall : 1;
 };
 
+struct comment_t {
+    char *comment;
+    int line;
+};
+
 /*
  * This structure defines the parser. It contains the AST, some
  * flags used for internal reasons and some info about the
@@ -133,8 +138,8 @@ struct parser_t {
     int sp;
 
     /* The last allocated comment + the comment stack    */
-    struct pos_t *last_comment;
-    struct pos_t *comment_stack[STACK_SIZE];
+    struct comment_t last_comment;
+    char *comment_stack[STACK_SIZE];
     int comment_index;
 
     /* Info about the content to parse */
@@ -1792,7 +1797,8 @@ static void init_parser(struct parser_t * parser)
     parser->last_error = NULL;
     parser->warning = 0;
     parser->unrecoverable = 0;
-    parser->last_comment = NULL;
+    parser->last_comment.comment = NULL;
+    parser->last_comment.line = 0;
     parser->comment_index = 0;
     lex_strterm.term = 0;
     lex_strterm.word = NULL;
@@ -1812,8 +1818,6 @@ static void free_parser(struct parser_t *parser)
         free(lex_strterm.word);
     if (!parser->content_given)
         free(parser->blob);
-/*     if (p->last_comment != NULL) */
-/*         free(p->last_comment); */
 }
 
 /* Read the file's source code and allocate it for further inspection. */
@@ -2138,15 +2142,12 @@ static void copy_last(struct node *h, struct node *t)
 
 static void push_last_comment(struct parser_t *parser)
 {
-    if (!parser->last_comment)
-        return;
-
-    if ((parser->line - parser->last_comment->end_line) < 2) {
-        parser->comment_stack[parser->comment_index] = parser->last_comment;
-        parser->comment_index++;
-    } else
+    if ((parser->line - parser->last_comment.line) < 2)
+        parser->comment_stack[parser->comment_index] = parser->last_comment.comment;
+    else
         parser->comment_stack[parser->comment_index] = NULL;
-    parser->last_comment = NULL;
+    parser->comment_index++;
+    parser->last_comment.comment = NULL;
 }
 
 static void pop_comment(struct parser_t *parser, struct node *n)
@@ -2200,17 +2201,43 @@ struct node * fix_star(struct parser_t *parser)
     return res;
 }
 
-static void store_comment(struct parser_t *parser, struct pos_t comment)
-{
-    struct pos_t *cm = (struct pos_t *) malloc(sizeof(struct pos_t));
+/*
+ * The following macros and functions make all the magic of fetching comments.
+ */
 
-    if (parser->last_comment != NULL)
-        free(parser->last_comment);
-    cm->start_line = comment.start_line;
-    cm->end_line = comment.end_line;
-    cm->start_col = comment.start_col;
-    cm->end_col = comment.end_col;
-    parser->last_comment = cm;
+#define __check_should_break { \
+  if (*c != '#') { \
+    int aux = is_indented_comment(c); \
+    if (!aux) \
+      break; \
+    else { \
+      c += aux; \
+      curs += aux; \
+      i += aux; \
+    } \
+  } \
+}
+
+#define __check_buffer_size(N) { \
+  if (count > N) { \
+    count = 0; \
+    scale++; \
+    buffer = (char *) realloc(buffer, scale * 1024); \
+  } \
+}
+
+#define __handle_comment_eol { \
+  c++; curs++; \
+  i = 0; \
+  parser->line++; \
+}
+
+static void store_comment(struct parser_t *parser, char *comment)
+{
+    if (parser->last_comment.comment != NULL)
+        free(parser->last_comment.comment);
+    parser->last_comment.comment = comment;
+    parser->last_comment.line = parser->line;
 }
 
 static int is_indented_comment(char *c)
@@ -2221,42 +2248,41 @@ static int is_indented_comment(char *c)
     return (*c == '#') ? (c - original) : 0;
 }
 
-static int parse_comment(struct parser_t *parser, char *c, int curs)
+static int get_comment(struct parser_t *parser, char *c, int curs)
 {
-    int aux = 0;
-    char *cc = c;
+    int len = parser->length;
+    int initial = curs;
     int i = parser->column;
-    int last_column = i;
-    struct pos_t comment;
+    int count = 0, scale = 1;
+    char *buffer = (char *) malloc(1024);
 
-    comment.start_line = parser->line;
-    comment.start_col = i;
-    for (;; c++, parser->line++) {
-        if (*c != '#') {
-            aux = is_indented_comment(c);
-            if (!aux)
-                break;
-            else {
-                c += aux;
-                i += aux;
-            }
-        }
+    for (;; ++count) {
+        __check_should_break;
 
-        for (; curs + (c - cc) < (int) parser->length; ++c, ++i) {
-            if (*c == '\n') {
-                last_column = i;
-                i = 0;
+        /* We don't want to store initial #'s */
+        for (; *c == '#' && curs < len; ++c, ++curs, ++i);
+
+        if (*c == '\n') {
+            buffer[count] = *c;
+            __handle_comment_eol;
+        } else {
+            for (; curs < len; ++c, ++curs, ++i, ++count) {
+                __check_buffer_size(1000);
+                buffer[count] = *c;
+                if (*c == '\n') {
+                __handle_comment_eol;
                 break;
+                }
             }
         }
     }
-    comment.end_line = parser->line - 1;
-    comment.end_col = last_column;
-    store_comment(parser, comment);
+
+    buffer[count] = '\0';
+    store_comment(parser, buffer);
 
     /* Magic to preserve the integrity of the column/cursor counting */
     parser->column = i;
-    return c - cc;
+    return curs - initial;
 }
 
 static int parse_string(struct parser_t *parser)
@@ -2423,7 +2449,7 @@ static int parser_yylex(struct parser_t *parser)
     (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
 
     if (*c == '#') {
-        int inc = parse_comment(parser, c, curs) - 1;
+        int inc = get_comment(parser, c, curs) - 1;
         curs += inc;
         c += inc;
         parser->line--;

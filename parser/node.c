@@ -158,8 +158,10 @@ void free_ast(struct node *n)
     free_ast(n->ensure);
     if (n->name)
         free(n->name);
-    if (n->comment)
+    if (n->comment) {
         free(n->comment);
+        n->comment = NULL;
+    }
     free(n);
 }
 

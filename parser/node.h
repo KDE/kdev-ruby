@@ -167,7 +167,7 @@ struct node {
 
 /* Node's position */
     struct pos_t pos;
-    struct pos_t *comment;
+    char *comment;
 
 /* Left/Right childs */
     struct node *l;

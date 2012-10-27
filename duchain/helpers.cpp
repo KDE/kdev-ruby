@@ -53,6 +53,12 @@ const QString getName(RubyAst *ast)
     return QString(rb_name_node(ast->tree)->name);
 }
 
+const QByteArray getComment(RubyAst *ast)
+{
+    char *m_comment = ast->tree->comment;
+    return (m_comment) ? QByteArray(m_comment) : QByteArray("");
+}
+
 Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, DUContextPointer context)
 {
     QList<Declaration *> decls;

@@ -32,15 +32,10 @@ extern int rb_debug_file(struct options_t *opts);
  */
 void fetch_comments(struct node *tree)
 {
-    struct pos_t *cm;
     if (!tree)
         return;
-
-    cm = tree->comment;
-    if (cm) {
-        printf("%i:%i <-> %i:%i\n", cm->start_line, cm->start_col,
-                                    cm->end_line, cm->end_col);
-    }
+    if (tree->comment != NULL)
+        printf("%s", tree->comment);
 
     fetch_comments(tree->l);
     fetch_comments(tree->r);
