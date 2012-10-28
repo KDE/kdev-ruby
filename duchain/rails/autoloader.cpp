@@ -21,13 +21,7 @@
 
 
 #include <duchain/rails/autoloader.h>
-#include <language/duchain/indexedstring.h>
 
-#include <KUrl> // TODO: remove ?
-#include <QtCore/QStringList>
-#include <KDebug>
-#include <duchain/loader.h>
-#include <rubydefs.h>
 
 namespace Rails
 {
@@ -42,16 +36,13 @@ QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedS
     const QString &name = dirs.last();
 
     fillUrlCache();
-
     dirs.removeLast();
-    // TODO: can be optimized to leave earlier.
     for (int i = dirs.size() - 1; i >= 0; --i) {
         if (dirs.at(i) == "models") {
             urls << KDevelop::IndexedString(getGem("active_record/base"));
             urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "lib");
             return urls;
         } else if (dirs.at(i) == "controllers") {
-            // TODO: maybe this is too dumb ?
             if (name == "application_controller.rb")
                 urls << KDevelop::IndexedString(getGem("action_controller/base"));
             else

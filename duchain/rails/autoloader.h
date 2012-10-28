@@ -24,45 +24,57 @@
 #define RAILS_AUTOLOADER_H
 
 
-/*
- * TODO: Cache Rails classes ¿ and paths ?
- */
-
-
-#include <QtCore/QList> // TODO
-#include <KUrl>
-#include <duchain/duchainexport.h>
 #include <duchain/loader.h>
 
-class KUrl;
-
-namespace KDevelop {
-    class IndexedString;
-}
 
 namespace Rails
 {
 
+/**
+ * @class AutoLoader
+ *
+ * This class implements de "auto-require" feature. That is, it does all the
+ * requiring for Rails projects. It's implemented in a way as it's as optimal
+ * as possible.
+ */
 class KDEVRUBYDUCHAIN_EXPORT AutoLoader : public Ruby::Loader
 {
 public:
+    /**
+     * Compute all the paths to require for the given path.
+     *
+     * @param path The given path.
+     * @returns a QList of KDevelop::IndexedString containing all the paths
+     * to be required later on.
+     */
     static QList<KDevelop::IndexedString> computePaths(const KDevelop::IndexedString &path);
 
+    /// Set the project root to the given @p url.
     inline static void setProjectRoot(const KUrl &url)
     {
         m_root = url;
     }
 
+private:
+    /// @returns the absoulte path to the application controller.
     inline static KDevelop::IndexedString appController()
     {
         return KDevelop::IndexedString(m_root.path(KUrl::AddTrailingSlash) +
                "app/controllers/application_controller.rb");
     }
 
-private:
+    /**
+     * Get all the files inside the given directory path. Note that this
+     * is a recursive functions, and files inside subdirectories will
+     * also be retrieved.
+     *
+     * @param path The directory path.
+     * @returns recursively all the files inside the given directory path.
+     */
     static QList<KDevelop::IndexedString> getDir(const QString &path);
 
 private:
+    /// The root directory for the project.
     static KUrl m_root;
 };
 
