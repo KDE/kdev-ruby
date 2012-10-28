@@ -60,7 +60,12 @@ public:
      */
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
-    /// TODO
+    /**
+     * Get the path for the given gem name.
+     *
+     * @param name The given gem name.
+     * @returns the path for the given gem name.
+     */
     static KUrl getGem(const QString &name);
 
     /**
