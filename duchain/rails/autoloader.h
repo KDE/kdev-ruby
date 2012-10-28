@@ -50,11 +50,14 @@ public:
 
     inline static void setProjectRoot(const KUrl &url)
     {
-        m_projectRoot = url;
+        m_root = url;
     }
 
 private:
-    static KUrl m_projectRoot;
+    static QList<KDevelop::IndexedString> getLib();
+
+private:
+    static KUrl m_root;
 };
 
 } // End of namespace Rails

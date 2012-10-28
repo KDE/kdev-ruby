@@ -32,7 +32,7 @@
 namespace Rails
 {
 
-KUrl AutoLoader::m_projectRoot;
+KUrl AutoLoader::m_root;
 
 
 QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedString &path)
@@ -48,18 +48,29 @@ QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedS
         if (dirs.at(i) == "models") {
             // TODO: provisional hack
             urls << KDevelop::IndexedString(getGem("active_record/base"));
+            urls << getLib();
             return urls;
         } else if (dirs.at(i) == "controllers") {
-            debug() << "It's a controller";
+            // TODO: provisional hack
+//             urls << KDevelop::IndexedString(getGem("active_controller/base"));
+            urls << getLib();
+            return urls;
         }
     }
-//     foreach (const QString &str, dirs) {
-//         if (str ==
-//     }
-
-    // TODO: do magic.
 
     return urls;
 }
+
+QList<KDevelop::IndexedString> AutoLoader::getLib()
+{
+    QList<KDevelop::IndexedString> files;
+    const QString &lib = m_root.path(KUrl::AddTrailingSlash) + "lib";
+    QDir dir(lib);
+
+    foreach (const QString &entry, dir.entryList(QDir::Files))
+        files << KDevelop::IndexedString(entry);
+    return files;
+}
+
 
 } // End of namespace Rails
