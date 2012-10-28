@@ -54,7 +54,7 @@ public:
     }
 
 private:
-    static QList<KDevelop::IndexedString> getLib();
+    static QList<KDevelop::IndexedString> getDir(const QString &path);
 
 private:
     static KUrl m_root;
