@@ -54,6 +54,7 @@ QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedS
             // TODO: provisional hack
 //             urls << KDevelop::IndexedString(getGem("active_controller/base"));
             urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "lib");
+            urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "app/models");
             return urls;
         }
     }
