@@ -125,6 +125,12 @@ public:
         return m_isRails;
     }
 
+    /// @returns the current project's root directory.
+    inline const KUrl & projectRoot() const
+    {
+        return m_rootUrl;
+    }
+
     /**
      * Setup the actions defined by this plugin.
      */
@@ -185,6 +191,7 @@ private:
     Ruby::Highlighting *m_highlighting;
     bool m_builtinsLoaded;
     bool m_isRails;
+    KUrl m_rootUrl;
     QReadWriteLock m_builtinsLock;
     enum ruby_version m_version;
 

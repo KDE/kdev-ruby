@@ -210,7 +210,42 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
 void ContextBuilder::visitRequire(RubyAst *node, bool relative)
 {
     RubyAstVisitor::visitRequire(node);
-    require(node->tree->r, relative);
+    Node *aux = node->tree->r;
+
+    /* If this is not a string, don't even care about it. */
+    if (aux->kind != token_string)
+        return;
+
+    KUrl path = Loader::getRequiredFile(aux, m_editor, relative);
+    if (path.isEmpty()) {
+        QString msg = i18n("LoadError: cannot load such file: %1", path.pathOrUrl());
+        appendProblem(aux, msg, ProblemData::Warning);
+        return;
+    }
+
+    const IndexedString indexedPath(path); // TODO: return IndexedString
+    require(indexedPath);
+}
+
+void ContextBuilder::require(const IndexedString &path)
+{
+    DUChainWriteLocker lock;
+    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(path);
+
+    if (!ctx) {
+        /*
+         * Schedule the required file for parsing, and schedule the current one
+         * for reparsing after that is done.
+         */
+        m_unresolvedImports.append(path);
+        BackgroundParser *backgroundParser = KDevelop::ICore::self()->languageController()->backgroundParser();
+        if (backgroundParser->isQueued(path))
+            backgroundParser->removeDocument(path);
+        backgroundParser->addDocument(path, TopDUContext::ForceUpdate,
+            m_priority - 1, 0, ParseJob::FullSequentialProcessing);
+        return;
+    } else
+        currentContext()->addImportedParentContext(ctx);
 }
 
 void ContextBuilder::appendProblem(Node *node, const QString &msg,
@@ -248,40 +283,6 @@ RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 
     RubyAst last(get_last_expr(node->tree), node->context);
     return editorFindRange(node, &last);
-}
-
-void ContextBuilder::require(Node *node, bool local)
-{
-    /* If this is not a string, don't even care about it. */
-    if (node->kind != token_string)
-        return;
-
-    KUrl path = Loader::getRequiredFile(node, m_editor, local);
-    if (path.isEmpty()) {
-        QString msg = i18n("LoadError: cannot load such file: %1", path.pathOrUrl());
-        appendProblem(node, msg, ProblemData::Warning);
-        return;
-    }
-
-    const IndexedString indexedPath(path);
-
-    DUChainWriteLocker lock;
-    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(indexedPath);
-
-    if (!ctx) {
-        /*
-         * Schedule the required file for parsing, and schedule the current one
-         * for reparsing after that is done.
-         */
-        m_unresolvedImports.append(indexedPath);
-        BackgroundParser *backgroundParser = KDevelop::ICore::self()->languageController()->backgroundParser();
-        if (backgroundParser->isQueued(indexedPath))
-            backgroundParser->removeDocument(indexedPath);
-        backgroundParser->addDocument(indexedPath, TopDUContext::ForceUpdate,
-            m_priority - 1, 0, ParseJob::FullSequentialProcessing);
-        return;
-    } else
-        currentContext()->addImportedParentContext(ctx);
 }
 
 } // End of namespace Ruby

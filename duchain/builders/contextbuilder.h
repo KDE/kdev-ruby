@@ -117,6 +117,14 @@ protected:
     virtual void visitRequire(RubyAst *node, bool relative = false);
 
     /**
+     * Issue a require. The required file will be scheduled for parsing
+     * if it's the first time that is loaded.
+     *
+     * @param path The path where the required file is located.
+     */
+    void require(const IndexedString &path);
+
+    /**
      * Append a new problem that appeared at the given @p node with @p msg
      * as its description. The @p sev is the severity of the problem, which
      * is ProblemData::Error by default.
@@ -145,15 +153,6 @@ private:
      * contained in @param node.
      */
     RangeInRevision rangeForMethodArguments(RubyAst *node);
-
-    /**
-     * Issue a require. The required file will be scheduled for parsing
-     * if it's the first time that is loaded.
-     *
-     * @param node The node with the require call.
-     * @param local True if this is a require_relative, false otherwise.
-     */
-    void require(Node *node, bool local);
 
 private:
     int m_priority;

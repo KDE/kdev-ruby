@@ -35,13 +35,12 @@ QPair<QList<KUrl>, QList<KUrl> > Loader::m_urlCache;
 KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
     QList<KUrl> searchPaths;
-    QString name(""), base("");
+    QString name("");
 
     /* Get the name of the file and update the cache of search paths. */
     name = editor->tokenToString(node);
     if (name.startsWith("'") || name.startsWith("\""))
         name.replace(name[0], ""); // remove surrounding '
-    base = name;
     if (!name.endsWith(".rb"))
         name += ".rb";
     searchPaths << editor->url().toUrl().directory();
@@ -74,14 +73,24 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     /*
      * This is not a local search and we haven't found it yet, go for the gems.
      */
-    QStringList filter;
-    filter << base[0] + "*";
+    name.chop(3); // .rb
+    return getGem(name);
+}
+
+KUrl Loader::getGem(const QString &name)
+{
+    QString real = name;
+    QStringList filter = QStringList() << QString(name[0]) + "*";
+
+    if (!name.endsWith(".rb"))
+        real += ".rb";
+
     foreach (const KUrl &path, m_urlCache.second) {
         QString basePath = path.path(KUrl::AddTrailingSlash);
         QDir dir(basePath);
         QStringList list = dir.entryList(filter, QDir::Dirs);
         foreach (const QString &inside, list) {
-            QString url = basePath + inside + "/lib/" + name;
+            QString url = basePath + inside + "/lib/" + real;
             QFile script(url);
             QFileInfo info(url);
             if (script.exists() && !info.isDir()) {
@@ -91,7 +100,6 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
             }
         }
     }
-
     return KUrl();
 }
 

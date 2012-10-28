@@ -96,6 +96,7 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     setupQuickOpen();
 
     m_isRails = false;
+    m_rootUrl = KUrl();
     connect(core()->projectController(), SIGNAL(projectOpened(KDevelop::IProject *)),
             this, SLOT(projectOpened(KDevelop::IProject *)));
     connect(core()->projectController(), SIGNAL(projectClosed(KDevelop::IProject*)),
@@ -233,9 +234,9 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::projectOpened(KDevelop::IProject *project)
 {
-    const KUrl &root = project->folder();
-    const QString &rails = root.path(KUrl::AddTrailingSlash) + "script/rails";
-    m_isRails = QFile::exists(rails);
+    m_rootUrl = project->folder();
+    const QString &rails = m_rootUrl.path(KUrl::AddTrailingSlash);
+    m_isRails = QFile::exists(rails + "script/rails");
 }
 
 void LanguageSupport::projectClosed(KDevelop::IProject *)
@@ -252,7 +253,7 @@ void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDeve
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
 }
 
-KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration(const QString& name)
+KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)
 {
     foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
         if (config->name() == name) return config;

@@ -60,6 +60,9 @@ public:
      */
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
+    /// TODO
+    static KUrl getGem(const QString &name);
+
     /**
      * Get all the files/directories inside the given directory except for
      * (UNIX) hidden files, backup files (that end with ~) and .so files.
@@ -74,12 +77,14 @@ public:
      */
     static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative = KUrl());
 
-private:
+protected:
     /**
      * Fill the m_urlCache attribute with the urls available from Ruby
      * through $:
      */
     static void fillUrlCache();
+
+private:
 
     /// @returns true if the url cache has been filled with search paths.
     static inline bool urlsCached()
@@ -87,7 +92,7 @@ private:
         return !m_urlCache.first.isEmpty() || !m_urlCache.second.isEmpty();
     }
 
-private:
+protected:
     /**
      * The cache of search paths. The first element is the list of search paths
      * for the Ruby standard library. The second element is the list of search
