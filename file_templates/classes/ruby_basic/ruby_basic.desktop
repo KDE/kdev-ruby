@@ -1,10 +1,25 @@
 [General]
 Name=Basic
+Name[nl]=Basis
+Name[pt]=Básico
+Name[pt_BR]=Básico
+Name[uk]=Базовий
+Name[x-test]=xxBasicxx
 Comment=Basic Ruby Class
+Comment[nl]=Basis Ruby klasse
+Comment[pt]=Classe Básica em Ruby
+Comment[pt_BR]=Classe básica em Ruby
+Comment[uk]=Базовий клас Ruby
+Comment[x-test]=xxBasic Ruby Classxx
 Category=Class/Ruby/Basic
 Files=Definition
 
 [Definition]
 Name=Definition
+Name[nl]=Definitie
+Name[pt]=Definição
+Name[pt_BR]=Definição
+Name[uk]=Визначення
+Name[x-test]=xxDefinitionxx
 File=class.rb
 OutputFile={{ name }}.rb
