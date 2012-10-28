@@ -95,6 +95,11 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
 
     setupQuickOpen();
 
+    m_isRails = false;
+    connect(core()->projectController(), SIGNAL(projectOpened(KDevelop::IProject *)),
+            this, SLOT(projectOpened(KDevelop::IProject *)));
+    connect(core()->projectController(), SIGNAL(projectClosed(KDevelop::IProject*)),
+            this, SLOT(projectClosed(KDevelop::IProject*)));
     QTimer::singleShot(0, this, SLOT(updateBuiltins()));
 
     /* Retrieving Ruby version */
@@ -224,6 +229,18 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
     kDebug(9047) << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
+}
+
+void LanguageSupport::projectOpened(KDevelop::IProject *project)
+{
+    const KUrl &root = project->folder();
+    const QString &rails = root.path(KUrl::AddTrailingSlash) + "script/rails";
+    m_isRails = QFile::exists(rails);
+}
+
+void LanguageSupport::projectClosed(KDevelop::IProject *)
+{
+    m_isRails = false;
 }
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
