@@ -74,7 +74,7 @@ QList<KDevelop::IndexedString> AutoLoader::getDir(const QString &path)
         if (info.isDir())
             files << getDir(real);
         else
-            files << KDevelop::IndexedString(entry);
+            files << KDevelop::IndexedString(real);
     }
     return files;
 }
