@@ -53,6 +53,12 @@ public:
         m_root = url;
     }
 
+    inline static KDevelop::IndexedString appController()
+    {
+        return KDevelop::IndexedString(m_root.path(KUrl::AddTrailingSlash) +
+               "app/controllers/application_controller.rb");
+    }
+
 private:
     static QList<KDevelop::IndexedString> getDir(const QString &path);
 

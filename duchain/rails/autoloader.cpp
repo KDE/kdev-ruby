@@ -39,6 +39,7 @@ QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedS
 {
     QList<KDevelop::IndexedString> urls;
     QStringList dirs = path.str().split("/");
+    const QString &name = dirs.last();
 
     fillUrlCache();
 
@@ -46,13 +47,15 @@ QList<KDevelop::IndexedString> AutoLoader::computePaths(const KDevelop::IndexedS
     // TODO: can be optimized to leave earlier.
     for (int i = dirs.size() - 1; i >= 0; --i) {
         if (dirs.at(i) == "models") {
-            // TODO: provisional hack
             urls << KDevelop::IndexedString(getGem("active_record/base"));
             urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "lib");
             return urls;
         } else if (dirs.at(i) == "controllers") {
-            // TODO: provisional hack
-//             urls << KDevelop::IndexedString(getGem("active_controller/base"));
+            // TODO: maybe this is too dumb ?
+            if (name == "application_controller.rb")
+                urls << KDevelop::IndexedString(getGem("action_controller/base"));
+            else
+                urls << appController();
             urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "lib");
             urls << getDir(m_root.path(KUrl::AddTrailingSlash) + "app/models");
             return urls;
