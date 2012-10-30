@@ -1,6 +1,7 @@
 [General]
 Name=Basic
 Name[es]=Básica
+Name[et]=Baas
 Name[nl]=Basis
 Name[pt]=Básico
 Name[pt_BR]=Básico
@@ -8,6 +9,7 @@ Name[uk]=Базовий
 Name[x-test]=xxBasicxx
 Comment=Basic Ruby Class
 Comment[es]=Clase Ruby básica
+Comment[et]=Ruby baasklass
 Comment[nl]=Basis Ruby klasse
 Comment[pt]=Classe Básica em Ruby
 Comment[pt_BR]=Classe básica em Ruby
@@ -19,6 +21,7 @@ Files=Definition
 [Definition]
 Name=Definition
 Name[es]=Definición
+Name[et]=Definitsioon
 Name[nl]=Definitie
 Name[pt]=Definição
 Name[pt_BR]=Definição
