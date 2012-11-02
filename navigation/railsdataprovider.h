@@ -70,7 +70,7 @@ public:
     virtual void reset();
     virtual uint itemCount() const;
     virtual uint unfilteredItemCount() const;
-    virtual QList<KDevelop::QuickOpenDataPointer> data( uint start, uint end ) const;
+    virtual KDevelop::QuickOpenDataPointer data( uint row ) const;
     virtual void enableData( const QStringList& items, const QStringList& scopes );
 
     virtual QString itemText( const RailsQuickOpenItem& data ) const;

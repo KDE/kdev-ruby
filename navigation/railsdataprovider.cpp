@@ -103,20 +103,11 @@ RailsDataProvider::RailsDataProvider(Ruby::RailsDataProvider::Kind kind): m_kind
     reset();
 }
 
-QList<KDevelop::QuickOpenDataPointer> RailsDataProvider::data(uint start, uint end) const
+KDevelop::QuickOpenDataPointer RailsDataProvider::data(uint row) const
 {
-    if( end > (uint)Base::filteredItems().count() )
-        end = Base::filteredItems().count();
-
-    QList<KDevelop::QuickOpenDataPointer> ret;
-
-    for( uint a = start; a < end; a++ ) {
-        RailsQuickOpenItem f( Base::filteredItems()[a] );
-        QString dataExplanation = m_kind == Views ? i18n("View for:") : i18n("Test for:");
-        ret << KDevelop::QuickOpenDataPointer( new RailsQuickOpenData( Base::filteredItems()[a], dataExplanation ) );
-    }
-
-    return ret;
+    RailsQuickOpenItem item( Base::filteredItems()[row] );
+    QString dataExplanation = m_kind == Views ? i18n("View for:") : i18n("Test for:");
+    return KDevelop::QuickOpenDataPointer( new RailsQuickOpenData( item, dataExplanation ) );
 }
 
 void RailsDataProvider::enableData(const QStringList& items, const QStringList& scopes)
