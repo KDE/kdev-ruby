@@ -30,7 +30,7 @@ REGISTER_DUCHAIN_ITEM(ModuleDeclaration);
 DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
 DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 
-ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData& data, const KDevelop::RangeInRevision& range)
+ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range)
     : KDevelop::Declaration(data, range)
 {
     /* There's nothing to do here */

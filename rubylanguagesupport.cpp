@@ -84,7 +84,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     , m_rubyFileLaunchConfiguration(NULL)
     , m_rubyCurrentFunctionLaunchConfiguration(NULL)
 {
-    m_builtinsLoaded = false;
     m_builtinsLock.lockForWrite();
 
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)

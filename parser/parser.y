@@ -134,7 +134,7 @@ struct parser_t {
 
     /* Stack of names */
     char *stack[2];
-    char *aux; /* TODO: free */
+    char *aux;
     int sp;
 
     /* The last allocated comment + the comment stack    */
