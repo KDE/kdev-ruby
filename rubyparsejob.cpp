@@ -50,7 +50,7 @@ using namespace Rails;
 namespace Ruby
 {
 
-ParseJob::ParseJob(const KDevelop::IndexedString& url, ILanguageSupport* languageSupport)
+ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
     , m_parser (new RubyParser)
     , m_duContext (NULL)
@@ -64,7 +64,7 @@ ParseJob::~ParseJob()
 
 LanguageSupport * ParseJob::ruby() const
 {
-    return dynamic_cast<LanguageSupport*>(languageSupport());
+    return dynamic_cast<LanguageSupport *>(languageSupport());
 }
 
 void ParseJob::run()

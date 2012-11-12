@@ -50,7 +50,7 @@ public:
     {
         /* There's nothing to do here! */
     };
-    
+
 public:
     /// The tree of this AST.
     Node *tree;

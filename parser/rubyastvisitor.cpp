@@ -48,7 +48,7 @@ void RubyAstVisitor::visitCode(RubyAst *node)
     debug() << "Visiting Code...";
     Node *aux = node->tree;
 
-    for (Node *n = aux; n != NULL; n = n->next) {
+    for (Node *n = aux; n; n = n->next) {
         visitNode(node);
         node->tree = n->next;
     }
@@ -720,7 +720,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
 void RubyAstVisitor::visitStatements(RubyAst *list)
 {
     Node *aux = list->tree;
-    for (Node *n = aux; n != NULL; n = n->next) {
+    for (Node *n = aux; n; n = n->next) {
         visitNode(list);
         list->tree = n->next;
     }
