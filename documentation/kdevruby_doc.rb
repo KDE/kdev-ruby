@@ -21,15 +21,35 @@
 #!/usr/bin/env ruby
 
 
+# This script is the responsible of extracting all the info from the Ruby
+# source code (MRI) in order to generate a file containing all the builtin
+# modules, classes and methods. You should call this script like this:
+#
+#   $ ruby kdevruby_doc.rb /absolute/path/to/mri builtins.rb
+#
+# This may take a while, but then you'll get a brand new builtins.rb file
+# containing all the Ruby's builtins.
+#
+# NOTE: Brace yourselves, this script is a complete hack. It re-opens
+# RDoc::RDoc and retrieves everything from it with black magic and unicorns.
+
+
 require 'rdoc/rdoc'
 
 
-# Re-open the RDoc::RDoc class in order to re-implement some key methods.
+# Re-open the RDoc::RDoc class. This way, we can extract all the info of
+# builtin classes, modules and methods. The method to be called is
+# RDoc::RDoc#parse_files that, in short parses all the given directory to
+# fetch info. After that, you can call the kdev_classes & kdev_modules methods
+# in order to retrieve hashes with all the extracted info.
 class RDoc::RDoc
+  attr_reader :kdev_classes, :kdev_modules
+
   # Public: Just call super and create a dummy value for @options.
   def initialize
     super
     @options = RDoc::Options.new
+    @kdev_classes, @kdev_modules = {}, {}
   end
 
   # Public: Re-implemented from RDoc::RDoc. Parse all the files from
@@ -39,15 +59,12 @@ class RDoc::RDoc
   def parse_files(directory)
     files = get_files_from directory
     @stats = RDoc::Stats.new files.size, @options.verbosity
-    top_levels = []
-    files.each { |f| top_levels << parse_file(f) }
+    files.each { |f| parse_file(f) }
   end
 
   # Public: Parse a file.
   #
   # name - a String containing the path to the file to be parsed.
-  #
-  # Returns a RDoc::TopLevel that represents the parsed file.
   def parse_file(name)
     content = IO.read name
     top_level = RDoc::TopLevel.new name
@@ -56,7 +73,8 @@ class RDoc::RDoc
     return unless parser
 
     parser.scan
-    top_level
+    @kdev_classes = eclasses(top_level.classes_hash, @kdev_classes)
+    @kdev_modules = emodules(top_level.modules_hash, @kdev_modules)
   end
 
   private
@@ -71,68 +89,103 @@ class RDoc::RDoc
     Dir.glob(File.join(d, "*.{c, rb}")).each { |f| files << f if File.file? f }
     files
   end
-end
 
-# Re-open the File class so we can print the results of the RDoc::TopLevel's
-# into files in an easier way.
-class File
-  # Public: Print a comment.
+  # Internal: Extract all the classes from the given parameters.
   #
-  # comment - A String containing the comment.
-  def print_comment(comment)
-    return if comment.empty?
-    puts '##'
-    puts comment.split("\n").each { |c| c.insert(0, '# ') << "\n" }.join
-  end
-
-  # Print the modules from the given parameter.
+  # hash    - A Hash containing all the info on classes.
+  # initial - A Hash containing calculations from previous calls.
   #
-  # hash - A Hash retrieved from RDoc::TopLevel#modules_hash.
-  def print_modules(hash)
-    hash.each do |o|
-      next if o.empty?
-      o = o.last
-      print_comment o.comment
-      puts "module #{o.name}"
-      o.ancestors.each { |a| puts "include #{a.name}" }
-      print_classes o.classes_hash
-      print_methods o.methods_hash
-      puts "end\n\n"
-    end
-  end
-
-  # Public: Print the classes from the given parameter.
-  #
-  # hash - A Hash retrieved from RDoc::TopLevel#class_hash.
-  def print_classes(hash)
-    hash.each do |o|
-      next if o.empty?
-      o = o.last
-      print_comment o.comment
-      if o.superclass.nil?
-        puts "class #{o.name}"
-        o.ancestors.each { |a| puts "include #{a.name}" }
-      else
-        base = (o.superclass.is_a? String) ? o.superclass : o.superclass.name
-        if o.name == o.name.downcase
-          puts "class #{o.name.capitalize} < #{base}"
-        else
-          puts "class #{o.name} < #{base}"
+  # Returns a Hash containing the extracted results.
+  def eclasses(hash, initial)
+    final = initial || {}
+    hash.each do |h|
+      next if h.empty?
+      h = h.last
+      who = h.name.to_sym
+      element = { comment: h.comment, ancestors: {} }
+      ancestors = []
+      if h.superclass.nil?
+        h.ancestors.each do |a|
+          ancestors << (a.is_a? String) ? a.to_sym : a.name.to_sym
         end
-        (o.ancestors - [o.superclass]).each { |a| puts "include #{a.name}" }
+      else
+        base = (h.superclass.is_a? String) ? h.superclass : h.superclass.name
+        element[:superclass] = base.to_sym
+        who = (h.name == h.name.downcase) ? h.name.capitalize : h.name
+        who = who.to_sym
+        (h.ancestors - [h.superclass]).each do |a|
+          if a.is_a? String
+            ancestors << a.to_sym
+          else
+            ancestors << a.name.to_sym
+          end
+        end
       end
-      print_classes o.classes_hash
-      print_methods o.methods_hash
-      puts "end\n\n"
+      if final.include? who
+        final[who] = fmerge(final[who], ancestors, h)
+      else
+        element[:ancestors] = ancestors || {}
+        element[:classes] = eclasses(h.classes_hash, {})
+        element[:methods] = emethods(h.methods_hash, {})
+        final[who] = element
+      end
     end
+    final
   end
 
-  # Public: Guess everything we can from the given parameters and print it.
+  # Internal: Extract all the modules from the given parameters.
   #
-  # method - a RDoc::MethodAttr object containing the info of the method.
-  # str    - a String containing the signature of the method.
-  def print_method_string(method, str)
-    print_comment method.comment
+  # hash    - A Hash containing all the info on modules.
+  # initial - A Hash containing calculations from previous calls.
+  #
+  # Returns a Hash containing the extracted results.
+  def emodules(hash, initial)
+    final = initial || {}
+    hash.each do |h|
+      next if h.empty?
+      h = h.last
+      who = h.name.to_sym
+      ancestors = h.ancestors.map { |a| a.name.to_sym }
+      if final.include? who
+        final[who] = fmerge(final[who], ancestors, h)
+      else
+        element = { comment: h.comment }
+        element[:ancestors] = ancestors
+        element[:classes] = eclasses(h.classes_hash, {})
+        element[:methods] = emethods(h.methods_hash, {})
+        final[who] = element
+      end
+    end
+    final
+  end
+
+  # Internal: Extract all the methods from the given parameters.
+  #
+  # hash    - A Hash containing all the info on methods.
+  # initial - A Hash containing calculations from previous calls.
+  #
+  # Returns a Hash containing the extracted results.
+  def emethods(hash, initial)
+    final = initial || {}
+    hash.each do |m|
+      method = m.last
+      call_seq = method.call_seq
+      unless call_seq.nil?
+        call_seq.split(/\n\s*/).each { |k| final = get_method_string(method, k, final) }
+      end
+    end
+    final
+  end
+
+  # Internal: Extract all what we can from the call_seq string of a method.
+  #
+  # method - The method object from RDoc.
+  # str    - The call_seq string from the documentation of the method.
+  # hash   - A Hash containing calculations from previous calls.
+  #
+  # Returns a Hash containing the extracted results.
+  def get_method_string(method, str, hash)
+    final = hash || {}
 
     # Extract block
     str = str.gsub(/\{(.+)\}/, '')
@@ -143,7 +196,7 @@ class File
     # +per_se+ is the signature itself, and +ret+ the expected return type
     arrow = str.include?('=>') ? '=>' : '->'
     per_se, ret = str.split(arrow).map(&:strip)
-    return if per_se.nil?
+    return final if per_se.nil?
 
     # Extract name and arguments of the method
     name, args = per_se.split('(')
@@ -153,18 +206,19 @@ class File
     else
       method.name
     end
-    name = filter_name name
+    name = filter_name(name).to_sym
 
-    # Write the method name
-    if method.singleton
-      print "def self.#{name}"
-    else
-      print "def #{name}"
-    end
-
-    # Write the method arguments
+    # Method arguments
+    args_str = '';
     if args.nil?
-      print block.nil? ? "; end\n\n" : "(#{block}); end\n\n"
+      args_str = "(#{block})" unless block.nil?
+      if final.include? name
+        if final[name][:args].split(',').size < args_str.split(',').size && method.singleton != final[name][:singleton]
+          final[name][:args] = args_str
+        end
+      else
+        final[name] = { comment: method.comment, args: args_str, singleton: method.singleton }
+      end
     else
       # Separate between normal parameters and optional parameters ...
       args = args.chop.gsub(/\[(.+)\]/, '')
@@ -181,41 +235,62 @@ class File
       res = strip_reserved(res)
       res = fix_typos(res)
       if res.include?('arg*more')
-        print "(#{block}); end\n\n"
+        args_str = "(#{block})"
       elsif res =~ /\+|\*/
-        print "; end\n\n"
+        args_str = '()'
       else
         res.gsub!('  , string=0', 'string=0')
         res.gsub!(/filename=$/, "filename=''")
-        print block.nil? ? "(#{res}); end\n\n" : "(#{res}, #{block}); end\n\n"
+        args_str = block.nil? ? "(#{res})" : "(#{res}, #{block})"
+      end
+
+      if final.include? name
+        if final[name][:args].split(',').size < args_str.split(',').size && method.singleton != final[name][:singleton]
+          final[name][:args] = args_str
+        end
+      else
+        final[name] = { comment: method.comment, args: args_str, singleton: method.singleton }
       end
     end
+    final
   end
 
-  # Public: Print the methods from the given parameter.
+  # Internal: Force merge. Forces the merge of internal hashes.
   #
-  # hash - A Hash retrieved from RDoc::TopLevel#methods_hash.
-  def print_methods(hash)
-    hash.each do |m|
-      method = m.last
-      call_seq = method.call_seq
-      unless call_seq.nil?
-        call_seq.split(/\n\s*/).each { |k| print_method_string method, k }
-      end
+  # element   - The element to be updated.
+  # ancestors - The ancestors of the given element.
+  # h         - The RDoc object of the Class/Module.
+  #
+  # Returns the same element but with some entries updated.
+  def fmerge(element, ancestors, h)
+    if element[:ancestors].nil?
+      element[:ancestors] = ancestors
+    else
+      element[:ancestors] |= (ancestors)
     end
+    if element[:classes].nil?
+      element[:classes] = eclasses(h.classes_hash, element[:classes])
+    else
+      element[:classes].merge!(eclasses(h.classes_hash, element[:classes]))
+    end
+    if element[:methods].nil?
+      element[:methods] = emethods(h.methods_hash, element[:methods])
+    else
+      element[:methods].merge!(emethods(h.methods_hash, element[:methods]))
+    end
+    element
   end
-
-  private
 
   # Internal: The following are some methods to clean typos
   # from Ruby's documentation.
-
+  #
   # Clean the given name.
   #
   # name - A String containing the name to clean.
   def filter_name(name)
     name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
     name.gsub!('enc or nil', 'enc_or_nil')
+    name.gsub!('proc_obj or nil', 'proc_or_nil')
     name = '[]' if name == ']' or name == ' ] ]' or name == '] ]' or name == ' ]'
     name
   end
@@ -237,7 +312,69 @@ class File
   #
   # str - The given string.
   def strip_reserved(str)
-    str.gsub(/module/, 'modul').gsub(/class/, 'klass').gsub(/end/, '_end')
+    str = str.gsub(/module/, 'modul').gsub(/class/, 'klass')
+    str.gsub(/end/, '_end').gsub(/begin/, '_begin')
+  end
+end
+
+# Re-open the File class so we can print the results of the RDoc::TopLevel's
+# hashes into files in an easier way.
+class File
+  # Public: Print a comment.
+  #
+  # comment - A String containing the comment.
+  def print_comment(comment)
+    return if comment.empty?
+    puts '##'
+    puts comment.split("\n").each { |c| c.insert(0, '# ') << "\n" }.join
+  end
+
+  # Public: Print all the modules.
+  #
+  # hash - A Hash containing all the info of all the modules.
+  def print_modules(hash)
+    hash.each do |k, v|
+      print_comment v[:comment]
+      puts "module #{k}"
+      v[:ancestors].each { |m| puts "include #{m}" unless m.empty? }
+      print_classes v[:classes]
+      print_methods v[:methods]
+      puts "end\n\n"
+    end
+  end
+
+  # Public: Print all the classes.
+  #
+  # hash - A Hash containing all the info of all the classes.
+  def print_classes(hash)
+    hash.each do |k, v|
+      print_comment v[:comment]
+      if v[:superclass].nil?
+        puts "class #{k}"
+      else
+        puts "class #{k} < #{v[:superclass]}"
+      end
+      v[:ancestors].each { |m| puts "include #{m}" unless m.empty? }
+      print_classes v[:classes]
+      print_methods v[:methods]
+      puts "end\n\n"
+    end
+  end
+
+  # Public: Print all the methods.
+  #
+  # hash - A Hash containing all the info of all the methods.
+  def print_methods(hash)
+    hash.each do |k, v|
+      print_comment v[:comment]
+      if v[:singleton]
+        print "def self.#{k}"
+      else
+        print "def #{k}"
+      end
+      print v[:args]
+      puts "; end\n"
+    end
   end
 end
 
@@ -262,7 +399,7 @@ puts 'Generating documentation. Please be patient, this may take a while.'
 doc.parse_files ruby_dir
 
 # Print everything into the +ruby_out+ file.
-output = File.open ruby_out, 'w'
+output = File.open(ruby_out, 'w')
 ruby_version = File.open("#{ruby_dir}/version.h", &:readline)
 ruby_version.match(/\"(.+)\"/)
 output.puts <<HEADER
@@ -270,8 +407,8 @@ output.puts <<HEADER
 # Ruby Version: #{$1}
 # This file is generated, all changes made in this file will be lost!\n\n
 HEADER
-output.print_modules RDoc::TopLevel.modules_hash
-output.print_classes RDoc::TopLevel.classes_hash
+output.print_modules doc.kdev_modules
+output.print_classes doc.kdev_classes
 
 
 # Print all the pre-defined global variables.
