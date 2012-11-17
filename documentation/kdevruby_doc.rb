@@ -241,7 +241,6 @@ class RDoc::RDoc
       else
         res.gsub!('  , string=0', 'string=0')
         res.gsub!(/filename=$/, "filename=''")
-        res.gsub!('proc_obj or nil', 'proc_or_nil') # BUG !!! TODO: doesn't work
         args_str = block.nil? ? "(#{res})" : "(#{res}, #{block})"
       end
 
@@ -291,6 +290,7 @@ class RDoc::RDoc
   def filter_name(name)
     name = name.gsub(/(\w+) = (\w+)/) { "#{$1}= #{$2}" }
     name.gsub!('enc or nil', 'enc_or_nil')
+    name.gsub!('proc_obj or nil', 'proc_or_nil')
     name = '[]' if name == ']' or name == ' ] ]' or name == '] ]' or name == ' ]'
     name
   end
