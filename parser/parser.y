@@ -3246,6 +3246,7 @@ int rb_debug_file(struct options_t *opts)
     for (index = 0; index < p.pos_size; index++)
         printf("\nP: %i:%i", p.pos_stack[index].start_line, p.pos_stack[index].start_col);
     printf("\n");
+    free_parser(&p);
     return 1;
 }
 #endif
