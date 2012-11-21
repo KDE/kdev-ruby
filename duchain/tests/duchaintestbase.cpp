@@ -54,15 +54,6 @@ TopDUContext * DUChainTestBase::parse(const QByteArray &code, const QString &id)
     f.write(code);
     f.close();
 
-    RubyParser *parser = new RubyParser();
-    parser->setContents(code);
-    parser->setCurrentDocument(IndexedString(url));
-    RubyAst *ast = parser->parse();
-
-    if (ast == NULL || ast->tree == NULL) {
-        debug() << "Parse failed!";
-        return NULL;
-    }
     return DUChain::self()->waitForUpdate(KDevelop::IndexedString(url),
                                             static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
 }
