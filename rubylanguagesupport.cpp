@@ -58,6 +58,7 @@
 #include <navigation/railsdataprovider.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
+#include <version.h>
 //END Includes
 
 
@@ -65,7 +66,7 @@
 #define RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby Test Function")
 
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<Ruby::LanguageSupport>();)
-K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby", ki18n("Ruby Support"), "1.2.60", ki18n("Support for the Ruby Language"), KAboutData::License_GPL)
+K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby", ki18n("Ruby Support"), KDEVRUBY_VERSION_STR, ki18n("Support for the Ruby Language"), KAboutData::License_GPL)
     .addAuthor(ki18n("Alexander Dymo"), ki18n("Original Author"), "adymo@kdevelop.org")
     .addAuthor(ki18n("Miquel Sabaté"), ki18n("Maintainer, Parser"), "mikisabate@gmail.com")
 ))

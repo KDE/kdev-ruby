@@ -1,11 +1,22 @@
 project(ruby)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
-enable_testing()
 
 find_package(KDE4 REQUIRED)
-find_package(KDevPlatform REQUIRED)
+find_package(KDevPlatform 1.4.60 REQUIRED)
 find_package(BISON REQUIRED)
+
+set(KDEVUPLOAD_VERSION_MAJOR 1)
+set(KDEVUPLOAD_VERSION_MINOR 4)
+set(KDEVUPLOAD_VERSION_PATCH 60)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/version.h"
+  @ONLY
+)
+
+enable_testing()
 
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
