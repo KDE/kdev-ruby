@@ -79,12 +79,13 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
 
 KUrl Loader::getGem(const QString &name)
 {
-    QString real = name;
-    QStringList filter = QStringList() << QString(name[0]) + "*";
+    const QString &real = name + ".rb";
+    QStringList filter;
 
-    if (!name.endsWith(".rb"))
-        real += ".rb";
+    if (name.isEmpty())
+      return KUrl();
 
+    filter = QStringList() << QString(name[0]) + "*";
     foreach (const KUrl &path, m_urlCache.second) {
         QString basePath = path.path(KUrl::AddTrailingSlash);
         QDir dir(basePath);

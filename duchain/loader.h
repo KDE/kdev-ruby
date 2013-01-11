@@ -61,14 +61,6 @@ public:
     static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
     /**
-     * Get the path for the given gem name.
-     *
-     * @param name The given gem name.
-     * @returns the path for the given gem name.
-     */
-    static KUrl getGem(const QString &name);
-
-    /**
      * Get all the files/directories inside the given directory except for
      * (UNIX) hidden files, backup files (that end with ~) and .so files.
      *
@@ -83,6 +75,15 @@ public:
     static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative = KUrl());
 
 protected:
+    /**
+     * Get the path for the given gem name.
+     *
+     * @param name The given gem name.
+     * @returns the path for the given gem name.
+     * @note that it assumes that it does not end with ".rb".
+     */
+    static KUrl getGem(const QString &name);
+
     /**
      * Fill the m_urlCache attribute with the urls available from Ruby
      * through $:
