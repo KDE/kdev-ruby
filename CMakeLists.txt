@@ -3,11 +3,11 @@ project(ruby)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
 
 find_package(KDE4 REQUIRED)
-find_package(KDevPlatform 1.4.60 REQUIRED)
+find_package(KDevPlatform 1.5.60 REQUIRED)
 find_package(BISON REQUIRED)
 
 set(KDEVUPLOAD_VERSION_MAJOR 1)
-set(KDEVUPLOAD_VERSION_MINOR 4)
+set(KDEVUPLOAD_VERSION_MINOR 5)
 set(KDEVUPLOAD_VERSION_PATCH 60)
 
 configure_file(
