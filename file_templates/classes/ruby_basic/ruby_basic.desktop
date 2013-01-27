@@ -1,6 +1,7 @@
 [General]
 Name=Basic
 Name[bs]=Osnovno
+Name[de]=Einfach
 Name[es]=Básica
 Name[et]=Baas
 Name[ga]=Bunúsach
@@ -13,6 +14,7 @@ Name[sv]=Enkel
 Name[uk]=Базовий
 Name[x-test]=xxBasicxx
 Comment=Basic Ruby Class
+Comment[de]=Einfache Ruby-Klasse
 Comment[es]=Clase Ruby básica
 Comment[et]=Ruby baasklass
 Comment[ga]=Bunaicme Ruby
