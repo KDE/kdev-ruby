@@ -92,7 +92,7 @@ public:
     virtual void visitParameter(RubyAst *node);
 
 protected:
-    /// Visitor method re-implemented from RubyAstVisitor.
+    /// Visitor methods re-implemented from RubyAstVisitor.
 
     virtual void visitString(RubyAst *node);
     virtual void visitRegexp(RubyAst *node);

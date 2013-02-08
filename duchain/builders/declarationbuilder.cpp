@@ -90,7 +90,7 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
     m_injected = false;
     m_lastMethodCall = NULL;
 
-    // If it's Rails, do all the auto-requiring magic.
+    // If it's a Rails project, do all the auto-requiring magic.
     if (m_isRails) {
         QList<IndexedString> dirs = AutoLoader::computePaths(m_editor->url());
         foreach (const IndexedString &d, dirs)

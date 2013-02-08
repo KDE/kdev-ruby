@@ -192,17 +192,13 @@ private:
      */
     void visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod);
 
-    /**
-     * @returns true if we're inside a class/module, false otherwise.
-     */
+    /// @returns true if we're inside a class/module, false otherwise.
     inline bool insideClassModule() const
     {
         return m_classDeclarations.size() > 0;
     }
 
-    /**
-     * @returns the last class/module.
-     */
+    /// @returns the last class/module.
     inline Declaration * lastClassModule() const
     {
         return m_classDeclarations.top().data();

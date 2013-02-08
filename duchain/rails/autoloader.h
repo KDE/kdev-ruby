@@ -65,7 +65,7 @@ private:
 
     /**
      * Get all the files inside the given directory path. Note that this
-     * is a recursive functions, and files inside subdirectories will
+     * is a recursive function, and files inside subdirectories will
      * also be retrieved.
      *
      * @param path The directory path.
