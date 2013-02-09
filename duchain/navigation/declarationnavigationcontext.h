@@ -54,6 +54,12 @@ public:
 protected:
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
+     * because the default implementation is just to "C++ centric".
+     */
+    virtual QString html(bool shorten = false);
+
+    /**
+     * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
      * because the default implementation assumes that default arguments
      * are always at the end, and in Ruby this is not true.
      */
@@ -75,15 +81,6 @@ protected:
      */
     virtual void makeLink(const QString &name, KDevelop::DeclarationPointer declaration,
                           KDevelop::NavigationAction::Type actionType);
-
-    /**
-     * Re-implemented from KDevelop::AbstractNavigationContext so we can also
-     * show to the user if this declaration has some special meaning for
-     * the Ruby interpreter.
-     *
-     * @param decl The involved declaration.
-     */
-    virtual QString declarationKind(KDevelop::DeclarationPointer decl);
 
 private:
     /**

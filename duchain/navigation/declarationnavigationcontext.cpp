@@ -18,15 +18,9 @@
  */
 
 
-// Qt + KDE
+// Qt + KDevelop
 #include <QtGui/QTextDocument>
-#include <KLocalizedString>
-
-// KDevelop
-#include <language/duchain/types/abstracttype.h>
-#include <language/duchain/types/indexedtype.h>
 #include <language/duchain/types/functiontype.h>
-#include <language/duchain/types/integraltype.h>
 #include <language/duchain/duchainutils.h>
 
 // Ruby
@@ -47,6 +41,73 @@ DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer d
     : AbstractDeclarationNavigationContext(decl, topContext, prevContext)
 {
     /* There's nothing to do here! */
+}
+
+QString DeclarationNavigationContext::html(bool shorten)
+{
+    clear();
+    m_shorten = shorten;
+    modifyHtml()  += "<html><body><p>" + fontSizePrefix(shorten);
+    addExternalHtml(m_prefix);
+
+    if(!m_declaration.data()) {
+        modifyHtml() += i18n("<br /> lost declaration <br />");
+        return currentHtml();
+    }
+    if(m_previousContext) {
+        QString link = createLink(m_previousContext->name(), m_previousContext->name(), NavigationAction(m_previousContext));
+        modifyHtml() += navigationHighlight(i18n("Back to %1<br />", link));
+    }
+
+    if (!shorten) {
+        const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(m_declaration.data());
+        if (mDecl) {
+            if (mDecl->qualifiedIdentifier().count() > 1 && mDecl->context() && mDecl->context()->owner()) {
+                Declaration *d = m_declaration->context()->owner();
+                makeLink(declarationName(DeclarationPointer(d)), DeclarationPointer(d), NavigationAction::NavigateDeclaration);
+                modifyHtml() += (mDecl->isClassMethod()) ? "::" : "#";
+            }
+            htmlFunction();
+        } else if (m_declaration->kind() == Declaration::Instance) {
+            eventuallyMakeTypeLinks(m_declaration->abstractType());
+            modifyHtml() += ' ' + nameHighlight(Qt::escape(declarationName(m_declaration))) + "<br>";
+        } else if (m_declaration->kind() == Declaration::Type && m_declaration->abstractType().cast<StructureType>())
+            htmlClass();
+    } else if (m_declaration->abstractType()) {
+        eventuallyMakeTypeLinks(m_declaration->abstractType());
+        modifyHtml() += " ";
+    }
+
+    QString access = stringFromAccess(m_declaration);
+    if(!access.isEmpty()) {
+        modifyHtml() += labelHighlight(i18n("Access: %1 ", propertyHighlight(Qt::escape(access))));
+        modifyHtml() += "<br />";
+    }
+
+    if (!shorten) {
+        htmlAdditionalNavigation();
+        modifyHtml() += "<br />";
+        modifyHtml() += labelHighlight(i18n("Def.: "));
+        makeLink(QString("%1 :%2").arg(KUrl(m_declaration->url().str()).fileName()).arg(m_declaration->rangeInCurrentRevision().textRange().start().line() + 1), m_declaration, NavigationAction::JumpToSource);
+        modifyHtml() += " ";
+        modifyHtml() += createLink(i18n("Show uses"), "show_uses", NavigationAction(m_declaration, NavigationAction::NavigateUses));
+        if(!shorten && !m_declaration->comment().isEmpty()) {
+            modifyHtml() += "<br />";
+            QString comment = QString::fromUtf8(m_declaration->comment());
+            if(!comment.isEmpty()) {
+                comment.replace("<br />", "\n");
+                comment.replace("<br/>", "\n");
+                comment = Qt::escape(comment);
+                comment.replace('\n', "<br />");
+                modifyHtml() += commentHighlight(comment);
+                modifyHtml() += "<br />";
+            }
+        }
+    }
+
+    addExternalHtml(m_suffix);
+    modifyHtml() += fontSizeSuffix(shorten) + "</p></body></html>";
+    return currentHtml();
 }
 
 void DeclarationNavigationContext::htmlFunction()
@@ -90,7 +151,6 @@ void DeclarationNavigationContext::htmlFunction()
             modifyHtml() += " )";
         }
     }
-    modifyHtml() += "<br/>";
 }
 
 void DeclarationNavigationContext::htmlClass()
@@ -127,29 +187,6 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
         return;
     }
     AbstractDeclarationNavigationContext::makeLink(name, declaration, actionType);
-}
-
-QString DeclarationNavigationContext::declarationKind(DeclarationPointer decl)
-{
-    const MethodDeclaration *md = dynamic_cast<const MethodDeclaration *>(decl.data());
-    if (md)
-        return (md->isClassMethod()) ? "Class method" : "Instance method";
-
-    const ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(decl.data());
-    if (mDecl)
-        return NULL;
-
-    VariableDeclaration *var = dynamic_cast<VariableDeclaration *>(decl.data());
-    if (var) {
-        switch (var->variableKind()) {
-            case 3: return "Global variable";
-            case 4: return "Instance variable";
-            case 5: return "Class variable";
-            case 6: return "Constant";
-            default: return "Variable";
-        }
-    }
-    return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 
 void DeclarationNavigationContext::addModuleMixins(ModuleDeclaration *decl)
