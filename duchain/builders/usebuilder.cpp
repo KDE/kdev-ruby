@@ -81,8 +81,10 @@ void UseBuilder::visitClassName(RubyAst *node)
 void UseBuilder::visitMixin(RubyAst *node, bool include)
 {
     Node *aux = node->tree;
-    const RangeInRevision &range = m_editor->findRange(get_last_expr(aux->r));
+    if (!aux->r)
+      return;
 
+    const RangeInRevision &range = m_editor->findRange(get_last_expr(aux->r));
     ExpressionVisitor ev(currentContext(), m_editor);
     node->tree = aux->r;
     ev.visitNode(node);
