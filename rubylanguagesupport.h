@@ -136,8 +136,6 @@ public:
      */
     virtual void createActionsForMainWindow(Sublime::MainWindow* window, QString& xmlFile,
                                             KActionCollection& actions);
-
-    virtual KDevelop::ICreateClassHelper* createClassHelper() const;
 private:
     /**
      * @internal Find or create a launch for a the given @p name.

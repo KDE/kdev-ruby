@@ -53,7 +53,6 @@
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
 #include <rubyhighlighting.h>
-#include <codegen/rubynewclass.h>
 #include <navigation/railsswitchers.h>
 #include <navigation/railsdataprovider.h>
 #include <duchain/helpers.h>
@@ -330,11 +329,6 @@ void LanguageSupport::setupQuickOpen()
         m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
     }
-}
-
-KDevelop::ICreateClassHelper* LanguageSupport::createClassHelper() const
-{
-    return new RubyClassHelper;
 }
 
 
