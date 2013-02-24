@@ -143,6 +143,10 @@ struct parser_t {
     int comment_index;
 
     /* Info about the content to parse */
+    /* TODO: optimize all this */
+    char *lex_p; /* TODO */
+    char *lex_prev;
+    unsigned long lex_prevc;
     unsigned long cursor;
     unsigned long length;
     unsigned long line;
@@ -210,7 +214,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
 %token <n> tREGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
-%token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR EOL tCOMMENT ARRAY tKEY SYMBOL
+%token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL
 %token tSTRING_BEG tSTRING_CONTENT tSTRING_DBEG tSTRING_DEND tSTRING_END tSTRING_DVAR
 
 /* Types */
@@ -1334,7 +1338,7 @@ literal: numeric | symbol
 strings: string
     {
         $$ = alloc_node(lex_strterm.token, $1, NULL);
-        pop_start(parser, $$);
+        pop_pos(parser, $$);
         $$->pos.end_line = parser->line;
         $$->pos.end_col = parser->column;
         $$->pos.offset = parser->cursor;
@@ -1712,7 +1716,7 @@ dot_or_colon: '.' | tCOLON2
 opt_terms: /* none */ | terms
 ;
 
-opt_eol: /* none */ | EOL
+opt_eol: /* none */ | '\n'
 ;
 
 rparen: opt_eol ')'
@@ -1724,7 +1728,7 @@ rbracket: opt_eol ']'
 trailer: opt_eol | ','
 ;
 
-term: ';' {yyerrok;} | EOL
+term: ';' {yyerrok;} | '\n'
 ;
 
 terms: term | terms ';' {yyerrok;}
@@ -1740,6 +1744,11 @@ none : /* none */ { $$ = NULL; }
 #include <ctype.h>
 #include "hash.c"
 
+// TODO
+#define nextc() parser_nextc(parser)
+#define pushback() parser_pushback(parser)
+#define _unused_(c) (void) c;
+
 
 /* Let's define some useful macros :D */
 
@@ -1752,6 +1761,7 @@ none : /* none */ { $$ = NULL; }
 #define is_simple(c) (c == '(' || c == '{' || c == '[' || c == '|' || c == '<' || c == '/' || c == '$')
 #define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
                                             || c == 'x' || is_simple(c))
+/* TODO: dollar and at are already checked by is_valid_identifier */
 #define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
                                         || *c == '_' || *c == '$' || *c == '@')
 #define is_special_method(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
@@ -1765,6 +1775,9 @@ static void init_parser(struct parser_t * parser)
     parser->content_given = 0;
     parser->ast = NULL;
     parser->blob = NULL;
+    parser->lex_p = NULL;
+    parser->lex_prev = NULL;
+    parser->lex_prevc = 0;
     parser->cursor = 0;
     parser->eof_reached = 0;
     parser->expr_seen = 0;
@@ -1850,6 +1863,7 @@ static int retrieve_source(struct parser_t *p, const char *path)
         return 0;
     }
     p->length = length;
+    p->lex_p = p->blob;
     return 1;
 }
 
@@ -1912,8 +1926,42 @@ static int is_valid_identifier(const char *c)
     return 0;
 }
 
+static int parser_nextc(struct parser_t *parser)
+{
+    int c;
+
+    /* TODO */
+    if (parser->eof_reached)
+        return -1;
+    if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length)
+        return -1;
+
+    parser->lex_prev = parser->lex_p;
+    parser->lex_prevc = parser->column;
+    c = (unsigned char) *parser->lex_p++;
+    if (c == '\n') {
+        parser->line++;
+        parser->column = -1;
+    }
+    parser->column++;
+    return c;
+}
+
+static void parser_pushback(struct parser_t *parser)
+{
+    /* TODO */
+    parser->column--;
+    parser->lex_p--;
+    if (*parser->lex_p == '\n') {
+        parser->line--;
+        parser->column = parser->lex_prevc;
+    }
+}
+
 static int parse_heredoc_identifier(struct parser_t *parser)
 {
+    /* TODO */
+    return 0;
     char *buffer = (char *) malloc(BSIZE * sizeof(char));
     int count = BSIZE, scale = 0;
     int curs = parser->cursor;
@@ -2077,6 +2125,7 @@ static void pop_stack(struct parser_t *parser, struct node *n)
     parser->sp--;
 }
 
+/* TODO: lex_pos changes everything */
 static void push_pos(struct parser_t *parser, struct pos_t tokp)
 {
     int scale = STACK_SIZE * parser->stack_scale;
@@ -2205,19 +2254,6 @@ struct node * fix_star(struct parser_t *parser)
  * The following macros and functions make all the magic of fetching comments.
  */
 
-#define __check_should_break { \
-  if (*c != '#') { \
-    int aux = is_indented_comment(c); \
-    if (!aux) \
-      break; \
-    else { \
-      c += aux; \
-      curs += aux; \
-      i += aux; \
-    } \
-  } \
-}
-
 #define __check_buffer_size(N) { \
   if (count > N) { \
     count = 0; \
@@ -2248,140 +2284,100 @@ static int is_indented_comment(char *c)
     return (*c == '#') ? (c - original) : 0;
 }
 
-static int get_comment(struct parser_t *parser, char *c, int curs)
+static void set_comment(struct parser_t *parser)
 {
-    int len = parser->length;
-    int initial = curs;
-    int i = parser->column;
-    int count = 0, scale = 1;
+    int c, count, scale = 1;
     char *buffer = (char *) malloc(1024);
+    char *ptr = buffer;
 
-    for (;; ++count) {
-        __check_should_break;
+    pushback();
+    for (;;) {
+        c = nextc();
+        if (c != '#' && !is_indented_comment(parser->lex_prev))
+            break;
+        while (c == '#' && c != -1)
+            c = nextc();
 
-        /* We don't want to store initial #'s */
-        for (; *c == '#' && curs < len; ++c, ++curs, ++i);
-
-        if (*c == '\n') {
-            buffer[count] = *c;
-            __handle_comment_eol;
-        } else {
-            for (; curs < len; ++c, ++curs, ++i, ++count) {
-                __check_buffer_size(1000);
-                buffer[count] = *c;
-                if (*c == '\n') {
-                __handle_comment_eol;
-                break;
+        if (c != '\n') {
+            while (c != -1) {
+                __check_buffer_size(1024);
+                *ptr++ = c;
+                c = nextc();
+                if (c == '\n') {
+                    *ptr++ = c;
+                    break;
                 }
             }
-        }
+        } else
+            *ptr++ = c;
     }
 
-    buffer[count] = '\0';
+    if (c != -1)
+        pushback();
+    *ptr = '\0';
     store_comment(parser, buffer);
-
-    /* Magic to preserve the integrity of the column/cursor counting */
-    parser->column = i;
-    return curs - initial;
 }
 
 static int parse_string(struct parser_t *parser)
 {
-    int curs = parser->cursor;
-    char *c = parser->blob + curs;
-    int diff = 1;
+    register int c = *parser->lex_p;
+    int next = *(parser->lex_p + 1);
 
-    if (*c == '\\' && (*(c + 1) == lex_strterm.term || *(c + 1) == '\\')) {
-        parser->cursor += 2;
+    if (c == '\\' && (next == lex_strterm.term || next == '\\')) {
+        parser->lex_p += 2;
         parser->column += 2;
         return tSTRING_CONTENT;
     }
 
-    if (*c == lex_strterm.term) {
-        parser->cursor++;
-        parser->column++;
+    if (c == lex_strterm.term) {
+        nextc();
         return tSTRING_END;
     }
 
-    if ((unsigned) curs >= parser->length) {
+    // TODO
+    // TODO: maybe the c value can mark more about it ? p.e. -2 means EOF, -1 EOL, ...
+    if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
         return -1;
     }
 
-    if (lex_strterm.can_embed && *c == '#') {
-        c++;
-        curs++;
-        switch (*c) {
+    if (lex_strterm.can_embed && c == '#') {
+        nextc();
+        switch (*parser->lex_p) {
             case '$':
             case '@':
-                parser->cursor = curs;
-                parser->column += 1;
+                nextc();
                 return tSTRING_DVAR;
             case '{':
-                parser->cursor = curs + 1;
-                parser->column += 2;
+                c = nextc();
                 return tSTRING_DBEG;
-            default:
-                c--;
-                curs--;
         }
     }
 
-    if (*c == '\n') {
-        parser->line++;
-        parser->column = -1;
-    } else
-        diff = utf8_charsize(c);
-
-    parser->column++;
-    parser->cursor = curs + diff;
+    // TODO: document why we re-use next and c like a boss.
+    next = utf8_charsize(parser->lex_p);
+    c = next - 1;
+    while (next-- > 0)
+        nextc();
+    parser->column -= c;
     return tSTRING_CONTENT;
 }
 
-static int parse_word(struct parser_t *p, char *c, int curs, char *buffer)
+static void parse_re_options(struct parser_t *parser)
 {
-    int step = 0; /* How many bytes the actual utf8 character has */
-    int ax = 0; /* Used to properly update the column when utf8 chars appear */
-    int len = p->length;
-    char *ptr = buffer;
+    char aux[64]; /* TODO: use buffer from lexbuf */
+    int c = *parser->lex_p;
 
-    do {
-        step = utf8_charsize(c);
-        ax += step - 1;
-        while (step-- > 0) {
-            *ptr++ = *c++;
-            curs++;
+    while (isalpha(c)) {
+        if (c != 'i' && c != 'm' && c != 'x' && c != 'o' &&
+            c != 'u' && c != 'e' && c != 's' && c != 'n') {
+            sprintf(aux, "unknown regexp option - %c", c);
+            yyerror(parser, aux);
         }
-    } while (curs < len && not_sep(c));
-    switch (*c) {
-        case '=':
-            if (!p->def_seen && !p->symbeg && !p->in_alias)
-                break;
-            if (*(c + 1) == '>')
-                break;
-        case '!': case '?':
-            *ptr++ = *c++;
+        c = nextc();
     }
-    *ptr = '\0';
-    if (p->def_seen && (isspace(*c) || *c == '('))
-        p->def_seen = 0;
-    p->column -= ax;
-    return ptr - buffer;
-}
-
-static int parse_re_options(struct parser_t *p, char *c, int curs)
-{
-    int init = curs++;
-    char aux[64];
-    for (c++; isalpha(*c); c++, curs++) {
-        if (*c != 'i' && *c != 'm' && *c != 'x' && *c != 'o' &&
-                *c != 'u' && *c != 'e' && *c != 's' && *c != 'n') {
-            sprintf(aux, "unknown regexp option - %c", *c);
-            yyerror(p, aux);
-        }
-    }
-    return curs - init;
+    pushback();
 }
 
 #define IS_SPCARG(c) (CMDARG_P() && space_seen && !isspace(c))
@@ -2392,38 +2388,40 @@ static int parse_re_options(struct parser_t *p, char *c, int curs)
  */
 static int parser_yylex(struct parser_t *parser)
 {
-    int t = token_invalid;
-    char buffer[BSIZE];
-    char *c;
-    int curs, len;
-    unsigned char space_seen;
+    register int c;
+    int bc = 0; /* TODO: register ? */
+    char *cp;
+    char lexbuf[BSIZE]; /* TODO: to the parser struct ¿? */
+    int space_seen = 0; /* TODO: short ? char ? */
     struct pos_t tokp = {-1, -1, -1, -1, 0};
 
-    curs = parser->cursor;
-    len = parser->length;
-    c = parser->blob + curs;
+    /*
+     * TODO:
+     *  - User parser->lex_p instead of bc = nextc() to avoid overhead
+     *    in some cases.
+     */
+
+    /*
+     * TODO
+     * Positions:
+     *  - Sometimes we don't have to push the position.
+     *  - We don't have to set the tokp all the time.
+     */
 
     /* String/Regexp/Heredoc parsing */
+    // TODO
     if (lex_strterm.term) {
         if (lex_strterm.token == token_heredoc)
-            t = parse_heredoc(parser);
+            c = parse_heredoc(parser);
         else
-            t = parse_string(parser);
-        if (t == tSTRING_END) {
-            if (lex_strterm.token == token_regexp) {
-                c++;
-                curs = parser->cursor;
-                if (isalpha(*c)) {
-                    int diff = parse_re_options(parser, c, curs);
-                    curs += diff;
-                    parser->column += diff;
-                }
-                parser->cursor = curs;
-            }
+            c = parse_string(parser);
+        if (c == tSTRING_END) {
+            if (lex_strterm.token == token_regexp && isalpha(*parser->lex_p))
+                parse_re_options(parser);
             lex_strterm.term = 0;
             parser->expr_seen = 1;
         }
-        return t;
+        return c;
     } else if (lex_strterm.token == token_heredoc && lex_strterm.was_mcall) {
         lex_strterm.was_mcall = 0;
         lex_strterm.token = 0;
@@ -2431,699 +2429,679 @@ static int parser_yylex(struct parser_t *parser)
         return ')';
     }
 
-    /* Ignore whitespaces and backslashes */
-    space_seen = *c;
-    for (; isspace(*c) || *c == '\\'; ++c, ++curs, parser->column++, parser->cursor++) {
-        if (*c == '\n') {
-            if (!parser->expr_seen) {
-                parser->column = -1;
-                parser->line++;
-            } else
-                break;
-        }
-    }
-    if (curs >= len || parser->eof_reached) {
-        parser->eof_reached = 1;
-        return 0;
-    }
-    (space_seen != *c) ? (space_seen = 1) : (space_seen = 0);
+retry:
+    c = nextc();
 
-    if (*c == '#') {
-        int inc = get_comment(parser, c, curs) - 1;
-        curs += inc;
-        c += inc;
-        parser->line--;
-        if (curs + 1 >= len) {
-            parser->eof_reached = 1;
+    /* TODO */
+    tokp.start_line = parser->line;
+    tokp.start_col = parser->column - 1;
+
+    if (isdigit(c)) {
+        cp = lexbuf;
+        goto tnum;
+    }
+
+    /* TODO: store last state ? */
+    switch (c) {
+        case '\0':      /* NULL */
+        case EOF:       /* end of script */
             return 0;
-        }
-        t = tCOMMENT;
-    } else if (*c == '\n') {
-        t = EOL;
-        parser->dot_seen = 0;
-        CMDARG_PUSH(0);
-        parser->column = -1; /* So it's correct after curs++ */
-        parser->in_alias = 0;
-        parser->line++;
-        curs++;
-        parser->expr_seen = 0;
-    } else if (isdigit(*c)) {
-        char hex, bin, has_point, aux;
-        hex = bin = has_point = aux = 0;
 
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        if (*c == '0') {
-            if (to_upper(*(c + 1)) == 'X') {
-                hex = 1;
-                curs++;
-                c++;
-            } else if (to_upper(*(c + 1)) == 'B') {
-                bin = 1;
-                curs++;
-                c++;
+        /* white spaces */
+        case ' ': case '\t': case '\f': case '\r':
+        case '\13': /* vertical tab */
+            space_seen = 1;
+            goto retry;
+        case '#':
+            set_comment(parser);
+        eol:
+        case '\n':
+            if (!parser->expr_seen)
+                goto retry;
+            parser->dot_seen = 0;
+            CMDARG_PUSH(0);
+            parser->in_alias = 0;
+            parser->expr_seen = 0;
+            return '\n';
+        case '=':
+            bc = nextc();
+            parser->expr_seen = 0;
+            if (bc == '=') {
+                bc = nextc();
+                if (bc == '=')
+                    return tEQQ;
+                pushback();
+                return tEQ;
             }
-            curs++;
-            c++;
-        }
-        while (curs < len && ((isdigit(*c) && !bin) || (!hex && !bin && !has_point && *c == '.')
-                    || (hex && to_upper(*c) >= 'A' && to_upper(*c) < 'G')
-                    || (bin && (*c == '1' || *c == '0')) || *c == '_')) {
-            if (*c == '.') {
-                if (!isdigit(*(c + 1)))
-                    break; /* Don't mess with ranges */
-                has_point = 1;
+            if (bc == '~')
+                return tMATCH;
+            if (bc == '>')
+                return tASSOC;
+            if (multiline_comment(parser->lex_prev - 1)) {
+                parser->column += 4;
+                parser->lex_p += 4;
+                while (!multiline_end(parser->lex_prev))
+                    nextc();
+                parser->column += 3;
+                parser->lex_p += 3;
+                parser->expr_seen = 1;
+                goto eol;
             }
-            aux = 1;
-            c++;
-            curs++;
-        }
-        if ((bin || hex) && !aux)
-            yyerror(parser, "numeric literal without digits");
-        /* is it an exponential number ? */
-        if (!bin && !hex && to_upper(*c) == 'E' && (isdigit(*(c + 1)) ||
-                ((*(c + 1) == '+' || *(c + 1) == '-') && isdigit(*(c + 2))))) {
-            c++;
-            curs++;
-            if (*c == '+' || *c == '-') {
-                c++;
-                curs++;
+            break;
+        case '[':
+            parser->paren_nest++;
+            CMDARG_PUSH(0);
+            if (parser->dot_seen || parser->def_seen || parser->symbeg) {
+                parser->expr_seen = 0;
+                bc = nextc();
+                if (bc == ']') {
+                    space_seen = 0;
+                    parser->symbeg = 0;
+                    bc = nextc();
+                    if (bc == '=')
+                        return tASET;
+                    pushback();
+                    return tAREF;
+                } else if (!parser->def_seen) {
+                    tokp.end_col = parser->column;
+                    push_pos(parser, tokp);
+                    COND_PUSH(0);
+                    return c;
+                }
+                break;
             }
-            for (; (curs < len) && isdigit(*c); c++, curs++);
-        }
-        parser->expr_seen = 1;
-        parser->dot_seen = 0;
-        t = (has_point) ? FLOAT : NUMERIC;
-    } else if (*c == '$') {
-        int inc = 1;
-        curs++;
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        buffer[0] = '$';
-        switch (*(c + 1)) {
-            case '1': case '2': case '3': case '4':
-            case '5': case '6': case '7': case '8': case '9':
-                for (c += 1; isdigit(*c); c++, curs++)
-                    buffer[inc++] = *c;
-                buffer[inc] = '\0';
-                t = tNTH_REF;
-                break;
-            case '~': case '*': case '$': case '?': case '!': case '@':
-            case '/': case '\\': case ';': case ',': case '.': case '=':
-            case ':': case '<': case '>': case '\"':
-            case '&': case '`': case '\'': case '+':
-            case '0':
-                t = GLOBAL;
-                curs++;
-                buffer[inc++] = *(c + 1);
-                buffer[inc] = '\0';
-                break;
-            case '-':
-                buffer[inc++] = *(c + 1);
-                curs++;
-            default:
-                t = GLOBAL;
-                inc = parse_word(parser, c + inc, curs + inc, buffer + inc);
-                curs += inc;
-                break;
-        }
-        parser->expr_seen = 1;
-        parser->dot_seen = 0;
-        push_stack(parser, buffer);
-    } else if (*c == '@') {
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        int inc = parse_word(parser, c, curs, buffer);
-        t = (inc > 1 && buffer[1] == '@') ? CVAR : IVAR;
-        curs += inc;
-        push_stack(parser, buffer);
-        parser->expr_seen = 1;
-        parser->dot_seen = 0;
-    } else if (not_sep(c)) {
-        int diff;
+            tokp.end_col = parser->column;
+            push_pos(parser, tokp);
+            if (!parser->expr_seen || space_seen) {
+                parser->expr_seen = 0;
+                return tLBRACKET;
+            }
+            parser->expr_seen = 0;
+            COND_PUSH(0);
+            return c;
+        case ']':
+            parser->paren_nest--;
+            parser->expr_seen = 1;
+            parser->brace_arg = 1;
+            CMDARG_LEXPOP();
+            COND_LEXPOP();
+            return c;
+        case '<':
+            bc = nextc();
+            if (bc == '<') {
+                bc = nextc();
+                if (bc == '<')
+                    return tOP_ASGN;
+                pushback();
+/*                if (maybe_heredoc && parse_heredoc_identifier(parser)) {
+                    lex_strterm.token = token_heredoc;
+                    push_pos(parser, tokp);
+                    return tSTRING_BEG;
+                }*/
+                parser->expr_seen = 0;
+                return tLSHIFT;
+            } else if (bc == '=') {
+                parser->expr_seen = 0;
+                bc = nextc();
+                if (bc == '>')
+                    return tCMP;
+                pushback();
+                return tLEQ;
+            }
+            parser->expr_seen = 0;
+            break;
+        case '>':
+            parser->expr_seen = 0;
+            bc = nextc();
+            if (bc == '>') {
+                bc = nextc();
+                if (bc == '=')
+                    return tOP_ASGN;
+                pushback();
+                return tRSHIFT;
+            } else if (bc == '=')
+                return tGEQ;
+            break;
+        case '!':
+            bc = nextc();
+            if (bc == '=') {
+                parser->expr_seen = 0;
+                return tNEQ;
+            } else if (bc == '~') {
+                parser->expr_seen = 0;
+                return tNMATCH;
+            }
+            tokp.end_line = parser->line;
+            push_pos(parser, tokp);
+            if (parser->def_seen && bc == '@')
+                return '!';
+            break;
+        case '+':
+            bc = nextc();
+            if (bc == '=')
+                return tOP_ASGN;
+            tokp.end_line = parser->line;
+            tokp.end_col = parser->column;
+            if (!parser->expr_seen) {
+                push_pos(parser, tokp);
+                c = tUPLUS;
+            } else if (parser->def_seen && bc == '@') {
+                push_pos(parser, tokp);
+                return tUPLUS;
+            } else if (parser->expr_seen && space_seen && !isspace(bc)) {
+                pushback();
+                push_pos(parser, tokp);
+                parser->expr_seen = 0;
+                return tUPLUS;
+            } else
+                parser->expr_seen = 0;
+            break;
+        case '-':
+            bc = nextc();
+            if (bc == '=')
+                return tOP_ASGN;
+            tokp.end_line = parser->line;
+            tokp.end_col = parser->column;
+            if (bc == '>') {
+                push_pos(parser, tokp);
+                return tLAMBDA;
+            }
+            if (!parser->expr_seen) {
+                push_pos(parser, tokp);
+                c = tUMINUS;
+            } else if (parser->def_seen && bc == '@') {
+                push_pos(parser, tokp);
+                return tUMINUS;
+            } else if (parser->expr_seen && space_seen && !isspace(bc)) {
+                pushback();
+                push_pos(parser, tokp);
+                parser->expr_seen = 0;
+                return tUMINUS;
+            } else
+                parser->expr_seen = 0;
+            break;
+        case '*':
+            bc = nextc();
+            if (bc == '=')
+                return tOP_ASGN;
+            if (bc == '*') {
+                bc = nextc();
+                if (bc == '=') {
+                    parser->expr_seen = 0;
+                    return tOP_ASGN;
+                }
+                pushback();
+                if (!parser->expr_seen)
+                    return tDSTAR;
+                parser->expr_seen = 0;
+                return tPOW;
+            }
+            parser->auxiliar.start_line = parser->line;
+            parser->auxiliar.start_col = parser->column - 2;
+            if (!parser->expr_seen || parser->dot_seen)
+                c = tSTAR;
+            parser->expr_seen = 0;
+            break;
+        case '/':
+            if (!parser->expr_seen) {
+                tokp.start_line = parser->line;
+                tokp.start_col = parser->column - 1;
+                push_pos(parser, tokp);
+                lex_strterm.term = c;
+                lex_strterm.can_embed = 1;
+                lex_strterm.token = token_regexp;
+                return tSTRING_BEG;
+            }
+            parser->expr_seen = 0;
+            bc = nextc();
+            if (bc == '=')
+                return tOP_ASGN;
+            break;
+        case '%':
+            bc = nextc();
+            if (bc == '=')
+                return tOP_ASGN;
+            if (is_shortcut(bc)) {
+                tokp.start_line = parser->line;
+                tokp.start_col = parser->column - 2;
+                push_pos(parser, tokp);
+                lex_strterm.token = guess_kind(parser, bc);
+                if (isalpha(bc))
+                    bc = nextc();
+                lex_strterm.term = closing_char(bc);
+                lex_strterm.can_embed = 1;
+                return tSTRING_BEG;
+            }
+            parser->expr_seen = 0;
+            break;
+        case '&':
+            bc = nextc();
+            if (bc == '&') {
+                parser->expr_seen = 0;
+                bc = nextc();
+                if (bc == '=')
+                    return tOP_ASGN;
+                pushback();
+                return tAND;
+            }
+            if (bc == '=') {
+                parser->expr_seen = 0;
+                return tOP_ASGN;
+            }
+            if (!parser->expr_seen || parser->dot_seen)
+                c = tAMPER;
+            parser->expr_seen = 0;
+            break;
+        case '|':
+            bc = nextc();
+            parser->expr_seen = 0;
+            if (bc == '|') {
+                bc = nextc();
+                if (bc == '=')
+                    return tOP_ASGN;
+                return tOR;
+            }
+            if (bc == '=')
+                return tOP_ASGN;
+            break;
+        case '.':
+            bc = nextc();
+            if (bc == '.') {
+                parser->expr_seen = 0;
+                bc = nextc();
+                if (bc == '.')
+                    return tDOT3;
+                pushback();
+                return tDOT2;
+            }
+            parser->dot_seen = 1;
+            break;
+        case ':':
+            bc = nextc();
+            if (bc == ':') {
+                if (!parser->expr_seen || (parser->expr_seen && space_seen))
+                    return tCOLON3;
+                return tCOLON2;
+            }
+            if (!isspace(bc)) {
+                pushback();
+                parser->symbeg = 1;
+                parser->expr_seen = 1;
+                push_pos(parser, tokp);
+                return tSYMBEG;
+            }
+            parser->expr_seen = 0;
+            break;
+        case ';':
+        case ',':
+        case '^':
+            parser->expr_seen = 0;
+            return c;
+        case '?':
+            bc = nextc();
+            if (!isspace(bc)) {
+                if (!parser->expr_seen) {
+                    if (bc == '\\')
+                        nextc();
+                    tokp.end_line = parser->line;
+                    tokp.end_col = parser->column;
+                    push_pos(parser, tokp);
+                    parser->expr_seen = 1;
+                    return tCHAR;
+                }
+            }
+            break;
+        case '`':
+            if (parser->def_seen)
+                return c;
+            /* fallthrough */
+        case '"':
+            space_seen = 1;
+            /* fallthrough */
+        case '\'':
+            lex_strterm.term = c;
+            lex_strterm.can_embed = space_seen;
+            lex_strterm.token = token_string;
+            push_pos(parser, tokp);
+            return tSTRING_BEG;
+        case '(':
+            parser->paren_nest++;
+            if (parser->special_arg) {
+                COND_PUSH(0);
+                CMDARG_PUSH(0);
+                parser->special_arg = 0;
+            } else if (!parser->expr_seen || COND_P())
+                c = tLPAREN;
+            else {
+                COND_PUSH(0);
+                CMDARG_PUSH(0);
+            }
+            return c;
+        case ')':
+            parser->paren_nest--;
+            parser->expr_seen = 1;
+            CMDARG_LEXPOP();
+            COND_LEXPOP();
+            if (!parser->paren_nest)
+                parser->mcall = 0;
+            return c;
+        case '{':
+            push_pos(parser, tokp);
+            if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
+                parser->lpar_beg = 0;
+                parser->paren_nest--;
+                COND_PUSH(0);
+                CMDARG_PUSH(0);
+                if (parser->version < ruby19) {
+                    yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
+                }
+                return tLAMBEG; /* this is a lambda ->() {} construction */
+            }
+            if (!parser->expr_seen || COND_P())
+                return tLBRACE; /* smells like hash */
+            if (parser->brace_arg)
+                return tLBRACE_ARG; /* block (expr) */
+            COND_PUSH(0);
+            CMDARG_PUSH(0);
+            return c; /* block (primary) */
+        case '}':
+            parser->expr_seen = 1;
+            parser->brace_arg = 1;
+            CMDARG_LEXPOP();
+            COND_LEXPOP();
+            tokp.end_line = parser->line;
+            tokp.end_col = parser->column;
+            push_pos(parser, tokp);
+            return c;
+        case '@':
+            cp = lexbuf;
+            *cp++ = c;
+            c = nextc();
+            if (c != '@') {
+                bc = IVAR;
+            } else {
+                *cp++ = c;
+                c = nextc();
+                bc = CVAR;
+            }
+            parser->expr_seen = 1;
+            parser->dot_seen = 0;
+            goto talpha;
+        case '$':
+            tokp.end_line = parser->line;
+            parser->expr_seen = 1;
+            parser->dot_seen = 0;
+            cp = lexbuf;
+            *cp++ = c;
+            bc = nextc();
+            switch (bc) {
+                case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    c = bc;
+                    while (isdigit(c)) {
+                        *cp++ = c;
+                        c = nextc();
+                    }
+                    *cp = '\0';
+                    pushback();
+                    c = tNTH_REF;
+                    break;
+                case '~': case '*': case '$': case '?': case '!': case '@':
+                case '/': case '\\': case ';': case ',': case '.': case '=':
+                case ':': case '<': case '>': case '\"':
+                case '&': case '`': case '\'': case '+':
+                case '0':
+                    c = GLOBAL;
+                    *cp++ = bc;
+                    *cp = '\0';
+                    break;
+                case '-':
+                    c = nextc();
+                    *cp++ = bc;
+                    bc = GLOBAL;
+                    goto talpha;
+                default:
+                    c = bc;
+                    bc = GLOBAL;
+                    goto talpha;
+            }
+            tokp.end_col = parser->column;
+            push_pos(parser, tokp);
+            push_stack(parser, lexbuf);
+            return c;
+        case '~':
+            bc = nextc();
+            push_pos(parser, tokp);
+            if (parser->def_seen && bc == '@') {
+                tokp.end_col = parser->column;
+                return c;
+            }
+            break;
+        default:
+            cp = lexbuf;
+            goto talpha;
+    }
+    pushback();
+    return c;
 
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        diff = parse_word(parser, c, curs, buffer);
-        c += diff; curs += diff;
+talpha:
+    {
+        /* TODO: this effectively replaces parse_word */
+        int step = 0;
+        int ax = 0;
+        int last_col = 0;
 
-        if (*c == '(') {
-            t = BASE;
-            push_stack(parser, buffer);
+        /* TODO: not sure on this. Is for last line not ending with blank. But anyways, this is ugly */
+/*         if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) */
+/*             return 0; */
+
+        while (not_sep(parser->lex_prev)) {
+            step = utf8_charsize(parser->lex_prev);
+            ax += step - 1;
+            while (step-- > 0) {
+                *cp++ = c;
+                last_col = parser->column;
+                c = nextc();
+            }
+            if (c < 0) {
+                parser->eof_reached = 1;
+                break;
+            }
+        }
+        switch (c) {
+        case '=':
+            if (!parser->def_seen && !parser->symbeg && !parser->in_alias)
+                break;
+            if (*(parser->lex_p) == '>')
+                break;
+        case '!': case '?':
+            *cp++ = c;
+            last_col = parser->column;
+            c = nextc();
+        }
+        if (parser->def_seen && (isspace(c) || c == '('))
+            parser->def_seen = 0;
+        *cp = '\0';
+        parser->column -= ax;
+        tokp.end_line = tokp.start_line;
+        tokp.end_col = last_col - ax;
+        push_pos(parser, tokp);
+        pushback();
+
+        /* IVAR, CVAR, GLOBAL */
+        if (bc > 0) {
+/*             printf("Inside\n"); */
+            push_stack(parser, lexbuf);
+            return bc;
+        }
+
+        /* TODO: I'm sure this can be reduced ! */
+        if (c == '(') {
+            push_stack(parser, lexbuf);
             parser->expr_seen = 0;
             parser->special_arg = 1;
             parser->mcall = 1;
+            parser->dot_seen = 0;
+            return BASE;
         } else if (parser->dot_seen) {
-            push_stack(parser, buffer);
-            t = BASE;
+            push_stack(parser, lexbuf);
             parser->dot_seen = 0;
             parser->expr_seen = 1;
-        } else {
-            const struct kwtable *kw = rb_reserved_word(buffer, diff);
-            if (kw) {
-                t = kw->id[0];
-                switch (t) {
-                    case tDEF:
-                        parser->def_seen = 1;
-                    case tMODULE: case tCLASS:
-                        push_last_comment(parser);
-                        break;
-                    case tALIAS:
-                        parser->in_alias = 1;
-                        break;
-                    case tEND:
-                        CMDARG_PUSH(0);
-                        break;
-                    case tRETURN:
-                        parser->expr_mid = 2;
-                }
-                if (t != kw->id[1] && (parser->expr_seen || parser->expr_mid > 0)) {
-                    t = kw->id[1];
-                    parser->expr_seen = 0;
-                } else
-                    parser->expr_seen = kw->expr;
-                if (*c == ':' && *(c + 1) != ':') {
-                    t = tKEY;
-                    parser->expr_seen = 0;
-                    ++curs;
-                    push_stack(parser, buffer);
-                }
-            } else if (is_special_method(buffer)) {
-                if (!strcmp(buffer, "__END__")) {
-                    parser->eof_reached = 1;
-                    t = tpEND;
-                } else {
-                    push_stack(parser, buffer);
-                    t = BASE;
-                }
-            } else if (not_sep(buffer)) {
-                parser->expr_seen = 1;
-                if (is_upper(buffer[0]))
-                    t = CONST;
-                else if (*c == ':' && *(c + 1) != ':') {
-                    t = tKEY;
-                    parser->expr_seen = 0;
-                    ++curs;
-                } else
-                    t = BASE;
-                push_stack(parser, buffer);
-            }
+            return BASE;
         }
+
+        /* TODO: Oh Lord if it can be reduced ... */
         parser->dot_seen = 0;
-    } else if (*c == '[') {
-        unsigned char should_store = 1;
-        curs++;
-        parser->paren_nest++;
-        CMDARG_PUSH(0);
-        if (parser->dot_seen || parser->def_seen || parser->symbeg) {
-            if (*(c + 1) == ']') {
-                ++curs;
-                should_store = 0;
-                parser->symbeg = 0;
-                if (*(c + 2) == '=') {
-                    ++curs;
-                    t = tASET;
+        const struct kwtable *kw = rb_reserved_word(lexbuf, cp - lexbuf);
+        if (kw) {
+            c = kw->id[0];
+            switch (c) {
+                case tDEF:
+                    parser->def_seen = 1;
+                case tMODULE: case tCLASS:
+                    push_last_comment(parser);
+                    break;
+                case tALIAS:
+                    parser->in_alias = 1;
+                    break;
+                case tEND:
+                    CMDARG_PUSH(0);
+                    break;
+                case tRETURN:
+                    parser->expr_mid = 2;
+            }
+            if (c != kw->id[1] && (parser->expr_seen || parser->expr_mid > 0)) {
+                c = kw->id[1];
+                parser->expr_seen = 0;
+            } else
+                parser->expr_seen = kw->expr;
+            bc = nextc();
+            if (c == ':' && bc != ':') {
+                parser->expr_seen = 0;
+                return tKEY;
+            }
+            pushback();
+            /* TODO: will be removed in the future */
+            if (c == tDO) {
+                if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
+                    parser->lpar_beg = 0;
+                    parser->paren_nest--;
+                    c = tDO_LAMBDA;
+                } else if (COND_P()) {
+                    c = tDO_COND;
+                } else if (CMDARG_P() || !parser->expr_seen || parser->brace_arg) {
+                    CMDARG_PUSH(0);
+                    c = tDO_BLOCK;
                 } else
-                    t = tAREF;
-            } else if (!parser->def_seen) {
-                COND_PUSH(0);
-                t = '[';
+                    c = tDO;
+                parser->expr_seen = 0;
             }
-        } else if (!parser->expr_seen || space_seen) {
-            t = tLBRACKET;
-        } else {
-            COND_PUSH(0);
-            t = '[';
+            return c;
         }
-        if (should_store) {
-            tokp.start_line = tokp.end_line = parser->line;
-            tokp.start_col = parser->column;
+        if (is_special_method(lexbuf)) {
+            if (!strcmp(lexbuf, "__END__")) {
+                parser->eof_reached = 1;
+                return tpEND;
+            }
+            push_stack(parser, lexbuf);
+            return BASE;
         }
-        parser->expr_seen = 0;
-    } else if (*c == ']') {
-        parser->paren_nest--;
         parser->expr_seen = 1;
-        parser->brace_arg = 1;
-        CMDARG_LEXPOP();
-        COND_LEXPOP();
-        t = ']';
-        curs++;
-    } else if (*c == '=') {
-        curs++;
-        if (*(c + 1) == '=') {
-            ++curs;
+        push_stack(parser, lexbuf);
+        if (is_upper(lexbuf[0]))
+            return CONST;
+        nextc();
+        if (c == ':' && *(parser->lex_p) != ':') {
             parser->expr_seen = 0;
-            if (*(c + 2) == '=') {
-                t = tEQQ;
-                curs++;
-            } else
-                t = tEQ;
-        } else if (*(c + 1) == '~') {
-            ++curs;
-            parser->expr_seen = 0;
-            t = tMATCH;
-            parser->expr_seen = 0;
-        } else if (*(c + 1) == '>') {
-            ++curs;
-            parser->expr_seen = 0;
-            t = tASSOC;
-        } else if (multiline_comment(c)) {
-            curs += 5;
-            c += 5;
-            for(; !multiline_end(c); ++curs, ++c)
-                if (*c == '\n')
-                    parser->line++;
-            curs += 3;
-            t = tCOMMENT;
-        } else
-            t = '=';
-    } else if (*c == '<') {
-        curs++;
-        if (*(c + 1) == '<') {
-            curs++;
-            if (*(c + 2) == '=') {
-                curs++;
-                t = tOP_ASGN;
-            } else {
-                if (maybe_heredoc) {
-                    tokp.start_line = parser->line;
-                    tokp.start_col = parser->column;
-                    if (parse_heredoc_identifier(parser)) {
-                        c = parser->blob + parser->cursor;
-                        lex_strterm.token = token_heredoc;
-                        t = tSTRING_BEG;
-                        push_pos(parser, tokp);
-                        return t;
-                    }
-                }
-                tokp.start_line = tokp.start_col = -1;
-                parser->expr_seen = 0;
-                t = tLSHIFT;
-            }
-        } else if (*(c + 1) == '=') {
-            curs++;
-            parser->expr_seen = 0;
-            if (*(c + 2) == '>') {
-                curs++;
-                t = tCMP;
-            } else
-                t = tLEQ;
-        } else {
-            parser->expr_seen = 0;
-            t = '<';
+            return tKEY;
         }
-    } else if (*c == '>') {
-        curs++;
-        parser->expr_seen = 0;
-        if (*(c + 1) == '>') {
-            curs++;
-            if (*(c + 2) == '=') {
-                curs++;
-                t = tOP_ASGN;
-            } else
-                t = tRSHIFT;
-        } else if (*(c + 1) == '=') {
-            curs++;
-            t = tGEQ;
-        } else
-            t = '>';
-    } else if (*c == '!') {
-        curs++;
-        if (*(c + 1) == '=') {
-            curs++;
-            parser->expr_seen = 0;
-            t = tNEQ;
-        } else if (*(c + 1) == '~') {
-            curs++;
-            parser->expr_seen = 0;
-            t = tNMATCH;
-        } else {
-            tokp.start_line = tokp.end_line = parser->line;
-            tokp.start_col = parser->column;
-            if (parser->def_seen && *(c + 1) == '@')
-                curs++;
-            t = '!';
-        }
-    } else if (*c == '+') {
-        curs++;
-        if (*(c + 1) == '=') {
-            curs++;
-            t = tOP_ASGN;
-        } else {
-            t = '+';
-            if (!parser->expr_seen) {
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUPLUS;
-            } else if (parser->def_seen && *(c + 1) == '@') {
-                curs++;
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUPLUS;
-            } else if (parser->expr_seen && space_seen && !isspace(*(c + 1))) {
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUPLUS;
-            } else
-                parser->expr_seen = 0;
-        }
-    } else if (*c == '-') {
-        curs++;
-        if (*(c + 1) == '=') {
-            curs++;
-            t = tOP_ASGN;
-        } else if (*(c + 1) == '>') {
-            curs++;
-            tokp.start_line = tokp.end_line = parser->line;
-            tokp.start_col = parser->column;
-            t = tLAMBDA;
-        } else {
-            t = '-';
-            if (!parser->expr_seen) {
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUMINUS;
-            } else if (parser->def_seen && *(c + 1) == '@') {
-                curs++;
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUMINUS;
-            }    else if (parser->expr_seen && space_seen && !isspace(*(c + 1))) {
-                parser->expr_seen = 0;
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                t = tUMINUS;
-            } else
-                parser->expr_seen = 0;
-        }
-    } else if (*c == '*') {
-        curs++;
-        if (*(c + 1) == '=') {
-            curs++;
-            t = tOP_ASGN;
-        } else if (*(c + 1) == '*') {
-            ++curs;
-            if (*(c + 2) == '=') {
-                ++curs;
-                t = tOP_ASGN;
-                parser->expr_seen = 0;
-            } else {
-                if (!parser->expr_seen)
-                    t = tDSTAR;
-                else {
-                    t = tPOW;
-                    parser->expr_seen = 0;
-                }
-            }
-        } else {
-            if (!parser->expr_seen || parser->dot_seen)
-                t = tSTAR;
-            else
-                t = '*';
-            parser->expr_seen = 0;
-            parser->auxiliar.start_line = parser->line;
-            parser->auxiliar.start_col = parser->column;
-        }
-    } else if (*c == '/') {
-        if (!parser->expr_seen) {
-            tokp.start_line = parser->line;
-            tokp.start_col = parser->column;
-            lex_strterm.term = *c;
-            lex_strterm.can_embed = 1;
-            lex_strterm.token = token_regexp;
-            t = tSTRING_BEG;
-            curs++;
-        } else if (*(c + 1) == '=') {
-            curs += 2;
-            t = tOP_ASGN;
-            parser->expr_seen = 0;
-        } else {
-            curs++;
-            t = '/';
-            parser->expr_seen = 0;
-        }
-    } else if (*c == '%') {
-        ++curs;
-        if (*(c + 1) == '=') {
-            curs++;
-            t = tOP_ASGN;
-        } else if (is_shortcut(*(c + 1))) {
-            int to_add = 2 - !isalpha(*(c + 1));
-            lex_strterm.token = guess_kind(parser, *(c + 1));
-            curs += to_add;
-            c += to_add;
-            tokp.start_line = parser->line;
-            tokp.start_col = parser->column;
-            lex_strterm.term = closing_char(*c);
-            lex_strterm.can_embed = 1;
-            t = tSTRING_BEG;
-        } else {
-            t = '%';
-            parser->expr_seen = 0;
-        }
-    } else if (*c == '&') {
-        ++curs;
-        if (*(c + 1) == '&') {
-            ++curs;
-            if (*(c + 2) == '=') {
-                ++curs;
-                t = tOP_ASGN;
-            } else
-                t = tAND;
-        } else if (*(c + 1) == '=') {
-            ++curs;
-            t = tOP_ASGN;
-        } else if (!parser->expr_seen || parser->dot_seen)
-            t = tAMPER;
-        else
-            t = '&';
-        parser->expr_seen = 0;
-    } else if (*c == '|') {
-        ++curs;
-        if (*(c + 1) == '|') {
-            ++curs;
-            if (*(c + 2) == '=') {
-                ++curs;
-                t = tOP_ASGN;
-            } else
-                t = tOR;
-        } else if (*(c + 1) == '=') {
-            ++curs;
-            t = tOP_ASGN;
-        } else
-            t = '|';
-        parser->expr_seen = 0;
-    } else if (*c == '.') {
-        curs++;
-        if (*(c + 1) == '.') {
-            curs++;
-            parser->expr_seen = 0;
-            if (*(c + 2) == '.') {
-                curs++;
-                t = tDOT3;
-            } else
-                t = tDOT2;
-        } else {
-            t = '.';
-            parser->dot_seen = 1;
-        }
-    } else if (*c == ':') {
-        curs++;
-        if (*(c + 1) == ':') {
-            curs++;
-            if (!parser->expr_seen || (parser->expr_seen && space_seen))
-                t = tCOLON3;
-            else
-                t = tCOLON2;
-        } else if (!isspace(*(c + 1))) {
-            tokp.start_line = tokp.end_line = parser->line;
-            tokp.start_col = parser->column;
-            t = tSYMBEG;
-            parser->symbeg = 1;
-            parser->expr_seen = 1;
-        } else {
-            parser->expr_seen = 0;
-            t = ':';
-        }
-    } else if (*c == ';') {
-        curs++;
-        parser->expr_seen = 0;
-        t = ';';
-    } else if (*c == '?') {
-        curs++;
-        if (!isspace(*(c + 1))) {
-            if (!parser->expr_seen) {
-                if (*(c + 1) == '\\')
-                    curs++;
-                curs++;
-                tokp.start_line = tokp.end_line = parser->line;
-                tokp.start_col = parser->column;
-                tokp.end_col = tokp.start_col + 2 + (*(c + 1) == '\\');
-                t = tCHAR;
-                parser->expr_seen = 1;
-            } else
-                t = '?';
-        } else
-            t = '?';
-    } else if (*c == '\'') {
-        tokp.start_line = parser->line;
-        tokp.start_col = parser->column;
-        lex_strterm.term = *c;
-        lex_strterm.can_embed = 0;
-        lex_strterm.token = token_string;
-        t = tSTRING_BEG;
-        curs++;
-    } else if (*c == '"') {
-        tokp.start_line = parser->line;
-        tokp.start_col = parser->column;
-        lex_strterm.term = *c;
-        lex_strterm.can_embed = 1;
-        lex_strterm.token = token_string;
-        t = tSTRING_BEG;
-        curs++;
-    } else if (*c == '(') {
-        parser->paren_nest++;
-        /*CMDARG_PUSH(0);*/
-        if (parser->special_arg) {
-            COND_PUSH(0);
-            CMDARG_PUSH(0);
-            parser->special_arg = 0;
-            t = '(';
-        } else if (!parser->expr_seen || COND_P())
-            t = tLPAREN;
-        else {
-            CMDARG_PUSH(0);
-            COND_PUSH(0);
-            t = '(';
-        }
-        curs++;
-    } else if (*c == ')') {
-        parser->paren_nest--;
-        curs++;
-        parser->expr_seen = 1;
-        CMDARG_LEXPOP();
-        COND_LEXPOP();
-        if (!parser->paren_nest)
-            parser->mcall = 0;
-        t = ')';
-    } else if (*c == '{') {
-        if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
-            parser->lpar_beg = 0;
-            parser->paren_nest--;
-            COND_PUSH(0);
-            CMDARG_PUSH(0);
-            t = tLAMBEG; /* this is a lambda ->() {} construction */
-            if (parser->version < ruby19) {
-                yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
-            }
-        } else if (!parser->expr_seen || COND_P())
-            t = tLBRACE; /* smells like hash */
-        else if (parser->brace_arg)
-            t = tLBRACE_ARG; /* block (expr) */
-        else {
-            COND_PUSH(0);
-            CMDARG_PUSH(0);
-            t = '{'; /* block (primary) */
-        }
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        curs++;
-    } else if (*c == '}') {
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = parser->column;
-        parser->expr_seen = 1;
-        parser->brace_arg = 1;
-        CMDARG_LEXPOP();
-        COND_LEXPOP();
-        curs++;
-        t = '}';
-    } else if (*c == ',') {
-        curs++;
-        parser->expr_seen = 0;
-        t = ',';
-    } else if (*c == '`') {
-        if (parser->def_seen) {
-            curs++;
-            t = '`';
-        } else {
-            tokp.start_line = parser->line;
-            tokp.start_col = parser->column;
-            lex_strterm.term = *c;
-            lex_strterm.can_embed = 1;
-            lex_strterm.token = token_string;
-            t = tSTRING_BEG;
-            curs++;
-        }
-    } else if (*c == '~') {
-        curs++;
-        tokp.start_line = tokp.end_line = parser->line;
-        tokp.start_col = tokp.end_col = parser->column;
-        if (parser->def_seen && *(c + 1) == '@')
-            curs++;
-        t = '~';
-    } else if (*c == '^') {
-        curs++;
-        t = '^';
-        parser->expr_seen = 0;
+        pushback();
+        return BASE;
     }
 
-    /* Let's fix the tDO token */
-    if (t == tDO) {
-        if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
-            parser->lpar_beg = 0;
-            parser->paren_nest--;
-            t = tDO_LAMBDA;
-        } else if (COND_P()) {
-            t = tDO_COND;
-        } else if (CMDARG_P() || !parser->expr_seen || parser->brace_arg) {
-            CMDARG_PUSH(0);
-            t = tDO_BLOCK;
-        } else
-            t = tDO;
+tnum:
+    /* TODO Can be optimized */
+    /* TODO: maybe then it could be embedded into the switch, with less crap going on */
+    {
+        char hex, bin, has_point, aux;
+        hex = bin = has_point = aux = 0;
+
+        if (c == '0') {
+            bc = nextc();
+            if (to_upper(bc) == 'X') {
+                hex = 1;
+                c = nextc();
+            } else if (to_upper(bc) == 'B') {
+                bin = 1;
+                c = nextc();
+            }
+            pushback();
+        }
+        while (c > 0 && ((isdigit(c) && !bin) || (!hex && !bin && !has_point && c == '.')
+                    || (hex && to_upper(c) >= 'A' && to_upper(c) < 'G')
+                    || (bin && (c == '1' || c == '0')) || c == '_')) {
+            if (c == '.') {
+                if (!isdigit(*parser->lex_p)) {
+                    tokp.end_line = parser->line;
+                    tokp.end_col = parser->column - 1;
+                    push_pos(parser, tokp);
+                    pushback();
+                    return NUMERIC;
+                }
+                has_point = 1;
+            }
+            aux = 1;
+            c = nextc();
+        }
+        if ((bin || hex) && !aux)
+            yyerror(parser, "numeric literal without digits");
+
+        /* is it an exponential number ? */
+        if (!bin && !hex && to_upper(c) == 'E') {
+            c = nextc();
+            if (isdigit(c) || ((c == '+' || c == '-') && isdigit(*(parser->lex_p))))
+                c = nextc();
+            while (c != -1 && isdigit(c))
+                c = nextc();
+        }
+
+        parser->expr_seen = 1;
         parser->dot_seen = 0;
-        parser->expr_seen = 0;
+        if (c != -1)
+            pushback();
+        tokp.end_line = parser->line;
+        tokp.end_col = parser->column;
+        push_pos(parser, tokp);
+        return (has_point) ? FLOAT : NUMERIC;
     }
+}
+
+/* Standard yylex. */
+static int yylex(void *lval, void *p)
+{
+    struct parser_t * parser = (struct parser_t *) p;
+    int t = token_invalid;
+    _unused_(lval);
+
+    t = parser_yylex(parser);
+
+    /* TODO: maybe we can get rid of these guys */
 
     /* Unset some flags if necessary */
-    if (parser->brace_arg && *c != '}' && *c != ']')
+    if (parser->brace_arg && t != '}' && t != ']')
         parser->brace_arg = 0;
     if (t == tOP_ASGN || t == '=')
         parser->expr_seen = 0;
-
     parser->expr_mid--;
     if (parser->symbeg && t != tSYMBEG) {
         parser->symbeg = 0;
         parser->expr_seen = 1;
     }
 
-    if (t != tCOMMENT)
-        parser->column += curs - parser->cursor;
-
-    parser->cursor = curs;
-    if (tokp.start_line > 0) {
-        if (tokp.end_col < 0)
-            tokp.end_col = parser->column;
-        push_pos(parser, tokp);
-    }
-
-    /* it's the end... */
-    if (curs >= len)
+    // TODO: to be removed
+    if (!t)
         parser->eof_reached = 1;
     return t;
-}
-
-/*
- * Standard yylex.
- */
-static int yylex(void *lval, void *p)
-{
-    struct parser_t * parser = (struct parser_t *) p;
-    int ret = token_invalid;
-    (void) lval; /* like Q_UNUSED */
-
-    /* This parser does not like comments inside the grammar */
-    while ((ret = parser_yylex(parser)) == tCOMMENT);
-    return ret;
 }
 
 /*
@@ -3147,6 +3125,7 @@ static void yyerror(struct parser_t *parser, const char *s)
     parser->last_error->next = NULL;
 
     if (!e->warning) {
+        printf("This is not a warning GTFO!\n");
         parser->eof_reached = 1;
         parser->unrecoverable = 1;
     }
@@ -3168,6 +3147,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
         p.content_given = 1;
         p.length = strlen(opts->contents);
         p.blob = opts->contents;
+        p.lex_p = opts->contents;
     }
 
     /* Let's parse */
