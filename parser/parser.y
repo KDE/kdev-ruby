@@ -1760,7 +1760,7 @@ none : /* none */ { $$ = NULL; }
                                                     && *(c+3) == 'd')
 #define is_simple(c) (c == '(' || c == '{' || c == '[' || c == '|' || c == '<' || c == '/' || c == '$')
 #define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
-                                            || c == 'x' || is_simple(c))
+                        || c == 'x' || to_upper(c) == 'I' || is_simple(c))
 /* TODO: dollar and at are already checked by is_valid_identifier */
 #define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
                                         || *c == '_' || *c == '$' || *c == '@')
@@ -2099,6 +2099,10 @@ static int guess_kind(struct parser_t *parser, char c)
 
     switch (c) {
         case 'Q': case 'q': case 'x': return token_string;
+        case 'I': case 'i':
+            if (parser->version < ruby20) {
+                yywarning("This shortcut is only available in Ruby 2.0.x or higher.");
+            }
         case 'W': case 'w': return token_array;
         case 's': return token_symbol;
         case 'r': return token_regexp;
@@ -2662,6 +2666,7 @@ retry:
             if (bc == '=')
                 return tOP_ASGN;
             if (is_shortcut(bc)) {
+                /* TODO: is_shortcut can be simplified I think */
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 2;
                 push_pos(parser, tokp);

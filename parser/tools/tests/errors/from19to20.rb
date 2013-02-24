@@ -12,4 +12,6 @@ def another(a, *b, c: '')
 end
 
 def yet_another(a, b = 1, *c, d: '', **e, &blk)
-end 
+end
+
+%i{ sym a_sym }

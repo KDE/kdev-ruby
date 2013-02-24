@@ -62,6 +62,7 @@ describe 'Parser' do
         Line: 9, Column: 15; This syntax is only available in Ruby 1.9.x or higher.
         Line: 11, Column: 25; Keyword arguments are only available in Ruby 2.0.x or higher.
         Line: 14, Column: 46; Keyword arguments are only available in Ruby 2.0.x or higher.
+        Line: 17, Column: 2; This shortcut is only available in Ruby 2.0.x or higher.
       HEREDOC
     end
   end
