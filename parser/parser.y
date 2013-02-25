@@ -2766,6 +2766,7 @@ retry:
             if (bc == ':') {
                 if (!parser->expr_seen || (parser->expr_seen && space_seen))
                     return tCOLON3;
+                parser->dot_seen = 1;
                 return tCOLON2;
             }
             if (!isspace(bc)) {
@@ -2992,7 +2993,7 @@ talpha:
             push_stack(parser, lexbuf);
             parser->dot_seen = 0;
             parser->expr_seen = 1;
-            return BASE;
+            return (is_upper(lexbuf[0])) ? CONST : BASE;
         }
 
         /* TODO: Oh Lord if it can be reduced ... */
