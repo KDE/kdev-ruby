@@ -641,7 +641,7 @@ fname: base
         $$ = alloc_node(token_object, NULL, NULL);
         $$->name = parser->aux;
         $$->pos.start_line = $$->pos.end_line = parser->line;
-        $$->pos.end_col = parser->column - 1;
+        $$->pos.end_col = parser->column;
         $$->pos.start_col = $$->pos.end_col - parser->name_length;
         parser->expr_seen = 1;
         parser->dot_seen = 0;
@@ -2566,9 +2566,13 @@ retry:
                 if (bc == '<')
                     return tOP_ASGN;
                 pushback();
-                if (maybe_heredoc && parse_heredoc_identifier(parser)) {
-                    push_pos(parser, tokp);
-                    return tSTRING_BEG;
+                if (maybe_heredoc) {
+                    if (parse_heredoc_identifier(parser)) {
+                        push_pos(parser, tokp);
+                        return tSTRING_BEG;
+                    }
+                    /* parse_heredoc_identifier calls nextc at least once */
+                    pushback();
                 }
                 parser->expr_seen = 0;
                 return tLSHIFT;

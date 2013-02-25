@@ -90,3 +90,7 @@ def self.[]; end
 
 class A
 end
+
+def <<(obj)
+  log(INFO, obj.to_s)
+end
