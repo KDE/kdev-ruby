@@ -25,6 +25,7 @@ alias foo foo1
 alias foo1 :a
 alias $ERROR_INFO $!
 alias mon= month=
+alias [] test
 
 undef :a, foo
 if defined? anoia

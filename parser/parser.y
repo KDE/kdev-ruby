@@ -2532,7 +2532,7 @@ retry:
         case '[':
             parser->paren_nest++;
             CMDARG_PUSH(0);
-            if (parser->dot_seen || parser->def_seen || parser->symbeg) {
+            if (parser->dot_seen || parser->def_seen || parser->symbeg || parser->in_alias) {
                 parser->expr_seen = 0;
                 bc = nextc();
                 if (bc == ']') {
@@ -2976,7 +2976,6 @@ talpha:
 
         /* IVAR, CVAR, GLOBAL */
         if (bc > 0) {
-/*             printf("Inside\n"); */
             push_stack(parser, lexbuf);
             return bc;
         }
