@@ -1476,8 +1476,16 @@ superclass: term { $$ = NULL; }
     | error term { yyerrok; $$ = NULL; }
 ;
 
-f_arglist: '(' f_args rparen    { $$ = $2; }
-    | f_args term               { $$ = $1; }
+f_arglist: '(' f_args rparen
+    {
+        $$ = $2;
+        parser->expr_seen = 0;
+    }
+    | f_args term
+    {
+        $$ = $1;
+        parser->expr_seen = 0;
+    }
 ;
 
 args_tail: f_kwarg ',' f_kwrest opt_f_block_arg
