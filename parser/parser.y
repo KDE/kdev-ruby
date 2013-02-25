@@ -1962,7 +1962,6 @@ static int parser_nextc(struct parser_t *parser)
 {
     int c;
 
-    /* TODO */
     if (parser->eof_reached)
         return -1;
     if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length)
@@ -1987,7 +1986,6 @@ static int parser_nextc(struct parser_t *parser)
 
 static void parser_pushback(struct parser_t *parser)
 {
-    /* TODO */
     parser->column--;
     parser->lex_p--;
     if (*parser->lex_p == '\n') {
@@ -2473,7 +2471,6 @@ static int parser_yylex(struct parser_t *parser)
 retry:
     c = nextc();
 
-    /* TODO */
     tokp.start_line = parser->line;
     tokp.start_col = parser->column - 1;
 
@@ -2936,14 +2933,9 @@ retry:
 
 talpha:
     {
-        /* TODO: this effectively replaces parse_word */
         int step = 0;
         int ax = 0;
         int last_col = 0;
-
-        /* TODO: not sure on this. Is for last line not ending with blank. But anyways, this is ugly */
-/*         if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) */
-/*             return 0; */
 
         while (not_sep(parser->lex_prev)) {
             step = utf8_charsize(parser->lex_prev);
@@ -3173,12 +3165,8 @@ static void yyerror(struct parser_t *parser, const char *s)
     parser->last_error = e;
     parser->last_error->next = NULL;
 
-    if (!e->warning) {
-        /* TODO: remove debug */
-        printf("This is not a warning GTFO!\n");
-        parser->eof_reached = 1;
-        parser->unrecoverable = 1;
-    }
+    parser->eof_reached = !e->warning;
+    parser->unrecoverable = !e->warning;
 }
 
 struct ast_t * rb_compile_file(struct options_t *opts)
