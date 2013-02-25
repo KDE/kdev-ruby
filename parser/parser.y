@@ -38,6 +38,7 @@
 #define BSIZE STACK_SIZE
 
 /* Flags used by the lexer */
+/* TODO: in the future they must go as a lex_state thing */
 struct flags_t {
     unsigned char eof_reached : 1;
     unsigned char expr_seen : 1;
@@ -85,13 +86,14 @@ struct flags_t {
 /* TODO: I'm sure it can be simplified */
 struct term_t {
     int token;
-    char *word;
+    char *word; /* TODO: const ? */
     int length;
     unsigned char term;
     unsigned char can_embed : 1;
     unsigned char was_mcall : 1;
 };
 
+/* TODO document */
 struct comment_t {
     char *comment;
     int line;
@@ -102,6 +104,7 @@ struct comment_t {
  * flags used for internal reasons and some info about the
  * content to parse.
  */
+/* TODO: can be simplified */
 struct parser_t {
     /* Abstract Syntax Tree */
     struct node *ast;
@@ -123,7 +126,7 @@ struct parser_t {
     int paren_nest;
     int lpar_beg;
     int expr_mid;
-    struct term_t lex_strterm;
+    struct term_t lex_strterm; /* TODO: to the lexer */
     enum ruby_version version;
 
     /* Errors on the file */
@@ -144,8 +147,15 @@ struct parser_t {
 
     /* Info about the content to parse */
     /* TODO: optimize all this */
+    /* TODO: MRI treats them as const */
     char *lex_p; /* TODO */
     char *lex_prev;
+    /* BEGIN: heredoc (can be optimized) */
+    char *lex_pend;
+    unsigned long line_pend;
+    unsigned long column_pend;
+    unsigned char here_found : 1;
+    /* END: heredoc */
     unsigned long lex_prevc;
     unsigned long cursor;
     unsigned long length;
@@ -1338,9 +1348,13 @@ literal: numeric | symbol
 strings: string
     {
         $$ = alloc_node(lex_strterm.token, $1, NULL);
-        pop_pos(parser, $$);
-        $$->pos.end_line = parser->line;
-        $$->pos.end_col = parser->column;
+        if (lex_strterm.token == token_heredoc)
+            pop_pos(parser, $$);
+        else {
+            $$->pos.end_line = parser->line;
+            $$->pos.end_col = parser->column;
+        }
+        pop_start(parser, $$);
         $$->pos.offset = parser->cursor;
     }
     | strings string
@@ -1360,7 +1374,10 @@ string: tCHAR
         lex_strterm.token = token_string;
         $$ = 0;
     }
-    | tSTRING_BEG string_contents tSTRING_END { $$ = $2; }
+    | tSTRING_BEG string_contents tSTRING_END
+    {
+        $$ = $2;
+    }
 ;
 
 string_contents: /* none */ { $$ = 0; }
@@ -1769,6 +1786,9 @@ none : /* none */ { $$ = NULL; }
                                                                 buffer[strlen(buffer) - 1] == '_')
 #define maybe_heredoc (!parser->class_seen && !parser->dot_seen)
 
+/* TODO: clean */
+#define SWAP(a, b, aux) { aux = a; a = b; b = aux; }
+
 
 static void init_parser(struct parser_t * parser)
 {
@@ -1778,6 +1798,10 @@ static void init_parser(struct parser_t * parser)
     parser->lex_p = NULL;
     parser->lex_prev = NULL;
     parser->lex_prevc = 0;
+    parser->lex_pend = NULL;
+    parser->line_pend = 0;
+    parser->column_pend = 0;
+    parser->here_found = 0;
     parser->cursor = 0;
     parser->eof_reached = 0;
     parser->expr_seen = 0;
@@ -1940,6 +1964,12 @@ static int parser_nextc(struct parser_t *parser)
     parser->lex_prevc = parser->column;
     c = (unsigned char) *parser->lex_p++;
     if (c == '\n') {
+        if (parser->here_found) {
+            parser->line = parser->line_pend;
+            parser->column = parser->column_pend;
+            parser->lex_p = parser->lex_pend + 1;
+            parser->here_found = 0;
+        }
         parser->line++;
         parser->column = -1;
     }
@@ -1960,123 +1990,117 @@ static void parser_pushback(struct parser_t *parser)
 
 static int parse_heredoc_identifier(struct parser_t *parser)
 {
-    /* TODO */
-    return 0;
+    /* TODO: buffer to some lexer buffer ? */
     char *buffer = (char *) malloc(BSIZE * sizeof(char));
+    char *ptr = buffer;
     int count = BSIZE, scale = 0;
-    int curs = parser->cursor;
-    int original = curs;
-    char *c = parser->blob + curs;
+    char c = nextc(); /* TODO: ugly */
     unsigned char quote_seen = 0, term = ' ';
     unsigned char dash_seen = 0;
-    int i, len = parser->length;
 
     /* Check for <<- case */
-    if (*(c + 2) == '-') {
+    if (c == '-') {
         dash_seen = 1;
-        c += 3;
-        curs += 3;
-    } else {
-        c += 2;
-        curs += 2;
+        c = nextc();
     }
-    if (*c == '\'' || *c == '"' || *c == '`') {
-        term = *c;
-        c++; curs++;
+    /* And now surrounding quotes */
+    if (c == '\'' || c == '"' || c == '`') {
+        term = c;
+        c = nextc();
         quote_seen = 1;
     }
-
-    if (!quote_seen && !is_identchar(c)) {
-        if (dash_seen) {
-            curs--;
-            c--;
-        }
+    if (!quote_seen && !is_identchar(parser->lex_prev)) {
+        if (dash_seen)
+            pushback();
         return 0;
     }
 
-    for (i = 0; curs <= len; curs++, --count) {
+    for (;;) {
         /* If quote was seen, anything except the term is accepted */
         if (quote_seen) {
-            if (*c == term || !is_utf8_graph(c))
+            if (c == term || !is_utf8_graph(parser->lex_prev))
                 break;
-        } else if (!is_identchar(c))
+        } else if (!is_identchar(parser->lex_prev))
             break;
-        if (curs > len) {
-            free(buffer);
-            yyerror(parser, "unterminated here document identifier");
-            return 0;
-        }
         if (!count) {
             scale++;
             buffer = (char *) realloc(buffer, (BSIZE << scale) * sizeof(char));
         }
-        buffer[i++] = *c++;
+        *ptr++ = c;
+        c = nextc();
+        if (c < 0) {
+            free(buffer);
+            yyerror(parser, "unterminated here document identifier");
+            return 0;
+        }
     }
-    buffer[i] = '\0';
+    *ptr = '\0';
+    pushback();
 
-    parser->column += curs - original;
-    parser->cursor = curs;
     lex_strterm.term = 1;
     lex_strterm.can_embed = dash_seen;
     lex_strterm.word = buffer;
-    lex_strterm.length = i;
+    lex_strterm.length = ptr - buffer;
     lex_strterm.was_mcall = parser->mcall;
+    lex_strterm.token = token_heredoc;
+    parser->lex_pend = parser->lex_p + quote_seen;
+    parser->line_pend = parser->line;
+    parser->column_pend = parser->column;
     return 1;
 }
 
+/*
+ * TODO: what has to be changed:
+ *  - The lexer must have some lex_pend that stores where were we after the
+ *    identifier was found. ( method_call(<<HERE, a, b) )
+ *  - Wait until the first end of line is found.
+ *  - When tSTRING_END has to be returned, then the state has to be restored. 
+ */
 static int parse_heredoc(struct parser_t *parser)
 {
-    int i, spaces, cols, buff_l = lex_strterm.length;
-    int curs = parser->cursor;
-    int original = curs;
-    int len = parser->length;
-    char *c = parser->blob + curs;
-    char aux[buff_l];
+    char aux[lex_strterm.length];
+    char c = nextc();
+    int i = 0;
     int ax = 0;
 
-    for (i = 0, spaces = 0; curs <= len; i++, c++, curs++, cols++) {
+    /* Skip until next line */
+    while (c != -1 && c != '\n')
+        c = nextc();
+
+    do {
+        c = nextc();
+
         /* Ignore initial spaces if dash seen */
         if (i == 0 && lex_strterm.can_embed)
-            for (; isspace(*c) && *c != '\n' && curs <= len; c++, curs++, spaces++);
-        if (*c == '#' && *(c - 1) != '\\') {
-            curs++;
-            i++;
-            c++;
-            switch (*c) {
-                case '$':
-                case '@':
-                    parser->cursor = curs;
-                    parser->column = i - ax;
+            while (isspace(c) || c == '\n')
+                c = nextc();
+        if (c == '#' && *(parser->lex_prev - 1) != '\\') {
+            c = nextc();
+            switch (c) {
+                case '$': case '@':
+                    parser->column -= ax;
+                    pushback();
                     return tSTRING_DVAR;
                 case '{':
-                    parser->cursor = curs + 1;
-                    parser->column = cols + spaces + 2 - ax;
+                    parser->column -= ax;
                     return tSTRING_DBEG;
             }
         }
-        aux[i] = *c;
-        if (*c == '\n') {
-            cols = -1;
-            parser->line++;
-            if ((buff_l == i) && !strncmp(lex_strterm.word, aux, buff_l)) {
-                parser->line--;
-                parser->column = i + spaces - ax;
-                parser->cursor += curs - original;
-                c = parser->blob + parser->cursor;
+        aux[i] = c;
+        if (c == '\n') {
+            if ((lex_strterm.length == i) && !strncmp(lex_strterm.word, aux, i)) {
+                pushback();
                 free(lex_strterm.word);
                 lex_strterm.word = NULL;
                 return tSTRING_END;
             }
-            spaces = 0;
             i = -1;
         } else
-            ax += utf8_charsize(c) - 1;
-        if (i >= buff_l)
+            ax += utf8_charsize(parser->lex_prev) - 1;
+        if (i >= lex_strterm.length)
             i = -1;
-    }
-
-    free(lex_strterm.word);
-    lex_strterm.word = NULL;
+        i++;
+    } while (c != -1);
     return token_invalid;
 }
 
@@ -2291,7 +2315,7 @@ static int is_indented_comment(char *c)
 static void set_comment(struct parser_t *parser)
 {
     int c, count, scale = 1;
-    char *buffer = (char *) malloc(1024);
+    char *buffer = (char *) malloc(1024); /* TODO: BSIZE or ? */
     char *ptr = buffer;
 
     pushback();
@@ -2378,6 +2402,7 @@ static void parse_re_options(struct parser_t *parser)
             c != 'u' && c != 'e' && c != 's' && c != 'n') {
             sprintf(aux, "unknown regexp option - %c", c);
             yyerror(parser, aux);
+            return;
         }
         c = nextc();
     }
@@ -2415,15 +2440,28 @@ static int parser_yylex(struct parser_t *parser)
     /* String/Regexp/Heredoc parsing */
     // TODO
     if (lex_strterm.term) {
-        if (lex_strterm.token == token_heredoc)
+        if (lex_strterm.token == token_heredoc) {
             c = parse_heredoc(parser);
-        else
+            if (c == tSTRING_END) {
+                tokp.end_line = parser->line;
+                tokp.end_col = parser->column;
+                push_pos(parser, tokp);
+                SWAP(parser->line, parser->line_pend, space_seen);
+                SWAP(parser->column, parser->column_pend, space_seen);
+                SWAP(parser->lex_p, parser->lex_pend, cp);
+                lex_strterm.term = 0;
+                parser->here_found = 1;
+                parser->expr_seen = 1;
+                lex_strterm.was_mcall = 0; // TODO: WTF ?!
+            }
+        } else {
             c = parse_string(parser);
-        if (c == tSTRING_END) {
-            if (lex_strterm.token == token_regexp && isalpha(*parser->lex_p))
-                parse_re_options(parser);
-            lex_strterm.term = 0;
-            parser->expr_seen = 1;
+            if (c == tSTRING_END) {
+                if (lex_strterm.token == token_regexp && isalpha(*parser->lex_p))
+                    parse_re_options(parser);
+                lex_strterm.term = 0;
+                parser->expr_seen = 1;
+            }
         }
         return c;
     } else if (lex_strterm.token == token_heredoc && lex_strterm.was_mcall) {
@@ -2537,11 +2575,10 @@ retry:
                 if (bc == '<')
                     return tOP_ASGN;
                 pushback();
-/*                if (maybe_heredoc && parse_heredoc_identifier(parser)) {
-                    lex_strterm.token = token_heredoc;
+                if (maybe_heredoc && parse_heredoc_identifier(parser)) {
                     push_pos(parser, tokp);
                     return tSTRING_BEG;
-                }*/
+                }
                 parser->expr_seen = 0;
                 return tLSHIFT;
             } else if (bc == '=') {
