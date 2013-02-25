@@ -59,3 +59,5 @@ end
 
 foo do |x, y = 1; z|
 end
+
+a {[]}

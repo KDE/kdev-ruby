@@ -2587,8 +2587,10 @@ retry:
             } else if (bc == '=') {
                 parser->expr_seen = 0;
                 bc = nextc();
-                if (bc == '>')
+                if (bc == '>') {
+                    parser->expr_seen = 1;
                     return tCMP;
+                }
                 pushback();
                 return tLEQ;
             }
@@ -2838,15 +2840,17 @@ retry:
                 parser->paren_nest--;
                 COND_PUSH(0);
                 CMDARG_PUSH(0);
+                parser->expr_seen = 0;
                 if (parser->version < ruby19) {
                     yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
                 }
                 return tLAMBEG; /* this is a lambda ->() {} construction */
             }
             if (!parser->expr_seen || COND_P())
-                return tLBRACE; /* smells like hash */
-            if (parser->brace_arg)
-                return tLBRACE_ARG; /* block (expr) */
+                c = tLBRACE; /* smells like hash */
+            else if (parser->brace_arg)
+                c = tLBRACE_ARG; /* block (expr) */
+            parser->expr_seen = 0;
             COND_PUSH(0);
             CMDARG_PUSH(0);
             return c; /* block (primary) */
