@@ -1761,7 +1761,7 @@ none : /* none */ { $$ = NULL; }
 #include <ctype.h>
 #include "hash.c"
 
-// TODO
+/* TODO */
 #define nextc() parser_nextc(parser)
 #define pushback() parser_pushback(parser)
 #define _unused_(c) (void) c;
@@ -2314,12 +2314,11 @@ static int is_indented_comment(char *c)
 
 static void set_comment(struct parser_t *parser)
 {
-    int c, count, scale = 1;
+    int c, count = 0, scale = 0;
     char *buffer = (char *) malloc(1024); /* TODO: BSIZE or ? */
-    char *ptr = buffer;
 
     pushback();
-    for (;;) {
+    for (;; ++count) {
         c = nextc();
         if (c != '#' && !is_indented_comment(parser->lex_prev))
             break;
@@ -2327,22 +2326,22 @@ static void set_comment(struct parser_t *parser)
             c = nextc();
 
         if (c != '\n') {
-            while (c != -1) {
-                __check_buffer_size(1024);
-                *ptr++ = c;
+            for (; c != -1; count++) {
+                __check_buffer_size(1000);
+                buffer[count] = c;
                 c = nextc();
                 if (c == '\n') {
-                    *ptr++ = c;
+                    buffer[++count] = c;
                     break;
                 }
             }
         } else
-            *ptr++ = c;
+            buffer[count] = c;
     }
 
     if (c != -1)
         pushback();
-    *ptr = '\0';
+    buffer[count] = '\0';
     store_comment(parser, buffer);
 }
 
@@ -2362,8 +2361,8 @@ static int parse_string(struct parser_t *parser)
         return tSTRING_END;
     }
 
-    // TODO
-    // TODO: maybe the c value can mark more about it ? p.e. -2 means EOF, -1 EOL, ...
+    /* TODO */
+    /* TODO: maybe the c value can mark more about it ? p.e. -2 means EOF, -1 EOL, ... */
     if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
@@ -2381,7 +2380,7 @@ static int parse_string(struct parser_t *parser)
         }
     }
 
-    // TODO: document why we re-use next and c like a boss.
+    /* TODO: document why we re-use next and c like a boss. */
     next = utf8_charsize(parser->lex_p);
     c = next - 1;
     while (next-- > 0)
@@ -2436,7 +2435,7 @@ static int parser_yylex(struct parser_t *parser)
      */
 
     /* String/Regexp/Heredoc parsing */
-    // TODO
+    /* TODO */
     if (lex_strterm.term) {
         if (lex_strterm.token == token_heredoc) {
             c = parse_heredoc(parser);
@@ -2450,7 +2449,7 @@ static int parser_yylex(struct parser_t *parser)
                 lex_strterm.term = 0;
                 parser->here_found = 1;
                 parser->expr_seen = 1;
-                lex_strterm.was_mcall = 0; // TODO: WTF ?!
+                lex_strterm.was_mcall = 0; /* TODO: WTF ?! */
             }
         } else {
             c = parse_string(parser);
@@ -3138,7 +3137,7 @@ static int yylex(void *lval, void *p)
         parser->expr_seen = 1;
     }
 
-    // TODO: to be removed
+    /* TODO: to be removed */
     if (!t)
         parser->eof_reached = 1;
     return t;
