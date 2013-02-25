@@ -48,7 +48,7 @@ describe 'Parser' do
       output = `#{parser} #{base}/tests/errors/from18to19.rb 0`
       output.should == <<-HEREDOC.gsub(/^\s+/, '')
         Line: 1, Column: 16; This syntax is only available in Ruby 1.9.x or higher.
-        Line: 2, Column: 3; "->" syntax is only available in Ruby 1.9.x or higher.
+        Line: 2, Column: 4; "->" syntax is only available in Ruby 1.9.x or higher.
         Line: 3, Column: 15; Block local variables are only available in Ruby 1.9.x or higher.
       HEREDOC
     end
