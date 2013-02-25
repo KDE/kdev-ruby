@@ -2373,9 +2373,7 @@ static int parse_string(struct parser_t *parser)
     if (lex_strterm.can_embed && c == '#') {
         nextc();
         switch (*parser->lex_p) {
-            case '$':
-            case '@':
-                nextc();
+            case '$': case '@':
                 return tSTRING_DVAR;
             case '{':
                 c = nextc();
