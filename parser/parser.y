@@ -2049,13 +2049,6 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     return 1;
 }
 
-/*
- * TODO: what has to be changed:
- *  - The lexer must have some lex_pend that stores where were we after the
- *    identifier was found. ( method_call(<<HERE, a, b) )
- *  - Wait until the first end of line is found.
- *  - When tSTRING_END has to be returned, then the state has to be restored. 
- */
 static int parse_heredoc(struct parser_t *parser)
 {
     char aux[lex_strterm.length];
@@ -2378,6 +2371,7 @@ static int parse_string(struct parser_t *parser)
                 c = nextc();
                 return tSTRING_DBEG;
         }
+        pushback();
     }
 
     /* TODO: document why we re-use next and c like a boss. */
@@ -3164,6 +3158,7 @@ static void yyerror(struct parser_t *parser, const char *s)
     parser->last_error->next = NULL;
 
     if (!e->warning) {
+        /* TODO: remove debug */
         printf("This is not a warning GTFO!\n");
         parser->eof_reached = 1;
         parser->unrecoverable = 1;
