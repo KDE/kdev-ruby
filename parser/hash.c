@@ -167,7 +167,7 @@ rb_reserved_word (str, len)
 #line 30 "gperf.txt"
       {"if", {tIF, modifier_if}, 0},
 #line 19 "gperf.txt"
-      {"case", {tCASE, tCASE}, 1},
+      {"case", {tCASE, tCASE}, 0},
 #line 37 "gperf.txt"
       {"redo", {tREDO, tREDO}, 1},
 #line 33 "gperf.txt"

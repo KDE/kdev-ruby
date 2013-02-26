@@ -16,7 +16,7 @@ alias, {tALIAS, tALIAS}, 1
 and, {tKWAND, tKWAND}, 0
 begin, {tBEGIN, tBEGIN}, 1
 break, {tBREAK, tBREAK}, 1
-case, {tCASE, tCASE}, 1
+case, {tCASE, tCASE}, 0
 class, {tCLASS, tCLASS}, 1
 def, {tDEF, tDEF}, 1
 defined?, {tDEFINED, tDEFINED}, 1
