@@ -2795,6 +2795,7 @@ retry:
                     return tCHAR;
                 }
             }
+            parser->expr_seen = 0;
             break;
         case '`':
             if (parser->def_seen)
