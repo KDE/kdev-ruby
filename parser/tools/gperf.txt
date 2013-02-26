@@ -40,7 +40,7 @@ retry, {tRETRY, tRETRY}, 1
 return, {tRETURN, tRETURN}, 0
 self, {tSELF, tSELF}, 1
 super, {tSUPER, tSUPER}, 1
-then, {tTHEN, tTHEN}, 1
+then, {tTHEN, tTHEN}, 0
 true, {tTRUE, tTRUE}, 1
 undef, {tUNDEF, tUNDEF}, 1
 unless, {tUNLESS, modifier_unless}, 0

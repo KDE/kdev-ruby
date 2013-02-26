@@ -125,7 +125,7 @@ rb_reserved_word (str, len)
 #line 26 "gperf.txt"
       {"end", {tEND, tEND}, 1},
 #line 43 "gperf.txt"
-      {"then", {tTHEN, tTHEN}, 1},
+      {"then", {tTHEN, tTHEN}, 0},
 #line 35 "gperf.txt"
       {"not", {tKWNOT, tKWNOT}, 1},
 #line 28 "gperf.txt"
