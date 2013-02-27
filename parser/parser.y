@@ -2565,10 +2565,11 @@ retry:
             COND_LEXPOP();
             return c;
         case '<':
+            parser->expr_seen = 0;
             bc = nextc();
             if (bc == '<') {
                 bc = nextc();
-                if (bc == '<')
+                if (bc == '=')
                     return tOP_ASGN;
                 pushback();
                 if (maybe_heredoc) {
@@ -2579,19 +2580,14 @@ retry:
                     /* parse_heredoc_identifier calls nextc at least once */
                     pushback();
                 }
-                parser->expr_seen = 0;
                 return tLSHIFT;
             } else if (bc == '=') {
-                parser->expr_seen = 0;
                 bc = nextc();
-                if (bc == '>') {
-                    parser->expr_seen = 1;
+                if (bc == '>')
                     return tCMP;
-                }
                 pushback();
                 return tLEQ;
             }
-            parser->expr_seen = 0;
             break;
         case '>':
             parser->expr_seen = 0;
@@ -2602,7 +2598,8 @@ retry:
                     return tOP_ASGN;
                 pushback();
                 return tRSHIFT;
-            } else if (bc == '=')
+            }
+            if (bc == '=')
                 return tGEQ;
             break;
         case '!':
@@ -2610,7 +2607,8 @@ retry:
             if (bc == '=') {
                 parser->expr_seen = 0;
                 return tNEQ;
-            } else if (bc == '~') {
+            }
+            if (bc == '~') {
                 parser->expr_seen = 0;
                 return tNMATCH;
             }
