@@ -2494,7 +2494,7 @@ retry:
             set_comment(parser);
         eol:
         case '\n':
-            if (!parser->expr_seen)
+            if (!parser->expr_seen || parser->dot_seen)
                 goto retry;
             parser->dot_seen = 0;
             CMDARG_PUSH(0);
