@@ -35,3 +35,7 @@ end
 quoted_string =~ /^[\'\"].*[\'\"]$/ ?
         quoted_string[1, quoted_string.length-2] :
         quoted_string
+
+a = b ? \
+        c :
+        d

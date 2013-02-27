@@ -2816,6 +2816,14 @@ retry:
             lex_strterm.token = token_string;
             push_pos(parser, tokp);
             return tSTRING_BEG;
+        case '\\':
+            c = nextc();
+            if (c == '\n') {
+                space_seen = 1;
+                goto retry;
+            }
+            pushback();
+            return '\\';
         case '(':
             parser->paren_nest++;
             if (parser->special_arg) {
