@@ -31,3 +31,4 @@ a::b += 1
 a.b += 1
 a[1] += 1
 a::year, b.month, c.DAY, d::LALA = year, month, day, lala
+h ^= a

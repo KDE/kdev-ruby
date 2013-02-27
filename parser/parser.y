@@ -2777,9 +2777,15 @@ retry:
             }
             parser->expr_seen = 0;
             break;
+        case '^':
+            bc = nextc();
+            if (bc == '=') {
+                parser->expr_seen = 0;
+                return tOP_ASGN;
+            }
+            pushback();
         case ';':
         case ',':
-        case '^':
             parser->expr_seen = 0;
             return c;
         case '?':
