@@ -222,13 +222,13 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
 %token <n> tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING tDSTAR
 %token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
-%token <n> tREGEXP IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
+%token <n> IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
 %token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
 %token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL
 %token tSTRING_BEG tSTRING_CONTENT tSTRING_DBEG tSTRING_DEND tSTRING_END tSTRING_DVAR
 
 /* Types */
-%type <n> singleton strings string regexp literal numeric cpath rescue_arg
+%type <n> singleton strings string literal numeric cpath rescue_arg
 %type <n> top_compstmt top_stmt bodystmt compstmt stmts stmt expr arg primary
 %type <n> command command_call method_call if_tail opt_else case_body cases
 %type <n> opt_rescue exc_list exc_var opt_ensure args call_args opt_call_args
@@ -829,7 +829,6 @@ mrhs: args ',' arg          { $$ = update_list($1, $3); }
 
 primary: literal
     | strings
-    | regexp
     | variable
     | backref
     | tBEGIN bodystmt tEND
@@ -1425,9 +1424,6 @@ string_dvar: backref
     | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
     | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
     | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
-;
-
-regexp: tREGEXP { $$ = ALLOC_N(token_regexp, NULL, NULL); }
 ;
 
 symbol: tSYMBEG sym
@@ -2367,7 +2363,7 @@ static int parse_string(struct parser_t *parser)
         return -1;
     }
 
-    if (lex_strterm.can_embed && c == '#') {
+    if (lex_strterm.can_embed && c == '#' && *(parser->lex_prev) != '\\') {
         nextc();
         switch (*parser->lex_p) {
             case '$': case '@':

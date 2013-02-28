@@ -23,3 +23,4 @@ end
 return /IIS\/(\d+)/
 
 a = /asd/iu
+a = /\A#\#$/
