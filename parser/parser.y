@@ -1783,9 +1783,8 @@ none : /* none */ { $$ = NULL; }
                                                             && *(c+4) == 'i' && *(c+5) == 'n')
 #define multiline_end(c) (*c == '=' && *(c+1) == 'e' && *(c+2) == 'n' \
                                                     && *(c+3) == 'd')
-#define is_simple(c) (c == '(' || c == '{' || c == '[' || c == '|' || c == '<' || c == '/' || c == '$')
 #define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
-                        || c == 'x' || to_upper(c) == 'I' || is_simple(c))
+                        || c == 'x' || to_upper(c) == 'I' || (ispunct(c) && !parser->symbeg))
 /* TODO: dollar and at are already checked by is_valid_identifier */
 #define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
                                         || *c == '_' || *c == '$' || *c == '@')
