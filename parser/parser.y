@@ -38,7 +38,10 @@
 #define BSIZE STACK_SIZE
 
 /* Flags used by the lexer */
-/* TODO: in the future they must go as a lex_state thing */
+/*
+ * TODO: enum, the real flag should be just a lex_state variable, as in
+ * the MRI.
+ */
 struct flags_t {
     unsigned char eof_reached : 1;
     unsigned char expr_seen : 1;
@@ -126,7 +129,7 @@ struct parser_t {
     int paren_nest;
     int lpar_beg;
     int expr_mid;
-    struct term_t lex_strterm; /* TODO: to the lexer */
+    struct term_t *lex_strterm; /* TODO: to the lexer */
     enum ruby_version version;
 
     /* Errors on the file */
@@ -213,7 +216,7 @@ static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
 %union {
     struct node *n;
     int num;
-    struct term_t term;
+    struct term_t *term;
 }
 
 /* Tokens */
@@ -1346,8 +1349,8 @@ literal: numeric | symbol
 
 strings: string
     {
-        $$ = alloc_node(lex_strterm.token, $1, NULL);
-        if (lex_strterm.token == token_heredoc)
+        $$ = $1;
+        if ($1->kind == token_heredoc)
             pop_pos(parser, $$);
         else {
             $$->pos.end_line = parser->line;
@@ -1360,22 +1363,27 @@ strings: string
     {
         if ($1->l != NULL)
             update_list($1->l, $2);
+        pop_pos(parser, $2); /* Drop the first position of the last string */
         $1->pos.end_line = parser->line;
         $1->pos.end_col = parser->column;
+        $2->pos.end_line = parser->line;
+        $2->pos.end_col = parser->column;
         $1->pos.offset = parser->cursor;
         $$ = $1;
-        pop_pos(parser, NULL); /* Drop the first position of the last string */
     }
 ;
 
 string: tCHAR
     {
-        lex_strterm.token = token_string;
-        $$ = 0;
+        $$ = alloc_node(token_string, NULL, NULL);
     }
     | tSTRING_BEG string_contents tSTRING_END
     {
-        $$ = $2;
+        $$ = alloc_node(lex_strterm->token, $2, NULL);
+        if (lex_strterm->word)
+            free(lex_strterm->word);
+        free(lex_strterm);
+        lex_strterm = NULL;
     }
 ;
 
@@ -1393,24 +1401,24 @@ string_content: tSTRING_CONTENT { $$ = 0; }
     | tSTRING_DBEG
     {
         parser->expr_seen = 0;
-        $<num>1 = parser->cond_stack;
+        $<num>$ = parser->cond_stack;
+    }
+    {
         $<term>$ = lex_strterm;
-        lex_strterm.term = 0;
-        lex_strterm.was_mcall = 0;
+        lex_strterm = NULL;
     }
     compstmt '}'
     {
         parser->expr_seen = 1;
-        parser->cond_stack = $<num>1;
-        lex_strterm = $<term>2;
-        $$ = $3;
+        parser->cond_stack = $<num>2;
+        lex_strterm = $<term>3;
+        $$ = $4;
         pop_pos(parser, NULL); /* '}' */
     }
     | tSTRING_DVAR
     {
         $<term>$ = lex_strterm;
-        lex_strterm.term = 0;
-        lex_strterm.was_mcall = 0;
+        lex_strterm = NULL;
         parser->expr_seen = 0;
     }
     string_dvar
@@ -1840,10 +1848,7 @@ static void init_parser(struct parser_t * parser)
     parser->last_comment.comment = NULL;
     parser->last_comment.line = 0;
     parser->comment_index = 0;
-    lex_strterm.term = 0;
-    lex_strterm.word = NULL;
-    lex_strterm.was_mcall = 0;
-    lex_strterm.token = token_invalid;
+    lex_strterm = NULL;
 }
 
 static void free_parser(struct parser_t *parser)
@@ -1854,8 +1859,8 @@ static void free_parser(struct parser_t *parser)
         free(parser->stack[index]);
     if (parser->pos_stack != NULL)
         free(parser->pos_stack);
-    if (lex_strterm.word)
-        free(lex_strterm.word);
+    if (lex_strterm && lex_strterm->word)
+        free(lex_strterm->word);
     if (!parser->content_given)
         free(parser->blob);
 }
@@ -2038,12 +2043,13 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     *ptr = '\0';
     pushback();
 
-    lex_strterm.term = 1;
-    lex_strterm.can_embed = dash_seen;
-    lex_strterm.word = buffer;
-    lex_strterm.length = ptr - buffer;
-    lex_strterm.was_mcall = parser->mcall;
-    lex_strterm.token = token_heredoc;
+    lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
+    lex_strterm->term = 1;
+    lex_strterm->can_embed = dash_seen;
+    lex_strterm->word = buffer;
+    lex_strterm->length = ptr - buffer;
+    lex_strterm->was_mcall = parser->mcall;
+    lex_strterm->token = token_heredoc;
     parser->lex_pend = parser->lex_p + quote_seen;
     parser->line_pend = parser->line;
     parser->column_pend = parser->column;
@@ -2052,7 +2058,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
 
 static int parse_heredoc(struct parser_t *parser)
 {
-    char aux[lex_strterm.length];
+    char aux[lex_strterm->length];
     char c = nextc();
     int i = 0;
     int ax = 0;
@@ -2065,7 +2071,7 @@ static int parse_heredoc(struct parser_t *parser)
         c = nextc();
 
         /* Ignore initial spaces if dash seen */
-        if (i == 0 && lex_strterm.can_embed)
+        if (i == 0 && lex_strterm->can_embed)
             while (isspace(c) || c == '\n')
                 c = nextc();
         if (c == '#' && *(parser->lex_prev - 1) != '\\') {
@@ -2082,16 +2088,14 @@ static int parse_heredoc(struct parser_t *parser)
         }
         aux[i] = c;
         if (c == '\n') {
-            if ((lex_strterm.length == i) && !strncmp(lex_strterm.word, aux, i)) {
+            if ((lex_strterm->length == i) && !strncmp(lex_strterm->word, aux, i)) {
                 pushback();
-                free(lex_strterm.word);
-                lex_strterm.word = NULL;
                 return tSTRING_END;
             }
             i = -1;
         } else
             ax += utf8_charsize(parser->lex_prev) - 1;
-        if (i >= lex_strterm.length)
+        if (i >= lex_strterm->length)
             i = -1;
         i++;
     } while (c != -1);
@@ -2344,13 +2348,13 @@ static int parse_string(struct parser_t *parser)
     register int c = *parser->lex_p;
     int next = *(parser->lex_p + 1);
 
-    if (c == '\\' && (next == lex_strterm.term || next == '\\')) {
+    if (c == '\\' && (next == lex_strterm->term || next == '\\')) {
         parser->lex_p += 2;
         parser->column += 2;
         return tSTRING_CONTENT;
     }
 
-    if (c == lex_strterm.term) {
+    if (c == lex_strterm->term) {
         nextc();
         return tSTRING_END;
     }
@@ -2363,7 +2367,7 @@ static int parse_string(struct parser_t *parser)
         return -1;
     }
 
-    if (lex_strterm.can_embed && c == '#' && *(parser->lex_prev) != '\\') {
+    if (lex_strterm->can_embed && c == '#' && *(parser->lex_prev) != '\\') {
         nextc();
         switch (*parser->lex_p) {
             case '$': case '@':
@@ -2431,8 +2435,8 @@ static int parser_yylex(struct parser_t *parser)
 
     /* String/Regexp/Heredoc parsing */
     /* TODO */
-    if (lex_strterm.term) {
-        if (lex_strterm.token == token_heredoc) {
+    if (lex_strterm) {
+        if (lex_strterm->token == token_heredoc) {
             c = parse_heredoc(parser);
             if (c == tSTRING_END) {
                 tokp.end_line = parser->line;
@@ -2441,24 +2445,23 @@ static int parser_yylex(struct parser_t *parser)
                 SWAP(parser->line, parser->line_pend, space_seen);
                 SWAP(parser->column, parser->column_pend, space_seen);
                 SWAP(parser->lex_p, parser->lex_pend, cp);
-                lex_strterm.term = 0;
                 parser->here_found = 1;
                 parser->expr_seen = 1;
-                lex_strterm.was_mcall = 0; /* TODO: WTF ?! */
+
             }
         } else {
             c = parse_string(parser);
             if (c == tSTRING_END) {
-                if (lex_strterm.token == token_regexp && isalpha(*parser->lex_p))
+                if (lex_strterm->token == token_regexp && isalpha(*parser->lex_p))
                     parse_re_options(parser);
-                lex_strterm.term = 0;
                 parser->expr_seen = 1;
             }
         }
         return c;
-    } else if (lex_strterm.token == token_heredoc && lex_strterm.was_mcall) {
-        lex_strterm.was_mcall = 0;
-        lex_strterm.token = 0;
+    } else if (lex_strterm && lex_strterm->token == token_heredoc && lex_strterm->was_mcall) {
+        /* TODO: can probably be removed */
+        lex_strterm->was_mcall = 0;
+        lex_strterm->token = 0;
         parser->mcall = 0;
         return ')';
     }
@@ -2683,9 +2686,11 @@ retry:
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 1;
                 push_pos(parser, tokp);
-                lex_strterm.term = c;
-                lex_strterm.can_embed = 1;
-                lex_strterm.token = token_regexp;
+                lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
+                lex_strterm->term = c;
+                lex_strterm->can_embed = 1;
+                lex_strterm->token = token_regexp;
+                lex_strterm->word = NULL;
                 return tSTRING_BEG;
             }
             parser->expr_seen = 0;
@@ -2702,11 +2707,13 @@ retry:
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 2;
                 push_pos(parser, tokp);
-                lex_strterm.token = guess_kind(parser, bc);
+                lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
+                lex_strterm->token = guess_kind(parser, bc);
                 if (isalpha(bc))
                     bc = nextc();
-                lex_strterm.term = closing_char(bc);
-                lex_strterm.can_embed = 1;
+                lex_strterm->term = closing_char(bc);
+                lex_strterm->can_embed = 1;
+                lex_strterm->word = NULL;
                 return tSTRING_BEG;
             }
             parser->expr_seen = 0;
@@ -2804,9 +2811,11 @@ retry:
             space_seen = 1;
             /* fallthrough */
         case '\'':
-            lex_strterm.term = c;
-            lex_strterm.can_embed = space_seen;
-            lex_strterm.token = token_string;
+            lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
+            lex_strterm->term = c;
+            lex_strterm->can_embed = space_seen;
+            lex_strterm->token = token_string;
+            lex_strterm->word = NULL;
             push_pos(parser, tokp);
             return tSTRING_BEG;
         case '\\':
