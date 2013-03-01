@@ -2378,7 +2378,7 @@ static int parse_string(struct parser_t *parser)
     if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
-        return -1;
+        return token_invalid;
     }
 
     if (lex_strterm->can_embed && c == '#' && *(parser->lex_prev) != '\\') {
@@ -2396,8 +2396,10 @@ static int parse_string(struct parser_t *parser)
     /* TODO: document why we re-use next and c like a boss. */
     next = utf8_charsize(parser->lex_p);
     c = next - 1;
-    while (next-- > 0)
-        nextc();
+    while (next-- > 0) {
+        if (nextc() < 0)
+            return token_invalid;
+    }
     parser->column -= c;
     return tSTRING_CONTENT;
 }
