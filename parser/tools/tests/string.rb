@@ -55,3 +55,6 @@ asdasdasdasd'
 b = "asd #{c.foo}" "aaa #{a} "
 
 "asd #$a sdàs #@a"
+
+%{ {} }
+%[ [ asdsad ] ]

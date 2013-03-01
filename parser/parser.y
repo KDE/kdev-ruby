@@ -91,9 +91,12 @@ struct term_t {
     int token;
     char *word; /* TODO: const ? */
     int length;
+    int nest;
     unsigned char term;
+    unsigned char paren;
     unsigned char can_embed : 1;
     unsigned char was_mcall : 1;
+    unsigned char nestable : 1;
 };
 
 /* TODO document */
@@ -2050,6 +2053,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     lex_strterm->length = ptr - buffer;
     lex_strterm->was_mcall = parser->mcall;
     lex_strterm->token = token_heredoc;
+    lex_strterm->nestable = 0;
     parser->lex_pend = parser->lex_p + quote_seen;
     parser->line_pend = parser->line;
     parser->column_pend = parser->column;
@@ -2354,9 +2358,19 @@ static int parse_string(struct parser_t *parser)
         return tSTRING_CONTENT;
     }
 
+    /* TODO: reduce this */
     if (c == lex_strterm->term) {
         nextc();
+        if (lex_strterm->nestable) {
+            lex_strterm->nest--;
+            if (lex_strterm->nest > 0)
+                return tSTRING_CONTENT;
+        }
         return tSTRING_END;
+    } else if (lex_strterm->nestable && lex_strterm->paren == c) {
+        lex_strterm->nest++;
+        nextc();
+        return tSTRING_CONTENT;
     }
 
     /* TODO */
@@ -2691,6 +2705,7 @@ retry:
                 lex_strterm->can_embed = 1;
                 lex_strterm->token = token_regexp;
                 lex_strterm->word = NULL;
+                lex_strterm->nestable = 0;
                 return tSTRING_BEG;
             }
             parser->expr_seen = 0;
@@ -2714,6 +2729,9 @@ retry:
                 lex_strterm->term = closing_char(bc);
                 lex_strterm->can_embed = 1;
                 lex_strterm->word = NULL;
+                lex_strterm->paren = bc;
+                lex_strterm->nestable = 1;
+                lex_strterm->nest = 1;
                 return tSTRING_BEG;
             }
             parser->expr_seen = 0;
@@ -2816,6 +2834,7 @@ retry:
             lex_strterm->can_embed = space_seen;
             lex_strterm->token = token_string;
             lex_strterm->word = NULL;
+            lex_strterm->nestable = 0;
             push_pos(parser, tokp);
             return tSTRING_BEG;
         case '\\':
