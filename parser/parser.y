@@ -2730,7 +2730,7 @@ retry:
                 lex_strterm->can_embed = 1;
                 lex_strterm->word = NULL;
                 lex_strterm->paren = bc;
-                lex_strterm->nestable = 1;
+                lex_strterm->nestable = (bc != lex_strterm->term);
                 lex_strterm->nest = 1;
                 return tSTRING_BEG;
             }
