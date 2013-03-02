@@ -186,9 +186,9 @@ static void yyerror(struct parser_t *, const char *);
 
 /* The static functions below deal with stacks. */
 
-#define ALLOC_N(kind, l, r) alloc_node(kind, l, r); fix_pos(parser, yyval.n);
-#define ALLOC_C(kind, cond, l, r) alloc_cond(kind, cond, l, r); fix_pos(parser, yyval.n);
-#define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond);
+#define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
+#define ALLOC_C(kind, cond, l, r) alloc_cond(kind, cond, l, r); pop_pos(parser, yyval.n);
+// #define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond);
 
 static void pop_stack(struct parser_t *parser, struct node *n);
 #define POP_STACK pop_stack(parser, yyval.n)
@@ -200,6 +200,7 @@ struct node * fix_star(struct parser_t *parser);
 static void push_pos(struct parser_t *parser, struct pos_t tokp);
 static void pop_pos(struct parser_t *parser, struct node *n);
 static void pop_start(struct parser_t *parser, struct node *n);
+static void pop_end(struct parser_t *parser, struct node *n);
 static void copy_last(struct node *head, struct node *tail);
 static void copy_wc_range(struct node *res, struct node *h, struct node *t);
 static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
@@ -288,10 +289,19 @@ top_stmt: none
     | error stmt { $$ = $2; }
 ;
 
-bodystmt: compstmt opt_rescue opt_else opt_ensure
+bodystmt:
     {
-        $$ = alloc_ensure(token_body, $1, $2, $3, $4);
-        copy_wc_range($$, $1, $1);
+        $<num>$ = parser->line;
+    }
+    {
+        $<num>$ = parser->column;
+    }
+    compstmt opt_rescue opt_else opt_ensure
+    {
+        $$ = alloc_ensure(token_body, $3, $4, $5, $6);
+        pop_end(parser, $$); /* Every bodystmt ends with tEND */
+        $$->pos.start_line = $<num>1;
+        $$->pos.start_col = $<num>2;
     }
 ;
 
@@ -306,7 +316,7 @@ stmts: none
 
 stmt: tALIAS fsym fsym
     {
-        $$ = ALLOC_N(token_alias, $2, $3); copy_end($$, $3);
+        $$ = alloc_node(token_alias, $2, $3); /*copy_end($$, $3);*/
     }
     | tALIAS GLOBAL GLOBAL
     {
@@ -319,7 +329,8 @@ stmt: tALIAS fsym fsym
         fix_pos(parser, l);
         pop_stack(parser, l);
         pop_stack(parser, r);
-        $$ = ALLOC_N(token_alias, l, r); copy_end($$, r);
+        $$ = alloc_node(token_alias, l, r);
+/*         $$ = ALLOC_N(token_alias, l, r); copy_end($$, r); */
     }
     | tALIAS GLOBAL tNTH_REF
     {
@@ -327,27 +338,33 @@ stmt: tALIAS fsym fsym
     }
     | tUNDEF undef_list
     {
-        $$ = ALLOC_N(token_undef, NULL, $2); copy_last($$, $2);
+        $$ = alloc_node(token_undef, NULL, $2);;
+/*         $$ = ALLOC_N(token_undef, NULL, $2); copy_last($$, $2); */
     }
     | stmt modifier_if expr
     {
-        $$ = ALLOC_MOD(token_if, $3, $1, NULL);
+        $$ = alloc_cond(token_if, $3, $1, NULL);
+/*         $$ = ALLOC_MOD(token_if, $3, $1, NULL); */
     }
     | stmt modifier_unless expr
     {
-        $$ = ALLOC_MOD(token_unless, $3, $1, NULL);
+        $$ = alloc_cond(token_unless, $3, $1, NULL);
+/*         $$ = ALLOC_MOD(token_unless, $3, $1, NULL); */
     }
     | stmt modifier_while expr
     {
-        $$ = ALLOC_MOD(token_while, $3, $1, NULL);
+        $$ = alloc_cond(token_while, $3, $1, NULL);
+/*         $$ = ALLOC_MOD(token_while, $3, $1, NULL); */
     }
     | stmt modifier_until expr
     {
-        $$ = ALLOC_MOD(token_until, $3, $1, NULL);
+        $$ = alloc_cond(token_until, $3, $1, NULL);
+/*         $$ = ALLOC_MOD(token_until, $3, $1, NULL); */
     }
     | stmt modifier_rescue stmt
     {
-        $$ = ALLOC_MOD(token_rescue, $3, $1, NULL);
+        $$ = alloc_cond(token_rescue, $3, $1, NULL);
+/*         $$ = ALLOC_MOD(token_rescue, $3, $1, NULL); */
     }
     | upBEGIN
     {
@@ -356,19 +373,25 @@ stmt: tALIAS fsym fsym
     }
     '{' compstmt '}'
     {
-        $$ = ALLOC_N(token_up_begin, $4, NULL);
+        $$ = alloc_node(token_up_begin, $4, NULL);
+        discard_pos(); /* } */
+        discard_pos(); /* { */
+/*        $$ = ALLOC_N(token_up_begin, $4, NULL);
         pop_pos(parser, NULL);
-        pop_start(parser, $$);
+        pop_start(parser, $$);*/
     }
     | upEND '{' compstmt '}'
     {
-        $$ = ALLOC_N(token_up_end, $3, NULL);
+        $$ = alloc_node(token_up_end, $3, NULL);
+        discard_pos(); /* } */
+        discard_pos(); /* { */
+/*        $$ = ALLOC_N(token_up_end, $3, NULL);
         pop_pos(parser, NULL);
-        pop_start(parser, $$);
+        pop_start(parser, $$);*/
     }
-    | lhs '=' command_call  { $$ = ALLOC_N(token_assign, $1, $3); }
-    | mlhs '=' command_call { $$ = ALLOC_N(token_assign, $1, $3); }
-    | variable tOP_ASGN command_call { $$ = ALLOC_N(token_op_assign, $1, $3); }
+    | lhs '=' command_call  { $$ = alloc_node(token_assign, $1, $3); }
+    | mlhs '=' command_call { $$ = alloc_node(token_assign, $1, $3); }
+    | variable tOP_ASGN command_call { $$ = alloc_node(token_op_assign, $1, $3); }
     | primary '[' opt_call_args rbracket tOP_ASGN command_call
     {
         struct node *aux = alloc_node(token_array_value, $1, $3);
@@ -393,19 +416,19 @@ stmt: tALIAS fsym fsym
         struct node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
-    | backref tOP_ASGN command_call { $$ = ALLOC_N(token_op_assign, $1, $3); }
-    | lhs '=' mrhs  { $$ = ALLOC_N(token_assign, $1, $3); }
-    | mlhs '=' arg  { $$ = ALLOC_N(token_assign, $1, $3); }
-    | mlhs '=' mrhs { $$ = ALLOC_N(token_assign, $1, $3); }
+    | backref tOP_ASGN command_call { $$ = alloc_node(token_op_assign, $1, $3); }
+    | lhs '=' mrhs  { $$ = alloc_node(token_assign, $1, $3); }
+    | mlhs '=' arg  { $$ = alloc_node(token_assign, $1, $3); }
+    | mlhs '=' mrhs { $$ = alloc_node(token_assign, $1, $3); }
     | expr
-    | tpEND { $$ = ALLOC_N(token__end__, NULL, NULL); }
+    | tpEND { $$ = alloc_node(token__end__, NULL, NULL); }
 ;
 
 expr: command_call
-    | expr tKWAND expr      { $$ = ALLOC_N(token_kw_and, $1, $3); discard_pos();    }
-    | expr tKWOR expr       { $$ = ALLOC_N(token_kw_or, $1, $3);    discard_pos();  }
-    | tKWNOT opt_eol expr   { $$ = ALLOC_N(token_kw_not, $3, NULL); }
-    | '!' command_call      { $$ = ALLOC_N(token_not, $2, NULL);    }
+    | expr tKWAND expr      { $$ = alloc_node(token_kw_and, $1, $3);   }
+    | expr tKWOR expr       { $$ = alloc_node(token_kw_or, $1, $3);    }
+    | tKWNOT opt_eol expr   { $$ = alloc_node(token_kw_not, $3, NULL); }
+    | '!' command_call      { $$ = alloc_node(token_not, $2, NULL);    }
     | arg
 ;
 
@@ -427,70 +450,72 @@ block_command: block_call
 
 cmd_brace_block: tLBRACE_ARG opt_block_param compstmt '}'
     {
-        discard_pos();
         $$ = ALLOC_N(token_block, $3, $2);
-        copy_last($$, $3);
+        pop_start(parser, $$);
+/*        discard_pos();
+        $$ = ALLOC_N(token_block, $3, $2);
+        copy_last($$, $3);*/
     }
 ;
 
 command: operation command_args             %prec tLOWEST
     {
         $$ = alloc_node(token_method_call, $1, $2);
-        copy_wc_range($$, $1, $2);
+/*         copy_wc_range($$, $1, $2); */
     }
     | operation command_args cmd_brace_block
     {
         $$ = alloc_cond(token_method_call, $3, $1, $2);
-        copy_wc_range($$, $1, $2);
+/*         copy_wc_range($$, $1, $2); */
     }
     | primary '.' operation2 command_args         %prec tLOWEST
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
-        ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4); */
     }
     | primary '.' operation2 command_args cmd_brace_block
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_cond(token_method_call, $5, aux, $4);
-        ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4); */
     }
     | primary tCOLON2 operation2 command_args %prec tLOWEST
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
-        ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4); */
     }
     | primary tCOLON2 operation2 command_args cmd_brace_block
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_cond(token_method_call, $5, aux, $4);
-        ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4); */
     }
     | tSUPER call_args
     {
-        $$ = ALLOC_N(token_method_call, $2, NULL);
-        copy_last($$, $2);
+        $$ = alloc_node(token_method_call, $2, NULL);
+/*         copy_last($$, $2); */
     }
     | tYIELD call_args
     {
-        $$ = ALLOC_N(token_yield, $2, NULL);
-        copy_last($$, $2);
+        $$ = alloc_node(token_yield, $2, NULL);
+/*         copy_last($$, $2); */
     }
     | tRETURN call_args
     {
-        $$ = ALLOC_N(token_return, $2, NULL);
-        copy_last($$, $2);
+        $$ = alloc_node(token_return, $2, NULL);
+/*         copy_last($$, $2); */
     }
     | tBREAK call_args
     {
-        $$ = ALLOC_N(token_break, $2, NULL);
-        copy_last($$, $2);
+        $$ = alloc_node(token_break, $2, NULL);
+/*         copy_last($$, $2); */
     }
     | tNEXT call_args
     {
-        $$ = ALLOC_N(token_next, $2, NULL);
-        copy_last($$, $2);
+        $$ = alloc_node(token_next, $2, NULL);
+/*         copy_last($$, $2); */
     }
 ;
 
@@ -516,12 +541,14 @@ mlhs_basic: mlhs_head
     }
     | mlhs_head tSTAR
     {
+        /* TODO: fix_star ... */
         $$ = fix_star(parser);
         $$->flags = 2;
         $$ = update_list($1, $$);
     }
     | mlhs_head tSTAR ',' mlhs_post
     {
+        /* TODO: fix_star ... */
         $$ = fix_star(parser);
         $$->flags = 2;
         $$ = update_list($1, $$);
@@ -532,6 +559,7 @@ mlhs_basic: mlhs_head
     | tSTAR                         { $$ = fix_star(parser); $$->flags = 2; }
     | tSTAR ',' mlhs_post
     {
+        /* TODO: fix_star ... */
         $$ = fix_star(parser);
         $$->flags = 2;
         $$ = update_list($$, $3);
@@ -542,7 +570,7 @@ mlhs_item: mlhs_node
     | tLPAREN mlhs_inner rparen
     {
         $$ = alloc_node(token_object, $2, NULL);
-        copy_wc_range($$, $2, $2);
+/*         copy_wc_range($$, $2, $2); */
     }
 ;
 
@@ -557,30 +585,30 @@ mlhs_post: mlhs_item            { $$ = $1; }
 mlhs_node: variable
     | primary '[' opt_call_args rbracket
     {
-        $$ = ALLOC_N(token_array_value, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+        $$ = alloc_node(token_array_value, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | primary '.' base
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | primary tCOLON2 base
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | primary '.' const
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | primary tCOLON2 const
     {
         if (parser->in_def)
             yyerror(parser, "dynamic constant assignment");
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | tCOLON3 const
     {
@@ -594,30 +622,30 @@ mlhs_node: variable
 lhs: variable
     | primary '[' opt_call_args rbracket
     {
-        $$ = ALLOC_N(token_array_value, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+        $$ = alloc_node(token_array_value, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
     | primary '.' base
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | primary tCOLON2 base
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | primary '.' const
     {
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | primary tCOLON2 const
     {
         if (parser->in_def)
             yyerror(parser, "dynamic constant assignment");
         $$ = alloc_node(token_method_call, $1, $3);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | tCOLON3 const
     {
@@ -636,7 +664,7 @@ cname: BASE
 
 cpath: tCOLON3 cname        { $$ = $2; }
     | cname                 { $$ = $1; }
-    | primary tCOLON2 cname { $$ = update_list($1, $3); }
+    | primary tCOLON2 cname { $$ = update_list($1, $3); copy_end($$, $3); }
 ;
 
 /* TODO: reswords, push to the stack ? */
@@ -652,7 +680,7 @@ fname: base
         parser->expr_seen = 1;
         parser->dot_seen = 0;
     }
-    | reswords { $$ = ALLOC_N(token_object, NULL, NULL); }
+    | reswords { $$ = alloc_node(token_object, NULL, NULL); }
 ;
 
 fsym: fname | symbol
@@ -682,42 +710,42 @@ reswords: tLINE | tFILE | tENCODING | upBEGIN | upEND | tALIAS | tKWAND
     | tUNDEF | tWHEN | tYIELD | tIF | tUNLESS | tWHILE | tUNTIL
 ;
 
-arg: lhs '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
+arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | lhs '=' arg modifier_rescue arg
     {
-        struct node *aux = ALLOC_MOD(token_rescue, $5, $3, NULL);
-        $$ = ALLOC_N(token_assign, $1, aux);
+        struct node *aux = alloc_cond(token_rescue, $5, $3, NULL);
+        $$ = alloc_node(token_assign, $1, aux);
     }
-    | variable tOP_ASGN arg { $$ = ALLOC_N(token_op_assign, $1, $3); }
+    | variable tOP_ASGN arg { $$ = alloc_node(token_op_assign, $1, $3); }
     | variable tOP_ASGN arg modifier_rescue arg
     {
-        struct node *aux = ALLOC_MOD(token_rescue, $5, $3, NULL);
-        $$ = ALLOC_N(token_op_assign, $1, aux);
+        struct node *aux = alloc_cond(token_rescue, $5, $3, NULL);
+        $$ = alloc_node(token_op_assign, $1, aux);
     }
     | primary '[' opt_call_args rbracket tOP_ASGN arg
     {
-        discard_pos();
+/*         discard_pos(); */
         struct node *aux = alloc_node(token_array_value, $1, $3);
-        copy_wc_range_ext(aux, $1, $3);
-        $$ = ALLOC_N(token_op_assign, aux, $6);
+/*         copy_wc_range_ext(aux, $1, $3); */
+        $$ = alloc_node(token_op_assign, aux, $6);
     }
     | primary '.' base tOP_ASGN arg
     {
-        struct node *aux    = alloc_node(token_object, $1, $3);
-        copy_wc_range_ext(aux, $1, $3);
-        $$ = ALLOC_N(token_op_assign, aux, $5);
+        struct node *aux = alloc_node(token_object, $1, $3);
+/*         copy_wc_range_ext(aux, $1, $3); */
+        $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary '.' const tOP_ASGN arg
     {
-        struct node *aux    = alloc_node(token_object, $1, $3);
-        copy_wc_range_ext(aux, $1, $3);
-        $$ = ALLOC_N(token_op_assign, aux, $5);
+        struct node *aux = alloc_node(token_object, $1, $3);
+/*         copy_wc_range_ext(aux, $1, $3); */
+        $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary tCOLON2 base tOP_ASGN arg
     {
-        struct node *aux    = alloc_node(token_object, $1, $3);
-        copy_wc_range_ext(aux, $1, $3);
-        $$ = ALLOC_N(token_op_assign, aux, $5);
+        struct node *aux = alloc_node(token_object, $1, $3);
+/*         copy_wc_range_ext(aux, $1, $3); */
+        $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary tCOLON2 const tOP_ASGN arg
     {
@@ -727,45 +755,45 @@ arg: lhs '=' arg { $$ = ALLOC_N(token_assign, $1, $3); }
     {
         yyerror(parser, "constant re-assignment");
     }
-    | backref tOP_ASGN arg { $$ = ALLOC_N(token_assign, $1, $3); }
-    | arg tDOT2 arg { $$ = ALLOC_N(token_dot2, $1, $3); }
-    | arg tDOT3 arg { $$ = ALLOC_N(token_dot3, $1, $3);}
-    | arg '+' arg { $$ = ALLOC_N(token_plus, $1, $3); }
-    | arg '-' arg { $$ = ALLOC_N(token_minus, $1, $3);}
-    | arg '*' arg { $$ = ALLOC_N(token_mul, $1, $3);}
-    | arg '/' arg { $$ = ALLOC_N(token_div, $1, $3);}
-    | arg '%' arg { $$ = ALLOC_N(token_mod, $1, $3);}
-    | arg tPOW arg { $$ = ALLOC_N(token_pow, $1, $3);}
-    | tUPLUS arg    { $$ = ALLOC_N(token_unary_plus, $2, NULL);    }
-    | tUMINUS arg { $$ = ALLOC_N(token_unary_minus, $2, NULL); }
-    | arg '|' arg { $$ = ALLOC_N(token_bit_or, $1, $3);    }
-    | arg '^' arg { $$ = ALLOC_N(token_bit_xor, $1, $3);    }
-    | arg '&' arg { $$ = ALLOC_N(token_bit_and, $1, $3);    }
-    | arg tCMP arg    { $$ = ALLOC_N(token_cmp, $1, $3);    }
-    | arg '>' arg    { $$ = ALLOC_N(token_greater, $1, $3);    }
-    | arg tGEQ arg    { $$ = ALLOC_N(token_geq, $1, $3);    }
-    | arg '<' arg    { $$ = ALLOC_N(token_lesser, $1, $3);    }
-    | arg tLEQ arg    { $$ = ALLOC_N(token_leq, $1, $3);    }
-    | arg tEQ arg    { $$ = ALLOC_N(token_eq, $1, $3);    }
-    | arg tEQQ arg    { $$ = ALLOC_N(token_eqq, $1, $3);    }
-    | arg tNEQ arg    { $$ = ALLOC_N(token_neq, $1, $3);    }
-    | arg tMATCH arg    { $$ = ALLOC_N(token_match, $1, $3); }
-    | arg tNMATCH arg    { $$ = ALLOC_N(token_nmatch, $1, $3);    }
-    | '!' arg    { $$ = ALLOC_N(token_not, $2, NULL);    }
-    | '~' arg { $$ = ALLOC_N(token_neg, $2, NULL);    }
-    | arg tLSHIFT arg { $$ = ALLOC_N(token_lshift, $1, $3); }
-    | arg tRSHIFT arg { $$ = ALLOC_N(token_rshift, $1, $3); }
-    | arg tAND arg { $$ = ALLOC_N(token_and, $1, $3); }
-    | arg tOR arg { $$ = ALLOC_N(token_or, $1, $3); }
+    | backref tOP_ASGN arg { $$ = alloc_node(token_assign, $1, $3); }
+    | arg tDOT2 arg { $$ = alloc_node(token_dot2, $1, $3); }
+    | arg tDOT3 arg { $$ = alloc_node(token_dot3, $1, $3);}
+    | arg '+' arg { $$ = alloc_node(token_plus, $1, $3); }
+    | arg '-' arg { $$ = alloc_node(token_minus, $1, $3);}
+    | arg '*' arg { $$ = alloc_node(token_mul, $1, $3);}
+    | arg '/' arg { $$ = alloc_node(token_div, $1, $3);}
+    | arg '%' arg { $$ = alloc_node(token_mod, $1, $3);}
+    | arg tPOW arg { $$ = alloc_node(token_pow, $1, $3);}
+    | tUPLUS arg    { $$ = alloc_node(token_unary_plus, $2, NULL);    }
+    | tUMINUS arg { $$ = alloc_node(token_unary_minus, $2, NULL); }
+    | arg '|' arg { $$ = alloc_node(token_bit_or, $1, $3);    }
+    | arg '^' arg { $$ = alloc_node(token_bit_xor, $1, $3);    }
+    | arg '&' arg { $$ = alloc_node(token_bit_and, $1, $3);    }
+    | arg tCMP arg    { $$ = alloc_node(token_cmp, $1, $3);    }
+    | arg '>' arg    { $$ = alloc_node(token_greater, $1, $3);    }
+    | arg tGEQ arg    { $$ = alloc_node(token_geq, $1, $3);    }
+    | arg '<' arg    { $$ = alloc_node(token_lesser, $1, $3);    }
+    | arg tLEQ arg    { $$ = alloc_node(token_leq, $1, $3);    }
+    | arg tEQ arg    { $$ = alloc_node(token_eq, $1, $3);    }
+    | arg tEQQ arg    { $$ = alloc_node(token_eqq, $1, $3);    }
+    | arg tNEQ arg    { $$ = alloc_node(token_neq, $1, $3);    }
+    | arg tMATCH arg    { $$ = alloc_node(token_match, $1, $3); }
+    | arg tNMATCH arg    { $$ = alloc_node(token_nmatch, $1, $3);    }
+    | '!' arg    { $$ = alloc_node(token_not, $2, NULL);    }
+    | '~' arg { $$ = alloc_node(token_neg, $2, NULL);    }
+    | arg tLSHIFT arg { $$ = alloc_node(token_lshift, $1, $3); }
+    | arg tRSHIFT arg { $$ = alloc_node(token_rshift, $1, $3); }
+    | arg tAND arg { $$ = alloc_node(token_and, $1, $3); }
+    | arg tOR arg { $$ = alloc_node(token_or, $1, $3); }
     | tDEFINED opt_eol arg
     {
-        $$ = ALLOC_N(token_defined, $3, NULL);
-        copy_end($$, $3);
+        $$ = alloc_node(token_defined, $3, NULL);
+/*         copy_end($$, $3); */
     }
     | arg '?' arg opt_eol ':' arg
     {
         $$ = alloc_cond(token_ternary, $1, $3, $6);
-        copy_range($$, $1, $6);
+/*         copy_range($$, $1, $6); */
     }
     | primary
 ;
@@ -790,13 +818,13 @@ call_args: command
     | assocs opt_block_arg
     {
         struct node *aux = alloc_node(token_hash, $1, NULL);
-        copy_wc_range_ext(aux, $1, $1);
+/*         copy_wc_range_ext(aux, $1, $1); */
         $$ = update_list(aux, $2);
     }
     | args ',' assocs opt_block_arg
     {
         struct node *aux = alloc_node(token_hash, $3, NULL);
-        copy_wc_range_ext(aux, $3, $3);
+/*         copy_wc_range_ext(aux, $3, $3); */
         struct node *n = update_list(aux, $4);
         $$ = concat_list($1, n);
     }
@@ -839,8 +867,8 @@ primary: literal
     | backref
     | tBEGIN bodystmt tEND
     {
-        $$ = ALLOC_N(token_begin, $2, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_node(token_begin, $2, NULL);
+/*         pop_start(parser, $$); */
     }
     | tLPAREN_ARG expr rparen { $$ = $2; }
     | tLPAREN compstmt ')' { $$ = $2; }
@@ -848,95 +876,103 @@ primary: literal
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, NULL);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | tCOLON3 const { $$ = $2; }
-    | ARRAY { $$ = ALLOC_N(token_array, NULL, NULL); }
+    | ARRAY { $$ = alloc_node(token_array, NULL, NULL); }
     | tLBRACKET aref_args ']'
     {
-        $$ = ALLOC_N(token_array, $2, NULL);
-        if ($2 != NULL && $2->last != NULL) {
+        $$ = alloc_node(token_array, $2, NULL);
+/*        if ($2 != NULL && $2->last != NULL) {
             if ($2->last->pos.end_line >= parser->last_pos->pos.end_line) {
                 copy_end($$, $2->last);
             } else {
                 copy_end($$, parser->last_pos);
             }
-        }
+        }*/
     }
     | tLBRACE assoc_list '}'
     {
         $$ = alloc_node(token_hash, $2, NULL);
-        pop_pos(parser, $$);
-        pop_start(parser, $$);
+        discard_pos();
+/*        pop_pos(parser, $$);
+        pop_start(parser, $$);*/
     }
-    | tRETURN { $$ = ALLOC_N(token_return, NULL, NULL); }
+    | tRETURN { $$ = alloc_node(token_return, NULL, NULL); }
     | tYIELD '(' call_args rparen
     {
-        $$ = ALLOC_N(token_yield, $3, NULL);
-        copy_last($$, $3);
+        $$ = alloc_node(token_yield, $3, NULL);
+/*         copy_last($$, $3); */
     }
-    | tYIELD '(' rparen { $$ = ALLOC_N(token_yield, NULL, NULL); }
-    | tYIELD { $$ = ALLOC_N(token_yield, NULL, NULL); }
+    | tYIELD '(' rparen { $$ = alloc_node(token_yield, NULL, NULL); }
+    | tYIELD { $$ = alloc_node(token_yield, NULL, NULL); }
     | tDEFINED opt_eol '(' expr rparen
     {
-        $$ = ALLOC_N(token_defined, $4, NULL);
-        copy_end($$, $4);
+        $$ = alloc_node(token_defined, $4, NULL);
+/*         copy_end($$, $4); */
     }
-    | tKWNOT '(' expr rparen { $$ = ALLOC_N(token_kw_not, $3, NULL);}
-    | tKWNOT '(' rparen { $$ = ALLOC_N(token_kw_not, NULL, NULL);}
+    | tKWNOT '(' expr rparen { $$ = alloc_node(token_kw_not, $3, NULL);}
+    | tKWNOT '(' rparen { $$ = alloc_node(token_kw_not, NULL, NULL);}
     | operation brace_block
     {
         $$ = alloc_cond(token_method_call, $2, $1, NULL);
-        copy_range($$, $1, $2);
+/*         copy_range($$, $1, $2); */
     }
     | method_call opt_brace_block
     {
         $$ = $1;
         $$->cond = $2;
-        if ($2)
-            copy_end($$, $2);
+/*         if ($2) */
+/*             copy_end($$, $2); */
     }
     | tLAMBDA lambda
     {
         $$ = alloc_cond(token_method_call, $2, NULL, NULL);
-        pop_start(parser, $$);
-        copy_end($$, $2);
+/*         pop_start(parser, $$); */
+/*         copy_end($$, $2); */
     }
     | tIF expr then compstmt if_tail tEND
     {
-        $$ = ALLOC_C(token_if, $2, $4, $5);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_if, $2, $4, $5);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tUNLESS expr then compstmt opt_else tEND
     {
-        $$ = ALLOC_C(token_unless, $2, $4, $5);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_unless, $2, $4, $5);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tWHILE { COND_PUSH(1); } expr do { COND_POP(); } compstmt tEND
     {
-        $$ = ALLOC_C(token_while, $3, $6, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_while, $3, $6, NULL);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tUNTIL { COND_PUSH(1); } expr do { COND_POP(); } compstmt tEND
     {
-        $$ = ALLOC_C(token_while, $3, $6, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_while, $3, $6, NULL);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tCASE expr opt_terms case_body tEND
     {
-        $$ = ALLOC_C(token_case, $2, $4, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_case, $2, $4, NULL);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tCASE opt_terms case_body tEND
     {
-        $$ = ALLOC_N(token_case, $3, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_node(token_case, $3, NULL);
+        discard_pos(); /* tEND */
+/*         pop_start(parser, $$); */
     }
     | tFOR for_var tIN { COND_PUSH(1); } expr do { COND_POP(); } compstmt tEND
     {
-        $$ = ALLOC_C(token_for, $5, $8, $2);
-        pop_pos(parser, NULL);
-        pop_start(parser, $$);
+        $$ = alloc_cond(token_for, $5, $8, $2);
+        discard_pos(); /* tEND */
+/*         pop_pos(parser, NULL); */
+/*         pop_start(parser, $$); */
     }
     | tCLASS cpath superclass
     {
@@ -945,9 +981,21 @@ primary: literal
     }
     bodystmt tEND
     {
-        $$ = ALLOC_C(token_class, $3, $5, $2);
+        $$ = alloc_cond(token_class, $3, $5, $2);
         pop_comment(parser, $$);
-        pop_start(parser, $$);
+/*        if ($5) {
+            pop_end(parser, $5);
+            if ($3) {
+                $5->pos.start_line = $3->pos.end_line;
+                $5->pos.start_col = $3->pos.end_col;
+            } else {
+                $5->pos.start_line = $2->pos.end_line;
+                $5->pos.start_col = $2->pos.end_col;
+            }*/
+/*             $5->pos.end_line = $3->pos.end_line; */
+/*             $5->pos.end_col = $3->pos.end_col; */
+/*         } */
+/*         pop_start(parser, $$); */
     }
     | tCLASS
     {
@@ -959,9 +1007,9 @@ primary: literal
     }
     expr term bodystmt tEND
     {
-        $$ = ALLOC_N(token_singleton_class, $8, $6);
+        $$ = alloc_node(token_singleton_class, $8, $6);
         pop_comment(parser, $$);
-        pop_start(parser, $$);
+/*         pop_start(parser, $$); */
     }
     | tMODULE cpath
     {
@@ -970,9 +1018,12 @@ primary: literal
     }
     bodystmt tEND
     {
-        $$ = ALLOC_N(token_module, $4, $2);
+        $$ = alloc_node(token_module, $4, $2);
         pop_comment(parser, $$);
-        pop_start(parser, $$);
+/*        pop_end(parser, $4);
+        $4->pos.start_line = $2->pos.end_line;
+        $4->pos.start_col = $2->pos.end_col;*/
+/*         pop_start(parser, $$); */
     }
     | tDEF fname
     {
@@ -982,10 +1033,10 @@ primary: literal
     f_arglist bodystmt tEND
     {
         parser->in_def--;
-        $$ = ALLOC_C(token_function, $2, $5, $4);
+        $$ = alloc_cond(token_function, $2, $5, $4);
         pop_comment(parser, $$);
-        if (parser->pos_size > 0)
-            pop_start(parser, $$);
+/*         if (parser->pos_size > 0) */
+/*             pop_start(parser, $$); */
     }
     | tDEF singleton dot_or_colon fname
     {
@@ -996,50 +1047,50 @@ primary: literal
     {
         $$ = alloc_node(token_object, $2, $4);
         copy_range($$, $2, $4);
-        $$ = ALLOC_C(token_function, $$, $7, $6);
+        $$ = alloc_cond(token_function, $$, $7, $6);
         $$->flags = 1; /* Class method */
         pop_comment(parser, $$);
-        pop_start(parser, $$);
+/*         pop_start(parser, $$); */
         parser->in_def--;
     }
-    | tBREAK    { $$ = ALLOC_N(token_break, NULL, NULL);    }
-    | tNEXT     { $$ = ALLOC_N(token_next, NULL, NULL);     }
-    | tREDO     { $$ = ALLOC_N(token_redo, NULL, NULL);     }
-    | tRETRY    { $$ = ALLOC_N(token_retry, NULL, NULL);    }
+    | tBREAK    { $$ = alloc_node(token_break, NULL, NULL);    }
+    | tNEXT     { $$ = alloc_node(token_next, NULL, NULL);     }
+    | tREDO     { $$ = alloc_node(token_redo, NULL, NULL);     }
+    | tRETRY    { $$ = alloc_node(token_retry, NULL, NULL);    }
 ;
 
 then: term
-    | tTHEN         { discard_pos(); }
-    | term tTHEN    { discard_pos(); }
+    | tTHEN
+    | term tTHEN
 ;
 
 do: term
-    | tDO_COND      { discard_pos(); }
+    | tDO_COND { discard_pos(); }
 ;
 
 if_tail: opt_else
     | tELSIF expr then compstmt if_tail
     {
-        $$ = ALLOC_C(token_if, $2, $4, $5);
-        struct pos_t tp = init_pos_from($$);
+        $$ = alloc_cond(token_if, $2, $4, $5);
+/*        struct pos_t tp = init_pos_from($$);
 
         pop_pos(parser, $$);
         push_pos(parser, tp);
         if ($4 != NULL)
-            copy_end($$, $4);
+            copy_end($$, $4);*/
     }
 ;
 
 opt_else: none
     | tELSE compstmt
     {
-        $$ = ALLOC_N(token_if, $2, NULL);
-        struct pos_t tp = init_pos_from($$);
+        $$ = alloc_node(token_if, $2, NULL);
+/*        struct pos_t tp = init_pos_from($$);
 
         pop_pos(parser, $$);
         push_pos(parser, tp);
         if ($2 != NULL)
-            copy_end($$, $2);
+            copy_end($$, $2);*/
     }
 ;
 
@@ -1181,11 +1232,11 @@ lambda:
     f_larglist lambda_body
     {
         parser->lpar_beg = $<num>1;
-        discard_pos();
-        $$ = ALLOC_N(token_block, $3, $2);
-        if ($3 != NULL)
+/*         discard_pos(); */
+        $$ = alloc_node(token_block, $3, $2);
+/*        if ($3 != NULL)
             copy_last($$, $3);
-        parser->last_pos = NULL;
+        parser->last_pos = NULL;*/
     }
 ;
 
@@ -1193,18 +1244,30 @@ f_larglist: '(' f_args opt_bv_decl rparen { $$ = update_list($2, $3); }
     | f_args
 ;
 
-lambda_body: tLAMBEG compstmt '}'   { $$ = $2; }
-    | tDO_LAMBDA compstmt tEND      { $$ = $2; }
+lambda_body: tLAMBEG compstmt '}'
+    {
+        $$ = $2;
+        discard_pos(); /* } */
+        discard_pos(); /* { */
+    }
+    | tDO_LAMBDA compstmt tEND
+    {
+        $$ = $2;
+        discard_pos(); /* end */
+        discard_pos(); /* do */
+    }
 ;
 
 do_block: tDO_BLOCK opt_block_param compstmt tEND
     {
-        discard_pos();
+/*         discard_pos(); */
+/*         $$ = alloc_node(token_block, $3, $2); */
         $$ = ALLOC_N(token_block, $3, $2);
-        if ($3 != NULL)
-            copy_last($$, $3);
-        else if ($2 != NULL)
-            copy_last($$, $2);
+        pop_start(parser, $$);
+/*         if ($3 != NULL) */
+/*             copy_last($$, $3); */
+/*         else if ($2 != NULL) */
+/*             copy_last($$, $2); */
     }
 ;
 
@@ -1224,25 +1287,25 @@ block_call: command do_block { $1->cond = $2; $$ = $1; }
 method_call: operation paren_args
     {
         $$ = alloc_node(token_method_call, $1, $2);
-        copy_wc_range($$, $1, $2);
+/*         copy_wc_range($$, $1, $2); */
     }
     | primary '.' operation2 opt_paren_args
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
-        ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_wc_range($$, $1, $3) : copy_wc_range($$, $1, $4); */
     }
     | primary tCOLON2 operation2 paren_args
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
-        ($4 == NULL) ? copy_range($$, $1, $3) : copy_range($$, $1, $4);
+/*         ($4 == NULL) ? copy_range($$, $1, $3) : copy_range($$, $1, $4); */
     }
     | primary tCOLON2 operation3
     {
         struct node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, NULL);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | primary '.' paren_args
     {
@@ -1256,8 +1319,8 @@ method_call: operation paren_args
     | super
     | primary '[' opt_call_args rbracket
     {
-        $$ = ALLOC_N(token_array_value, $1, $3);
-        copy_wc_range_ext($$, $1, $3);
+        $$ = alloc_node(token_array_value, $1, $3);
+/*         copy_wc_range_ext($$, $1, $3); */
     }
 ;
 
@@ -1267,33 +1330,37 @@ opt_brace_block: none
 
 brace_block: '{' opt_block_param compstmt '}'
     {
-        discard_pos();
+/*         discard_pos(); */
         $$ = ALLOC_N(token_block, $3, $2);
-        if ($3 != NULL)
+        pop_start(parser, $$);
+/*         pop_(parser, $$); */
+/*         printf("HERERERERE\n"); */
+/*        if ($3 != NULL)
             copy_last($$, $3);
         else if ($2 != NULL)
-            copy_last($$, $2);
+            copy_last($$, $2);*/
     }
     | tDO opt_block_param compstmt tEND
     {
-        discard_pos();
+/*         discard_pos(); */
         $$ = ALLOC_N(token_block, $3, $2);
-        if ($3 != NULL)
+        pop_start(parser, $$);
+/*        if ($3 != NULL)
             copy_last($$, $3);
         else if ($2 != NULL)
-            copy_last($$, $2);
+            copy_last($$, $2);*/
     }
 ;
 
 case_body: tWHEN { parser->expr_seen = 0; } args then compstmt cases
     {
         /* The following statements fixes some issues around positions. */
-        $$ = ALLOC_N(token_object, NULL, NULL);
-        struct pos_t tp = init_pos_from($$);
-        $$ = ALLOC_C(token_when, $3, $5, $6);
-        push_pos(parser, tp);
-        if ($5 != NULL)
-            copy_last($$, $5);
+        $$ = alloc_node(token_object, NULL, NULL);
+/*         struct pos_t tp = init_pos_from($$); */
+        $$ = alloc_cond(token_when, $3, $5, $6);
+/*         push_pos(parser, tp); */
+/*         if ($5 != NULL) */
+/*             copy_last($$, $5); */
     }
 ;
 
@@ -1302,29 +1369,30 @@ cases: opt_else | case_body
 
 opt_rescue: tRESCUE rescue_arg then compstmt opt_rescue
     {
-         $$ = ALLOC_N(token_rescue, $2, $4);
-        struct pos_t tp = init_pos_from($$);
-
+         $$ = alloc_node(token_rescue, $2, $4);
+/*         struct pos_t tp = init_pos_from($$); */
+/*
         pop_pos(parser, $$);
         push_pos(parser, tp);
         if ($4 != NULL)
             copy_last($$, $4);
         else if ($2 != NULL)
-            copy_end($$, $2);
+            copy_end($$, $2);*/
     }
     | none
 ;
 
 rescue_arg: exc_list exc_var
     {
-        if ($2 != NULL) {
+        $$ = ($1 || $2) ? alloc_node(token_rescue_arg, $1, $2) : NULL;
+/*        if ($2 != NULL) {
             $$ = alloc_node(token_rescue_arg, $1, $2);
             ($1 != NULL) ? copy_range($$, $1, $2) : copy_range($$, $2, $2);
         } else if ($1 != NULL) {
             $$ = alloc_node(token_rescue_arg, $1, $2);
             copy_range($$, $1, $1);
         } else
-            $$ = NULL;
+            $$ = NULL;*/
     }
 ;
 
@@ -1337,13 +1405,13 @@ exc_var: none | tASSOC lhs { $$ = $2; }
 opt_ensure: none
     | tENSURE compstmt
     {
-        $$ = ALLOC_N(token_ensure, $2, NULL);
-        struct pos_t tp = init_pos_from($$);
+        $$ = alloc_node(token_ensure, $2, NULL);
+/*        struct pos_t tp = init_pos_from($$);
 
         pop_pos(parser, $$);
         push_pos(parser, tp);
         if ($2 != NULL)
-            copy_end($$, $2);
+            copy_end($$, $2);*/
     }
 ;
 
@@ -1353,25 +1421,25 @@ literal: numeric | symbol
 strings: string
     {
         $$ = $1;
-        if ($1->kind == token_heredoc)
+/*        if ($1->kind == token_heredoc)
             pop_pos(parser, $$);
         else {
             $$->pos.end_line = parser->line;
             $$->pos.end_col = parser->column;
         }
         pop_start(parser, $$);
-        $$->pos.offset = parser->cursor;
+        $$->pos.offset = parser->cursor;*/
     }
     | strings string
     {
         if ($1->l != NULL)
             update_list($1->l, $2);
-        pop_pos(parser, $2); /* Drop the first position of the last string */
-        $1->pos.end_line = parser->line;
+        /*pop_pos(parser, $2);*/ /* Drop the first position of the last string */
+/*        $1->pos.end_line = parser->line;
         $1->pos.end_col = parser->column;
         $2->pos.end_line = parser->line;
         $2->pos.end_col = parser->column;
-        $1->pos.offset = parser->cursor;
+        $1->pos.offset = parser->cursor;*/
         $$ = $1;
     }
 ;
@@ -1416,7 +1484,8 @@ string_content: tSTRING_CONTENT { $$ = 0; }
         parser->cond_stack = $<num>2;
         lex_strterm = $<term>3;
         $$ = $4;
-        pop_pos(parser, NULL); /* '}' */
+        discard_pos(); /* } */
+        /*pop_pos(parser, NULL);*/ /* '}' */
     }
     | tSTRING_DVAR
     {
@@ -1439,11 +1508,14 @@ string_dvar: backref
 
 symbol: tSYMBEG sym
     {
-        $$ = ALLOC_N(token_symbol, NULL, NULL);
-        copy_end($$, $2);
+        $$ = $2;
+        $$->kind = token_symbol;
+        $$->pos.start_col--;
+/*         $$ = alloc_node(token_symbol, NULL, NULL); */
+/*        copy_end($$, $2);
         if ($2->name != NULL)
             $$->name = strdup($2->name);
-        free_ast($2);
+        free_ast($2);*/
     }
 ;
 
@@ -1454,8 +1526,8 @@ sym: fname
     | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
 ;
 
-numeric: NUMERIC    { $$ = ALLOC_N(token_numeric, NULL, NULL); }
-    | FLOAT         { $$ = ALLOC_N(token_numeric, NULL, NULL); $$->flags = 1; }
+numeric: NUMERIC    { $$ = alloc_node(token_numeric, NULL, NULL); }
+    | FLOAT         { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 1; }
 ;
 
 variable: base
@@ -1466,13 +1538,13 @@ variable: base
     | other_vars
 ;
 
-other_vars: tNIL    { $$ = ALLOC_N(token_nil, NULL, NULL);      }
-    | tSELF         { $$ = ALLOC_N(token_self, NULL, NULL);     }
-    | tTRUE         { $$ = ALLOC_N(token_true, NULL, NULL);     }
-    | tFALSE        { $$ = ALLOC_N(token_false, NULL, NULL);    }
-    | tFILE         { $$ = ALLOC_N(token_file, NULL, NULL);     }
-    | tLINE         { $$ = ALLOC_N(token_line, NULL, NULL);     }
-    | tENCODING     { $$ = ALLOC_N(token_encoding, NULL, NULL); }
+other_vars: tNIL    { $$ = alloc_node(token_nil, NULL, NULL);      }
+    | tSELF         { $$ = alloc_node(token_self, NULL, NULL);     }
+    | tTRUE         { $$ = alloc_node(token_true, NULL, NULL);     }
+    | tFALSE        { $$ = alloc_node(token_false, NULL, NULL);    }
+    | tFILE         { $$ = alloc_node(token_file, NULL, NULL);     }
+    | tLINE         { $$ = alloc_node(token_line, NULL, NULL);     }
+    | tENCODING     { $$ = alloc_node(token_encoding, NULL, NULL); }
 ;
 
 backref: tNTH_REF   { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
@@ -1633,10 +1705,10 @@ f_kwrest: kwrest_mark base
     }
 ;
 
-f_opt: base '=' arg { $$ = ALLOC_N(token_assign, $1, $3); $1->flags = 3; }
+f_opt: base '=' arg { $$ = alloc_node(token_assign, $1, $3); $1->flags = 3; }
 ;
 
-f_block_opt: base '=' primary { $$ = ALLOC_N(token_assign, $1, $3); }
+f_block_opt: base '=' primary { $$ = alloc_node(token_assign, $1, $3); }
 ;
 
 f_block_optarg    : f_block_opt
@@ -1725,11 +1797,11 @@ operation: base
 
 operation2: base
     | const
-    | op { $$ = alloc_node(token_object, NULL, NULL); $$->name = parser->aux; }
+    | op { $$ = ALLOC_N(token_object, NULL, NULL); $$->name = parser->aux; }
 ;
 
 operation3: base
-    | op { $$ = alloc_node(token_object, NULL, NULL); $$->name = parser->aux; }
+    | op { $$ = ALLOC_N(token_object, NULL, NULL); $$->name = parser->aux; }
 ;
 
 label: tKEY
@@ -1739,7 +1811,7 @@ label: tKEY
     }
 ;
 
-super: tSUPER { $$ = ALLOC_N(token_super, NULL, NULL); }
+super: tSUPER { $$ = alloc_node(token_super, NULL, NULL); }
 ;
 
 dot_or_colon: '.' | tCOLON2
@@ -2200,6 +2272,13 @@ static void pop_start(struct parser_t *parser, struct node *n)
     pop_pos(parser, NULL);
 }
 
+static void pop_end(struct parser_t *parser, struct node *n)
+{
+    n->pos.end_line = parser->pos_stack[parser->pos_size - 1].start_line;
+    n->pos.end_col = parser->pos_stack[parser->pos_size - 1].start_col;
+    pop_pos(parser, NULL);
+}
+
 static void copy_wc_range(struct node *res, struct node *h, struct node *t)
 {
     if (t != NULL)
@@ -2238,6 +2317,7 @@ static void pop_comment(struct parser_t *parser, struct node *n)
 }
 
 /*
+ * TODO: probably not needed anymore.
  * The following macros are helpers to the fix_pos function.
  */
 
@@ -2245,16 +2325,17 @@ static void pop_comment(struct parser_t *parser, struct node *n)
                                                         (kind > token_unary_minus && kind < token_ternary))
 #define is_unary(kind) (kind >= token_neg && kind <= token_unary_minus)
 
-
+/* TODO: probably not needed anymore => just pop_pos */
 static void fix_pos(struct parser_t *parser, struct node *n)
 {
     int kind;
     struct node *aux;
 
+    /* TODO: To be removed */
     if (!n)
         return;
 
-    kind = n->kind;
+/*    kind = n->kind;
     if (has_operators(kind)) {
         copy_start(n, n->l);
         aux = (n->r->last != NULL) ? n->r->last : n->r;
@@ -2264,12 +2345,13 @@ static void fix_pos(struct parser_t *parser, struct node *n)
         pop_pos(parser, n);
         n->pos.end_line = n->l->pos.end_line;
         n->pos.end_col = n->l->pos.end_col;
-    } else {
+    } else {*/
         pop_pos(parser, n);
-        parser->last_pos = n;
-    }
+        parser->last_pos = n; /* TODO: probably not needed anymore */
+/*     } */
 }
 
+/* TODO: probably not needed anymore */
 struct node * fix_star(struct parser_t *parser)
 {
     struct node *res = alloc_node(token_object, NULL, NULL);
@@ -2458,7 +2540,7 @@ static int parser_yylex(struct parser_t *parser)
             if (c == tSTRING_END) {
                 tokp.end_line = parser->line;
                 tokp.end_col = parser->column;
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 SWAP(parser->line, parser->line_pend, space_seen);
                 SWAP(parser->column, parser->column_pend, space_seen);
                 SWAP(parser->lex_p, parser->lex_pend, cp);
@@ -2558,14 +2640,14 @@ retry:
                     return tAREF;
                 } else if (!parser->def_seen) {
                     tokp.end_col = parser->column;
-                    push_pos(parser, tokp);
+/*                     push_pos(parser, tokp); */
                     COND_PUSH(0);
                     return c;
                 }
                 break;
             }
             tokp.end_col = parser->column;
-            push_pos(parser, tokp);
+/*             push_pos(parser, tokp); */
             if (!parser->expr_seen || space_seen) {
                 parser->expr_seen = 0;
                 return tLBRACKET;
@@ -2590,7 +2672,7 @@ retry:
                 pushback();
                 if (maybe_heredoc) {
                     if (parse_heredoc_identifier(parser)) {
-                        push_pos(parser, tokp);
+/*                         push_pos(parser, tokp); */
                         return tSTRING_BEG;
                     }
                     /* parse_heredoc_identifier calls nextc at least once */
@@ -2629,9 +2711,11 @@ retry:
                 return tNMATCH;
             }
             tokp.end_line = parser->line;
-            push_pos(parser, tokp);
-            if (parser->def_seen && bc == '@')
-                return '!';
+            if (parser->def_seen) {
+                push_pos(parser, tokp);
+                if (bc == '@')
+                    return '!';
+            }
             break;
         case '+':
             bc = nextc();
@@ -2640,14 +2724,14 @@ retry:
             tokp.end_line = parser->line;
             tokp.end_col = parser->column;
             if (!parser->expr_seen) {
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 c = tUPLUS;
             } else if (parser->def_seen && bc == '@') {
                 push_pos(parser, tokp);
                 return tUPLUS;
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 parser->expr_seen = 0;
                 return tUPLUS;
             } else
@@ -2660,18 +2744,18 @@ retry:
             tokp.end_line = parser->line;
             tokp.end_col = parser->column;
             if (bc == '>') {
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 return tLAMBDA;
             }
             if (!parser->expr_seen) {
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 c = tUMINUS;
             } else if (parser->def_seen && bc == '@') {
                 push_pos(parser, tokp);
                 return tUMINUS;
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 parser->expr_seen = 0;
                 return tUMINUS;
             } else
@@ -2703,7 +2787,7 @@ retry:
             if (!parser->expr_seen) {
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 1;
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
                 lex_strterm->term = c;
                 lex_strterm->can_embed = 1;
@@ -2725,7 +2809,7 @@ retry:
                 /* TODO: is_shortcut can be simplified I think */
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 2;
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
                 lex_strterm->token = guess_kind(parser, bc);
                 if (isalpha(bc))
@@ -2794,7 +2878,7 @@ retry:
                 pushback();
                 parser->symbeg = 1;
                 parser->expr_seen = 1;
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 return tSYMBEG;
             }
             parser->expr_seen = 0;
@@ -2818,7 +2902,7 @@ retry:
                         nextc();
                     tokp.end_line = parser->line;
                     tokp.end_col = parser->column;
-                    push_pos(parser, tokp);
+/*                     push_pos(parser, tokp); */
                     parser->expr_seen = 1;
                     return tCHAR;
                 }
@@ -2839,7 +2923,7 @@ retry:
             lex_strterm->token = token_string;
             lex_strterm->word = NULL;
             lex_strterm->nestable = 0;
-            push_pos(parser, tokp);
+/*             push_pos(parser, tokp); */
             return tSTRING_BEG;
         case '\\':
             c = nextc();
@@ -2871,7 +2955,6 @@ retry:
                 parser->mcall = 0;
             return c;
         case '{':
-            push_pos(parser, tokp);
             if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
                 parser->lpar_beg = 0;
                 parser->paren_nest--;
@@ -2881,12 +2964,16 @@ retry:
                 if (parser->version < ruby19) {
                     yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
                 }
+                push_pos(parser, tokp);
                 return tLAMBEG; /* this is a lambda ->() {} construction */
             }
             if (!parser->expr_seen || COND_P())
                 c = tLBRACE; /* smells like hash */
-            else if (parser->brace_arg)
+            else if (parser->brace_arg) {
                 c = tLBRACE_ARG; /* block (expr) */
+                push_pos(parser, tokp);
+            } else
+                push_pos(parser, tokp);
             parser->expr_seen = 0;
             COND_PUSH(0);
             CMDARG_PUSH(0);
@@ -2958,9 +3045,9 @@ retry:
             return c;
         case '~':
             bc = nextc();
-            push_pos(parser, tokp);
             if (parser->def_seen && bc == '@') {
                 tokp.end_col = parser->column;
+                push_pos(parser, tokp);
                 return c;
             }
             break;
@@ -3007,11 +3094,12 @@ talpha:
         parser->column -= ax;
         tokp.end_line = tokp.start_line;
         tokp.end_col = last_col - ax;
-        push_pos(parser, tokp);
+/*         push_pos(parser, tokp); */
         pushback();
 
         /* IVAR, CVAR, GLOBAL */
         if (bc > 0) {
+            push_pos(parser, tokp);
             push_stack(parser, lexbuf);
             return bc;
         }
@@ -3023,11 +3111,13 @@ talpha:
             parser->special_arg = 1;
             parser->mcall = 1;
             parser->dot_seen = 0;
+            push_pos(parser, tokp);
             return BASE;
         } else if (parser->dot_seen) {
             push_stack(parser, lexbuf);
             parser->dot_seen = 0;
             parser->expr_seen = 1;
+            push_pos(parser, tokp);
             return (is_upper(lexbuf[0])) ? CONST : BASE;
         }
 
@@ -3040,12 +3130,14 @@ talpha:
                 case tDEF:
                     parser->def_seen = 1;
                 case tMODULE: case tCLASS:
+/*                     push_pos(parser, tokp); */
                     push_last_comment(parser);
                     break;
                 case tALIAS:
                     parser->in_alias = 1;
                     break;
                 case tEND:
+                    push_pos(parser, tokp);
                     CMDARG_PUSH(0);
                     break;
                 case tRETURN:
@@ -3059,6 +3151,7 @@ talpha:
             bc = nextc();
             if (c == ':' && bc != ':') {
                 parser->expr_seen = 0;
+                push_pos(parser, tokp);
                 return tKEY;
             }
             pushback();
@@ -3076,17 +3169,21 @@ talpha:
                 } else
                     c = tDO;
                 parser->expr_seen = 0;
+                push_pos(parser, tokp);
             }
             return c;
         }
+/*         push_pos(parser, tokp); */
         if (is_special_method(lexbuf)) {
             if (!strcmp(lexbuf, "__END__")) {
                 parser->eof_reached = 1;
                 return tpEND;
             }
+            push_pos(parser, tokp);
             push_stack(parser, lexbuf);
             return BASE;
         }
+        push_pos(parser, tokp);
         parser->expr_seen = 1;
         push_stack(parser, lexbuf);
         if (is_upper(lexbuf[0]))
@@ -3125,7 +3222,7 @@ tnum:
                 if (!isdigit(*parser->lex_p)) {
                     tokp.end_line = parser->line;
                     tokp.end_col = parser->column - 1;
-                    push_pos(parser, tokp);
+/*                     push_pos(parser, tokp); */
                     pushback();
                     return NUMERIC;
                 }
@@ -3152,7 +3249,7 @@ tnum:
             pushback();
         tokp.end_line = parser->line;
         tokp.end_col = parser->column;
-        push_pos(parser, tokp);
+/*         push_pos(parser, tokp); */
         return (has_point) ? FLOAT : NUMERIC;
     }
 }

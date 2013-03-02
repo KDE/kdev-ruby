@@ -111,8 +111,12 @@ void raw_print(struct node *n)
     printf("%i", n->kind);
     if (n->name != NULL)
         printf("(%s)", n->name);
-    printf("[%i,%i:%i,%i] ", n->pos.start_line, n->pos.start_col,
-           n->pos.end_line, n->pos.end_col);
+    if (n->pos.start_line != -1 && n->pos.start_col != -1 &&
+        n->pos.end_line != -1 && n->pos.end_col != -1) {
+        printf("[%i,%i:%i,%i] ", n->pos.start_line, n->pos.start_col,
+                                    n->pos.end_line, n->pos.end_col);
+    } else
+        printf(" ");
 }
 
 void print_list(struct node *n)
