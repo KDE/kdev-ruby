@@ -2352,7 +2352,8 @@ static int parse_string(struct parser_t *parser)
     register int c = *parser->lex_p;
     int next = *(parser->lex_p + 1);
 
-    if (c == '\\' && (next == lex_strterm->term || next == '\\')) {
+    /* TODO: can be reduced ? */
+    if (c == '\\' && (next == '\\' || next == lex_strterm->term || next == lex_strterm->paren)) {
         parser->lex_p += 2;
         parser->column += 2;
         return tSTRING_CONTENT;
