@@ -2509,6 +2509,7 @@ retry:
             set_comment(parser);
         eol:
         case '\n':
+            parser->expr_mid = 0;
             if (!parser->expr_seen || parser->dot_seen)
                 goto retry;
             parser->dot_seen = 0;

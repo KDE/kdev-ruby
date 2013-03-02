@@ -72,3 +72,8 @@ begin
 rescue => ex
   1
 end
+
+begin
+  return
+rescue FTPPermError => e
+end
