@@ -188,7 +188,7 @@ static void yyerror(struct parser_t *, const char *);
 
 #define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
 #define ALLOC_C(kind, cond, l, r) alloc_cond(kind, cond, l, r); pop_pos(parser, yyval.n);
-// #define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond);
+/* #define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond); */
 
 static void pop_stack(struct parser_t *parser, struct node *n);
 #define POP_STACK pop_stack(parser, yyval.n)
