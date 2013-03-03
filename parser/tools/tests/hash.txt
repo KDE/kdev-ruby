@@ -24,6 +24,6 @@ Root: 64
 60 51 60 
 Next statements: 51 51 
 Root: 64 
-51(@options)[24,0:24,8] 22 53(accept_charset)[24,10:24,25] 51[24,10:24,43] 51(@@accept_charset)[24,27:24,43] 64 
+51(@options)[24,0:24,8] 22 53(accept_charset)[24,10:24,25] 51 51(@@accept_charset)[24,27:24,43] 64 
 
 

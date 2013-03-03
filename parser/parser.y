@@ -188,31 +188,19 @@ static void yyerror(struct parser_t *, const char *);
 
 #define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
 #define ALLOC_C(kind, cond, l, r) alloc_cond(kind, cond, l, r); pop_pos(parser, yyval.n);
-/* #define ALLOC_MOD(kind, cond, l, r) ALLOC_C(kind, cond, l, r); copy_range(yyval.n, l, cond); */
 
 static void pop_stack(struct parser_t *parser, struct node *n);
 #define POP_STACK pop_stack(parser, yyval.n)
 static void push_last_comment(struct parser_t *parser);
 static void pop_comment(struct parser_t *parser, struct node *n);
 
-static void fix_pos(struct parser_t *parser, struct node *n);
-struct node * fix_star(struct parser_t *parser);
 static void push_pos(struct parser_t *parser, struct pos_t tokp);
 static void pop_pos(struct parser_t *parser, struct node *n);
 static void pop_start(struct parser_t *parser, struct node *n);
 static void pop_end(struct parser_t *parser, struct node *n);
-static void copy_last(struct node *head, struct node *tail);
-static void copy_wc_range(struct node *res, struct node *h, struct node *t);
-static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t);
-#define init_pos_from(n) { n->pos.start_line, n->pos.end_line, n->pos.start_col, n->pos.end_col, 0 }
 #define discard_pos() pop_pos(parser, NULL)
-#define copy_start(dest, src) ({ dest->pos.start_line = src->pos.start_line; dest->pos.start_col = src->pos.start_col; })
 #define copy_end(dest, src) ({ dest->pos.end_line = src->pos.end_line; dest->pos.end_col = src->pos.end_col; })
-#define copy_range(dest, src1, src2) ({ copy_start(dest, src1); copy_end(dest, src2); dest->pos.offset = src2->pos.offset; })
-#define copy_pos(dest, src) copy_range(dest, src, src);
 #define copy_op(op) { parser->aux = strdup(op); parser->name_length = strlen(op);}
-#define CONCAT_STRING         parser->auxiliar.end_line = parser->pos_stack[parser->pos_size - 1].end_line; \
-                                                    parser->auxiliar.end_col = parser->pos_stack[parser->pos_size - 1].end_col;
 %}
 
 %pure_parser
@@ -316,7 +304,7 @@ stmts: none
 
 stmt: tALIAS fsym fsym
     {
-        $$ = alloc_node(token_alias, $2, $3); /*copy_end($$, $3);*/
+        $$ = alloc_node(token_alias, $2, $3);
     }
     | tALIAS GLOBAL GLOBAL
     {
@@ -325,8 +313,8 @@ stmt: tALIAS fsym fsym
         l->flags = 3;
         struct node *r = alloc_node(token_object, NULL, NULL);
         r->flags = 3;
-        fix_pos(parser, r);
-        fix_pos(parser, l);
+        pop_pos(parser, r);
+        pop_pos(parser, l);
         pop_stack(parser, l);
         pop_stack(parser, r);
         $$ = alloc_node(token_alias, l, r);
@@ -541,26 +529,27 @@ mlhs_basic: mlhs_head
     }
     | mlhs_head tSTAR
     {
-        /* TODO: fix_star ... */
-        $$ = fix_star(parser);
+        $$ = alloc_node(token_object, NULL, NULL);
         $$->flags = 2;
         $$ = update_list($1, $$);
     }
     | mlhs_head tSTAR ',' mlhs_post
     {
-        /* TODO: fix_star ... */
-        $$ = fix_star(parser);
+        $$ = alloc_node(token_object, NULL, NULL);
         $$->flags = 2;
         $$ = update_list($1, $$);
         $$ = concat_list($$, $4);
     }
     | tSTAR mlhs_node               { $$ = $2; $$->flags = 1; }
     | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); $2->flags = 1; }
-    | tSTAR                         { $$ = fix_star(parser); $$->flags = 2; }
+    | tSTAR
+    {
+        $$ = alloc_node(token_object, NULL, NULL);
+        $$->flags = 2;
+    }
     | tSTAR ',' mlhs_post
     {
-        /* TODO: fix_star ... */
-        $$ = fix_star(parser);
+        $$ = alloc_node(token_object, NULL, NULL);
         $$->flags = 2;
         $$ = update_list($$, $3);
     }
@@ -664,7 +653,11 @@ cname: BASE
 
 cpath: tCOLON3 cname        { $$ = $2; }
     | cname                 { $$ = $1; }
-    | primary tCOLON2 cname { $$ = update_list($1, $3); copy_end($$, $3); }
+    | primary tCOLON2 cname
+    {
+        $$ = update_list($1, $3);
+        copy_end($$, $3);
+    }
 ;
 
 /* TODO: reswords, push to the stack ? */
@@ -698,9 +691,9 @@ op: '|' { copy_op("|"); } | '^' { copy_op("^"); } | '&' { copy_op("&"); }
     | '+' { copy_op("+"); } | '-' { copy_op("-"); } | '*' { copy_op("*"); }
     | tSTAR { copy_op("*"); } | '/' { copy_op("/"); } | '%' { copy_op("%"); }
     | tPOW { copy_op("**"); } | tAREF { copy_op("[]"); } | '`' { copy_op("`");}
-    | tUPLUS { copy_op("+"); discard_pos(); } | tASET { copy_op("[]="); }
-    | tUMINUS { copy_op("-");discard_pos(); } | tDSTAR { copy_op("**"); }
-    | '!' { copy_op("!"); discard_pos(); } | '~' { copy_op("~"); discard_pos(); }
+    | tUPLUS { copy_op("+"); } | tASET { copy_op("[]="); }
+    | tUMINUS { copy_op("-"); } | tDSTAR { copy_op("**"); }
+    | '!' { copy_op("!"); } | '~' { copy_op("~"); }
 ;
 
 reswords: tLINE | tFILE | tENCODING | upBEGIN | upEND | tALIAS | tKWAND
@@ -1046,7 +1039,7 @@ primary: literal
     f_arglist bodystmt tEND
     {
         $$ = alloc_node(token_object, $2, $4);
-        copy_range($$, $2, $4);
+/*         copy_range($$, $2, $4); */
         $$ = alloc_cond(token_function, $$, $7, $6);
         $$->flags = 1; /* Class method */
         pop_comment(parser, $$);
@@ -1675,7 +1668,7 @@ f_kw: label arg
     {
         $$ = alloc_node(token_object, $1, $2);
         $$->flags = 4;
-        copy_range($$, $1, $2);
+/*         copy_range($$, $1, $2); */
     }
 ;
 
@@ -1683,7 +1676,7 @@ f_block_kw: label primary
     {
         $$ = alloc_node(token_object, $1, $2);
         $$->flags = 4;
-        copy_range($$, $1, $2);
+/*         copy_range($$, $1, $2); */
     }
 ;
 
@@ -1772,7 +1765,7 @@ assocs: assoc
 assoc: arg tASSOC arg
     {
         $$ = alloc_node(token_object, $1, $3);
-        copy_range($$, $1, $3);
+/*         copy_range($$, $1, $3); */
     }
     | label arg
     {
@@ -1780,7 +1773,7 @@ assoc: arg tASSOC arg
             yywarning("This syntax is only available in Ruby 1.9.x or higher.");
         }
         $$ = alloc_node(token_object, $1, $2);
-        copy_range($$, $1, $2);
+/*         copy_range($$, $1, $2); */
     }
     | tDSTAR arg
     {
@@ -2279,25 +2272,6 @@ static void pop_end(struct parser_t *parser, struct node *n)
     pop_pos(parser, NULL);
 }
 
-static void copy_wc_range(struct node *res, struct node *h, struct node *t)
-{
-    if (t != NULL)
-        (t->last != NULL) ? copy_range(res, h, t->last) : copy_range(res, h, t);
-}
-
-static void copy_wc_range_ext(struct node *res, struct node *h, struct node *t)
-{
-    if (t != NULL)
-        (t->last != NULL) ? copy_range(res, h, t->last) : copy_range(res, h, t);
-    else
-        copy_range(res, h, h);
-}
-
-static void copy_last(struct node *h, struct node *t)
-{
-    (t->last != NULL) ? copy_end(h, t->last) : copy_end(h, t);
-}
-
 static void push_last_comment(struct parser_t *parser)
 {
     if ((parser->line - parser->last_comment.line) < 2)
@@ -2314,52 +2288,6 @@ static void pop_comment(struct parser_t *parser, struct node *n)
         parser->comment_index--;
         n->comment = parser->comment_stack[parser->comment_index];
     }
-}
-
-/*
- * TODO: probably not needed anymore.
- * The following macros are helpers to the fix_pos function.
- */
-
-#define has_operators(kind) ((kind > 1 && kind < token_neg && kind != token_kw_not) || \
-                                                        (kind > token_unary_minus && kind < token_ternary))
-#define is_unary(kind) (kind >= token_neg && kind <= token_unary_minus)
-
-/* TODO: probably not needed anymore => just pop_pos */
-static void fix_pos(struct parser_t *parser, struct node *n)
-{
-    int kind;
-    struct node *aux;
-
-    /* TODO: To be removed */
-    if (!n)
-        return;
-
-/*    kind = n->kind;
-    if (has_operators(kind)) {
-        copy_start(n, n->l);
-        aux = (n->r->last != NULL) ? n->r->last : n->r;
-        copy_end(n, aux);
-        n->pos.offset = aux->pos.offset;
-    } else if (is_unary(kind) || kind == token_kw_not) {
-        pop_pos(parser, n);
-        n->pos.end_line = n->l->pos.end_line;
-        n->pos.end_col = n->l->pos.end_col;
-    } else {*/
-        pop_pos(parser, n);
-        parser->last_pos = n; /* TODO: probably not needed anymore */
-/*     } */
-}
-
-/* TODO: probably not needed anymore */
-struct node * fix_star(struct parser_t *parser)
-{
-    struct node *res = alloc_node(token_object, NULL, NULL);
-    res->pos.start_line = res->pos.end_line = parser->auxiliar.start_line;
-    res->pos.start_col = parser->auxiliar.start_col;
-    res->pos.end_col = res->pos.start_col + 1;
-    parser->auxiliar.end_line = -1;
-    return res;
 }
 
 /*
@@ -2711,11 +2639,8 @@ retry:
                 return tNMATCH;
             }
             tokp.end_line = parser->line;
-            if (parser->def_seen) {
-                push_pos(parser, tokp);
-                if (bc == '@')
-                    return '!';
-            }
+            if (parser->def_seen && bc == '@')
+                return '!';
             break;
         case '+':
             bc = nextc();
@@ -2727,11 +2652,10 @@ retry:
 /*                 push_pos(parser, tokp); */
                 c = tUPLUS;
             } else if (parser->def_seen) {
-                push_pos(parser, tokp);
                 if (bc == '@')
                     return '+';
-                pushback();
-                return tUPLUS;
+/*                 push_pos(parser, tokp); */
+/*                 break; */
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
 /*                 push_pos(parser, tokp); */
@@ -2754,11 +2678,11 @@ retry:
 /*                 push_pos(parser, tokp); */
                 c = tUMINUS;
             } else if (parser->def_seen) {
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 if (bc == '@')
                     return '-';
-                pushback();
-                return tUMINUS;
+/*                 pushback(); */
+/*                 return tUMINUS; */
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
 /*                 push_pos(parser, tokp); */
@@ -3052,7 +2976,7 @@ retry:
         case '~':
             bc = nextc();
             if (parser->def_seen) {
-                push_pos(parser, tokp);
+/*                 push_pos(parser, tokp); */
                 if (bc == '@')
                     return '-';
             }

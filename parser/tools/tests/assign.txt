@@ -1,6 +1,6 @@
 Resulting AST's:
 51(a)[1,0:1,1] 
-Next statements: 51[1,3:1,4] 51(b)[1,6:1,7] 51(c)[1,9:1,10] 
+Next statements: 51 51(b)[1,6:1,7] 51(c)[1,9:1,10] 
 Root: 22 52 
 Next statements: 52 52 63 
 Root: 
