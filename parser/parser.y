@@ -2726,8 +2726,11 @@ retry:
             if (!parser->expr_seen) {
 /*                 push_pos(parser, tokp); */
                 c = tUPLUS;
-            } else if (parser->def_seen && bc == '@') {
+            } else if (parser->def_seen) {
                 push_pos(parser, tokp);
+                if (bc == '@')
+                    return '+';
+                pushback();
                 return tUPLUS;
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
@@ -2750,8 +2753,11 @@ retry:
             if (!parser->expr_seen) {
 /*                 push_pos(parser, tokp); */
                 c = tUMINUS;
-            } else if (parser->def_seen && bc == '@') {
+            } else if (parser->def_seen) {
                 push_pos(parser, tokp);
+                if (bc == '@')
+                    return '-';
+                pushback();
                 return tUMINUS;
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
@@ -3045,10 +3051,10 @@ retry:
             return c;
         case '~':
             bc = nextc();
-            if (parser->def_seen && bc == '@') {
-                tokp.end_col = parser->column;
+            if (parser->def_seen) {
                 push_pos(parser, tokp);
-                return c;
+                if (bc == '@')
+                    return '-';
             }
             break;
         default:
