@@ -117,7 +117,6 @@ struct parser_t {
 
     /* Stack of positions */
     struct pos_t *pos_stack;
-    struct node *last_pos;
     unsigned char call_args : 1;
     int stack_scale;
     int pos_size;
@@ -162,7 +161,6 @@ struct parser_t {
     unsigned char here_found : 1;
     /* END: heredoc */
     unsigned long lex_prevc;
-    unsigned long cursor;
     unsigned long length;
     unsigned long line;
     unsigned long column;
@@ -1449,7 +1447,18 @@ f_kwrest: kwrest_mark base
     }
 ;
 
-f_opt: base '=' arg { $$ = alloc_node(token_assign, $1, $3); $1->flags = 3; }
+f_opt: base '='
+    {
+        $<num>$ = parser->column;
+    }
+    arg
+    {
+        $$ = alloc_node(token_assign, $1, $4);
+        $1->flags = 3;
+        $4->pos.start_col = $<num>3;
+        $4->pos.end_col = parser->column;
+        $4->pos.offset = parser->lex_prev - parser->blob;
+    }
 ;
 
 f_block_opt: base '=' primary { $$ = alloc_node(token_assign, $1, $3); }
@@ -1630,7 +1639,6 @@ static void init_parser(struct parser_t * parser)
     parser->line_pend = 0;
     parser->column_pend = 0;
     parser->here_found = 0;
-    parser->cursor = 0;
     parser->eof_reached = 0;
     parser->expr_seen = 0;
     parser->class_seen = 0;
@@ -1655,7 +1663,6 @@ static void init_parser(struct parser_t * parser)
     parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
     parser->stack_scale = 0;
     parser->pos_size = 0;
-    parser->last_pos = NULL;
     parser->call_args = 0;
     parser->errors = NULL;
     parser->last_error = NULL;
@@ -1980,7 +1987,6 @@ static void push_pos(struct parser_t *parser, struct pos_t tokp)
         scale += STACK_SIZE;
         parser->pos_stack = (struct pos_t *) realloc(parser->pos_stack, scale * sizeof(struct pos_t));
     }
-    tokp.offset = parser->cursor;
     parser->pos_stack[parser->pos_size + scale - 1] = tokp;
 }
 
