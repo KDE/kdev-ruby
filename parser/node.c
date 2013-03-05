@@ -18,9 +18,10 @@
  */
 
 
+#ifdef BUILD_TESTS
 #include <stdio.h>
+#endif
 #include <stdlib.h>
-#include <string.h>
 
 #include "node.h"
 
@@ -33,10 +34,8 @@ struct node * alloc_node(int kind, struct node *l, struct node *r)
 {
     struct node *n = (struct node *) malloc(sizeof(struct node));
 
-    if (!n) {
-        printf("Out of space!");
+    if (!n)
         exit(0);
-    }
     n->kind = kind;
     n->flags = 0;
     n->name = NULL;

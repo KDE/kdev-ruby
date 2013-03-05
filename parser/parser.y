@@ -89,13 +89,12 @@ struct flags_t {
 /* TODO: I'm sure it can be simplified */
 struct term_t {
     int token;
-    char *word; /* TODO: const ? */
+    char *word;
     int length;
     int nest;
     unsigned char term;
     unsigned char paren;
     unsigned char can_embed : 1;
-    unsigned char was_mcall : 1;
     unsigned char nestable : 1;
 };
 
@@ -1871,7 +1870,6 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     lex_strterm->can_embed = dash_seen;
     lex_strterm->word = buffer;
     lex_strterm->length = ptr - buffer;
-    lex_strterm->was_mcall = parser->mcall;
     lex_strterm->token = token_heredoc;
     lex_strterm->nestable = 0;
     parser->lex_pend = parser->lex_p + quote_seen;
@@ -2207,14 +2205,6 @@ static int parser_yylex(struct parser_t *parser)
      *    in some cases.
      */
 
-    /*
-     * TODO
-     * Positions:
-     *  - Sometimes we don't have to push the position.
-     *  - We don't have to set the tokp all the time.
-     */
-
-    /* String/Regexp/Heredoc parsing */
     /* TODO */
     if (lex_strterm) {
         if (lex_strterm->token == token_heredoc) {
@@ -2222,7 +2212,6 @@ static int parser_yylex(struct parser_t *parser)
             if (c == tSTRING_END) {
                 tokp.end_line = parser->line;
                 tokp.end_col = parser->column;
-/*                 push_pos(parser, tokp); */
                 SWAP(parser->line, parser->line_pend, space_seen);
                 SWAP(parser->column, parser->column_pend, space_seen);
                 SWAP(parser->lex_p, parser->lex_pend, cp);
@@ -2239,12 +2228,6 @@ static int parser_yylex(struct parser_t *parser)
             }
         }
         return c;
-    } else if (lex_strterm && lex_strterm->token == token_heredoc && lex_strterm->was_mcall) {
-        /* TODO: can probably be removed */
-        lex_strterm->was_mcall = 0;
-        lex_strterm->token = 0;
-        parser->mcall = 0;
-        return ')';
     }
 
 retry:
