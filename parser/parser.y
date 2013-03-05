@@ -27,7 +27,6 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 
 #include "node.h"
@@ -43,7 +42,6 @@
  * the MRI.
  */
 struct flags_t {
-    unsigned char eof_reached : 1;
     unsigned char expr_seen : 1;
     unsigned char class_seen : 1;
     unsigned char dot_seen : 1;
@@ -55,7 +53,7 @@ struct flags_t {
     unsigned char symbeg : 1;
 };
 
-#define eof_reached lexer_flags.eof_reached
+
 #define expr_seen lexer_flags.expr_seen
 #define class_seen lexer_flags.class_seen
 #define dot_seen lexer_flags.dot_seen
@@ -108,6 +106,7 @@ struct comment_t {
  * content to parse.
  */
 /* TODO: can be simplified */
+/* TODO: move : 1 attributes to single parser_state or ? */
 struct parser_t {
     /* Abstract Syntax Tree */
     struct node *ast;
@@ -121,6 +120,7 @@ struct parser_t {
 
     /* Flags used by the parser */
     struct flags_t lexer_flags;
+    unsigned char eof_reached : 1;
     unsigned int cond_stack;
     unsigned int cmdarg_stack;
     int in_def;
@@ -1596,7 +1596,10 @@ none : /* none */ { $$ = NULL; }
 #include <ctype.h>
 #include "hash.c"
 
-/* TODO */
+/*
+ * TODO: beautify all these macros.
+ */
+
 #define nextc() parser_nextc(parser)
 #define pushback() parser_pushback(parser)
 #define _unused_(c) (void) c;
@@ -1612,15 +1615,12 @@ none : /* none */ { $$ = NULL; }
                                                     && *(c+3) == 'd')
 #define is_shortcut(c) (to_upper(c) == 'W' || c == 'r' || to_upper(c) == 'Q' \
                         || c == 'x' || to_upper(c) == 'I' || (ispunct(c) && !parser->symbeg))
-/* TODO: dollar and at are already checked by is_valid_identifier */
 #define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
-                                        || *c == '_' || *c == '$' || *c == '@')
+                                        || *c == '_')
 #define is_special_method(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
                                                                 buffer[1] == '_' && buffer[strlen(buffer) - 2] == '_' && \
                                                                 buffer[strlen(buffer) - 1] == '_')
 #define maybe_heredoc (!parser->class_seen && !parser->dot_seen)
-
-/* TODO: clean */
 #define SWAP(a, b, aux) { aux = a; a = b; b = aux; }
 
 
@@ -2245,6 +2245,7 @@ retry:
             set_comment(parser);
         eol:
         case '\n':
+            /* TODO: MRI also retries when class_seen */
             parser->expr_mid = 0;
             if (!parser->expr_seen || parser->dot_seen)
                 goto retry;
