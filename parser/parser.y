@@ -53,7 +53,6 @@ struct flags_t {
     unsigned char def_seen : 1;
     unsigned char in_alias : 1;
     unsigned char symbeg : 1;
-    unsigned char mcall : 1;
 };
 
 #define eof_reached lexer_flags.eof_reached
@@ -66,7 +65,6 @@ struct flags_t {
 #define def_seen lexer_flags.def_seen
 #define in_alias lexer_flags.in_alias
 #define symbeg lexer_flags.symbeg
-#define mcall lexer_flags.mcall
 
 
 #define BITSTACK_PUSH(stack, n) ((stack) = ((stack)<<1)|((n)&1))
@@ -1650,7 +1648,6 @@ static void init_parser(struct parser_t * parser)
     parser->in_def = 0;
     parser->in_alias = 0;
     parser->symbeg = 0;
-    parser->mcall = 0;
     parser->expr_mid = 0;
     parser->lpar_beg = 0;
     parser->paren_nest = 0;
@@ -2184,8 +2181,6 @@ static void parse_re_options(struct parser_t *parser)
     pushback();
 }
 
-#define IS_SPCARG(c) (CMDARG_P() && space_seen && !isspace(c))
-
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
@@ -2193,17 +2188,11 @@ static void parse_re_options(struct parser_t *parser)
 static int parser_yylex(struct parser_t *parser)
 {
     register int c;
-    int bc = 0; /* TODO: register ? */
+    int bc = 0;
     char *cp;
     char lexbuf[BSIZE]; /* TODO: to the parser struct ¿? */
-    int space_seen = 0; /* TODO: short ? char ? */
+    unsigned char space_seen = 0;
     struct pos_t tokp = {-1, -1, -1, -1, 0};
-
-    /*
-     * TODO:
-     *  - User parser->lex_p instead of bc = nextc() to avoid overhead
-     *    in some cases.
-     */
 
     /* TODO */
     if (lex_strterm) {
@@ -2212,8 +2201,8 @@ static int parser_yylex(struct parser_t *parser)
             if (c == tSTRING_END) {
                 tokp.end_line = parser->line;
                 tokp.end_col = parser->column;
-                SWAP(parser->line, parser->line_pend, space_seen);
-                SWAP(parser->column, parser->column_pend, space_seen);
+                SWAP(parser->line, parser->line_pend, bc);
+                SWAP(parser->column, parser->column_pend, bc);
                 SWAP(parser->lex_p, parser->lex_pend, cp);
                 parser->here_found = 1;
                 parser->expr_seen = 1;
@@ -2595,8 +2584,6 @@ retry:
             parser->expr_seen = 1;
             CMDARG_LEXPOP();
             COND_LEXPOP();
-            if (!parser->paren_nest)
-                parser->mcall = 0;
             return c;
         case '{':
             if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
@@ -2749,7 +2736,6 @@ talpha:
             push_stack(parser, lexbuf);
             parser->expr_seen = 0;
             parser->special_arg = 1;
-            parser->mcall = 1;
             parser->dot_seen = 0;
             push_pos(parser, tokp);
             return BASE;
@@ -2837,7 +2823,6 @@ talpha:
 
 tnum:
     /* TODO Can be optimized */
-    /* TODO: maybe then it could be embedded into the switch, with less crap going on */
     {
         char hex, bin, has_point, aux;
         hex = bin = has_point = aux = 0;
