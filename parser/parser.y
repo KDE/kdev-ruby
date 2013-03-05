@@ -48,9 +48,8 @@ struct flags_t {
     unsigned char last_is_paren : 1;
     unsigned char special_arg : 1;
     unsigned char brace_arg : 1;
-    unsigned char def_seen : 1;
-    unsigned char in_alias : 1;
     unsigned char symbeg : 1;
+    unsigned char expr_fname : 1;
 };
 
 
@@ -60,10 +59,8 @@ struct flags_t {
 #define last_is_paren lexer_flags.last_is_paren
 #define special_arg lexer_flags.special_arg
 #define brace_arg lexer_flags.brace_arg
-#define def_seen lexer_flags.def_seen
-#define in_alias lexer_flags.in_alias
 #define symbeg lexer_flags.symbeg
-
+#define expr_fname lexer_flags.expr_fname
 
 #define BITSTACK_PUSH(stack, n) ((stack) = ((stack)<<1)|((n)&1))
 #define BITSTACK_POP(stack)     ((stack) = (stack) >> 1)
@@ -296,11 +293,11 @@ stmts: none
     | error stmt        { $$ = $2; }
 ;
 
-stmt: tALIAS fsym fsym
+stmt: tALIAS fsym { parser->expr_fname = 1; } fsym
     {
-        $$ = alloc_node(token_alias, $2, $3);
+        $$ = alloc_node(token_alias, $2, $4);
     }
-    | tALIAS GLOBAL GLOBAL
+    | tALIAS GLOBAL { parser->expr_fname = 1; } GLOBAL
     {
         /* Ugly as hell, but it works */
         struct node *l = alloc_node(token_object, NULL, NULL);
@@ -597,7 +594,7 @@ fsym: fname | symbol
 ;
 
 undef_list: fsym
-    | undef_list ',' fsym { $$ = update_list($1, $3); }
+    | undef_list ',' { parser->expr_fname = 1; } fsym { $$ = update_list($1, $4); }
 ;
 
 op: '|' { copy_op("|"); } | '^' { copy_op("^"); } | '&' { copy_op("&"); }
@@ -866,7 +863,7 @@ primary: literal
     }
     | tDEF fname
     {
-        parser->def_seen = 0;
+        parser->expr_fname = 0;
         parser->in_def++;
     }
     f_arglist bodystmt tEND
@@ -877,7 +874,7 @@ primary: literal
     }
     | tDEF singleton dot_or_colon fname
     {
-        parser->def_seen = 0;
+        parser->expr_fname = 0;
         parser->in_def++;
     }
     f_arglist bodystmt tEND
@@ -1639,6 +1636,7 @@ static void init_parser(struct parser_t * parser)
     parser->eof_reached = 0;
     parser->expr_seen = 0;
     parser->class_seen = 0;
+    parser->expr_fname = 0;
     parser->dot_seen = 0;
     parser->last_is_paren = 0;
     parser->cond_stack = 0;
@@ -1646,12 +1644,10 @@ static void init_parser(struct parser_t * parser)
     parser->special_arg = 0;
     parser->brace_arg = 0;
     parser->in_def = 0;
-    parser->in_alias = 0;
     parser->symbeg = 0;
     parser->expr_mid = 0;
     parser->lpar_beg = 0;
     parser->paren_nest = 0;
-    parser->def_seen = 0;
     parser->sp = 0;
     parser->line = 1;
     parser->column = 0;
@@ -2251,7 +2247,7 @@ retry:
                 goto retry;
             parser->dot_seen = 0;
             CMDARG_PUSH(0);
-            parser->in_alias = 0;
+            parser->expr_fname = 0;
             parser->expr_seen = 0;
             return '\n';
         case '=':
@@ -2282,7 +2278,7 @@ retry:
         case '[':
             parser->paren_nest++;
             CMDARG_PUSH(0);
-            if (parser->dot_seen || parser->def_seen || parser->symbeg || parser->in_alias) {
+            if (parser->dot_seen || parser->expr_fname || parser->symbeg) {
                 parser->expr_seen = 0;
                 bc = nextc();
                 if (bc == ']') {
@@ -2293,10 +2289,6 @@ retry:
                         return tASET;
                     pushback();
                     return tAREF;
-                } else if (!parser->def_seen) {
-                    tokp.end_col = parser->column;
-                    COND_PUSH(0);
-                    return c;
                 }
                 break;
             }
@@ -2362,7 +2354,7 @@ retry:
                 return tNMATCH;
             }
             tokp.end_line = parser->line;
-            if (parser->def_seen && bc == '@')
+            if (parser->expr_fname && bc == '@')
                 return '!';
             break;
         case '+':
@@ -2373,7 +2365,7 @@ retry:
             tokp.end_col = parser->column;
             if (!parser->expr_seen) {
                 c = tUPLUS;
-            } else if (parser->def_seen) {
+            } else if (parser->expr_fname) {
                 if (bc == '@')
                     return '+';
             } else if (parser->expr_seen && space_seen && !isspace(bc)) {
@@ -2393,7 +2385,7 @@ retry:
                 return tLAMBDA;
             if (!parser->expr_seen)
                 c = tUMINUS;
-            else if (parser->def_seen && bc == '@')
+            else if (parser->expr_fname && bc == '@')
                 return '-';
             else if (parser->expr_seen && space_seen && !isspace(bc)) {
                 pushback();
@@ -2545,7 +2537,7 @@ retry:
             parser->expr_seen = 0;
             break;
         case '`':
-            if (parser->def_seen)
+            if (parser->expr_fname)
                 return c;
             /* fallthrough */
         case '"':
@@ -2677,7 +2669,7 @@ retry:
             return c;
         case '~':
             bc = nextc();
-            if (parser->def_seen && bc == '@')
+            if (parser->expr_fname && bc == '@')
                 return '-';
             break;
         default:
@@ -2708,7 +2700,7 @@ talpha:
         }
         switch (c) {
         case '=':
-            if (!parser->def_seen && !parser->symbeg && !parser->in_alias)
+            if (!parser->expr_fname && !parser->symbeg)
                 break;
             if (*(parser->lex_p) == '>')
                 break;
@@ -2717,8 +2709,8 @@ talpha:
             last_col = parser->column;
             c = nextc();
         }
-        if (parser->def_seen && (isspace(c) || c == '('))
-            parser->def_seen = 0;
+        if (parser->expr_fname && (isspace(c) || c == '('))
+            parser->expr_fname = 0;
         *cp = '\0';
         parser->column -= ax;
         tokp.end_line = tokp.start_line;
@@ -2755,12 +2747,13 @@ talpha:
             c = kw->id[0];
             switch (c) {
                 case tDEF:
-                    parser->def_seen = 1;
+                    parser->expr_fname = 1;
                 case tMODULE: case tCLASS:
                     push_last_comment(parser);
                     break;
+                case tUNDEF:
                 case tALIAS:
-                    parser->in_alias = 1;
+                    parser->expr_fname = 1;
                     break;
                 case tEND:
                     push_pos(parser, tokp);
