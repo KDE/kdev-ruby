@@ -45,7 +45,6 @@ struct flags_t {
     unsigned char expr_seen : 1;
     unsigned char class_seen : 1;
     unsigned char dot_seen : 1;
-    unsigned char last_is_paren : 1;
     unsigned char special_arg : 1;
     unsigned char brace_arg : 1;
     unsigned char symbeg : 1;
@@ -56,7 +55,6 @@ struct flags_t {
 #define expr_seen lexer_flags.expr_seen
 #define class_seen lexer_flags.class_seen
 #define dot_seen lexer_flags.dot_seen
-#define last_is_paren lexer_flags.last_is_paren
 #define special_arg lexer_flags.special_arg
 #define brace_arg lexer_flags.brace_arg
 #define symbeg lexer_flags.symbeg
@@ -1638,7 +1636,6 @@ static void init_parser(struct parser_t * parser)
     parser->class_seen = 0;
     parser->expr_fname = 0;
     parser->dot_seen = 0;
-    parser->last_is_paren = 0;
     parser->cond_stack = 0;
     parser->cmdarg_stack = 0;
     parser->special_arg = 0;
