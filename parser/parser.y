@@ -108,10 +108,8 @@ struct parser_t {
 
     /* Stack of positions */
     struct pos_t *pos_stack;
-    unsigned char call_args : 1;
     int stack_scale;
     int pos_size;
-    int name_length;
 
     /* Flags used by the parser */
     struct flags_t lexer_flags;
@@ -189,7 +187,7 @@ static void pop_start(struct parser_t *parser, struct node *n);
 static void pop_end(struct parser_t *parser, struct node *n);
 #define discard_pos() pop_pos(parser, NULL)
 #define copy_end(dest, src) ({ dest->pos.end_line = src->pos.end_line; dest->pos.end_col = src->pos.end_col; })
-#define copy_op(op) { parser->aux = strdup(op); parser->name_length = strlen(op);}
+#define copy_op(op) { parser->aux = strdup(op); }
 %}
 
 %pure_parser
@@ -581,7 +579,7 @@ fname: base
         $$->name = parser->aux;
         $$->pos.start_line = $$->pos.end_line = parser->line;
         $$->pos.end_col = parser->column;
-        $$->pos.start_col = $$->pos.end_col - parser->name_length;
+        $$->pos.start_col = $$->pos.end_col - strlen(parser->aux); 
         parser->expr_seen = 1;
         parser->dot_seen = 0;
     }
@@ -1652,7 +1650,6 @@ static void init_parser(struct parser_t * parser)
     parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
     parser->stack_scale = 0;
     parser->pos_size = 0;
-    parser->call_args = 0;
     parser->errors = NULL;
     parser->last_error = NULL;
     parser->warning = 0;
