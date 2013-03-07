@@ -127,7 +127,6 @@ struct parser_t {
     struct error_t *errors;
     struct error_t *last_error;
     unsigned char warning : 1;
-    unsigned char unrecoverable : 1;
 
     /* Stack of names */
     char *stack[2];
@@ -1653,7 +1652,6 @@ static void init_parser(struct parser_t * parser)
     parser->errors = NULL;
     parser->last_error = NULL;
     parser->warning = 0;
-    parser->unrecoverable = 0;
     parser->last_comment.comment = NULL;
     parser->last_comment.line = 0;
     parser->comment_index = 0;
@@ -1960,7 +1958,6 @@ static void pop_stack(struct parser_t *parser, struct node *n)
     parser->sp--;
 }
 
-/* TODO: lex_pos changes everything */
 static void push_pos(struct parser_t *parser, struct pos_t tokp)
 {
     int scale = STACK_SIZE * parser->stack_scale;
@@ -2029,22 +2026,12 @@ static void pop_comment(struct parser_t *parser, struct node *n)
     }
 }
 
-/*
- * The following macros and functions make all the magic of fetching comments.
- */
-
 #define __check_buffer_size(N) { \
   if (count > N) { \
     count = 0; \
     scale++; \
     buffer = (char *) realloc(buffer, scale * 1024); \
   } \
-}
-
-#define __handle_comment_eol { \
-  c++; curs++; \
-  i = 0; \
-  parser->line++; \
 }
 
 static void store_comment(struct parser_t *parser, char *comment)
@@ -2912,7 +2899,6 @@ static void yyerror(struct parser_t *parser, const char *s)
     parser->last_error->next = NULL;
 
     parser->eof_reached = !e->warning;
-    parser->unrecoverable = !e->warning;
 }
 
 struct ast_t * rb_compile_file(struct options_t *opts)
@@ -2948,7 +2934,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
         }
         if (p.eof_reached) {
             result->errors = p.errors;
-            result->unrecoverable = p.unrecoverable;
+            result->unrecoverable = !p.warning;
             break;
         }
     }
