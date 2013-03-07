@@ -2012,8 +2012,11 @@ static void push_last_comment(struct parser_t *parser)
 {
     if ((parser->line - parser->last_comment.line) < 2)
         parser->comment_stack[parser->comment_index] = parser->last_comment.comment;
-    else
+    else {
         parser->comment_stack[parser->comment_index] = NULL;
+        if (parser->last_comment.comment)
+            free(parser->last_comment.comment);
+    }
     parser->comment_index++;
     parser->last_comment.comment = NULL;
 }
