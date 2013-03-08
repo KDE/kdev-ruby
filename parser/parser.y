@@ -36,36 +36,10 @@
 #define STACK_SIZE 256
 #define BSIZE STACK_SIZE
 
-/* Flags used by the lexer */
-/*
- * TODO: enum, the real flag should be just a lex_state variable, as in
- * the MRI.
- */
-struct flags_t {
-    unsigned char expr_seen : 1;
-    unsigned char class_seen : 1;
-    unsigned char dot_seen : 1;
-    unsigned char special_arg : 1;
-    unsigned char brace_arg : 1;
-    unsigned char symbeg : 1;
-    unsigned char expr_fname : 1;
-};
-
-
-#define expr_seen lexer_flags.expr_seen
-#define class_seen lexer_flags.class_seen
-#define dot_seen lexer_flags.dot_seen
-#define special_arg lexer_flags.special_arg
-#define brace_arg lexer_flags.brace_arg
-#define symbeg lexer_flags.symbeg
-#define expr_fname lexer_flags.expr_fname
-
 /*
  * TODO
- * This effectively replaces the flags_t struct. Note that it will evolve
- * in the future.
+ * They will be merged in the near future
  */
-
 enum lex_state_bits {
     EXPR_BEG_bit,
     EXPR_CLASS_bit,
@@ -147,7 +121,6 @@ struct parser_t {
     int pos_size;
 
     /* Flags used by the parser */
-/*     struct flags_t lexer_flags; */
     enum lex_state_e lex_state;
     unsigned char eof_reached : 1;
     unsigned int cond_stack;
@@ -618,8 +591,6 @@ fname: base
         $$->pos.start_col = $$->pos.end_col - strlen(parser->aux); 
         UNSET(EXPR_BEG);
         UNSET(EXPR_DOT);
-/*         parser->expr_seen = 1; */
-/*         parser->dot_seen = 0; */
     }
     | reswords { $$ = alloc_node(token_object, NULL, NULL); }
 ;
@@ -876,7 +847,6 @@ primary: literal
     {
         /* TODO: to be removed in the future */
         SET(EXPR_CLASS);
-/*         parser->class_seen = 1; */
     }
     opt_terms tLSHIFT
     {
@@ -899,7 +869,6 @@ primary: literal
     }
     | tDEF fname
     {
-/*         parser->expr_fname = 0; */
         UNSET(EXPR_FNAME);
         parser->in_def++;
     }
@@ -1252,7 +1221,6 @@ string_contents: /* none */ { $$ = 0; }
 string_content: tSTRING_CONTENT { $$ = 0; }
     | tSTRING_DBEG
     {
-/*         parser->expr_seen = 0; */
         SET(EXPR_BEG);
         $<num>$ = parser->cond_stack;
     }
@@ -1262,7 +1230,6 @@ string_content: tSTRING_CONTENT { $$ = 0; }
     }
     compstmt '}'
     {
-/*         parser->expr_seen = 1; */
         UNSET(EXPR_BEG);
         parser->cond_stack = $<num>2;
         lex_strterm = $<term>3;
@@ -1274,7 +1241,6 @@ string_content: tSTRING_CONTENT { $$ = 0; }
         $<term>$ = lex_strterm;
         lex_strterm = NULL;
         SET(EXPR_BEG);
-/*         parser->expr_seen = 0; */
     }
     string_dvar
     {
@@ -1337,13 +1303,11 @@ f_arglist: '(' f_args rparen
     {
         $$ = $2;
         SET(EXPR_BEG);
-/*         parser->expr_seen = 0; */
     }
     | f_args term
     {
         $$ = $1;
         SET(EXPR_BEG);
-/*         parser->expr_seen = 0; */
     }
 ;
 
@@ -1677,16 +1641,9 @@ static void init_parser(struct parser_t * parser)
     parser->here_found = 0;
     parser->eof_reached = 0;
     lex_state = EXPR_BEG;
-/*     parser->expr_seen = 0; */
-/*     parser->class_seen = 0; */
-/*     parser->expr_fname = 0; */
-/*     parser->dot_seen = 0; */
     parser->cond_stack = 0;
     parser->cmdarg_stack = 0;
-/*     parser->special_arg = 0; */
-/*     parser->brace_arg = 0; */
     parser->in_def = 0;
-/*     parser->symbeg = 0; */
     parser->expr_mid = 0;
     parser->lpar_beg = 0;
     parser->paren_nest = 0;
@@ -2234,7 +2191,6 @@ static int parser_yylex(struct parser_t *parser)
                 SWAP(parser->lex_p, parser->lex_pend, cp);
                 parser->here_found = 1;
                 UNSET(EXPR_BEG);
-/*                 parser->expr_seen = 1; */
 
             }
         } else {
@@ -2242,7 +2198,6 @@ static int parser_yylex(struct parser_t *parser)
             if (c == tSTRING_END) {
                 if (lex_strterm->token == token_regexp && isalpha(*parser->lex_p))
                     parse_re_options(parser);
-/*                 parser->expr_seen = 1; */
                 UNSET(EXPR_BEG);
             }
         }
@@ -2277,22 +2232,16 @@ retry:
         case '\n':
             /* TODO: MRI also retries when class_seen */
             parser->expr_mid = 0;
-/*             UNSET(EXPR_MID); */
             if (IS(EXPR_BEG) || IS(EXPR_DOT))
                 goto retry;
             UNSET(EXPR_DOT);
             UNSET(EXPR_FNAME);
             SET(EXPR_BEG);
-/*             parser->dot_seen = 0; */
             CMDARG_PUSH(0);
-/*             parser->expr_fname = 0; */
-/*             parser->expr_seen = 0; */
             return '\n';
         case '=':
             bc = nextc();
             SET(EXPR_BEG);
-/*             lex_state = EXPR_BEG; */
-/*             parser->expr_seen = 0; */
             if (bc == '=') {
                 bc = nextc();
                 if (bc == '=')
@@ -2311,10 +2260,7 @@ retry:
                     nextc();
                 parser->column += 3;
                 parser->lex_p += 3;
-/*                 parser->expr_seen = 1; */
                 UNSET(EXPR_BEG);
-/*                 lex_state = EXPR_ARG; */
-/*                 lex_state &= ~EXPR_BEG; */
                 goto eol;
             }
             break;
@@ -2322,13 +2268,11 @@ retry:
             parser->paren_nest++;
             CMDARG_PUSH(0);
             if (IS(EXPR_DOT) || IS(EXPR_FNAME) || IS(EXPR_SYMBEG)) {
-/*                 parser->expr_seen = 0; */
                 SET(EXPR_BEG);
                 bc = nextc();
                 if (bc == ']') {
                     space_seen = 0;
                     UNSET(EXPR_SYMBEG);
-/*                     parser->symbeg = 0; */
                     bc = nextc();
                     if (bc == '=')
                         return tASET;
@@ -2339,27 +2283,21 @@ retry:
             }
             tokp.end_col = parser->column;
             if (IS(EXPR_BEG) || space_seen) {
-/*                 parser->expr_seen = 0; */
                 SET(EXPR_BEG);
                 return tLBRACKET;
             }
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
-/*             lex_state = EXPR_BEG; */
             COND_PUSH(0);
             return c;
         case ']':
             parser->paren_nest--;
             UNSET(EXPR_BEG);
             SET(EXPR_BRACE);
-/*             parser->expr_seen = 1; */
-/*             parser->brace_arg = 1; */
             CMDARG_LEXPOP();
             COND_LEXPOP();
             return c;
         case '<':
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             bc = nextc();
             if (bc == '<') {
                 bc = nextc();
@@ -2383,7 +2321,6 @@ retry:
             break;
         case '>':
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             bc = nextc();
             if (bc == '>') {
                 bc = nextc();
@@ -2397,16 +2334,11 @@ retry:
             break;
         case '!':
             bc = nextc();
-            if (bc == '=') {
-                SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
+            SET(EXPR_BEG);
+            if (bc == '=')
                 return tNEQ;
-            }
-            if (bc == '~') {
-                SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
+            if (bc == '~')
                 return tNMATCH;
-            }
             tokp.end_line = parser->line;
             if (IS(EXPR_FNAME) && bc == '@')
                 return '!';
@@ -2415,7 +2347,6 @@ retry:
             bc = nextc();
             if (bc == '=') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 return tOP_ASGN;
             }
             tokp.end_line = parser->line;
@@ -2436,7 +2367,6 @@ retry:
             bc = nextc();
             if (bc == '=') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 return tOP_ASGN;
             }
             tokp.end_line = parser->line;
@@ -2449,38 +2379,32 @@ retry:
                 return '-';
             else if (!IS(EXPR_BEG) && space_seen && !isspace(bc)) {
                 pushback();
-/*                 parser->expr_seen = 0; */
                 SET(EXPR_BEG);
                 return tUMINUS;
             } else
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
             break;
         case '*':
             bc = nextc();
             if (bc == '=') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 return tOP_ASGN;
             }
             if (bc == '*') {
                 bc = nextc();
                 if (bc == '=') {
                     SET(EXPR_BEG);
-/*                     parser->expr_seen = 0; */
                     return tOP_ASGN;
                 }
                 pushback();
                 if (IS(EXPR_BEG))
                     return tDSTAR;
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 return tPOW;
             }
             if (IS(EXPR_BEG) || IS(EXPR_DOT))
                 c = tSTAR;
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             break;
         case '/':
             if (IS(EXPR_BEG)) {
@@ -2495,7 +2419,6 @@ retry:
                 return tSTRING_BEG;
             }
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             bc = nextc();
             if (bc == '=')
                 return tOP_ASGN;
@@ -2503,7 +2426,6 @@ retry:
         case '%':
             bc = nextc();
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             if (bc == '=')
                 return tOP_ASGN;
             if (is_shortcut(bc)) {
@@ -2527,7 +2449,6 @@ retry:
             bc = nextc();
             if (bc == '&') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 bc = nextc();
                 if (bc == '=')
                     return tOP_ASGN;
@@ -2536,18 +2457,15 @@ retry:
             }
             if (bc == '=') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 return tOP_ASGN;
             }
             if (IS(EXPR_BEG) || IS(EXPR_DOT))
                 c = tAMPER;
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             break;
         case '|':
             bc = nextc();
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             if (bc == '|') {
                 bc = nextc();
                 if (bc == '=')
@@ -2561,7 +2479,6 @@ retry:
             bc = nextc();
             if (bc == '.') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 bc = nextc();
                 if (bc == '.')
                     return tDOT3;
@@ -2569,7 +2486,6 @@ retry:
                 return tDOT2;
             }
             SET(EXPR_DOT);
-/*             parser->dot_seen = 1; */
             break;
         case ':':
             bc = nextc();
@@ -2578,24 +2494,18 @@ retry:
                 if (IS(EXPR_BEG) || (!IS(EXPR_BEG) && space_seen))
                     return tCOLON3;
                 SET(EXPR_DOT);
-/*                 parser->dot_seen = 1; */
                 return tCOLON2;
             }
             if (!isspace(bc)) {
                 pushback();
                 SET(EXPR_SYMBEG);
-/*                 parser->symbeg = 1; */
                 UNSET(EXPR_BEG);
-/*                 parser->expr_seen = 1; */
                 return tSYMBEG;
             }
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             break;
         case '^':
             bc = nextc();
-/*             SET(EXPR_BEG); */
-/*             parser->expr_seen = 0; */
             if (bc == '=') {
                 SET(EXPR_BEG);
                 return tOP_ASGN;
@@ -2604,7 +2514,6 @@ retry:
         case ';':
         case ',':
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             return c;
         case '?':
             bc = nextc();
@@ -2615,12 +2524,10 @@ retry:
                     tokp.end_line = parser->line;
                     tokp.end_col = parser->column;
                     UNSET(EXPR_BEG);
-/*                     parser->expr_seen = 1; */
                     return tCHAR;
                 }
             }
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             break;
         case '`':
             if (IS(EXPR_FNAME))
@@ -2651,7 +2558,6 @@ retry:
                 COND_PUSH(0);
                 CMDARG_PUSH(0);
                 UNSET(EXPR_SPECIAL);
-/*                 parser->special_arg = 0; */
             } else if (IS(EXPR_BEG) || COND_P())
                 c = tLPAREN;
             else {
@@ -2662,7 +2568,6 @@ retry:
         case ')':
             parser->paren_nest--;
             UNSET(EXPR_BEG);
-/*             parser->expr_seen = 1; */
             CMDARG_LEXPOP();
             COND_LEXPOP();
             return c;
@@ -2673,7 +2578,6 @@ retry:
                 COND_PUSH(0);
                 CMDARG_PUSH(0);
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 if (parser->version < ruby19) {
                     yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
                 }
@@ -2688,15 +2592,12 @@ retry:
             } else
                 push_pos(parser, tokp);
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             COND_PUSH(0);
             CMDARG_PUSH(0);
             return c; /* block (primary) */
         case '}':
             UNSET(EXPR_BEG);
             SET(EXPR_BRACE);
-/*             parser->expr_seen = 1; */
-/*             parser->brace_arg = 1; */
             CMDARG_LEXPOP();
             COND_LEXPOP();
             tokp.end_line = parser->line;
@@ -2716,15 +2617,11 @@ retry:
             }
             UNSET(EXPR_BEG);
             UNSET(EXPR_DOT);
-/*             parser->expr_seen = 1; */
-/*             parser->dot_seen = 0; */
             goto talpha;
         case '$':
             tokp.end_line = parser->line;
             UNSET(EXPR_BEG);
-/*             parser->expr_seen = 1; */
             UNSET(EXPR_DOT);
-/*             parser->dot_seen = 0; */
             cp = lexbuf;
             *cp++ = c;
             bc = nextc();
@@ -2826,30 +2723,23 @@ talpha:
             SET(EXPR_BEG);
             SET(EXPR_SPECIAL);
             UNSET(EXPR_DOT);
-/*             parser->expr_seen = 0; */
-/*             parser->special_arg = 1; */
-/*             parser->dot_seen = 0; */
             push_pos(parser, tokp);
             return BASE;
         } else if (IS(EXPR_DOT)) {
             push_stack(parser, lexbuf);
             UNSET(EXPR_DOT);
             UNSET(EXPR_BEG);
-/*             parser->dot_seen = 0; */
-/*             parser->expr_seen = 1; */
             push_pos(parser, tokp);
             return (is_upper(lexbuf[0])) ? CONST : BASE;
         }
 
         /* TODO: Oh Lord if it can be reduced ... */
-/*         parser->dot_seen = 0; */
         UNSET(EXPR_DOT);
         const struct kwtable *kw = rb_reserved_word(lexbuf, cp - lexbuf);
         if (kw) {
             c = kw->id[0];
             switch (c) {
                 case tDEF:
-/*                     parser->expr_fname = 1; */
                     SET(EXPR_FNAME);
                 case tMODULE: case tCLASS:
                     push_last_comment(parser);
@@ -2857,7 +2747,6 @@ talpha:
                 case tUNDEF:
                 case tALIAS:
                     SET(EXPR_FNAME);
-/*                     parser->expr_fname = 1; */
                     break;
                 case tEND:
                     push_pos(parser, tokp);
@@ -2869,19 +2758,16 @@ talpha:
             if (c != kw->id[1] && (!IS(EXPR_BEG) || parser->expr_mid > 0)) {
                 c = kw->id[1];
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
             } else {
                 /* TODO */
                 if (kw->expr)
                     UNSET(EXPR_BEG);
                 else
                     SET(EXPR_BEG);
-/*                 parser->expr_seen = kw->expr; */
             }
             bc = nextc();
             if (c == ':' && bc != ':') {
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 push_pos(parser, tokp);
                 return tKEY;
             }
@@ -2900,7 +2786,6 @@ talpha:
                 } else
                     c = tDO;
                 SET(EXPR_BEG);
-/*                 parser->expr_seen = 0; */
                 push_pos(parser, tokp);
             }
             return c;
@@ -2916,14 +2801,12 @@ talpha:
         }
         push_pos(parser, tokp);
         UNSET(EXPR_BEG);
-/*         parser->expr_seen = 1; */
         push_stack(parser, lexbuf);
         if (is_upper(lexbuf[0]))
             return CONST;
         nextc();
         if (c == ':' && *(parser->lex_p) != ':') {
             SET(EXPR_BEG);
-/*             parser->expr_seen = 0; */
             return tKEY;
         }
         pushback();
@@ -2975,9 +2858,7 @@ tnum:
         }
 
         UNSET(EXPR_BEG);
-/*         parser->expr_seen = 1; */
         UNSET(EXPR_DOT);
-/*         parser->dot_seen = 0; */
         if (c != -1)
             pushback();
         tokp.end_line = parser->line;
@@ -3003,9 +2884,7 @@ static int yylex(void *lval, void *p)
     parser->expr_mid--;
     if (IS(EXPR_SYMBEG) && t != tSYMBEG) {
         UNSET(EXPR_SYMBEG);
-/*         parser->symbeg = 0; */
         UNSET(EXPR_BEG);
-/*         parser->expr_seen = 1; */
     }
 
     /* TODO: to be removed */
