@@ -2343,8 +2343,10 @@ retry:
             break;
         case '+':
             bc = nextc();
-            if (bc == '=')
+            if (bc == '=') {
+                parser->expr_seen = 0;
                 return tOP_ASGN;
+            }
             tokp.end_line = parser->line;
             tokp.end_col = parser->column;
             if (!parser->expr_seen) {
@@ -2361,8 +2363,10 @@ retry:
             break;
         case '-':
             bc = nextc();
-            if (bc == '=')
+            if (bc == '=') {
+                parser->expr_seen = 0;
                 return tOP_ASGN;
+            }
             tokp.end_line = parser->line;
             tokp.end_col = parser->column;
             if (bc == '>')
@@ -2380,8 +2384,10 @@ retry:
             break;
         case '*':
             bc = nextc();
-            if (bc == '=')
+            if (bc == '=') {
+                parser->expr_seen = 0;
                 return tOP_ASGN;
+            }
             if (bc == '*') {
                 bc = nextc();
                 if (bc == '=') {
@@ -2417,6 +2423,7 @@ retry:
             break;
         case '%':
             bc = nextc();
+            parser->expr_seen = 0;
             if (bc == '=')
                 return tOP_ASGN;
             if (is_shortcut(bc)) {
@@ -2435,7 +2442,6 @@ retry:
                 lex_strterm->nest = 1;
                 return tSTRING_BEG;
             }
-            parser->expr_seen = 0;
             break;
         case '&':
             bc = nextc();
@@ -2497,10 +2503,9 @@ retry:
             break;
         case '^':
             bc = nextc();
-            if (bc == '=') {
-                parser->expr_seen = 0;
+            parser->expr_seen = 0;
+            if (bc == '=')
                 return tOP_ASGN;
-            }
             pushback();
         case ';':
         case ',':
@@ -2867,8 +2872,6 @@ static int yylex(void *lval, void *p)
     /* Unset some flags if necessary */
     if (parser->brace_arg && t != '}' && t != ']')
         parser->brace_arg = 0;
-    if (t == tOP_ASGN || t == '=')
-        parser->expr_seen = 0;
     parser->expr_mid--;
     if (parser->symbeg && t != tSYMBEG) {
         parser->symbeg = 0;
