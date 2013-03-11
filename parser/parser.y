@@ -36,9 +36,7 @@
 #define LSIZE (SSIZE << 2)
 
 
-/*
- * TODO: improve documentation
- */
+/* The state bits, as defined below, have been extracted from the MRI. */
 enum lex_state_bits {
     EXPR_BEG_bit,               /* ignore newline, +/- is a sign. */
     EXPR_END_bit,               /* newline significant, +/- is an operator. */
@@ -51,9 +49,9 @@ enum lex_state_bits {
     EXPR_DOT_bit,               /* right after `.' or `::', no reserved words. */
     EXPR_CLASS_bit,             /* immediate after `class', no here document. */
     EXPR_VALUE_bit,             /* alike EXPR_BEG but label is disallowed. */
-    EXPR_MAX_STATE
 };
-/* examine combinations */
+
+/* This enum defines the states in which the lexer can be. */
 enum lex_state_e {
 #define DEF_EXPR(n) EXPR_##n = (1 << EXPR_##n##_bit)
     DEF_EXPR(BEG),
@@ -71,10 +69,12 @@ enum lex_state_e {
     EXPR_ARG_ANY  =  (EXPR_ARG | EXPR_CMDARG),
     EXPR_END_ANY  =  (EXPR_END | EXPR_ENDARG | EXPR_ENDFN)
 };
+
+/* Helper macros for handling the lexer states. */
 #define IS_lex_state_for(x, ls) ((x) & (ls))
 #define IS_lex_state(ls)        IS_lex_state_for(lex_state, (ls))
 
-
+/* And now some macros that will help us on some stacks of the parser. */
 #define BITSTACK_PUSH(stack, n) ((stack) = ((stack)<<1)|((n)&1))
 #define BITSTACK_POP(stack)     ((stack) = (stack) >> 1)
 #define BITSTACK_LEXPOP(stack)  ((stack) = ((stack) >> 1) | ((stack) & 1))
@@ -115,13 +115,9 @@ struct comment_t {
 };
 
 /*
- * TODO: update this documentation
- * This structure defines the parser. It contains the AST, some
- * flags used for internal reasons and some info about the
- * content to parse.
+ * This structure defines all the information that the parser has.
+ * It contains the AST, flags, stacks, etc.
  */
-/* TODO: can be simplified */
-/* TODO: move : 1 attributes to single parser_state or ? */
 struct parser_t {
     /* Abstract Syntax Tree */
     struct node *ast;
@@ -132,16 +128,27 @@ struct parser_t {
     int pos_size;
 
     /* Flags used by the parser */
-    enum lex_state_e lex_state;
     unsigned char eof_reached : 1;
     unsigned int cond_stack;
     unsigned int cmdarg_stack;
     int in_def;
     int paren_nest;
     int lpar_beg;
-    struct term_t *lex_strterm; /* TODO: to the lexer */
-    enum ruby_version version;
     int parser_command_start;
+    enum ruby_version version;
+
+    /* Stuff from the lexer */
+    enum lex_state_e lex_state;
+    struct term_t *lex_strterm;
+    char *lex_p;
+    char *lex_prev;
+    char *lex_pend;
+    unsigned long lex_prevc;
+
+    /* Basically used to handle heredocs properly */
+    unsigned long line_pend;
+    unsigned long column_pend;
+    unsigned char here_found : 1;
 
     /* Errors on the file */
     struct error_t *errors;
@@ -159,16 +166,6 @@ struct parser_t {
     int comment_index;
 
     /* Info about the content to parse */
-    /* TODO: optimize all this */
-    char *lex_p; /* TODO */
-    char *lex_prev;
-    /* BEGIN: heredoc (can be optimized) */
-    char *lex_pend;
-    unsigned long line_pend;
-    unsigned long column_pend;
-    unsigned char here_found : 1;
-    /* END: heredoc */
-    unsigned long lex_prevc;
     unsigned long length;
     unsigned long line;
     unsigned long column;
@@ -181,30 +178,27 @@ struct parser_t {
 #define YYLEX_PARAM parser
 #define YYERROR_VERBOSE 1
 
+/* Macros to access some attributes in a fancier way. */
 #define lex_strterm parser->lex_strterm
 #define lex_state parser->lex_state
 #define command_start parser->parser_command_start
-
 
 /* yy's functions */
 static int yylex(void *, void *);
 static void yyerror(struct parser_t *, const char *);
 #define yywarning(msg) { parser->warning = 1; yyerror(parser, (msg)); parser->warning = 0;}
-#define nextc() parser_nextc(parser)
-#define pushback() parser_pushback(parser)
 
 /* The static functions below deal with stacks. */
-
-#define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
-
 static void pop_stack(struct parser_t *parser, struct node *n);
-#define POP_STACK pop_stack(parser, yyval.n)
 static void push_last_comment(struct parser_t *parser);
 static void pop_comment(struct parser_t *parser, struct node *n);
-
 static void pop_pos(struct parser_t *parser, struct node *n);
 static void pop_start(struct parser_t *parser, struct node *n);
 static void pop_end(struct parser_t *parser, struct node *n);
+
+/* Helper macros for positions and stacks */
+#define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
+#define POP_STACK pop_stack(parser, yyval.n)
 #define discard_pos() pop_pos(parser, NULL)
 #define copy_op(op) { parser->aux = strdup(op); }
 %}
@@ -1636,6 +1630,8 @@ none: /* none */ { $$ = NULL; }
 #define IS_LABEL_SUFFIX() (*parser->lex_p == ':' && *(parser->lex_p + 1) != ':')
 #define IS_AFTER_OPERATOR() IS_lex_state(EXPR_FNAME | EXPR_DOT)
 
+
+/* Initialize the parser */
 static void init_parser(struct parser_t *parser)
 {
     parser->content_given = 0;
@@ -1671,6 +1667,7 @@ static void init_parser(struct parser_t *parser)
     lex_state = EXPR_BEG;
 }
 
+/* Free the parser */
 static void free_parser(struct parser_t *parser)
 {
     int index;
@@ -1765,6 +1762,7 @@ static int is_utf8_digit(const char *str)
     return is_special(str) ? 0 : isdigit(*str);
 }
 
+/* Check that the given parameter points to a valid identifier */
 static int is_valid_identifier(const char *c)
 {
     if (is_utf8_alpha(c))
@@ -1778,6 +1776,7 @@ static int is_valid_identifier(const char *c)
     return 0;
 }
 
+/* Get the next character and move the lexer forward. */
 static int parser_nextc(struct parser_t *parser)
 {
     int c;
@@ -1801,7 +1800,9 @@ static int parser_nextc(struct parser_t *parser)
     parser->column++;
     return c;
 }
+#define nextc() parser_nextc(parser)
 
+/* Move the lexer backwards. */
 static void parser_pushback(struct parser_t *parser)
 {
     parser->column--;
@@ -1811,7 +1812,9 @@ static void parser_pushback(struct parser_t *parser)
         parser->column = parser->lex_prevc;
     }
 }
+#define pushback() parser_pushback(parser)
 
+/* It parses a heredoc identifier and sets a new lex_strterm */
 static int parse_heredoc_identifier(struct parser_t *parser)
 {
     char *buffer = (char *) malloc(SSIZE * sizeof(char));
@@ -1872,6 +1875,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     return 1;
 }
 
+/* Let's parse a heredoc */
 static int parse_heredoc(struct parser_t *parser)
 {
     int length = strlen(lex_strterm->word);
@@ -1934,6 +1938,7 @@ static char closing_char(char c)
     }
 }
 
+/* Guess the token kind of the shortcut based on the given character */
 static int guess_kind(struct parser_t *parser, char c)
 {
     if (!isalpha(c))
@@ -1971,6 +1976,7 @@ static void pop_stack(struct parser_t *parser, struct node *n)
     parser->sp--;
 }
 
+/* Push a position into the stack of positions */
 static void push_pos(struct parser_t *parser, struct pos_t tokp)
 {
     int scale = SSIZE * parser->stack_scale;
@@ -1985,6 +1991,7 @@ static void push_pos(struct parser_t *parser, struct pos_t tokp)
     parser->pos_stack[parser->pos_size + scale - 1] = tokp;
 }
 
+/* Pop a position from the stack of positions and assign to the given node */
 static void pop_pos(struct parser_t *parser, struct node *n)
 {
     int scale = SSIZE * parser->stack_scale;
@@ -2007,6 +2014,7 @@ static void pop_pos(struct parser_t *parser, struct node *n)
     }
 }
 
+/* Like pop_pos but it just copies the start position to the given node */
 static void pop_start(struct parser_t *parser, struct node *n)
 {
     n->pos.start_line = parser->pos_stack[parser->pos_size - 1].start_line;
@@ -2014,6 +2022,7 @@ static void pop_start(struct parser_t *parser, struct node *n)
     pop_pos(parser, NULL);
 }
 
+/* Like pop_pos but it just copies the end position to the given node */
 static void pop_end(struct parser_t *parser, struct node *n)
 {
     n->pos.end_line = parser->pos_stack[parser->pos_size - 1].start_line;
@@ -2021,6 +2030,7 @@ static void pop_end(struct parser_t *parser, struct node *n)
     pop_pos(parser, NULL);
 }
 
+/* Push the last comment that we've found to the stack of comments. */
 static void push_last_comment(struct parser_t *parser)
 {
     if ((parser->line - parser->last_comment.line) < 2)
@@ -2034,6 +2044,7 @@ static void push_last_comment(struct parser_t *parser)
     parser->last_comment.comment = NULL;
 }
 
+/* Pop a comment from the stack of comments and assign it to the given node */
 static void pop_comment(struct parser_t *parser, struct node *n)
 {
     if (parser->comment_index > 0) {
@@ -2050,6 +2061,7 @@ static void pop_comment(struct parser_t *parser, struct node *n)
   } \
 }
 
+/* Store the given comment as the last comment seen */
 static void store_comment(struct parser_t *parser, char *comment)
 {
     if (parser->last_comment.comment != NULL)
@@ -2058,6 +2070,7 @@ static void store_comment(struct parser_t *parser, char *comment)
     parser->last_comment.line = parser->line;
 }
 
+/* Check if the given parameter points to an indented comment */
 static int is_indented_comment(char *c)
 {
     char *original = c;
@@ -2066,6 +2079,7 @@ static int is_indented_comment(char *c)
     return (*c == '#') ? (c - original) : 0;
 }
 
+/* Read a comment and store it if possible */
 static void set_comment(struct parser_t *parser)
 {
     int c, count = 0, scale = 0;
@@ -2099,6 +2113,7 @@ static void set_comment(struct parser_t *parser)
     store_comment(parser, buffer);
 }
 
+/* Parse a string or a regexp */
 static int parse_string(struct parser_t *parser)
 {
     register int c = *parser->lex_p;
@@ -2156,6 +2171,7 @@ static int parse_string(struct parser_t *parser)
     return tSTRING_CONTENT;
 }
 
+/* Regular expressions can end with some options, read them */
 static void parse_re_options(struct parser_t *parser)
 {
     char aux[64];
@@ -2173,6 +2189,7 @@ static void parse_re_options(struct parser_t *parser)
     pushback();
 }
 
+/* Standard warning for ambiguous arguments */
 static void arg_ambiguous_gen(struct parser_t *parser)
 {
     yywarning("ambiguous first argument; put parentheses or even spaces");
@@ -2722,8 +2739,8 @@ retry:
 
 talpha:
     {
-        int step, ax, last_col;
-        step = ax = last_col = 0;
+        int step = 0;
+        int ax = 0;
 
         /* It's time to parse the word */
         while (not_sep(parser->lex_prev)) {
@@ -2731,7 +2748,6 @@ talpha:
             ax += step - 1;
             while (step-- > 0) {
                 *cp++ = c;
-                last_col = parser->column;
                 c = nextc();
             }
             if (c < 0) {
@@ -2742,7 +2758,7 @@ talpha:
         *cp = '\0';
         parser->column -= ax;
         tokp.end_line = tokp.start_line;
-        tokp.end_col = last_col - ax;
+        tokp.end_col = parser->lex_prevc - ax;
         pushback();
 
         /* IVAR, CVAR, GLOBAL */
