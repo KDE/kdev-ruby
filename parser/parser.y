@@ -139,7 +139,6 @@ struct parser_t {
     int in_def;
     int paren_nest;
     int lpar_beg;
-/*     int expr_mid; */
     struct term_t *lex_strterm; /* TODO: to the lexer */
     enum ruby_version version;
     int parser_command_start;
@@ -175,7 +174,6 @@ struct parser_t {
     unsigned long line;
     unsigned long column;
     unsigned char content_given : 1;
-    const char *name;
     char *blob;
 };
 
@@ -209,9 +207,6 @@ static void pop_end(struct parser_t *parser, struct node *n);
 #define discard_pos() pop_pos(parser, NULL)
 #define copy_end(dest, src) ({ dest->pos.end_line = src->pos.end_line; dest->pos.end_col = src->pos.end_col; })
 #define copy_op(op) { parser->aux = strdup(op); }
-
-/* TODO: debug */
-void print_state(struct parser_t *parser);
 %}
 
 %pure_parser
@@ -1672,7 +1667,6 @@ static void init_parser(struct parser_t * parser)
     parser->sp = 0;
     parser->line = 1;
     parser->column = 0;
-    parser->name = NULL;
     parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
     parser->stack_scale = 0;
     parser->pos_size = 0;
@@ -2189,25 +2183,6 @@ static void parse_re_options(struct parser_t *parser)
         c = nextc();
     }
     pushback();
-}
-
-/* TODO: debug!!! */
-void print_state(struct parser_t *parser)
-{
-    switch (lex_state) {
-    case EXPR_BEG: printf("EXPR_BEG\n"); break;
-    case EXPR_END: printf("EXPR_END\n"); break;
-    case EXPR_ENDARG: printf("EXPR_ENDARG\n"); break;
-    case EXPR_ENDFN: printf("EXPR_ENDFN\n"); break;
-    case EXPR_ARG: printf("EXPR_ARG\n"); break;
-    case EXPR_CMDARG: printf("EXPR_CMDARG\n"); break;
-    case EXPR_MID: printf("EXPR_MID\n"); break;
-    case EXPR_FNAME: printf("EXPR_FNAME\n"); break;
-    case EXPR_DOT: printf("EXPR_DOT\n"); break;
-    case EXPR_CLASS: printf("EXPR_CLASS\n"); break;
-    case EXPR_VALUE: printf("EXPR_VALUE\n"); break;
-    default: break;
-    }
 }
 
 /*
@@ -3011,7 +2986,6 @@ struct ast_t * rb_compile_file(struct options_t *opts)
 
     /* Initialize parser */
     init_parser(&p);
-    p.name = opts->path;
     p.version = opts->version;
     if (!opts->contents) {
         if (!retrieve_source(&p, opts->path))
@@ -3058,9 +3032,8 @@ int rb_debug_file(struct options_t *opts)
 
     /* Set up parser */
     init_parser(&p);
-    p.name = strdup(opts->path);
     p.version = opts->version;
-    if (!retrieve_source(&p, p.name))
+    if (!retrieve_source(&p, opts->path))
         return 0;
 
     printf("Resulting AST's:");
