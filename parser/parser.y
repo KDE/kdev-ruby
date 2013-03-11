@@ -1753,7 +1753,7 @@ static int retrieve_source(struct parser_t *p, const char *path)
     int length;
 
     /* Open specified file */
-    FILE * fd = fopen(path, "r");
+    FILE *fd = fopen(path, "r");
     if (!fd) {
         fprintf(stderr, "Cannot open file: %s\n", path);
         return 0;
@@ -2645,14 +2645,25 @@ retry:
             lex_state = IS_AFTER_OPERATOR() ? EXPR_ARG : EXPR_BEG;
             break;
         case '/':
+            if (IS_lex_state(EXPR_BEG_ANY)) {
+                tokp.start_line = parser->line;
+                tokp.start_col = parser->column - 1;
+                lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
+                lex_strterm->term = c;
+                lex_strterm->can_embed = 1;
+                lex_strterm->token = token_regexp;
+                lex_strterm->word = NULL;
+                lex_strterm->nestable = 0;
+                return tSTRING_BEG;
+            }
             bc = nextc();
             if (bc == '=') {
                 lex_state = EXPR_BEG;
                 return tOP_ASGN;
             }
             pushback();
-            if (IS_lex_state(EXPR_BEG_ANY) || IS_SPCARG(bc)) {
-                /* TODO: IS_SPCARG: warning */
+            if (IS_SPCARG(bc)) {
+                /* TODO: has to be reduced */
                 tokp.start_line = parser->line;
                 tokp.start_col = parser->column - 1;
                 lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
@@ -3193,7 +3204,7 @@ talpha:
                         break;
                 }
                 /* TODO: IS_lex_state */
-                if (state & (EXPR_BEG | EXPR_ENDARG))
+                if (state & (EXPR_BEG | EXPR_VALUE))
                     return kw->id[0];
                 else {
                     if (kw->id[0] != kw->id[1])
