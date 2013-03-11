@@ -101,9 +101,9 @@ enum lex_state_e {
  * TODO: will be removed in the future. We need this by now, just for
  * the transition.
  */
-#define SET(state) (lex_state |= state)
+/*#define SET(state) (lex_state |= state)
 #define UNSET(state) (lex_state &= ~state)
-#define IS(state) (lex_state & state)
+#define IS(state) (lex_state & state)*/
 
 #define BITSTACK_PUSH(stack, n) ((stack) = ((stack)<<1)|((n)&1))
 #define BITSTACK_POP(stack)     ((stack) = (stack) >> 1)
@@ -890,18 +890,9 @@ primary: literal
         $$ = alloc_cond(token_class, $3, $5, $2);
         pop_comment(parser, $$);
     }
-    | tCLASS
+    | tCLASS opt_terms tLSHIFT expr term bodystmt tEND
     {
-        /* TODO: to be removed in the future */
-        SET(EXPR_CLASS);
-    }
-    opt_terms tLSHIFT
-    {
-        UNSET(EXPR_CLASS);
-    }
-    expr term bodystmt tEND
-    {
-        $$ = alloc_node(token_singleton_class, $8, $6);
+        $$ = alloc_node(token_singleton_class, $6, $4);
         pop_comment(parser, $$);
     }
     | tMODULE cpath
@@ -1196,11 +1187,11 @@ brace_block: '{' opt_block_param compstmt '}'
     }
 ;
 
-case_body: tWHEN { SET(EXPR_BEG); } args then compstmt cases
+case_body: tWHEN args then compstmt cases
     {
         /* The following statements fixes some issues around positions. */
         $$ = alloc_node(token_object, NULL, NULL);
-        $$ = alloc_cond(token_when, $3, $5, $6);
+        $$ = alloc_cond(token_when, $2, $4, $5);
     }
 ;
 
@@ -1606,18 +1597,22 @@ operation: base
 
 operation2: base
     | const
-    | op { $$ = ALLOC_N(token_object, NULL, NULL); $$->name = parser->aux; }
+    | op
+    {
+        $$ = alloc_node(token_object, NULL, NULL);
+        $$->name = parser->aux;
+    }
 ;
 
 operation3: base
-    | op { $$ = ALLOC_N(token_object, NULL, NULL); $$->name = parser->aux; }
+    | op
+    {
+        $$ = alloc_node(token_object, NULL, NULL);
+        $$->name = parser->aux;
+    }
 ;
 
-label: tKEY
-    {
-        $$ = ALLOC_N(token_symbol, NULL, NULL);
-        POP_STACK;
-    }
+label: tKEY { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
 ;
 
 super: tSUPER { $$ = alloc_node(token_super, NULL, NULL); }
@@ -3015,8 +3010,8 @@ retry:
                 c = nextc();
                 bc = CVAR;
             }
-            UNSET(EXPR_BEG);
-            UNSET(EXPR_DOT);
+/*             UNSET(EXPR_BEG); */
+/*             UNSET(EXPR_DOT); */
             goto talpha;
         case '$':
             tokp.end_line = parser->line;
@@ -3373,8 +3368,6 @@ tnum:
                 c = nextc();
         }
 
-        UNSET(EXPR_BEG);
-        UNSET(EXPR_DOT);
         if (c != -1)
             pushback();
         tokp.end_line = parser->line;
@@ -3386,7 +3379,7 @@ tnum:
 /* Standard yylex. */
 static int yylex(void *lval, void *p)
 {
-    struct parser_t * parser = (struct parser_t *) p;
+    struct parser_t *parser = (struct parser_t *) p;
     int t = token_invalid;
     _unused_(lval);
 
