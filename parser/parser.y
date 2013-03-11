@@ -76,10 +76,6 @@ enum lex_state_e {
 #define IS_lex_state(ls)        IS_lex_state_for(lex_state, (ls))
 
 
-/*
- * TODO: can some of these guys below be removed ?
- */
-
 #define BITSTACK_PUSH(stack, n) ((stack) = ((stack)<<1)|((n)&1))
 #define BITSTACK_POP(stack)     ((stack) = (stack) >> 1)
 #define BITSTACK_LEXPOP(stack)  ((stack) = ((stack) >> 1) | ((stack) & 1))
@@ -109,7 +105,11 @@ struct term_t {
     unsigned char nestable : 1;
 };
 
-/* TODO document */
+/*
+ * This structure contains a comment on the code. It basically stores
+ * the comment itself in a dynamically allocated char pointer, and the
+ * line where it was found.
+ */
 struct comment_t {
     char *comment;
     int line;
@@ -160,7 +160,6 @@ struct parser_t {
 
     /* Info about the content to parse */
     /* TODO: optimize all this */
-    /* TODO: MRI treats them as const */
     char *lex_p; /* TODO */
     char *lex_prev;
     /* BEGIN: heredoc (can be optimized) */
@@ -190,6 +189,8 @@ struct parser_t {
 static int yylex(void *, void *);
 static void yyerror(struct parser_t *, const char *);
 #define yywarning(msg) { parser->warning = 1; yyerror(parser, (msg)); parser->warning = 0;}
+#define nextc() parser_nextc(parser)
+#define pushback() parser_pushback(parser)
 
 /* The static functions below deal with stacks. */
 
@@ -589,7 +590,6 @@ cpath: tCOLON3 cname        { $$ = $2; }
     }
 ;
 
-/* TODO: reswords, push to the stack ? */
 fname: base
     | const
     | op
@@ -905,8 +905,7 @@ then: term
     | term tTHEN
 ;
 
-do: term
-    | tDO_COND { discard_pos(); }
+do: term | tDO_COND
 ;
 
 if_tail: opt_else
@@ -1076,7 +1075,6 @@ lambda_body: tLAMBEG compstmt '}'
     {
         $$ = $2;
         discard_pos(); /* end */
-        discard_pos(); /* do */
     }
 ;
 
@@ -1153,8 +1151,6 @@ brace_block: '{' opt_block_param compstmt '}'
 
 case_body: tWHEN args then compstmt cases
     {
-        /* The following statements fixes some issues around positions. */
-        $$ = alloc_node(token_object, NULL, NULL);
         $$ = alloc_cond(token_when, $2, $4, $5);
     }
 ;
@@ -1301,7 +1297,11 @@ superclass: term { $$ = NULL; }
     {
         lex_state = EXPR_BEG;
         command_start = 1;
-     } expr term { $$ = $3; }
+    }
+    expr term
+    {
+        $$ = $3;
+    }
     | error term { yyerrok; $$ = NULL; }
 ;
 
@@ -1616,41 +1616,29 @@ none : /* none */ { $$ = NULL; }
 #include <ctype.h>
 #include "hash.c"
 
-/*
- * TODO: beautify all these macros.
- */
-
-#define nextc() parser_nextc(parser)
-#define pushback() parser_pushback(parser)
-#define _unused_(c) (void) c;
-
 
 /* Let's define some useful macros :D */
 
-#define to_upper(a) (a & ~32)
-#define is_upper(c) (c >= 'A' && c <= 'Z')
-#define multiline_comment(c) (*(c+1) == 'b' && *(c+2) == 'e' && *(c+3) == 'g' \
-                                                            && *(c+4) == 'i' && *(c+5) == 'n')
-#define multiline_end(c) (*c == '=' && *(c+1) == 'e' && *(c+2) == 'n' \
-                                                    && *(c+3) == 'd')
-#define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) \
-                                        || *c == '_')
+#define _unused_(c) (void) c;
+#define multiline_comment(c) (*(c+1) == 'b' && *(c+2) == 'e' && *(c+3) == 'g' && *(c+4) == 'i' && *(c+5) == 'n')
+#define multiline_end(c) (*c == '=' && *(c+1) == 'e' && *(c+2) == 'n' && *(c+3) == 'd')
+#define not_sep(c) (is_valid_identifier(c) || is_utf8_digit(c) || *c == '_')
+#define is_blank(c) (c == ' ' || c == '\t')
+#define SWAP(a, b, aux) { aux = a; a = b; b = aux; }
 #define is_special_method(buffer) ((strlen(buffer) > 4) && buffer[0] == '_' && \
                                                                 buffer[1] == '_' && buffer[strlen(buffer) - 2] == '_' && \
                                                                 buffer[strlen(buffer) - 1] == '_')
-#define is_blank(c) (c == ' ' || c == '\t')
-#define SWAP(a, b, aux) { aux = a; a = b; b = aux; }
-
+#define IS_EOF() ((unsigned int) (parser->lex_p - parser->blob) >= parser->length)
 #define IS_ARG() IS_lex_state(EXPR_ARG_ANY)
 #define IS_END() IS_lex_state(EXPR_END_ANY)
 #define IS_BEG() IS_lex_state(EXPR_BEG_ANY)
 #define IS_SPCARG(c) (IS_ARG() && space_seen && !isspace(c))
 #define IS_LABEL_POSSIBLE() ((IS_lex_state(EXPR_BEG | EXPR_ENDFN) && !cmd_state) || IS_ARG())
-#define IS_LABEL_SUFFIX(n) (*parser->lex_p == ':' && *(parser->lex_p + 1) != ':')
+#define IS_LABEL_SUFFIX() (*parser->lex_p == ':' && *(parser->lex_p + 1) != ':')
 #define IS_AFTER_OPERATOR() IS_lex_state(EXPR_FNAME | EXPR_DOT)
 
 
-static void init_parser(struct parser_t * parser)
+static void init_parser(struct parser_t *parser)
 {
     parser->content_given = 0;
     parser->ast = NULL;
@@ -1663,7 +1651,6 @@ static void init_parser(struct parser_t * parser)
     parser->column_pend = 0;
     parser->here_found = 0;
     parser->eof_reached = 0;
-    lex_state = EXPR_BEG;
     parser->cond_stack = 0;
     parser->cmdarg_stack = 0;
     parser->in_def = 0;
@@ -1683,6 +1670,7 @@ static void init_parser(struct parser_t * parser)
     parser->comment_index = 0;
     command_start = 1;
     lex_strterm = NULL;
+    lex_state = EXPR_BEG;
 }
 
 static void free_parser(struct parser_t *parser)
@@ -1796,9 +1784,7 @@ static int parser_nextc(struct parser_t *parser)
 {
     int c;
 
-    if (parser->eof_reached)
-        return -1;
-    if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length)
+    if (parser->eof_reached || IS_EOF())
         return -1;
 
     parser->lex_prev = parser->lex_p;
@@ -1934,6 +1920,8 @@ static int parse_heredoc(struct parser_t *parser)
             i = -1;
         i++;
     } while (c != -1);
+
+    parser->eof_reached = 1;
     return token_invalid;
 }
 
@@ -2141,9 +2129,7 @@ static int parse_string(struct parser_t *parser)
         return tSTRING_CONTENT;
     }
 
-    /* TODO */
-    /* TODO: maybe the c value can mark more about it ? p.e. -2 means EOF, -1 EOL, ... */
-    if ((unsigned int) (parser->lex_p - parser->blob) >= parser->length) {
+    if (IS_EOF()) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
         return token_invalid;
@@ -2166,8 +2152,10 @@ static int parse_string(struct parser_t *parser)
     next = utf8_charsize(parser->lex_p);
     c = next - 1;
     while (next-- > 0) {
-        if (nextc() < 0)
+        if (nextc() < 0) {
+            parser->eof_reached = 1;
             return token_invalid;
+        }
     }
     parser->column -= c;
     return tSTRING_CONTENT;
@@ -2245,6 +2233,7 @@ retry:
     switch (c) {
         case '\0':      /* NULL */
         case EOF:       /* end of script */
+            parser->eof_reached = 1;
             return token_invalid;
 
         /* white spaces */
@@ -2676,7 +2665,6 @@ retry:
             }
             return c;
         case '}':
-            /* TODO: what about brace-nesting ? */
             CMDARG_LEXPOP();
             COND_LEXPOP();
             tokp.end_line = parser->line;
@@ -2698,8 +2686,6 @@ retry:
             goto talpha;
         case '$':
             tokp.end_line = parser->line;
-            /* TODO: probably not needed */
-            lex_state = EXPR_END;
             cp = lexbuf;
             *cp++ = c;
             bc = nextc();
@@ -2734,6 +2720,7 @@ retry:
                     bc = GLOBAL;
                     goto talpha;
             }
+            lex_state = EXPR_END;
             tokp.end_col = parser->column;
             push_pos(parser, tokp);
             push_stack(parser, lexbuf);
@@ -2756,10 +2743,10 @@ retry:
 
 talpha:
     {
-        int step = 0;
-        int ax = 0;
-        int last_col = 0;
+        int step, ax, last_col;
+        step = ax = last_col = 0;
 
+        /* It's time to parse the word */
         while (not_sep(parser->lex_prev)) {
             step = utf8_charsize(parser->lex_prev);
             ax += step - 1;
@@ -2787,8 +2774,8 @@ talpha:
             return bc;
         }
 
+        /* Check for '!', '?' and '=' at the end of the word */
         if (c == '!' || c == '?') {
-            /* TODO: improve this. */
             *cp++ = c;
             *cp = '\0';
             tokp.end_col++;
@@ -2797,7 +2784,6 @@ talpha:
         } else {
             c = 0;
             if (IS_lex_state(EXPR_FNAME)) {
-                /* TODO: can be optimized */
                 bc = nextc();
                 if (bc == '=') {
                     bc = nextc();
@@ -2811,19 +2797,19 @@ talpha:
                 }
                 pushback();
             }
-            c = (!c && is_upper(lexbuf[0])) ? CONST : BASE;
+            c = (!c && isupper(lexbuf[0])) ? CONST : BASE;
         }
 
-        if (IS_LABEL_POSSIBLE()) {
-            if (IS_LABEL_SUFFIX(0)) {
-                lex_state = EXPR_BEG;
-                nextc();
-                push_stack(parser, lexbuf);
-                push_pos(parser, tokp);
-                return tKEY;
-            }
+        /* Check if this is just a hash key. */
+        if (IS_LABEL_POSSIBLE() && IS_LABEL_SUFFIX()) {
+            lex_state = EXPR_BEG;
+            nextc();
+            push_stack(parser, lexbuf);
+            push_pos(parser, tokp);
+            return tKEY;
         }
 
+        /* Check if this is a keyword */
         const struct kwtable *kw = NULL;
         if (!IS_lex_state(EXPR_DOT)) {
             kw = rb_reserved_word(lexbuf, cp - lexbuf);
@@ -2839,8 +2825,6 @@ talpha:
                         push_last_comment(parser);
                         break;
                     case tDO:
-                        /* TODO: not sure if it's always needed */
-                        push_pos(parser, tokp);
                         if (parser->lpar_beg && parser->lpar_beg == parser->paren_nest) {
                             parser->lpar_beg = 0;
                             parser->paren_nest--;
@@ -2848,18 +2832,15 @@ talpha:
                         }
                         if (COND_P())
                             return tDO_COND;
+                        push_pos(parser, tokp);
                         if (CMDARG_P() && state != EXPR_CMDARG)
                             return tDO_BLOCK;
                         return tDO;
                     case tEND:
                         push_pos(parser, tokp);
                         break;
-                    default:
-                        /* TODO */
-                        break;
                 }
-                /* TODO: IS_lex_state */
-                if (state & (EXPR_BEG | EXPR_VALUE))
+                if (IS_lex_state_for(state, EXPR_BEG | EXPR_VALUE))
                     return kw->id[0];
                 else {
                     if (kw->id[0] != kw->id[1])
@@ -2869,6 +2850,7 @@ talpha:
             }
         }
 
+        /* Maybe this is just some special method */
         if (is_special_method(lexbuf)) {
             if (!strcmp(lexbuf, "__END__")) {
                 parser->eof_reached = 1;
@@ -2876,25 +2858,23 @@ talpha:
             }
         }
 
+        /* If this is not a keyword, push its position and the name */
         if (!kw) {
             push_stack(parser, lexbuf);
             push_pos(parser, tokp);
         }
 
+        /* Update the state of the lexer */
         if (IS_lex_state(EXPR_BEG_ANY | EXPR_ARG_ANY | EXPR_DOT))
             lex_state = (cmd_state) ? EXPR_CMDARG : EXPR_ARG;
         else if (lex_state == EXPR_FNAME)
             lex_state = EXPR_ENDFN;
         else
             lex_state = EXPR_END;
-
-/*        if (!IS_lex_state_for(last_state, EXPR_DOT | EXPR_FNAME))
-            lex_state = EXPR_END;*/
         return c;
     }
 
 tnum:
-    /* TODO Can be optimized */
     {
         char hex, bin, has_point, aux;
         hex = bin = has_point = aux = 0;
@@ -2902,17 +2882,17 @@ tnum:
         lex_state = EXPR_END;
         if (c == '0') {
             bc = nextc();
-            if (to_upper(bc) == 'X') {
+            if (toupper(bc) == 'X') {
                 hex = 1;
                 c = nextc();
-            } else if (to_upper(bc) == 'B') {
+            } else if (toupper(bc) == 'B') {
                 bin = 1;
                 c = nextc();
             }
             pushback();
         }
         while (c > 0 && ((isdigit(c) && !bin) || (!hex && !bin && !has_point && c == '.')
-                    || (hex && to_upper(c) >= 'A' && to_upper(c) < 'G')
+                    || (hex && toupper(c) >= 'A' && toupper(c) < 'G')
                     || (bin && (c == '1' || c == '0')) || c == '_')) {
             if (c == '.') {
                 if (!isdigit(*parser->lex_p)) {
@@ -2930,7 +2910,7 @@ tnum:
             yyerror(parser, "numeric literal without digits");
 
         /* is it an exponential number ? */
-        if (!bin && !hex && to_upper(c) == 'E') {
+        if (!bin && !hex && toupper(c) == 'E') {
             c = nextc();
             if (isdigit(c) || ((c == '+' || c == '-') && isdigit(*(parser->lex_p))))
                 c = nextc();
@@ -2954,10 +2934,6 @@ static int yylex(void *lval, void *p)
     _unused_(lval);
 
     t = parser_yylex(parser);
-
-    /* TODO: to be removed */
-    if (!t)
-        parser->eof_reached = 1;
     return t;
 }
 
