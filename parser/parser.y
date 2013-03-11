@@ -2450,7 +2450,7 @@ retry:
                     return tOP_ASGN;
                 }
                 pushback();
-                if (IS_SPCARG(c)) {
+                if (IS_SPCARG(bc)) {
                     /* TODO */
                     c = tDSTAR;
                 } else if (IS_BEG())
@@ -2614,6 +2614,10 @@ retry:
             }
             if (bc == '\\')
                 nextc();
+            if (IS_BEG()) {
+                lex_state = EXPR_END;
+                return tCHAR;
+            }
             if (is_blank(*parser->lex_p) || *parser->lex_p == ':') {
                 lex_state = EXPR_VALUE;
                 break;
