@@ -1,5 +1,5 @@
 %{
-struct kwtable {const char *name; int id[2]; short int expr;};
+struct kwtable {const char *name; int id[2]; enum lex_state_e state;};
 const struct kwtable *rb_reserved_word(const char *, unsigned int);
 static const struct kwtable *reserved_word(const char *, unsigned int);
 #define rb_reserved_word(str, len) reserved_word(str, len)
@@ -7,45 +7,45 @@ static const struct kwtable *reserved_word(const char *, unsigned int);
 
 struct kwtable;
 %%
-__ENCODING__, {tENCODING, tENCODING}, 1
-__LINE__, {tLINE, tLINE}, 1
-__FILE__, {tFILE, tFILE}, 1
-BEGIN, {upBEGIN, upBEGIN}, 1
-END, {upEND, upEND}, 1
-alias, {tALIAS, tALIAS}, 1
-and, {tKWAND, tKWAND}, 0
-begin, {tBEGIN, tBEGIN}, 1
-break, {tBREAK, tBREAK}, 1
-case, {tCASE, tCASE}, 0
-class, {tCLASS, tCLASS}, 1
-def, {tDEF, tDEF}, 1
-defined?, {tDEFINED, tDEFINED}, 1
-do, {tDO, tDO}, 1
-else, {tELSE, tELSE}, 1
-elsif, {tELSIF, tELSIF}, 0
-end, {tEND, tEND}, 1
-ensure, {tENSURE, tENSURE}, 1
-false, {tFALSE, tFALSE}, 1
-for, {tFOR, tFOR}, 1
-if, {tIF, modifier_if}, 0
-in, {tIN, tIN}, 1
-module, {tMODULE, tMODULE}, 1
-next, {tNEXT, tNEXT}, 1
-nil, {tNIL, tNIL}, 1
-not, {tKWNOT, tKWNOT}, 1
-or, {tKWOR, tKWOR}, 0
-redo, {tREDO, tREDO}, 1
-rescue, {tRESCUE, modifier_rescue}, 1
-retry, {tRETRY, tRETRY}, 1
-return, {tRETURN, tRETURN}, 0
-self, {tSELF, tSELF}, 1
-super, {tSUPER, tSUPER}, 1
-then, {tTHEN, tTHEN}, 0
-true, {tTRUE, tTRUE}, 1
-undef, {tUNDEF, tUNDEF}, 1
-unless, {tUNLESS, modifier_unless}, 0
-until, {tUNTIL, modifier_until}, 0
-when, {tWHEN, tWHEN}, 1
-while, {tWHILE, modifier_while}, 0
-yield, {tYIELD, tYIELD}, 1
+__ENCODING__, {tENCODING, tENCODING}, EXPR_END
+__LINE__, {tLINE, tLINE}, EXPR_END
+__FILE__, {tFILE, tFILE}, EXPR_END
+BEGIN, {upBEGIN, upBEGIN}, EXPR_END
+END, {upEND, upEND}, EXPR_END
+alias, {tALIAS, tALIAS}, EXPR_FNAME
+and, {tKWAND, tKWAND}, EXPR_VALUE
+begin, {tBEGIN, tBEGIN}, EXPR_BEG
+break, {tBREAK, tBREAK}, EXPR_MID
+case, {tCASE, tCASE}, EXPR_VALUE
+class, {tCLASS, tCLASS}, EXPR_CLASS
+def, {tDEF, tDEF}, EXPR_FNAME
+defined?, {tDEFINED, tDEFINED}, EXPR_ARG
+do, {tDO, tDO}, EXPR_BEG
+else, {tELSE, tELSE}, EXPR_BEG
+elsif, {tELSIF, tELSIF}, EXPR_VALUE
+end, {tEND, tEND}, EXPR_END
+ensure, {tENSURE, tENSURE}, EXPR_BEG
+false, {tFALSE, tFALSE}, EXPR_END
+for, {tFOR, tFOR}, EXPR_VALUE
+if, {tIF, modifier_if}, EXPR_VALUE
+in, {tIN, tIN}, EXPR_VALUE
+module, {tMODULE, tMODULE}, EXPR_VALUE
+next, {tNEXT, tNEXT}, EXPR_MID
+nil, {tNIL, tNIL}, EXPR_END
+not, {tKWNOT, tKWNOT}, EXPR_ARG
+or, {tKWOR, tKWOR}, EXPR_VALUE
+redo, {tREDO, tREDO}, EXPR_END
+rescue, {tRESCUE, modifier_rescue}, EXPR_MID
+retry, {tRETRY, tRETRY}, EXPR_END
+return, {tRETURN, tRETURN}, EXPR_MID
+self, {tSELF, tSELF}, EXPR_END
+super, {tSUPER, tSUPER}, EXPR_ARG
+then, {tTHEN, tTHEN}, EXPR_BEG
+true, {tTRUE, tTRUE}, EXPR_END
+undef, {tUNDEF, tUNDEF}, EXPR_FNAME
+unless, {tUNLESS, modifier_unless}, EXPR_VALUE
+until, {tUNTIL, modifier_until}, EXPR_VALUE
+when, {tWHEN, tWHEN}, EXPR_VALUE
+while, {tWHILE, modifier_while}, EXPR_VALUE
+yield, {tYIELD, tYIELD}, EXPR_ARG
 %%

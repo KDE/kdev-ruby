@@ -30,7 +30,7 @@ error "gperf generated tables don't work with this execution character set. Plea
 
 #line 1 "gperf.txt"
 
-struct kwtable {const char *name; int id[2]; short int expr;};
+struct kwtable {const char *name; int id[2]; enum lex_state_e state;};
 const struct kwtable *rb_reserved_word(const char *, unsigned int);
 static const struct kwtable *reserved_word(const char *, unsigned int);
 #define rb_reserved_word(str, len) reserved_word(str, len)
@@ -115,88 +115,88 @@ rb_reserved_word (str, len)
     {
       {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0}, {"", {0,0}, 0},
 #line 18 "gperf.txt"
-      {"break", {tBREAK, tBREAK}, 1},
+      {"break", {tBREAK, tBREAK}, EXPR_MID},
 #line 24 "gperf.txt"
-      {"else", {tELSE, tELSE}, 1},
+      {"else", {tELSE, tELSE}, EXPR_BEG},
 #line 34 "gperf.txt"
-      {"nil", {tNIL, tNIL}, 1},
+      {"nil", {tNIL, tNIL}, EXPR_END},
 #line 27 "gperf.txt"
-      {"ensure", {tENSURE, tENSURE}, 1},
+      {"ensure", {tENSURE, tENSURE}, EXPR_BEG},
 #line 26 "gperf.txt"
-      {"end", {tEND, tEND}, 1},
+      {"end", {tEND, tEND}, EXPR_END},
 #line 43 "gperf.txt"
-      {"then", {tTHEN, tTHEN}, 0},
+      {"then", {tTHEN, tTHEN}, EXPR_BEG},
 #line 35 "gperf.txt"
-      {"not", {tKWNOT, tKWNOT}, 1},
+      {"not", {tKWNOT, tKWNOT}, EXPR_ARG},
 #line 28 "gperf.txt"
-      {"false", {tFALSE, tFALSE}, 1},
+      {"false", {tFALSE, tFALSE}, EXPR_END},
 #line 41 "gperf.txt"
-      {"self", {tSELF, tSELF}, 1},
+      {"self", {tSELF, tSELF}, EXPR_END},
 #line 25 "gperf.txt"
-      {"elsif", {tELSIF, tELSIF}, 0},
+      {"elsif", {tELSIF, tELSIF}, EXPR_VALUE},
 #line 38 "gperf.txt"
-      {"rescue", {tRESCUE, modifier_rescue}, 1},
+      {"rescue", {tRESCUE, modifier_rescue}, EXPR_MID},
 #line 44 "gperf.txt"
-      {"true", {tTRUE, tTRUE}, 1},
+      {"true", {tTRUE, tTRUE}, EXPR_END},
 #line 47 "gperf.txt"
-      {"until", {tUNTIL, modifier_until}, 0},
+      {"until", {tUNTIL, modifier_until}, EXPR_VALUE},
 #line 46 "gperf.txt"
-      {"unless", {tUNLESS, modifier_unless}, 0},
+      {"unless", {tUNLESS, modifier_unless}, EXPR_VALUE},
 #line 40 "gperf.txt"
-      {"return", {tRETURN, tRETURN}, 0},
+      {"return", {tRETURN, tRETURN}, EXPR_MID},
 #line 21 "gperf.txt"
-      {"def", {tDEF, tDEF}, 1},
+      {"def", {tDEF, tDEF}, EXPR_FNAME},
 #line 16 "gperf.txt"
-      {"and", {tKWAND, tKWAND}, 0},
+      {"and", {tKWAND, tKWAND}, EXPR_VALUE},
 #line 23 "gperf.txt"
-      {"do", {tDO, tDO}, 1},
+      {"do", {tDO, tDO}, EXPR_BEG},
 #line 50 "gperf.txt"
-      {"yield", {tYIELD, tYIELD}, 1},
+      {"yield", {tYIELD, tYIELD}, EXPR_ARG},
 #line 29 "gperf.txt"
-      {"for", {tFOR, tFOR}, 1},
+      {"for", {tFOR, tFOR}, EXPR_VALUE},
 #line 45 "gperf.txt"
-      {"undef", {tUNDEF, tUNDEF}, 1},
+      {"undef", {tUNDEF, tUNDEF}, EXPR_FNAME},
 #line 36 "gperf.txt"
-      {"or", {tKWOR, tKWOR}, 0},
+      {"or", {tKWOR, tKWOR}, EXPR_VALUE},
 #line 31 "gperf.txt"
-      {"in", {tIN, tIN}, 1},
+      {"in", {tIN, tIN}, EXPR_VALUE},
 #line 48 "gperf.txt"
-      {"when", {tWHEN, tWHEN}, 1},
+      {"when", {tWHEN, tWHEN}, EXPR_VALUE},
 #line 39 "gperf.txt"
-      {"retry", {tRETRY, tRETRY}, 1},
+      {"retry", {tRETRY, tRETRY}, EXPR_END},
 #line 30 "gperf.txt"
-      {"if", {tIF, modifier_if}, 0},
+      {"if", {tIF, modifier_if}, EXPR_VALUE},
 #line 19 "gperf.txt"
-      {"case", {tCASE, tCASE}, 0},
+      {"case", {tCASE, tCASE}, EXPR_VALUE},
 #line 37 "gperf.txt"
-      {"redo", {tREDO, tREDO}, 1},
+      {"redo", {tREDO, tREDO}, EXPR_END},
 #line 33 "gperf.txt"
-      {"next", {tNEXT, tNEXT}, 1},
+      {"next", {tNEXT, tNEXT}, EXPR_MID},
 #line 42 "gperf.txt"
-      {"super", {tSUPER, tSUPER}, 1},
+      {"super", {tSUPER, tSUPER}, EXPR_ARG},
 #line 32 "gperf.txt"
-      {"module", {tMODULE, tMODULE}, 1},
+      {"module", {tMODULE, tMODULE}, EXPR_VALUE},
 #line 17 "gperf.txt"
-      {"begin", {tBEGIN, tBEGIN}, 1},
+      {"begin", {tBEGIN, tBEGIN}, EXPR_BEG},
 #line 11 "gperf.txt"
-      {"__LINE__", {tLINE, tLINE}, 1},
+      {"__LINE__", {tLINE, tLINE}, EXPR_END},
 #line 12 "gperf.txt"
-      {"__FILE__", {tFILE, tFILE}, 1},
+      {"__FILE__", {tFILE, tFILE}, EXPR_END},
 #line 10 "gperf.txt"
-      {"__ENCODING__", {tENCODING, tENCODING}, 1},
+      {"__ENCODING__", {tENCODING, tENCODING}, EXPR_END},
 #line 14 "gperf.txt"
-      {"END", {upEND, upEND}, 1},
+      {"END", {upEND, upEND}, EXPR_END},
 #line 15 "gperf.txt"
-      {"alias", {tALIAS, tALIAS}, 1},
+      {"alias", {tALIAS, tALIAS}, EXPR_FNAME},
 #line 13 "gperf.txt"
-      {"BEGIN", {upBEGIN, upBEGIN}, 1},
+      {"BEGIN", {upBEGIN, upBEGIN}, EXPR_END},
 #line 22 "gperf.txt"
-      {"defined?", {tDEFINED, tDEFINED}, 1},
+      {"defined?", {tDEFINED, tDEFINED}, EXPR_ARG},
 #line 20 "gperf.txt"
-      {"class", {tCLASS, tCLASS}, 1},
+      {"class", {tCLASS, tCLASS}, EXPR_CLASS},
       {"", {0,0}, 0}, {"", {0,0}, 0},
 #line 49 "gperf.txt"
-      {"while", {tWHILE, modifier_while}, 0}
+      {"while", {tWHILE, modifier_while}, EXPR_VALUE}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
