@@ -2419,7 +2419,7 @@ retry:
                 if (bc == '@')
                     return tUMINUS;
                 pushback();
-                break;
+                return '-';
             }
             if (bc == '=') {
                 lex_state = EXPR_BEG;
