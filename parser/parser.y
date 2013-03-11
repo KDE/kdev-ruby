@@ -273,7 +273,7 @@ void print_state(struct parser_t *parser);
 %left tLSHIFT tRSHIFT
 %left '+' '-'
 %left '*' '/' '%'
-%right tUMINUS_NUM tUMINUS
+%right tUMINUS
 %right tPOW
 %right '!' '~' tUPLUS
 

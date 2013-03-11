@@ -15,3 +15,11 @@ case num
   when 2 then :a
   when 3 then :b
 end
+
+case a
+when :text
+  return 1
+=begin
+
+=end
+end

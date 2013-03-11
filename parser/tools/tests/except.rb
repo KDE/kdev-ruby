@@ -77,3 +77,7 @@ begin
   return
 rescue FTPPermError => e
 end
+
+begin
+rescue *EXCEPTIONS
+end

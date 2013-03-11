@@ -94,3 +94,6 @@ end
 def <<(obj)
   log(INFO, obj.to_s)
 end
+
+def %(x)
+end

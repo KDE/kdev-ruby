@@ -33,3 +33,11 @@ end
 
 while a and b do
 end
+
+while MUTEX.synchronize { a }
+end
+
+while MUTEX.synchronize {
+    a
+  }
+end

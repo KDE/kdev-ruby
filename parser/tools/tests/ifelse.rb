@@ -58,3 +58,7 @@ end
 if (ret = @major <=> other.major) == 0
   return @minor <=> other.minor
 end
+
+if(@req)
+  a = 0
+end

@@ -17,5 +17,13 @@ Root: 40
 Condition: 51(a)[27,6:27,7] 26 52 15 51(b)[27,16:27,17] 26 52 
 40 
 Condition: 51(a)[34,6:34,7] 11 51(b)[34,12:34,13] 
+40 
+Condition: 51(MUTEX)[37,6:37,11] 
+Next statements: 51(synchronize)[37,12:37,23] 
+Root: 66 
+40 
+Condition: 51(MUTEX)[40,6:40,11] 
+Next statements: 51(synchronize)[40,12:40,23] 
+Root: 66 
 
 
