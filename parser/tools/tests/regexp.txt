@@ -27,5 +27,7 @@ Condition: 51(ajax_method)[13,3:13,14] 29 61
 51(a)[25,0:25,1] 22 61 
 51(a)[26,0:26,1] 22 61 
 61 
+51(puts)[28,0:28,4] 66 61 
+Line: 28, Column: 6; ambiguous first argument; put parentheses or even spaces
 
 

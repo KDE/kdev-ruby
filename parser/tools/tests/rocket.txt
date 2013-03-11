@@ -26,5 +26,7 @@ Root: 66 60
 51(p)[42,0:42,1] 66 51(str)[42,3:42,6] 20 
 51(p)[43,0:43,1] 66 51(str)[43,3:43,6] 19 
 51(p)[44,0:44,1] 66 51(str)[44,3:44,6] 21 
+Line: 42, Column: 4; ambiguous first argument; put parentheses or even spaces
+Line: 44, Column: 4; ambiguous first argument; put parentheses or even spaces
 
 

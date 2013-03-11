@@ -31,10 +31,9 @@
 
 #include "node.h"
 
-/* TODO: check sizes */
-#define YYERROR_VERBOSE 1
-#define STACK_SIZE 256
-#define BSIZE STACK_SIZE
+
+#define SSIZE 256
+#define LSIZE (SSIZE << 2)
 
 
 /*
@@ -92,12 +91,12 @@ enum lex_state_e {
 #define CMDARG_P()      BITSTACK_SET_P(parser->cmdarg_stack)
 
 
-/* This structure represents a string/heredoc/regexp term. */
-/* TODO: I'm sure it can be simplified */
+/*
+ * This structure represents a string/heredoc/regexp/shortcut term.
+ */
 struct term_t {
     int token;
     char *word;
-    int length;
     int nest;
     unsigned char term;
     unsigned char paren;
@@ -116,6 +115,7 @@ struct comment_t {
 };
 
 /*
+ * TODO: update this documentation
  * This structure defines the parser. It contains the AST, some
  * flags used for internal reasons and some info about the
  * content to parse.
@@ -155,7 +155,7 @@ struct parser_t {
 
     /* The last allocated comment + the comment stack    */
     struct comment_t last_comment;
-    char *comment_stack[STACK_SIZE];
+    char *comment_stack[SSIZE];
     int comment_index;
 
     /* Info about the content to parse */
@@ -179,6 +179,7 @@ struct parser_t {
 #include "parser.h"
 #define yyparse ruby_yyparse
 #define YYLEX_PARAM parser
+#define YYERROR_VERBOSE 1
 
 #define lex_strterm parser->lex_strterm
 #define lex_state parser->lex_state
@@ -201,12 +202,10 @@ static void pop_stack(struct parser_t *parser, struct node *n);
 static void push_last_comment(struct parser_t *parser);
 static void pop_comment(struct parser_t *parser, struct node *n);
 
-static void push_pos(struct parser_t *parser, struct pos_t tokp);
 static void pop_pos(struct parser_t *parser, struct node *n);
 static void pop_start(struct parser_t *parser, struct node *n);
 static void pop_end(struct parser_t *parser, struct node *n);
 #define discard_pos() pop_pos(parser, NULL)
-#define copy_end(dest, src) ({ dest->pos.end_line = src->pos.end_line; dest->pos.end_col = src->pos.end_col; })
 #define copy_op(op) { parser->aux = strdup(op); }
 %}
 
@@ -586,7 +585,8 @@ cpath: tCOLON3 cname        { $$ = $2; }
     | primary tCOLON2 cname
     {
         $$ = update_list($1, $3);
-        copy_end($$, $3);
+        $$->pos.end_line = $3->pos.end_line;
+        $$->pos.end_col = $3->pos.end_col;
     }
 ;
 
@@ -1555,8 +1555,7 @@ assoc: arg tASSOC arg
     }
 ;
 
-operation: base
-    | const
+operation: base | const
 ;
 
 operation2: base
@@ -1576,10 +1575,10 @@ operation3: base
     }
 ;
 
-label: tKEY { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
+label: tKEY     { $$ = ALLOC_N(token_symbol, NULL, NULL); POP_STACK; }
 ;
 
-super: tSUPER { $$ = alloc_node(token_super, NULL, NULL); }
+super: tSUPER   { $$ = alloc_node(token_super, NULL, NULL); }
 ;
 
 dot_or_colon: '.' | tCOLON2
@@ -1606,7 +1605,7 @@ term: ';' {yyerrok;} | '\n'
 terms: term | terms ';' {yyerrok;}
 ;
 
-none : /* none */ { $$ = NULL; }
+none: /* none */ { $$ = NULL; }
 ;
 
 %%
@@ -1637,7 +1636,6 @@ none : /* none */ { $$ = NULL; }
 #define IS_LABEL_SUFFIX() (*parser->lex_p == ':' && *(parser->lex_p + 1) != ':')
 #define IS_AFTER_OPERATOR() IS_lex_state(EXPR_FNAME | EXPR_DOT)
 
-
 static void init_parser(struct parser_t *parser)
 {
     parser->content_given = 0;
@@ -1659,7 +1657,7 @@ static void init_parser(struct parser_t *parser)
     parser->sp = 0;
     parser->line = 1;
     parser->column = 0;
-    parser->pos_stack = (struct pos_t *) malloc(STACK_SIZE * sizeof(struct pos_t));
+    parser->pos_stack = (struct pos_t *) malloc(SSIZE * sizeof(struct pos_t));
     parser->stack_scale = 0;
     parser->pos_size = 0;
     parser->errors = NULL;
@@ -1816,11 +1814,10 @@ static void parser_pushback(struct parser_t *parser)
 
 static int parse_heredoc_identifier(struct parser_t *parser)
 {
-    /* TODO: buffer to some lexer buffer ? */
-    char *buffer = (char *) malloc(BSIZE * sizeof(char));
+    char *buffer = (char *) malloc(SSIZE * sizeof(char));
     char *ptr = buffer;
-    int count = BSIZE, scale = 0;
-    char c = nextc(); /* TODO: ugly */
+    int count = SSIZE, scale = 0;
+    char c = nextc();
     unsigned char quote_seen = 0, term = ' ';
     unsigned char dash_seen = 0;
 
@@ -1850,7 +1847,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
             break;
         if (!count) {
             scale++;
-            buffer = (char *) realloc(buffer, (BSIZE << scale) * sizeof(char));
+            buffer = (char *) realloc(buffer, (SSIZE << scale) * sizeof(char));
         }
         *ptr++ = c;
         c = nextc();
@@ -1867,7 +1864,6 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     lex_strterm->term = 1;
     lex_strterm->can_embed = dash_seen;
     lex_strterm->word = buffer;
-    lex_strterm->length = ptr - buffer;
     lex_strterm->token = token_heredoc;
     lex_strterm->nestable = 0;
     parser->lex_pend = parser->lex_p + quote_seen;
@@ -1878,7 +1874,8 @@ static int parse_heredoc_identifier(struct parser_t *parser)
 
 static int parse_heredoc(struct parser_t *parser)
 {
-    char aux[lex_strterm->length];
+    int length = strlen(lex_strterm->word);
+    char aux[length];
     char c = nextc();
     int i = 0;
     int ax = 0;
@@ -1909,14 +1906,14 @@ static int parse_heredoc(struct parser_t *parser)
         }
         aux[i] = c;
         if (c == '\n') {
-            if ((lex_strterm->length == i) && !strncmp(lex_strterm->word, aux, i)) {
+            if ((length == i) && !strncmp(lex_strterm->word, aux, i)) {
                 pushback();
                 return tSTRING_END;
             }
             i = -1;
         } else
             ax += utf8_charsize(parser->lex_prev) - 1;
-        if (i >= lex_strterm->length)
+        if (i >= length)
             i = -1;
         i++;
     } while (c != -1);
@@ -1976,13 +1973,13 @@ static void pop_stack(struct parser_t *parser, struct node *n)
 
 static void push_pos(struct parser_t *parser, struct pos_t tokp)
 {
-    int scale = STACK_SIZE * parser->stack_scale;
+    int scale = SSIZE * parser->stack_scale;
 
     parser->pos_size++;
-    if (parser->pos_size > STACK_SIZE) {
+    if (parser->pos_size > SSIZE) {
         parser->pos_size = 1;
         parser->stack_scale++;
-        scale += STACK_SIZE;
+        scale += SSIZE;
         parser->pos_stack = (struct pos_t *) realloc(parser->pos_stack, scale * sizeof(struct pos_t));
     }
     parser->pos_stack[parser->pos_size + scale - 1] = tokp;
@@ -1990,7 +1987,7 @@ static void push_pos(struct parser_t *parser, struct pos_t tokp)
 
 static void pop_pos(struct parser_t *parser, struct node *n)
 {
-    int scale = STACK_SIZE * parser->stack_scale;
+    int scale = SSIZE * parser->stack_scale;
     int pos = parser->pos_size - 1 + scale;
     struct pos_t tokp = parser->pos_stack[pos];
 
@@ -2004,8 +2001,8 @@ static void pop_pos(struct parser_t *parser, struct node *n)
     parser->pos_size--;
     if (parser->pos_size == 0 && parser->stack_scale > 0) {
         parser->stack_scale--;
-        parser->pos_size = STACK_SIZE;
-        scale -= STACK_SIZE;
+        parser->pos_size = SSIZE;
+        scale -= SSIZE;
         parser->pos_stack = (struct pos_t *) realloc(parser->pos_stack, scale * sizeof(struct pos_t));
     }
 }
@@ -2072,7 +2069,7 @@ static int is_indented_comment(char *c)
 static void set_comment(struct parser_t *parser)
 {
     int c, count = 0, scale = 0;
-    char *buffer = (char *) malloc(1024); /* TODO: BSIZE or ? */
+    char *buffer = (char *) malloc(LSIZE);
 
     pushback();
     for (;; ++count) {
@@ -2107,14 +2104,12 @@ static int parse_string(struct parser_t *parser)
     register int c = *parser->lex_p;
     int next = *(parser->lex_p + 1);
 
-    /* TODO: can be reduced ? */
     if (c == '\\' && (next == '\\' || next == lex_strterm->term || next == lex_strterm->paren)) {
         parser->lex_p += 2;
         parser->column += 2;
         return tSTRING_CONTENT;
     }
 
-    /* TODO: reduce this */
     if (c == lex_strterm->term) {
         nextc();
         if (lex_strterm->nestable) {
@@ -2148,7 +2143,7 @@ static int parse_string(struct parser_t *parser)
         pushback();
     }
 
-    /* TODO: document why we re-use next and c like a boss. */
+    /* Re-using the next and the c variables */
     next = utf8_charsize(parser->lex_p);
     c = next - 1;
     while (next-- > 0) {
@@ -2163,7 +2158,7 @@ static int parse_string(struct parser_t *parser)
 
 static void parse_re_options(struct parser_t *parser)
 {
-    char aux[64]; /* TODO: use buffer from lexbuf */
+    char aux[64];
     int c = *parser->lex_p;
 
     while (isalpha(c)) {
@@ -2178,6 +2173,12 @@ static void parse_re_options(struct parser_t *parser)
     pushback();
 }
 
+static void arg_ambiguous_gen(struct parser_t *parser)
+{
+    yywarning("ambiguous first argument; put parentheses or even spaces");
+}
+#define arg_ambiguous() (arg_ambiguous_gen(parser), 1)
+
 /*
  * This is the lexer. It reads the source code (blob) and provides tokens to
  * the parser. It also updates the necessary flags.
@@ -2187,12 +2188,12 @@ static int parser_yylex(struct parser_t *parser)
     register int c;
     int bc = 0;
     char *cp;
-    char lexbuf[BSIZE]; /* TODO: to the parser struct ¿? */
+    char lexbuf[SSIZE];
     unsigned char space_seen = 0;
     int cmd_state;
     struct pos_t tokp = {-1, -1, -1, -1, 0};
 
-    /* TODO */
+    /* Check for string terminations: string, regexp, heredoc, shortcut */
     if (lex_strterm) {
         if (lex_strterm->token == token_heredoc) {
             c = parse_heredoc(parser);
@@ -2225,6 +2226,7 @@ retry:
     tokp.start_line = parser->line;
     tokp.start_col = parser->column - 1;
 
+    /* Check numeric values here instead of entering the main switch */
     if (isdigit(c)) {
         cp = lexbuf;
         goto tnum;
@@ -2254,8 +2256,7 @@ retry:
             lex_state = IS_AFTER_OPERATOR() ? EXPR_ARG : EXPR_BEG;
             bc = nextc();
             if (bc == '=') {
-                bc = nextc();
-                if (bc == '=')
+                if (nextc() == '=')
                     return tEQQ;
                 pushback();
                 return tEQ;
@@ -2281,8 +2282,7 @@ retry:
                 lex_state = EXPR_ARG;
                 bc = nextc();
                 if (bc == ']') {
-                    bc = nextc();
-                    if (bc == '=')
+                    if (nextc() == '=')
                         return tASET;
                     c = tAREF;
                 }
@@ -2317,15 +2317,13 @@ retry:
                 lex_state = EXPR_BEG;
             }
             if (bc == '=') {
-                bc = nextc();
-                if (bc == '>')
+                if (nextc() == '>')
                     return tCMP;
                 pushback();
                 return tLEQ;
             }
             if (bc == '<') {
-                bc = nextc();
-                if (bc == '=') {
+                if (nextc() == '=') {
                     lex_state = EXPR_BEG;
                     return tOP_ASGN;
                 }
@@ -2338,8 +2336,7 @@ retry:
             if (bc == '=')
                 return tGEQ;
             if (bc == '>') {
-                bc = nextc();
-                if (bc == '=') {
+                if (nextc() == '=') {
                     lex_state = EXPR_BEG;
                     return tOP_ASGN;
                 }
@@ -2372,8 +2369,7 @@ retry:
                 lex_state = EXPR_BEG;
                 return tOP_ASGN;
             }
-            if (IS_BEG() || IS_SPCARG(bc)) {
-                /* TODO: arg_ambiguous */
+            if (IS_BEG() || (IS_SPCARG(bc) && arg_ambiguous())) {
                 lex_state = EXPR_BEG;
                 pushback();
                 return tUPLUS;
@@ -2397,8 +2393,7 @@ retry:
                 lex_state = EXPR_ENDFN;
                 return tLAMBDA;
             }
-            if (IS_BEG() || IS_SPCARG(bc)) {
-                /* TODO: arg_ambiguous */
+            if (IS_BEG() || (IS_SPCARG(bc) && arg_ambiguous())) {
                 lex_state = EXPR_BEG;
                 pushback();
                 return tUMINUS;
@@ -2419,7 +2414,7 @@ retry:
                 }
                 pushback();
                 if (IS_SPCARG(bc)) {
-                    /* TODO */
+                    yywarning("`**' interpreted as argument prefix");
                     c = tDSTAR;
                 } else if (IS_BEG())
                     c = tDSTAR;
@@ -2429,7 +2424,7 @@ retry:
                 return c;
             }
             if (IS_SPCARG(bc)) {
-                /* TODO */
+                yywarning("`*' interpreted as argument prefix");
                 c = tSTAR;
             } else if (IS_BEG())
                 c = tSTAR;
@@ -2437,8 +2432,7 @@ retry:
             break;
         case '/':
             if (IS_lex_state(EXPR_BEG_ANY)) {
-                tokp.start_line = parser->line;
-                tokp.start_col = parser->column - 1;
+            regexp:
                 lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
                 lex_strterm->term = c;
                 lex_strterm->can_embed = 1;
@@ -2454,24 +2448,14 @@ retry:
             }
             pushback();
             if (IS_SPCARG(bc)) {
-                /* TODO: has to be reduced */
-                tokp.start_line = parser->line;
-                tokp.start_col = parser->column - 1;
-                lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
-                lex_strterm->term = c;
-                lex_strterm->can_embed = 1;
-                lex_strterm->token = token_regexp;
-                lex_strterm->word = NULL;
-                lex_strterm->nestable = 0;
-                return tSTRING_BEG;
+                arg_ambiguous_gen(parser);
+                goto regexp;
             }
             lex_state = IS_AFTER_OPERATOR() ? EXPR_ARG : EXPR_BEG;
             return c;
         case '%':
             bc = nextc();
             if (IS_lex_state(EXPR_BEG_ANY) || IS_SPCARG(bc)) {
-                tokp.start_line = parser->line;
-                tokp.start_col = parser->column - 2;
                 lex_strterm = (struct term_t *) malloc(sizeof(struct term_t));
                 lex_strterm->token = guess_kind(parser, bc);
                 if (isalpha(bc))
@@ -2494,8 +2478,7 @@ retry:
             bc = nextc();
             if (bc == '&') {
                 lex_state = EXPR_BEG;
-                bc = nextc();
-                if (bc == '=')
+                if (nextc() == '=')
                     return tOP_ASGN;
                 pushback();
                 return tAND;
@@ -2505,7 +2488,7 @@ retry:
                 return tOP_ASGN;
             }
             if (IS_SPCARG(bc)) {
-                /* TODO */
+                yywarning("`&' interpreted as argument prefix");
                 c = tAMPER;
             } else if (IS_BEG())
                 c = tAMPER;
@@ -2515,8 +2498,7 @@ retry:
             bc = nextc();
             if (bc == '|') {
                 lex_state = EXPR_BEG;
-                bc = nextc();
-                if (bc == '=')
+                if (nextc() == '=')
                     return tOP_ASGN;
                 pushback();
                 return tOR;
@@ -2531,8 +2513,7 @@ retry:
             lex_state = EXPR_BEG;
             bc = nextc();
             if (bc == '.') {
-                bc = nextc();
-                if (bc == '.')
+                if (nextc() == '.')
                     return tDOT3;
                 pushback();
                 return tDOT2;
@@ -2557,8 +2538,7 @@ retry:
             pushback();
             return tSYMBEG;
         case '^':
-            bc = nextc();
-            if (bc == '=') {
+            if (nextc() == '=') {
                 lex_state = EXPR_BEG;
                 return tOP_ASGN;
             }
@@ -2614,13 +2594,12 @@ retry:
             lex_strterm->nestable = 0;
             return tSTRING_BEG;
         case '\\':
-            c = nextc();
-            if (c == '\n') {
+            if (nextc() == '\n') {
                 space_seen = 1;
                 goto retry;
             }
             pushback();
-            return '\\';
+            return c;
         case '(':
             if (IS_BEG())
                 c = tLPAREN;
@@ -2648,14 +2627,14 @@ retry:
                 if (parser->version < ruby19) {
                     yywarning("\"->\" syntax is only available in Ruby 1.9.x or higher.");
                 }
-                return tLAMBEG;
+                return tLAMBEG; /* this is a lambda ->() {} construction */
             }
             if (IS_ARG() || IS_lex_state(EXPR_END | EXPR_ENDFN))
                 c = '{';
             else if (IS_lex_state(EXPR_ENDARG))
-                c = tLBRACE_ARG;
+                c = tLBRACE_ARG; /* block (expr) */
             else
-                c = tLBRACE;
+                c = tLBRACE; /* smells like a hash */
             COND_PUSH(0);
             CMDARG_PUSH(0);
             lex_state = EXPR_BEG;
@@ -2663,7 +2642,7 @@ retry:
                 push_pos(parser, tokp);
                 command_start = 1;
             }
-            return c;
+            return c; /* block (primary) */
         case '}':
             CMDARG_LEXPOP();
             COND_LEXPOP();
