@@ -2274,7 +2274,6 @@ retry:
             goto retry;
         case '#':
             set_comment(parser);
-        eol:
         case '\n':
             if (IS_lex_state(EXPR_BEG | EXPR_VALUE | EXPR_CLASS | EXPR_FNAME | EXPR_DOT))
                 goto retry;
@@ -2303,8 +2302,8 @@ retry:
                     nextc();
                 parser->column += 3;
                 parser->lex_p += 3;
-                lex_state = EXPR_END;
-                goto eol;
+                bc = 0;
+                goto retry;
             }
             break;
         case '[':
