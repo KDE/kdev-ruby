@@ -97,3 +97,5 @@ end
 
 def %(x)
 end
+
+def foo a, *; end

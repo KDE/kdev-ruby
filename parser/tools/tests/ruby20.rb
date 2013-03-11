@@ -13,3 +13,5 @@ end
 
 def yet_another(a, b = 1, *c, d: '', **e, &blk)
 end
+
+def yay a: 1, **; end

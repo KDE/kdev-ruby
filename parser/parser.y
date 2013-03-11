@@ -1453,6 +1453,11 @@ f_kwrest: kwrest_mark base
         $$ = $2;
         $$->flags = 5;
     }
+    | kwrest_mark
+    {
+        $$ = alloc_node(token_object, NULL, NULL);
+        $$->flags = 5;
+    }
 ;
 
 f_opt: base '='
