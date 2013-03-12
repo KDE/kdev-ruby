@@ -1155,6 +1155,7 @@ cases: opt_else | case_body
 opt_rescue: tRESCUE rescue_arg then compstmt opt_rescue
     {
          $$ = alloc_node(token_rescue, $2, $4);
+         $$->ensure = $5;
     }
     | none
 ;
