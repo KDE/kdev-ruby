@@ -1472,7 +1472,7 @@ f_opt: base '='
 f_block_opt: base '=' primary { $$ = alloc_node(token_assign, $1, $3); }
 ;
 
-f_block_optarg    : f_block_opt
+f_block_optarg: f_block_opt
     | f_block_optarg ',' f_block_opt { $$ = update_list($1, $3); }
 ;
 
@@ -1677,8 +1677,12 @@ static void free_parser(struct parser_t *parser)
         free(parser->stack[index]);
     if (parser->pos_stack != NULL)
         free(parser->pos_stack);
-    if (lex_strterm && lex_strterm->word)
+    if (lex_strterm && lex_strterm->word) {
         free(lex_strterm->word);
+        free(lex_strterm); /* TODO: really ? */
+    }
+    if (parser->last_comment.comment)
+      free(parser->last_comment.comment);
     if (!parser->content_given)
         free(parser->blob);
 }
