@@ -1869,6 +1869,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     lex_strterm->word = buffer;
     lex_strterm->token = token_heredoc;
     lex_strterm->nestable = 0;
+    lex_strterm->paren = 0;
     parser->lex_pend = parser->lex_p + quote_seen;
     parser->line_pend = parser->line;
     parser->column_pend = parser->column;
@@ -2456,6 +2457,7 @@ retry:
                 lex_strterm->token = token_regexp;
                 lex_strterm->word = NULL;
                 lex_strterm->nestable = 0;
+                lex_strterm->paren = 0;
                 return tSTRING_BEG;
             }
             bc = nextc();
@@ -2609,6 +2611,7 @@ retry:
             lex_strterm->token = token_string;
             lex_strterm->word = NULL;
             lex_strterm->nestable = 0;
+            lex_strterm->paren = 0;
             return tSTRING_BEG;
         case '\\':
             if (nextc() == '\n') {
