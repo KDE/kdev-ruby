@@ -1183,13 +1183,8 @@ opt_ensure: none
 literal: numeric | symbol
 ;
 
-strings: string { $$ = $1; }
-    | strings string
-    {
-        if ($1->l != NULL)
-            update_list($1->l, $2);
-        $$ = $1;
-    }
+strings: string         { $$ = $1; }
+    | strings string    { $$ = update_list($1, $2); }
 ;
 
 string: tCHAR
