@@ -1843,6 +1843,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     if (!quote_seen && !is_identchar(parser->lex_prev)) {
         if (dash_seen)
             pushback();
+        free(buffer);
         return 0;
     }
 
