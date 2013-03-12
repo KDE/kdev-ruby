@@ -1016,8 +1016,12 @@ block_param: f_arg ',' f_block_optarg ',' f_rest_arg opt_block_args_tail
     | block_args_tail
 ;
 
-opt_block_param : none
-    | block_param_def { command_start = 1; }
+opt_block_param: none
+    | block_param_def
+    {
+      command_start = 1;
+      $$ = $1;
+    }
 ;
 
 block_param_def : '|' opt_bv_decl '|'   { $$ = $2;      }
@@ -1415,7 +1419,7 @@ f_arg_item: f_norm_arg
 ;
 
 f_arg: f_arg_item
-    | f_arg ',' f_arg_item { $$ = update_list($1, $3); }
+    | f_arg ',' f_arg_item { $$ = concat_list($1, $3); }
 ;
 
 f_kw: label arg
@@ -1677,10 +1681,8 @@ static void free_parser(struct parser_t *parser)
         free(parser->stack[index]);
     if (parser->pos_stack != NULL)
         free(parser->pos_stack);
-    if (lex_strterm && lex_strterm->word) {
+    if (lex_strterm && lex_strterm->word)
         free(lex_strterm->word);
-        free(lex_strterm); /* TODO: really ? */
-    }
     if (parser->last_comment.comment)
       free(parser->last_comment.comment);
     if (!parser->content_given)
