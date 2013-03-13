@@ -1927,6 +1927,9 @@ static int parse_heredoc(struct parser_t *parser)
     } while (c != -1);
 
     parser->eof_reached = 1;
+    if (lex_strterm->word)
+        free(lex_strterm->word);
+    free(lex_strterm);
     return token_invalid;
 }
 
@@ -2146,6 +2149,7 @@ static int parse_string(struct parser_t *parser)
     if (IS_EOF()) {
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
+        free(lex_strterm);
         return token_invalid;
     }
 
@@ -2168,6 +2172,7 @@ static int parse_string(struct parser_t *parser)
     while (next-- > 0) {
         if (nextc() < 0) {
             parser->eof_reached = 1;
+            free(lex_strterm);
             return token_invalid;
         }
     }
