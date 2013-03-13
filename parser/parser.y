@@ -212,14 +212,14 @@ static void pop_end(struct parser_t *parser, struct node *n);
 }
 
 /* Tokens */
-%token <n> tCLASS tMODULE tDEF tUNDEF tBEGIN tRESCUE tENSURE tEND tIF tUNLESS
-%token <n> tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
-%token <n> tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
-%token <n> tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING tDSTAR
-%token <n> tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
-%token <n> IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
-%token <n> tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
-%token <n> tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL
+%token tCLASS tMODULE tDEF tUNDEF tBEGIN tRESCUE tENSURE tEND tIF tUNLESS
+%token tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
+%token tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
+%token tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING tDSTAR
+%token tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
+%token IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
+%token tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
+%token tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL
 %token tSTRING_BEG tSTRING_CONTENT tSTRING_DBEG tSTRING_DEND tSTRING_END tSTRING_DVAR
 
 /* Types */
@@ -240,6 +240,9 @@ static void pop_end(struct parser_t *parser, struct node *n);
 %type <n> opt_args_tail args_tail f_kwarg block_args_tail opt_block_args_tail
 %type <n> f_kw f_block_kw f_block_kwarg f_kwrest
 %type <n> string_contents string_content string_dvar
+
+/* When an error has been found, free all the nodes from bison's stacks */
+%destructor { free_ast($$); } <n>
 
 /* precedence table */
 %nonassoc tLOWEST
@@ -268,7 +271,7 @@ static void pop_end(struct parser_t *parser, struct node *n);
 
 %%
 
-top_compstmt: top_stmt  { parser->ast = $1; YYACCEPT; }
+top_compstmt: top_stmt  { parser->ast = $1; $$ = 0; YYACCEPT; }
     | term              { $$ = 0; YYACCEPT; }
 ;
 
@@ -322,6 +325,7 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     | tALIAS GLOBAL tNTH_REF
     {
         yyerror(parser, "can't make alias for the number variables");
+        $$ = 0;
     }
     | tUNDEF undef_list
     {
@@ -385,6 +389,10 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     | primary tCOLON2 const tOP_ASGN command_call
     {
         yyerror(parser, "constant re-assignment");
+        $$ = 0;
+        free_ast($1);
+        free_ast($3);
+        free_ast($5);
     }
     | primary tCOLON2 base tOP_ASGN command_call
     {
@@ -570,7 +578,11 @@ lhs: variable
     }
 ;
 
-cname: BASE     { yyerror(parser, "class/module name must be CONSTANT"); }
+cname: BASE
+    {
+      yyerror(parser, "class/module name must be CONSTANT");
+      $$ = 0;
+    }
     | const
 ;
 
@@ -664,10 +676,17 @@ arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | primary tCOLON2 const tOP_ASGN arg
     {
         yyerror(parser, "constant re-assignment");
+        free_ast($1);
+        free_ast($3);
+        free_ast($5);
+        $$ = 0;
     }
     | tCOLON3 const tOP_ASGN arg
     {
         yyerror(parser, "constant re-assignment");
+        free_ast($2);
+        free_ast($4);
+        $$ = 0;
     }
     | backref tOP_ASGN arg { $$ = alloc_node(token_assign, $1, $3); }
     | arg tDOT2 arg { $$ = alloc_node(token_dot2, $1, $3); }
@@ -1044,7 +1063,11 @@ bv_decls: bvar
 ;
 
 bvar: base
-    | f_bad_arg { $$ = NULL; }
+    | f_bad_arg
+    {
+      $$ = NULL;
+      free_ast($1);
+    }
 ;
 
 lambda:
@@ -1400,10 +1423,10 @@ f_args: f_arg ',' f_optarg ',' f_rest_arg opt_args_tail
     | none
 ;
 
-f_bad_arg: CONST    { yyerror(parser, "formal argument cannot be a constant");              }
-    | IVAR          { yyerror(parser, "formal argument cannot be an instance variable");    }
-    | GLOBAL        { yyerror(parser, "formal argument cannot be a global variable");       }
-    | CVAR          { yyerror(parser, "formal argument cannot be a class variable");        }
+f_bad_arg: CONST    { yyerror(parser, "formal argument cannot be a constant"); $$ = 0;             }
+    | IVAR          { yyerror(parser, "formal argument cannot be an instance variable"); $$ = 0;   }
+    | GLOBAL        { yyerror(parser, "formal argument cannot be a global variable"); $$ = 0;      }
+    | CVAR          { yyerror(parser, "formal argument cannot be a class variable"); $$ = 0;       }
 ;
 
 f_norm_arg: f_bad_arg | base
