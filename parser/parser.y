@@ -196,8 +196,10 @@ static void pop_pos(struct parser_t *parser, struct node *n);
 static void pop_start(struct parser_t *parser, struct node *n);
 static void pop_end(struct parser_t *parser, struct node *n);
 
-/* Helper macros for positions and stacks */
+/* Helper macros for nodes, positions and stacks */
 #define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
+#define DISPOSE2(node1, node2) { free_ast(node1); free_ast(node2); }
+#define DISPOSE3(node1, node2, node3) { DISPOSE2(node1, node2); free_ast(node3); }
 #define POP_STACK pop_stack(parser, yyval.n)
 #define discard_pos() pop_pos(parser, NULL)
 #define copy_op(op) { parser->aux = strdup(op); }
@@ -389,10 +391,8 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     | primary tCOLON2 const tOP_ASGN command_call
     {
         yyerror(parser, "constant re-assignment");
-        $$ = 0;
-        free_ast($1);
-        free_ast($3);
-        free_ast($5);
+        $$ = NULL;
+        DISPOSE3($1, $3, $5);
     }
     | primary tCOLON2 base tOP_ASGN command_call
     {
@@ -676,17 +676,14 @@ arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | primary tCOLON2 const tOP_ASGN arg
     {
         yyerror(parser, "constant re-assignment");
-        free_ast($1);
-        free_ast($3);
-        free_ast($5);
-        $$ = 0;
+        $$ = NULL;
+        DISPOSE3($1, $3, $5);
     }
     | tCOLON3 const tOP_ASGN arg
     {
         yyerror(parser, "constant re-assignment");
-        free_ast($2);
-        free_ast($4);
-        $$ = 0;
+        $$ = NULL;
+        DISPOSE2($2, $4);
     }
     | backref tOP_ASGN arg { $$ = alloc_node(token_assign, $1, $3); }
     | arg tDOT2 arg { $$ = alloc_node(token_dot2, $1, $3); }
