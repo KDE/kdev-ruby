@@ -1819,8 +1819,7 @@ static void parser_pushback(struct parser_t *parser)
 /* It parses a heredoc identifier and sets a new lex_strterm */
 static int parse_heredoc_identifier(struct parser_t *parser)
 {
-    char *buffer = (char *) malloc(SSIZE * sizeof(char));
-    char *ptr = buffer;
+    char *buffer, *ptr;
     int count = SSIZE, scale = 0;
     char c = nextc();
     unsigned char quote_seen = 0, term = ' ';
@@ -1840,10 +1839,11 @@ static int parse_heredoc_identifier(struct parser_t *parser)
     if (!quote_seen && !is_identchar(parser->lex_prev)) {
         if (dash_seen)
             pushback();
-        free(buffer);
         return 0;
     }
 
+    buffer = (char *) malloc(SSIZE * sizeof(char));
+    ptr = buffer;
     for (;;) {
         /* If quote was seen, anything except the term is accepted */
         if (quote_seen) {

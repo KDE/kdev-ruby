@@ -55,7 +55,7 @@ end
 def execute(tool, opts, file)
   FileUtils.rm_rf file
   putb "Calling Valgrind\'s #{tool} tool with: #{opts}"
-  `valgrind #{opts} #{PARSER} #{TMP}`
+  `valgrind #{opts} #{PARSER} #{TMP} 1`
   putb "#{tool.capitalize} output left at #{file}" unless file.empty?
 end
 
@@ -146,7 +146,7 @@ end
 
 if ARGV.include? '--bench'
   Benchmark.bm do |x|
-    x.report('parser: ') { 100.times { `#{PARSER} #{TMP}` } }
+    x.report('parser: ') { 10.times { `#{PARSER} #{TMP}` } }
   end
   ok = true
 end
