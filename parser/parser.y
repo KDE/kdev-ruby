@@ -154,6 +154,7 @@ struct parser_t {
     struct error_t *errors;
     struct error_t *last_error;
     unsigned char warning : 1;
+    unsigned char unrecoverable : 1;
 
     /* Stack of names */
     char *stack[2];
@@ -1679,6 +1680,7 @@ static void init_parser(struct parser_t *parser)
     parser->errors = NULL;
     parser->last_error = NULL;
     parser->warning = 0;
+    parser->unrecoverable = 0;
     parser->last_comment.comment = NULL;
     parser->last_comment.line = 0;
     parser->comment_index = 0;
@@ -2984,6 +2986,8 @@ static void yyerror(struct parser_t *parser, const char *s)
     parser->last_error->next = NULL;
 
     parser->eof_reached = !e->warning;
+    if (!parser->unrecoverable)
+      parser->unrecoverable = !e->warning;
 }
 
 struct ast_t * rb_compile_file(struct options_t *opts)
@@ -3007,7 +3011,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
     /* Let's parse */
     result = (struct ast_t *) malloc(sizeof(struct ast_t));
     result->tree = NULL;
-    result->unrecoverable = 1;
+    result->unrecoverable = 0;
     for (;;) {
         yyparse(&p);
         if (p.ast != NULL) {
@@ -3018,7 +3022,7 @@ struct ast_t * rb_compile_file(struct options_t *opts)
         }
         if (p.eof_reached) {
             result->errors = p.errors;
-            result->unrecoverable = !p.warning;
+            result->unrecoverable = p.unrecoverable;
             break;
         }
     }
