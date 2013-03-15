@@ -48,6 +48,13 @@ module Aa
   # and this one too.
   module Bb
   end
+  
+  # This is more documentation
+  # and more, and more
+  # testing a regression
+  #no blank
+  def foo
+  end
 
   # but not this one.
 end

@@ -2100,12 +2100,12 @@ static void store_comment(struct parser_t *parser, char *comment)
 }
 
 /* Check if the given parameter points to an indented comment */
-static int is_indented_comment(char *c)
+static int is_indented_comment(struct parser_t *parser)
 {
-    char *original = c;
+    char *c = parser->lex_prev;
 
-    for (; *c == ' ' || *c == '\t'; ++c);
-    return (*c == '#') ? (c - original) : 0;
+    for (; *c == ' ' || *c == '\t'; ++c, ++parser->lex_p);
+    return (*c == '#');
 }
 
 /* Read a comment and store it if possible */
@@ -2114,14 +2114,12 @@ static void set_comment(struct parser_t *parser)
     int c, count = 0, scale = 0;
     char *buffer = (char *) malloc(LSIZE);
 
-    pushback();
     for (;; ++count) {
-        c = nextc();
-        if (c != '#' && !is_indented_comment(parser->lex_prev))
+        if (c != '#' && !is_indented_comment(parser))
             break;
+        c = *(parser->lex_p - 1);
         while (c == '#' && c != -1)
             c = nextc();
-
         if (c != '\n') {
             for (; c != -1; count++) {
                 __check_buffer_size(1000);
@@ -2134,6 +2132,7 @@ static void set_comment(struct parser_t *parser)
             }
         } else
             buffer[count] = c;
+        c = nextc();
     }
 
     if (c != -1)

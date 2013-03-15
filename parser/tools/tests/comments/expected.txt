@@ -8,3 +8,7 @@
  But this one is not
  Store this comment
  and this one too.
+ This is more documentation
+ and more, and more
+ testing a regression
+no blank
