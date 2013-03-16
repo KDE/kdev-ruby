@@ -148,7 +148,7 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
     , m_valid(true), m_kind(NoMemberAccess)
 {
-    if (!m_duContext) {
+    if (!m_duContext || !isValidPosition()) {
         m_valid = false;
         return;
     }
@@ -203,6 +203,20 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
 QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
 {
     return m_ungroupedItems;
+}
+
+bool CodeCompletionContext::isValidPosition()
+{
+    if (m_text.isEmpty())
+        return true;
+
+    for (QString::iterator it = m_text.end(); it != m_text.begin(); --it) {
+        if (*it == '\n')
+            break;
+        if (*it == '#')
+            return false;
+    }
+    return true;
 }
 
 bool CodeCompletionContext::doRequireCompletion()

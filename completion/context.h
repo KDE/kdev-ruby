@@ -76,6 +76,12 @@ public:
 
 private:
     /**
+     * @returns true if it's ok to offer code completion in the current
+     * position. Returns false otherwise.
+     */
+    bool isValidPosition();
+
+    /**
      * @returns true if this is a require/require_relative completion. If so,
      * it then fills the m_includeItems attribute with the requirable files.
      */
