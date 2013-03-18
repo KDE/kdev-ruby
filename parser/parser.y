@@ -1737,6 +1737,7 @@ static int retrieve_source(struct parser_t *p, const char *path)
     }
     p->length = length;
     p->lex_p = p->blob;
+    fclose(fd);
     return 1;
 }
 
