@@ -2103,8 +2103,11 @@ static void store_comment(struct parser_t *parser, char *comment)
 static int is_indented_comment(struct parser_t *parser)
 {
     char *c = parser->lex_prev;
+    char *original = c;
 
-    for (; *c == ' ' || *c == '\t'; ++c, ++parser->lex_p);
+    for (; *c == ' ' || *c == '\t'; ++c);
+    parser->lex_p += (c - original);
+    parser->column += (c - original);
     return (*c == '#');
 }
 
