@@ -24,6 +24,7 @@
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/types/typeregister.h>
+#include <language/util/kdevhash.h>
 
 // Ruby
 #include <duchain/helpers.h>
@@ -74,7 +75,7 @@ AbstractType* ClassType::clone() const
 
 uint ClassType::hash() const
 {
-    return StructureType::hash() +
+    return KDevHash(StructureType::hash()) <<
         ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 );
 }
 
