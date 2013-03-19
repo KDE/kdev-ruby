@@ -1215,8 +1215,10 @@ string: tCHAR
     | tSTRING_BEG string_contents tSTRING_END
     {
         $$ = alloc_node(lex_strterm->token, $2, NULL);
-        if (lex_strterm->word)
+        if (lex_strterm->word) {
             free(lex_strterm->word);
+            lex_strterm->word = NULL;
+        }
         free(lex_strterm);
         lex_strterm = NULL;
     }
@@ -1950,9 +1952,12 @@ static int parse_heredoc(struct parser_t *parser)
     } while (c != -1);
 
     parser->eof_reached = 1;
-    if (lex_strterm->word)
+    if (lex_strterm->word) {
         free(lex_strterm->word);
+        lex_strterm->word = NULL;
+    }
     free(lex_strterm);
+    lex_strterm = NULL;
     return token_invalid;
 }
 
