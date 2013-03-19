@@ -31,8 +31,8 @@ using namespace KTextEditor;
 namespace Ruby
 {
 
-RequireFileItem::RequireFileItem(const KDevelop::IncludeItem &include)
-    : BaseIncludeFileItem(include)
+RequireFileItem::RequireFileItem(const KDevelop::IncludeItem &include, const char closing)
+    : BaseIncludeFileItem(include), m_closing(closing)
 {
     /* There's nothing to do here */
 }
@@ -44,6 +44,18 @@ void RequireFileItem::execute(Document *document, const Range &word)
         text += "/";
     else if (text.endsWith(".rb"))
         text.chop(3); // .rb
+
+    /* Close the item if needed. */
+    const QString textAfter = document->text(Range(word.end(), document->documentEnd()));
+    bool found = false;
+    for (int i = 0; textAfter[i] != '\n' && i < textAfter.length(); i++) {
+        if (textAfter[i] == m_closing) {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+        text += m_closing;
 
     document->replaceText(word, text);
 }

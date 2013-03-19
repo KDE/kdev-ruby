@@ -135,6 +135,7 @@ private:
 
 private:
     bool m_valid;
+    char m_closing;
     QString m_following;
     CompletionContextType m_kind;
     QList<KDevelop::IncludeItem> m_includeItems;

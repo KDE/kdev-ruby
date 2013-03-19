@@ -39,10 +39,14 @@ class RequireFileItem : public BaseIncludeFileItem
 {
 public:
     /// Constructor
-    RequireFileItem(const KDevelop::IncludeItem &include);
+    RequireFileItem(const KDevelop::IncludeItem &include, const char closing);
 
     /// Re-implemented from KDevelop::AbstractIncludeFileCompletionItem
     virtual void execute(KTextEditor::Document *document, const KTextEditor::Range &word);
+
+private:
+    /// The character that may enclose this item.
+    char m_closing;
 };
 
 } // End of namespace Ruby

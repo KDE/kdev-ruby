@@ -154,6 +154,7 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
     }
 
     m_following = followingText;
+    m_closing = 0;
     if (doRequireCompletion())
         return;
 
@@ -232,9 +233,13 @@ bool CodeCompletionContext::doRequireCompletion()
         relative = m_duContext->url().toUrl().directory();
     }
     line = line.mid(idx).trimmed();
+    m_closing = '\'';
     if ((idx = line.indexOf("'")) < 0) {
-        if ((idx = line.indexOf("\"")) < 0)
-            return false;            
+        m_closing = '"';
+        if ((idx = line.indexOf("\"")) < 0) {
+            m_closing = 0;
+            return false;
+        }
     }
     line = line.mid(idx + 1);
 
@@ -370,7 +375,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
     QList<CompletionTreeItemPointer> list;
 
     foreach (const KDevelop::IncludeItem &item, m_includeItems)
-        list << CompletionTreeItemPointer(new RequireFileItem(item));
+        list << CompletionTreeItemPointer(new RequireFileItem(item, m_closing));
     return list;
 }
 
