@@ -2180,6 +2180,7 @@ static int parse_string(struct parser_t *parser)
         parser->eof_reached = 1;
         yyerror(parser, "unterminated string meets end of file");
         free(lex_strterm);
+        lex_strterm = NULL;
         return token_invalid;
     }
 
@@ -2203,6 +2204,7 @@ static int parse_string(struct parser_t *parser)
         if (nextc() < 0) {
             parser->eof_reached = 1;
             free(lex_strterm);
+            lex_strterm = NULL;
             return token_invalid;
         }
     }
