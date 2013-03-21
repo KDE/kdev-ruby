@@ -86,7 +86,7 @@ class RDoc::RDoc
   # Returns an Array containing all the files inside the given directory.
   def get_files_from(d)
     files = []
-    Dir.glob(File.join(d, "*.{c, rb}")).each { |f| files << f if File.file? f }
+    Dir.glob(File.join(d, '*.{c, rb}')).each { |f| files << f if File.file? f }
     files
   end
 
@@ -252,6 +252,7 @@ class RDoc::RDoc
         final[name] = { comment: method.comment, args: args_str, singleton: method.singleton }
       end
     end
+    final[name][:return] = get_return(ret)
     final
   end
 
@@ -315,6 +316,118 @@ class RDoc::RDoc
     str = str.gsub(/module/, 'modul').gsub(/class/, 'klass')
     str.gsub(/end/, '_end').gsub(/begin/, '_begin')
   end
+
+  # Internal: get the return value for a method.
+  # NOTE: it has to be improved like a lot ...
+  def get_return(ret)
+    return nil if ret.nil? || ret.empty?
+    {
+      'anIO' => "''", 'obj' => 'Object.new', 'string' => "''",
+      'integer' => '0', 'Numeric' => '0', 'array' => '[]', 'float' => '0.0',
+      'true or false' => 'true || false', 'aBignum' => 'Bignum.new',
+      'time' => 'Time.new', 'a_rational' => 'Rational.new', 'number' => '0',
+      'numeric' => '0', 'fixnum' => '0', 'int' => '0',
+      'new_time' => 'Time.new', 'new_str' => "''", 'str' => "''",
+      'new_str or nil' => "'' || nil", 'an_enumerator' => 'Enumerator.new',
+      '0 .. 255' => '0..255', 'anArray' => '[]', 'an_array' => '[]',
+      'symbol' => ':a', 'enumerator' => 'Enumerator.new',
+      '[head, match, tail]' => '[]', '[head, sep, tail]' => '[]',
+      'sym' => ':a', 'other_symbol' => ':a', 'a_proc' => 'Proc.new',
+      'encoding' => 'Encoding.new', 'char' => "''", 'prc' => 'Proc.new',
+      'result_of_proc' => 'Proc.new', '[String, Fixnum]' => "['', 0]",
+      'binding' => 'Binding.new', 'method' => 'Method.new',
+      'new_method' => 'Method.new', 'unbound_method' => 'Method.new',
+      'class_or_module' => 'Class.new || Module.new', 'self' => 'self',
+      'a_binding' => 'Binding.new', 'rational' => 'Rational.new',
+      '-1, 0, +1 or nil' => '1 || nil', '(0/1)' => '(0/1)', '1' => '1',
+      'matchdata or nil' => 'MatchData.new || nil', 'object' => 'Object.new',
+      'str or nil' => "'' || nil", 'fixnum or nil' => '1 || nil',
+      'self or nil' => 'self || nil', 'proc' => 'Proc.new',
+      'other_string' => "''", '$_' => '$_', 'hsh' => '{}', 'a_hash' => '{}',
+      'Hash' => '{}', 'Enumerator' => 'Enumerator.new', 'nil' => 'nil',
+      'Array or nil' => '[] || nil', 'array or nil' => '[] || nil',
+      'string or nil' => "'' || nil", '0' => '0', 'anObject' => 'Object.new',
+      '(true or false)' => 'true || false', 'Integer' => '0',
+      'new_hash' => '{}', 'hsh or new_hash' => '{}', 'real' => '0',
+      'hash or nil' => '{} || nil', 'value' => 'Object.new',
+      'numeric_result' => '0', 'integer or float' => '0 || 0.0',
+      'an_exception or exc' => 'Exception.new', 'module' => 'Module.new',
+      'aTime' => 'Time.new', 'abs_file_name' => "''", 'real_pathname' => "''",
+      'base_name' => "''", 'ary' => '[]', '0 or false' => '0 || false',
+      'obj     or nil' => 'Object.new || nil', '0, 1' => '0',
+      'enc' => 'Encoding.new', 'mod' => 'Module.new', 'rng' => '1..2',
+      'num' => '0', 'integer_result' => '0', 'hsh_result' => '{}',
+      'key' => 'Object.new', 'hash' => '{}', 'Array' => '[]',
+      'anArray or obj' => '[] || Object.new', '"/home/me"' => "''",
+      '"/root"' => "''", '[enc1, enc2, ...]' => '[Encoding.new]',
+      '["enc1", "enc2", ...]' => '[Encoding.new]', 'new_ary' => '[]',
+      'destination_string' => "''", 'dir' => 'Dir.new', 'aDir' => 'Dir.new',
+      'exception or nil' => 'Exception.new || nil', 'enum' => 'Enumerator.new',
+      'encoding or nil' => 'Encoding.new || nil', 'ARGF' => 'ARGF',
+      'new_ary or nil' => '[] || nil', 'String' => "''", '0.0' => '0.0',
+      'Integer or nil' => '0 || nil', 'file_name' => "''", 'dir_name' => "''",
+      'path' => "''", 'stat' => "''", 'filename' => "''", 'false' => 'false',
+      'outbuf' => "''", 'string, outbuf, or nil' => "'' || nil", '""' => "''",
+      '{}' => '{}', '"nil"' => 'nil', '(0+0i)' => 'Complex.new',
+      'complex' => 'Complex.new', 'Complex(0,num)' => 'Complex.new',
+      '0 or float' => '0 || 0.0', 'other  ->  0 or nil' => '0 || nil',
+      'lazy_enum' => 'Enumerator::Lazy.new', 'thread' => 'Thread.new',
+      'thr' => 'Thread.new', 'thr or nil' => 'nil || Thread.new',
+      'true/false' => 'true || false', 'result of the block' => 'Object.new',
+      '0 or nil' => '0 || nil', 'boolean' => 'true || false', 'io' => 'IO.new',
+      'ios' => 'IO.new', 'array  or  nil' => '[] || nil', 'pid' => '0',
+      '[read_io, write_io]' => '[IO.new]', 'io or nil' => 'IO.new || nil',
+      'true' => 'true', 'String or nil' => "'' || nil",
+      'obj or nil' => 'Object.new || nil', 'new_regexp' => '//',
+      'lazy_enumerator' => 'Enumerator::Lazy.new', 'class' => 'Class.new',
+      'matchdata' => 'MatchData.new', 're or nil' => '// || nil',
+      'an_object' => 'Object.new', 'old_seed' => '1', 'struct' => 'Struct.new',
+      'true, false or nil' => 'true || false || nil', 'regexp' => '//',
+      'StructClass' => 'Struct.new', 'ary or nil' => '[] || nil',
+      'ary  or  nil' => '[] || nil', 'obj  or nil' => 'Object.new || nil',
+      'obj or other_ary or nil' => '[] || nil', 'file' => 'File.new',
+      'obj or nil' => 'Object.new || nil', 'int or nil' => '1 || nil',
+      'nil, -1, +1' => '1 || nil', 'ARGV' => 'ARGV', 'IO' => 'IO',
+      'Fixnum or nil' => '0 || nil', 'Fixnum' => '0', 'result' => 'Object.new',
+      'integer or nil' => '1 || nil', '[name1, name2, ...]' => '[]',
+      'signal_exception' => 'SignalException.new', 'elem' => 'Object.new',
+      'other_module   -> -1, 0, +1, or nil' => '1 || nil',
+      'other -> 0 or nil' => '0 || nil', 'new_string' => "''",
+      'true, false, or nil' => 'true || false || nil',
+      'new_ary  or  nil' => '[]', 'aBinaryString' => "''",
+      'other_string   -> -1, 0, +1 or nil' => '1 || nil',
+      '[pid, status]' => '[1]', 'prng' => 'Random.new',
+      'system_exit' => 'SystemExit.new', 'name_error' => 'NameError.new',
+      'no_method_error' => 'NoMethodError.new', 'hsh or nil' => '{} || nil',
+      'an_array  or  nil' => '[] || nil', 'an_array or nil' => '[] || nil',
+      'system_call_error_subclass' => 'SystemCallError',
+      'ENV or nil' => 'ENV || nil', 'name' => "''",
+      'real  ->  -1, 0, +1 or nil' => '1 || nil', 'e' => 'Exception.new',
+      'numeric  ->  -1, 0, +1 or nil' => '1 || nil',
+      'env' => 'ENV', '"ENV"' => 'ENV', 'enc or nil' => 'Encoding.new || nil',
+      '[ fraction, exponent ]' => '[]', '[float, -1 or 1]' => '[0.0, 0]',
+      'a_class' => 'Class.new', 'a_super_class or nil' => 'Class.new || nil',
+      '"true"' => 'true', '!obj' => 'Object.new', '"false"' => 'false',
+      'bool' => 'true || false', 'item or nil' => 'Object.new || nil',
+      'item or result of block' => 'Object.new || nil',
+      '[min, max]' => '[]', 'other_ary   ->  -1, 0, +1 or nil' => '1 || nil',
+      'numeric   -> -1, 0, +1 or nil' => '1 || nil',
+      'other_time -> -1, 0, +1 or nil' => '1 || nil',
+      'other_symbol       -> -1, 0, +1 or nil' => '1 || nil',
+      'a_string' => "''", 'exception' => 'Exception.new',
+      'thgrp' => 'ThreadGroup.new', 'aStructTms' => 'Struct::Tms.new',
+      'other_stat    -> -1, 0, 1, nil' => '1 || nil',
+      '[ [pid1,status1], ...]' => '[]', '[cur_limit, max_limit]' => '[]',
+      'an_array_of_array' => '[]', '[obj, ...]' => '[]',
+      'IO or File object' => 'IO.new || File.new', 'mutex' => 'Mutex.new',
+      'other_stat    -> -1, 0, 1, nil' => '1 || nil',
+      'a_lazy_enumerator' => 'Enumerator::Lazy.new', 'fiber' => 'Fiber.new',
+      'int, Float::INFINITY or nil' => '1 || 0.0 || nil',
+      '[ true_array, false_array ]' => '[[true], [false]]',
+      'string, false or nil' => "'' || false || nil",
+      'thgrp or nil' => 'ThreadGroup.new || nil'
+    }[ret]
+  end
 end
 
 # Re-open the File class so we can print the results of the RDoc::TopLevel's
@@ -373,7 +486,7 @@ class File
         print "def #{k}"
       end
       print v[:args]
-      puts "; end\n"
+      puts "; #{v[:return]}; end\n"
     end
   end
 end
