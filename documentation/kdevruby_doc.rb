@@ -252,9 +252,7 @@ class RDoc::RDoc
         final[name] = { comment: method.comment, args: args_str, singleton: method.singleton }
       end
     end
-    if name == 'new' && method.singleton
-      final[name][:return] = get_return(ret)
-    end
+    final[name][:return] = get_return(ret)
     final
   end
 
@@ -488,7 +486,10 @@ class File
         print "def #{k}"
       end
       print v[:args]
-      puts "; #{v[:return]}; end\n"
+      if !(k == :new && v[:singleton]) && !v[:return].nil?
+        print "; #{v[:return]}"
+      end
+      puts "; end\n"
     end
   end
 end
