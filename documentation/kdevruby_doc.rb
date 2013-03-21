@@ -252,7 +252,9 @@ class RDoc::RDoc
         final[name] = { comment: method.comment, args: args_str, singleton: method.singleton }
       end
     end
-    final[name][:return] = get_return(ret)
+    if name == 'new' && method.singleton
+      final[name][:return] = get_return(ret)
+    end
     final
   end
 
