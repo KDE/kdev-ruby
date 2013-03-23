@@ -366,7 +366,7 @@ void DeclarationBuilder::visitVariable(RubyAst *node)
 void DeclarationBuilder::visitBlock(RubyAst *node)
 {
     m_accessPolicy.push(Declaration::Public);
-    RubyAstVisitor::visitBlock(node);
+    DeclarationBuilderBase::visitBlock(node);
     m_accessPolicy.pop();
 }
 

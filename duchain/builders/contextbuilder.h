@@ -114,6 +114,7 @@ protected:
     virtual void visitModuleStatement(RubyAst *node);
     virtual void visitClassStatement(RubyAst *node);
     virtual void visitMethodStatement(RubyAst *node);
+    virtual void visitBlock(RubyAst *node);
     virtual void visitRequire(RubyAst *node, bool relative = false);
 
     /**

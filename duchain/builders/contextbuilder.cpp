@@ -207,6 +207,20 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 }
 
+void ContextBuilder::visitBlock(RubyAst *node)
+{
+    if (!node->tree)
+        return;
+
+    DUContext *block = openContext(node, DUContext::Other);
+    if (compilingContexts()) {
+        DUChainWriteLocker wlock(DUChain::lock());
+        block->setInSymbolTable(false);
+    }
+    RubyAstVisitor::visitBlock(node);
+    closeContext();
+}
+
 void ContextBuilder::visitRequire(RubyAst *node, bool relative)
 {
     RubyAstVisitor::visitRequire(node);
