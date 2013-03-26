@@ -60,10 +60,14 @@ private slots:
     void alias();
     void assignment();
     void checkSubClassing();
-    void checkMethodArgumentsContext();
     void instanceVariable();
     void classVariable();
     void exceptions();
+
+    // Contexts
+    void block();
+    void checkMethodArgumentsContext();
+    void checkMethodLocalDeclarations();
 
     // Method calls
     void builtinUses();

@@ -122,41 +122,6 @@ void TestUseBuilder::checkSubClassing()
     compareUses(d, RangeInRevision(0, 31, 0, 35));
 }
 
-void TestUseBuilder::checkMethodArgumentsContext()
-{
-    //               0          1        2
-    //               0123456789012345678901234
-    QByteArray code("def foo(a, b); a; end; a");
-    TopDUContext *top = parse(code, "checkMethodArgumentsContext");
-    DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
-
-    // Check that exists a method declaration and that it has a proper
-    // context for its parameters
-    QCOMPARE(top->localDeclarations().count(), 1);
-    Declaration *d = dynamic_cast<Declaration *>(top->localDeclarations().first());
-    QVERIFY(d);
-    DUContext *params = DUChainUtils::getArgumentContext(d);
-    QVERIFY(params);
-    QCOMPARE(params->range(), RangeInRevision(0, 8, 0, 12));
-
-    // Check that there's a context for the method body and that it imports
-    // the context of the parameters
-    DUContext *body = d->internalContext();
-    QVERIFY(body);
-    QCOMPARE(body->range(), RangeInRevision(0, 15, 0, 16));
-    QCOMPARE(body->importedParentContexts().count(), 1);
-    QCOMPARE(body->importedParentContexts().first().context(top), params);
-
-    // And finally check the uses of the parameters. There's only one use of a,
-    // but it's in the method's body. not the a that is outside.
-    QCOMPARE(params->localDeclarations().count(), 2);
-    Declaration *a = params->localDeclarations().first();
-    QCOMPARE(a->qualifiedIdentifier(), QualifiedIdentifier("foo::a"));
-    QCOMPARE(a->uses().count(), 1);
-    compareUses(a, RangeInRevision(0, 15, 0, 16));
-}
-
 void TestUseBuilder::instanceVariable()
 {
     //               0         1         2         3         4         5         6         7
@@ -216,6 +181,85 @@ void TestUseBuilder::exceptions()
 }
 
 //END: Basic stuff
+
+//BEGIN: Contexts
+
+void TestUseBuilder::block()
+{
+    //               0         1         2         3         4
+    //               01234567890123456789012345678901234567890123456
+    QByteArray code("a = ''; 5.times do |a, b|; puts a; puts b; end");
+    TopDUContext *top = parse(code, "block");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Outer "a" has no uses
+    Declaration *a = top->localDeclarations().first();
+    QCOMPARE(a->uses().count(), 0);
+
+    // Inner a
+    DUContext *block = top->topContext()->childContexts().first();
+    a = block->localDeclarations().first();
+    QCOMPARE(a->range(), RangeInRevision(0, 20, 0, 21));
+    compareUses(a, RangeInRevision(0, 32, 0, 33));
+}
+
+void TestUseBuilder::checkMethodArgumentsContext()
+{
+    //               0          1        2
+    //               0123456789012345678901234
+    QByteArray code("def foo(a, b); a; end; a");
+    TopDUContext *top = parse(code, "checkMethodArgumentsContext");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Check that exists a method declaration and that it has a proper
+    // context for its parameters
+    QCOMPARE(top->localDeclarations().count(), 1);
+    Declaration *d = dynamic_cast<Declaration *>(top->localDeclarations().first());
+    QVERIFY(d);
+    DUContext *params = DUChainUtils::getArgumentContext(d);
+    QVERIFY(params);
+    QCOMPARE(params->range(), RangeInRevision(0, 8, 0, 12));
+
+    // Check that there's a context for the method body and that it imports
+    // the context of the parameters
+    DUContext *body = d->internalContext();
+    QVERIFY(body);
+    QCOMPARE(body->range(), RangeInRevision(0, 15, 0, 16));
+    QCOMPARE(body->importedParentContexts().count(), 1);
+    QCOMPARE(body->importedParentContexts().first().context(top), params);
+
+    // And finally check the uses of the parameters. There's only one use of a,
+    // but it's in the method's body. not the a that is outside.
+    QCOMPARE(params->localDeclarations().count(), 2);
+    Declaration *a = params->localDeclarations().first();
+    QCOMPARE(a->qualifiedIdentifier(), QualifiedIdentifier("foo::a"));
+    QCOMPARE(a->uses().count(), 1);
+    compareUses(a, RangeInRevision(0, 15, 0, 16));
+}
+
+void TestUseBuilder::checkMethodLocalDeclarations()
+{
+    //               0         1         2
+    //               01234567890123456789012345
+    QByteArray code("a = 0; def foo(a); a; end");
+    TopDUContext *top = parse(code, "checkMethodLocalDeclarations");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // Outer "a" has no uses
+    Declaration *a = top->localDeclarations().first();
+    QCOMPARE(a->uses().count(), 0);
+
+    // Inner a
+    DUContext *method = top->topContext()->childContexts().first();
+    a = method->localDeclarations().first();
+    QCOMPARE(a->range(), RangeInRevision(0, 15, 0, 16));
+    compareUses(a, RangeInRevision(0, 19, 0, 20));
+}
+
+//END: Contexts
 
 //BEGIN: Method calls
 
