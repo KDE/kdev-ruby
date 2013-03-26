@@ -64,20 +64,22 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
     QList<Declaration *> decls;
 
     {
-        /*
-         * Find the declarations at the topContext(). If no declaration was
-         * found, we have to look for local declarations. If this fails, we
-         * should find for global declarations.
-         */
         DUChainReadLocker lock(DUChain::lock());
-        if (context.data() == context->topContext())
-            decls = context->topContext()->findDeclarations(id, range.end);
-        else
-            decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
+
+        /*
+         * Search first for local declarations. If no local declaration has
+         * been found, then take a look at imported contexts (p.e. method
+         * arguments). Otherwise, we'll search for global declarations.
+         */
+        decls = context->findLocalDeclarations(id.last(), range.end);
         if (decls.isEmpty()) {
-            decls = context->findLocalDeclarations(id.last(), range.end);
-            if (decls.isEmpty())
-                decls = context->findDeclarations(id.last(), range.end);
+            decls = context->findDeclarations(id.last(), range.end);
+            if (decls.isEmpty()) {
+                if (context.data() == context->topContext())
+                    decls = context->topContext()->findDeclarations(id, range.end);
+                else
+                    decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
+            }
         }
     }
     return (decls.length()) ? decls.last() : NULL;
