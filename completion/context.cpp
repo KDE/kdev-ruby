@@ -453,6 +453,7 @@ void CodeCompletionContext::addRubyKeywords()
 
     // Complex constructions
     ADD_KEYWORD2("elsif", "elsif %SELECT%condition%ENDSELECT%");
+    ADD_KEYWORD2("else", "else\n%INDENT%%CURSOR%");
     ADD_KEYWORD2("for", "for %SELECT%condition%ENDSELECT% in \n%END%");
     ADD_KEYWORD2("def", "def %SELECT%name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("class", "class %SELECT%Name%ENDSELECT%\n%END%");
