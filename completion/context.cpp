@@ -412,7 +412,6 @@ void CodeCompletionContext::addRubyKeywords()
 {
     QList<CompletionTreeItemPointer> list;
 
-    // TODO: pick user's indentation level
     // TODO: unindent things like rescue, ensure,...
 
     // "Ultra-simple" statements. Some of them may not be *that* useful.
@@ -437,7 +436,7 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("alias", "alias ");
     ADD_KEYWORD2("undef", "undef ");
     ADD_KEYWORD2("rescue", "rescue ");
-    ADD_KEYWORD2("BEGIN", "BEGIN {\n  %CURSOR%\n}");
+    ADD_KEYWORD2("BEGIN", "BEGIN {\n%INDENT%%CURSOR%\n}");
 
     // Take care of complex statements that can be just statement modifiers
     if (lastNLines(m_text, 1).isEmpty()) {
@@ -460,7 +459,7 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD2("module", "module %SELECT%Name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("case", "case %SELECT%condition%ENDSELECT%\n%END%");
     ADD_KEYWORD2("when", "when %SELECT%condition%ENDSELECT%");
-    ADD_KEYWORD2("begin", "begin\n  %CURSOR%\n%END%");
+    ADD_KEYWORD2("begin", "begin\n%INDENT%%CURSOR%\n%END%");
     ADD_KEYWORD2("do", "do %SELECT%||%ENDSELECT%\n%END%");
 
     // Group all these keywords into the "Ruby Keyword" group.

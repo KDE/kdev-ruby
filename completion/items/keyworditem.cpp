@@ -27,7 +27,7 @@
 // Ruby
 #include <completion/items/keyworditem.h>
 #include <completion/helpers.h>
-
+#include <rubydefs.h>
 
 using namespace KTextEditor;
 using namespace KDevelop;
@@ -51,11 +51,14 @@ void KeywordItem::execute(Document *document, const Range &word)
         int cursor = replacement.indexOf("%CURSOR%");
         int selectionEnd = -1;
 
-        if (cursor != -1)
+        if (cursor != -1) {
+            uint ind = getIndentWidth(document);
+            replacement = replacement.replace("%INDENT%", QString(ind, ' '));
+            cursor -= 8 - ind;
             replacement.remove("%CURSOR%");
-        else {
+        } else {
             cursor = replacement.indexOf("%SELECT%");
-            if ( cursor != -1 ) {
+            if (cursor != -1) {
                 replacement.remove("%SELECT%");
                 selectionEnd = replacement.indexOf("%ENDSELECT%", cursor + 1);
                 if (selectionEnd == -1)
@@ -78,7 +81,7 @@ void KeywordItem::execute(Document *document, const Range &word)
                     word.start().column() + replacement.length() - replacement.lastIndexOf('\n') - 1
                 );
                 view->setCursorPosition(newPos);
-                if ( selectionEnd != -1 ) {
+                if (selectionEnd != -1) {
                     view->setSelection(
                         KTextEditor::Range(
                             newPos,

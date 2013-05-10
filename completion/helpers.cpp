@@ -18,6 +18,8 @@
  */
 
 
+#include <KTextEditor/Document>
+#include <KTextEditor/ConfigInterface>
 #include <language/duchain/declaration.h>
 #include <language/duchain/duchainutils.h>
 #include <completion/helpers.h>
@@ -27,6 +29,13 @@ using namespace KDevelop;
 
 namespace Ruby
 {
+
+uint getIndentWidth(KTextEditor::Document *document)
+{
+    KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface *>(document);
+    /* TODO: tabs */
+    return iface->configValue("indent-width").toUInt();
+}
 
 QString getIndendation(const QString &line)
 {

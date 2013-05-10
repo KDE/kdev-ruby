@@ -27,6 +27,10 @@
 #include <completion/completionexport.h>
 
 
+namespace KTextEditor {
+    class Document;
+}
+
 namespace KDevelop {
     class Declaration;
 }
@@ -35,6 +39,14 @@ namespace Ruby
 {
 
 class NormalItem;
+
+/**
+ * Get the indentation width for the given document.
+ *
+ * @param document The current document.
+ * @returns an unsigned integer containing the indentation width.
+ */
+uint KDEVRUBYCOMPLETION_EXPORT getIndentWidth(KTextEditor::Document *document);
 
 /// Get the indentation of a given @p line.
 QString KDEVRUBYCOMPLETION_EXPORT getIndendation(const QString &line);
