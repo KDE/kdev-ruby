@@ -48,6 +48,7 @@ void KeywordItem::execute(Document *document, const Range &word)
     if (!m_replacement.isEmpty()) {
         QString replacement = m_replacement;
         replacement = replacement.replace("%END%", getIndendation(document->line(word.start().line())) + "end");
+        replacement = replacement.replace('\n', '\n' + getIndendation(document->line(word.start().line())));
         int cursor = replacement.indexOf("%CURSOR%");
         int selectionEnd = -1;
 
