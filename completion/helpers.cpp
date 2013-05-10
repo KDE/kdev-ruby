@@ -30,11 +30,12 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-uint getIndentWidth(KTextEditor::Document *document)
+const QString indentString(KTextEditor::Document *document)
 {
     KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface *>(document);
-    /* TODO: tabs */
-    return iface->configValue("indent-width").toUInt();
+    if (iface->configValue("replace-tabs").toBool())
+        return QString(iface->configValue("indent-width").toUInt(), ' ');
+    return "\t";
 }
 
 QString getIndendation(const QString &line)

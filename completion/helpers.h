@@ -41,12 +41,12 @@ namespace Ruby
 class NormalItem;
 
 /**
- * Get the indentation width for the given document.
+ * Get a string representing an indentation.
  *
  * @param document The current document.
- * @returns an unsigned integer containing the indentation width.
+ * @returns a QString containing the indentation to be used.
  */
-uint KDEVRUBYCOMPLETION_EXPORT getIndentWidth(KTextEditor::Document *document);
+const QString KDEVRUBYCOMPLETION_EXPORT indentString(KTextEditor::Document *document);
 
 /// Get the indentation of a given @p line.
 QString KDEVRUBYCOMPLETION_EXPORT getIndendation(const QString &line);

@@ -27,7 +27,7 @@
 // Ruby
 #include <completion/items/keyworditem.h>
 #include <completion/helpers.h>
-#include <rubydefs.h>
+
 
 using namespace KTextEditor;
 using namespace KDevelop;
@@ -52,9 +52,9 @@ void KeywordItem::execute(Document *document, const Range &word)
         int selectionEnd = -1;
 
         if (cursor != -1) {
-            uint ind = getIndentWidth(document);
-            replacement = replacement.replace("%INDENT%", QString(ind, ' '));
-            cursor -= 8 - ind;
+            const QString ind = indentString(document);
+            replacement = replacement.replace("%INDENT%", ind);
+            cursor -= 8 - ind.size(); /* "%INDENT%" -> 8 */
             replacement.remove("%CURSOR%");
         } else {
             cursor = replacement.indexOf("%SELECT%");
