@@ -48,7 +48,10 @@ void KeywordItem::execute(Document *document, const Range &word)
     if (!m_replacement.isEmpty()) {
         QString replacement = m_replacement;
         replacement = replacement.replace("%END%", getIndendation(document->line(word.start().line())) + "end");
-        replacement = replacement.replace('\n', '\n' + getIndendation(document->line(word.start().line())));
+        bool shouldUnindent = replacement.indexOf("%UNINDENT%") != -1;
+        replacement.remove("%UNINDENT%");
+        if (!shouldUnindent)
+            replacement = replacement.replace('\n', '\n' + getIndendation(document->line(word.start().line())));
         int cursor = replacement.indexOf("%CURSOR%");
         int selectionEnd = -1;
 
@@ -73,6 +76,16 @@ void KeywordItem::execute(Document *document, const Range &word)
             document->replaceText(newRange, m_keyword);
         } else
             document->replaceText(word, replacement);
+
+        if (shouldUnindent) {
+            int iWidth = indentString(document).size();
+            if (word.start().column() >= iWidth) {
+                Range unindent(Cursor(word.start().line(), 0), Cursor(word.end().line(), iWidth));
+                document->removeText(unindent);
+                cursor -= iWidth;
+                selectionEnd -= iWidth;
+            }
+        }
 
         if (cursor != -1) {
             if (KTextEditor::View *view = document->activeView()) {

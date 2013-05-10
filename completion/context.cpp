@@ -412,8 +412,6 @@ void CodeCompletionContext::addRubyKeywords()
 {
     QList<CompletionTreeItemPointer> list;
 
-    // TODO: unindent things like rescue, ensure,...
-
     // "Ultra-simple" statements. Some of them may not be *that* useful.
     ADD_KEYWORD("next");
     ADD_KEYWORD("break");
@@ -427,7 +425,6 @@ void CodeCompletionContext::addRubyKeywords()
     ADD_KEYWORD("super");
     ADD_KEYWORD("return");
     ADD_KEYWORD("defined?");
-    ADD_KEYWORD("ensure");
     ADD_KEYWORD("__FILE__");
     ADD_KEYWORD("__LINE__");
     ADD_KEYWORD("__ENCODING__");
@@ -435,7 +432,8 @@ void CodeCompletionContext::addRubyKeywords()
     // Simple statements
     ADD_KEYWORD2("alias", "alias ");
     ADD_KEYWORD2("undef", "undef ");
-    ADD_KEYWORD2("rescue", "rescue ");
+    ADD_KEYWORD2("rescue", "%UNINDENT%rescue ");
+    ADD_KEYWORD2("ensure", "%UNINDENT%ensure%INDENT%%CURSOR%\n");
     ADD_KEYWORD2("BEGIN", "BEGIN {\n%INDENT%%CURSOR%\n}");
 
     // Take care of complex statements that can be just statement modifiers
@@ -452,14 +450,14 @@ void CodeCompletionContext::addRubyKeywords()
     }
 
     // Complex constructions
-    ADD_KEYWORD2("elsif", "elsif %SELECT%condition%ENDSELECT%");
-    ADD_KEYWORD2("else", "else\n%INDENT%%CURSOR%");
+    ADD_KEYWORD2("elsif", "%UNINDENT%elsif %SELECT%condition%ENDSELECT%");
+    ADD_KEYWORD2("else", "%UNINDENT%else\n%INDENT%%CURSOR%");
     ADD_KEYWORD2("for", "for %SELECT%condition%ENDSELECT% in \n%END%");
     ADD_KEYWORD2("def", "def %SELECT%name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("class", "class %SELECT%Name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("module", "module %SELECT%Name%ENDSELECT%\n%END%");
     ADD_KEYWORD2("case", "case %SELECT%condition%ENDSELECT%\n%END%");
-    ADD_KEYWORD2("when", "when %SELECT%condition%ENDSELECT%");
+    ADD_KEYWORD2("when", "%UNINDENT%when %SELECT%condition%ENDSELECT%");
     ADD_KEYWORD2("begin", "begin\n%INDENT%%CURSOR%\n%END%");
     ADD_KEYWORD2("do", "do %SELECT%||%ENDSELECT%\n%END%");
 
