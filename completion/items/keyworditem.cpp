@@ -50,7 +50,7 @@ void KeywordItem::execute(Document *document, const Range &word)
         replacement = replacement.replace("%END%", getIndendation(document->line(word.start().line())) + "end");
         bool shouldUnindent = replacement.indexOf("%UNINDENT%") != -1;
         replacement.remove("%UNINDENT%");
-        if (!shouldUnindent)
+        if (shouldUnindent)
             replacement = replacement.replace('\n', '\n' + getIndendation(document->line(word.start().line())));
         int cursor = replacement.indexOf("%CURSOR%");
         int selectionEnd = -1;
