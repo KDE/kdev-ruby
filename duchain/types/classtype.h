@@ -39,7 +39,7 @@ class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
     /// Default constructor.
-    ClassTypeData() : KDevelop::StructureTypeData()
+    ClassTypeData() : KDevelop::StructureTypeData(), m_contentType(NULL)
     {
         /* There's nothing to do here! */
     }
