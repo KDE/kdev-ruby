@@ -118,7 +118,7 @@ bool isUsefulType(AbstractType::Ptr type)
 
 AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 {
-    DUChainReadLocker lock(DUChain::lock()); // TODO: not sure about this
+    DUChainReadLocker lock(DUChain::lock());
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(type);
     UnsureType::Ptr newUnsure = UnsureType::Ptr::dynamicCast(newType);
     UnsureType::Ptr res;
@@ -138,7 +138,6 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
             cloned->addType(type->indexed());
         res = cloned;
     } else {
-        // TODO: There're some cases that this code crashes
         unsure = UnsureType::Ptr(new UnsureType());
         if (isUsefulType(type))
             unsure->addType(type->indexed());
