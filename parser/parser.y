@@ -176,7 +176,6 @@ struct parser_t {
 
 #include "parser.h"
 #define yyparse ruby_yyparse
-#define YYLEX_PARAM parser
 #define YYERROR_VERBOSE 1
 
 /* Macros to access some attributes in a fancier way. */
@@ -185,7 +184,11 @@ struct parser_t {
 #define command_start parser->parser_command_start
 
 /* yy's functions */
+#if YYPURE
 static int yylex(void *, void *);
+#else
+static int yylex(void *);
+#endif
 static void yyerror(struct parser_t *, const char *);
 #define yywarning(msg) { parser->warning = 1; yyerror(parser, (msg)); parser->warning = 0;}
 
@@ -206,7 +209,8 @@ static void pop_end(struct parser_t *parser, struct node *n);
 #define copy_op(op) { parser->aux = strdup(op); }
 %}
 
-%pure_parser
+%pure-parser
+%lex-param {struct parser_t *parser }
 %parse-param { struct parser_t *parser }
 %union {
     struct node *n;
@@ -2965,7 +2969,11 @@ tnum:
 }
 
 /* Standard yylex. */
+#if YYPURE
 static int yylex(void *lval, void *p)
+#else
+static int yylex(void *p)
+#endif
 {
     struct parser_t *parser = (struct parser_t *) p;
     int t = token_invalid;
