@@ -144,7 +144,7 @@ void DeclarationNavigationContext::htmlFunction()
                 modifyHtml() += nameHighlight(Qt::escape(vd->identifier().toString()));
 
                 if (vd->isOpt()) {
-                    modifyHtml() += " = " + Qt::escape(mDecl->defaultParameters()[nDef].str());
+                    modifyHtml() += " " + Qt::escape(mDecl->defaultParameters()[nDef].str());
                     nDef++;
                 }
             }
