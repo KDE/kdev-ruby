@@ -20,6 +20,7 @@
  */
 
 
+#include <QtCore/QDir>
 #include <duchain/rails/autoloader.h>
 
 

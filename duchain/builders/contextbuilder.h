@@ -27,6 +27,7 @@
 
 // KDevelop
 #include <language/duchain/builders/abstractcontextbuilder.h>
+#include <language/interfaces/iproblem.h>
 
 // Ruby
 #include <duchain/duchainexport.h>

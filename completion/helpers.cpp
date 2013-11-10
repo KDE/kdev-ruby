@@ -20,6 +20,7 @@
 
 #include <KTextEditor/Document>
 #include <KTextEditor/ConfigInterface>
+#include <language/duchain/ducontext.h>
 #include <language/duchain/declaration.h>
 #include <language/duchain/duchainutils.h>
 #include <completion/helpers.h>
