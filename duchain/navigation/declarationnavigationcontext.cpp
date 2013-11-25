@@ -21,6 +21,7 @@
 // Qt + KDevelop
 #include <QtGui/QTextDocument>
 #include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/structuretype.h>
 #include <language/duchain/duchainutils.h>
 
 // Ruby
@@ -79,7 +80,7 @@ QString DeclarationNavigationContext::html(bool shorten)
     }
 
     QString access = stringFromAccess(m_declaration);
-    if(!access.isEmpty()) {
+    if (!access.isEmpty()) {
         modifyHtml() += labelHighlight(i18n("Access: %1 ", propertyHighlight(Qt::escape(access))));
         modifyHtml() += "<br />";
     }
