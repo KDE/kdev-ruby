@@ -23,6 +23,7 @@
 
 
 #ifdef __cplusplus
+namespace Ruby {
 extern "C" {
 #endif
 
@@ -302,6 +303,7 @@ void print_errors(struct error_t *errors);
 
 
 #ifdef __cplusplus
+}
 }
 #endif
 
