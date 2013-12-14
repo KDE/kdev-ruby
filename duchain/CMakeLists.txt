@@ -22,7 +22,7 @@ set(rubyduchain_SRCS
 )
 
 kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
-target_link_libraries( kdev4rubyduchain
+target_link_libraries( kdev4rubyduchain LINK_PRIVATE
     ${KDE4_KDECORE_LIBS}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}

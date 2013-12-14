@@ -13,7 +13,7 @@ set(rubycompletion_SRCS
 )
 
 kde4_add_library(kdev4rubycompletion SHARED ${rubycompletion_SRCS})
-target_link_libraries( kdev4rubycompletion
+target_link_libraries( kdev4rubycompletion LINK_PRIVATE
     ${KDE4_KDECORE_LIBS}
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}

@@ -8,6 +8,8 @@ set( KDEVPLATFORM_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
 
+cmake_minimum_required(VERSION 2.8.9)
+
 find_package(KDE4 REQUIRED)
 find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
 find_package(BISON REQUIRED)
@@ -42,7 +44,7 @@ set(kdevrubylanguagesupport_PART_SRCS
 )
 
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
-target_link_libraries(kdevrubylanguagesupport
+target_link_libraries(kdevrubylanguagesupport LINK_PRIVATE
     ${KDE4_KDEUI_LIBS}
     ${KDE4_KTEXTEDITOR_LIBS}
     ${KDE4_THREADWEAVER_LIBRARIES}

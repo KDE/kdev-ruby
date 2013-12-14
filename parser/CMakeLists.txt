@@ -14,7 +14,7 @@ include_directories(
 )
 
 kde4_add_library(kdev4rubyparser SHARED ${rubyparser_SRCS})
-target_link_libraries( kdev4rubyparser
+target_link_libraries( kdev4rubyparser LINK_PRIVATE
     ${KDE4_KDECORE_LIBS}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDE4_KTEXTEDITOR_LIBS}
