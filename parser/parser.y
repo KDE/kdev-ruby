@@ -272,7 +272,7 @@ static void pop_end(struct parser_t *parser, struct node *n);
 %left tLSHIFT tRSHIFT
 %left '+' '-'
 %left '*' '/' '%'
-%right tUMINUS
+%right tUMINUS_NUM tUMINUS
 %right tPOW
 %right '!' '~' tUPLUS
 
@@ -699,7 +699,11 @@ arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | arg '/' arg { $$ = alloc_node(token_div, $1, $3);}
     | arg '%' arg { $$ = alloc_node(token_mod, $1, $3);}
     | arg tPOW arg { $$ = alloc_node(token_pow, $1, $3);}
-    | tUMINUS_NUM simple_numeric tPOW arg { $$ = NULL; /* TODO */ }
+    | tUMINUS_NUM simple_numeric tPOW arg
+    {
+        struct node *aux = alloc_node(token_pow, $2, $4);
+        $$ = alloc_node(token_unary_minus, aux, NULL);
+    }
     | tUPLUS arg    { $$ = alloc_node(token_unary_plus, $2, NULL);    }
     | tUMINUS arg { $$ = alloc_node(token_unary_minus, $2, NULL); }
     | arg '|' arg { $$ = alloc_node(token_bit_or, $1, $3);    }
@@ -1293,8 +1297,7 @@ sym: fname
 numeric: simple_numeric
     | tUMINUS_NUM simple_numeric   %prec tLOWEST
     {
-        $$ = NULL;
-        /* TODO */
+        $$ = alloc_node(token_unary_minus, $2, NULL);
     }
 ;
 
@@ -2481,6 +2484,8 @@ retry:
             if (IS_BEG() || (IS_SPCARG(bc) && arg_ambiguous())) {
                 lex_state = EXPR_BEG;
                 pushback();
+                if (bc != -1 && isdigit(bc))
+                    return tUMINUS_NUM;
                 return tUMINUS;
             }
             lex_state = EXPR_BEG;
