@@ -1300,8 +1300,20 @@ numeric: simple_numeric
 
 simple_numeric: tINTEGER        { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 0; }
     | tFLOAT                    { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 1; }
-    | tRATIONAL                 { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 2; }
-    | tIMAGINARY                { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 3; }
+    | tRATIONAL
+    {
+        if (parser->version < ruby21) {
+            yywarning("Rational literals are only available in Ruby 2.1.x or higher.");
+        }
+        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 2;
+    }
+    | tIMAGINARY
+    {
+        if (parser->version < ruby21) {
+            yywarning("Imaginary literals are only available in Ruby 2.1.x or higher.");
+        }
+        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 3;
+    }
 ;
 
 variable: base

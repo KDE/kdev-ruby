@@ -65,5 +65,13 @@ describe 'Parser' do
         Line: 17, Column: 2; This shortcut is only available in Ruby 2.0.x or higher.
       HEREDOC
     end
+
+    it '2.0.x -> 2.1.x transition' do
+      output = `#{parser} #{base}/tests/errors/from20to21.rb 0`
+      output.should == <<-HEREDOC.gsub(/^\s+/, '')
+        Line: 2, Column: 8; Imaginary literals are only available in Ruby 2.1.x or higher.
+        Line: 3, Column: 8; Rational literals are only available in Ruby 2.1.x or higher.
+      HEREDOC
+    end
   end
 end

@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     switch (argc) {
         case 2:
             opts.path = argv[argc - 1];
-            opts.version = ruby20;
+            opts.version = ruby21;
             return rb_debug_file(&opts);
         case 3:
             opts.path = argv[argc - 2];

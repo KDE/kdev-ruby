@@ -198,6 +198,7 @@ enum ruby_version {
     ruby18 = 0, /* 1.8.x branch */
     ruby19 = 1, /* 1.9.x branch */
     ruby20 = 2, /* 2.0.x branch */
+    ruby21 = 3, /* 2.1.x branch */
 };
 
 /**
