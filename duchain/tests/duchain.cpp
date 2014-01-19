@@ -80,7 +80,7 @@ void TestDUChain::testProblems(TopDUContext *ctx, const QStringList &list)
 
 void TestDUChain::numeric()
 {
-    QByteArray code("a = 1; b = 1.2");
+    QByteArray code("a = 1; b = 1.2; c = 12i; d = 34r");
     TopDUContext *top = parse(code, "numeric");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
@@ -92,6 +92,14 @@ void TestDUChain::numeric()
     Declaration *dec2 = top->localDeclarations().at(1);
     QVERIFY(dec2->type<StructureType>());
     QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Float"));
+
+    Declaration *dec3 = top->localDeclarations().at(2);
+    QVERIFY(dec3->type<StructureType>());
+    QCOMPARE(dec3->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Complex"));
+
+    Declaration *dec4 = top->localDeclarations().at(3);
+    QVERIFY(dec4->type<StructureType>());
+    QCOMPARE(dec4->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Rational"));
 }
 
 void TestDUChain::range()
