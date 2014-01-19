@@ -23,6 +23,7 @@
 
 
 #ifdef __cplusplus
+
 namespace Ruby {
 extern "C" {
 #endif
@@ -209,6 +210,16 @@ struct options_t {
     enum ruby_version version;
 };
 
+/**
+ * Enumeration for the different kind of numeric types that can
+ * be declared with from a literal.
+ */
+enum numeric_t {
+    int_t = 0,
+    float_t = 1,
+    rational_t = 2,
+    imaginary_t = 3,
+};
 
 /* Interface to the parser */
 
@@ -295,7 +306,6 @@ void print_errors(struct error_t *errors);
 #define is_ivar(n) (n->flags == 4)
 #define is_cvar(n) (n->flags == 5)
 #define is_constant (n->flags == 6)
-#define is_float(n) (n->flags == 1)
 #define valid_children(n) (n->r && n->l)
 #define is_super(n) (!n->l)
 #define has_star(n) (n->flags == 1 || n->flags == 2)

@@ -223,10 +223,10 @@ static void pop_end(struct parser_t *parser, struct node *n);
 %token tTHEN tELSIF tELSE tCASE tWHEN tWHILE tUNTIL tFOR tBREAK tNEXT tREDO
 %token tRETRY tIN tDO tDO_COND tDO_BLOCK tRETURN tYIELD tKWAND tKWOR tKWNOT
 %token tALIAS tDEFINED upBEGIN upEND tTRUE tFALSE tNIL tENCODING tDSTAR
-%token tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR
-%token IVAR CVAR NUMERIC FLOAT tNTH_REF tBACKTICK tpEND tSYMBEG
+%token tFILE tLINE tSELF tSUPER GLOBAL BASE CONST tDO_LAMBDA tCHAR tIMAGINARY
+%token IVAR CVAR tINTEGER tFLOAT tNTH_REF tBACKTICK tpEND tSYMBEG tRATIONAL
 %token tAMPER tAREF tASET tASSOC tCOLON2 tCOLON3 tLAMBDA tLAMBEG tLBRACE
-%token tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL
+%token tLBRACKET tLPAREN tLPAREN_ARG tSTAR tCOMMENT ARRAY tKEY SYMBOL tUMINUS_NUM
 %token tSTRING_BEG tSTRING_CONTENT tSTRING_DBEG tSTRING_DEND tSTRING_END tSTRING_DVAR
 
 /* Types */
@@ -245,7 +245,7 @@ static void pop_end(struct parser_t *parser, struct node *n);
 %type <n> cname fname f_rest_arg f_block_arg opt_f_block_arg f_norm_arg
 %type <n> brace_block cmd_brace_block f_bad_arg sym opt_brace_block
 %type <n> opt_args_tail args_tail f_kwarg block_args_tail opt_block_args_tail
-%type <n> f_kw f_block_kw f_block_kwarg f_kwrest
+%type <n> f_kw f_block_kw f_block_kwarg f_kwrest simple_numeric
 %type <n> string_contents string_content string_dvar
 
 /* When an error has been found, free all the nodes from bison's stacks */
@@ -699,6 +699,7 @@ arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | arg '/' arg { $$ = alloc_node(token_div, $1, $3);}
     | arg '%' arg { $$ = alloc_node(token_mod, $1, $3);}
     | arg tPOW arg { $$ = alloc_node(token_pow, $1, $3);}
+    | tUMINUS_NUM simple_numeric tPOW arg { $$ = NULL; /* TODO */ }
     | tUPLUS arg    { $$ = alloc_node(token_unary_plus, $2, NULL);    }
     | tUMINUS arg { $$ = alloc_node(token_unary_minus, $2, NULL); }
     | arg '|' arg { $$ = alloc_node(token_bit_or, $1, $3);    }
@@ -1289,8 +1290,18 @@ sym: fname
     | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
 ;
 
-numeric: NUMERIC    { $$ = alloc_node(token_numeric, NULL, NULL); }
-    | FLOAT         { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 1; }
+numeric: simple_numeric
+    | tUMINUS_NUM simple_numeric   %prec tLOWEST
+    {
+        $$ = NULL;
+        /* TODO */
+    }
+;
+
+simple_numeric: tINTEGER        { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 0; }
+    | tFLOAT                    { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 1; }
+    | tRATIONAL                 { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 2; }
+    | tIMAGINARY                { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 3; }
 ;
 
 variable: base
@@ -2941,7 +2952,7 @@ tnum:
                     tokp.end_line = parser->line;
                     tokp.end_col = parser->column - 1;
                     pushback();
-                    return NUMERIC;
+                    return tINTEGER;
                 }
                 has_point = 1;
             }
@@ -2962,9 +2973,18 @@ tnum:
 
         if (c != -1)
             pushback();
-        tokp.end_line = parser->line;
-        tokp.end_col = parser->column;
-        return (has_point) ? FLOAT : NUMERIC;
+        tokp.end_line = parser->line + 1;
+        tokp.end_col = parser->column + 1;
+        if (c == 'r') {
+            nextc();
+            return tRATIONAL;
+        } else if (c == 'i') {
+            nextc();
+            return tIMAGINARY;
+        }
+        tokp.end_line--;
+        tokp.end_col--;
+        return (has_point) ? tFLOAT : tINTEGER;
     }
 }
 
