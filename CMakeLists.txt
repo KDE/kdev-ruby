@@ -48,6 +48,8 @@ set(kdevrubylanguagesupport_PART_SRCS
     rubyparsejob.cpp
     rubyhighlighting.cpp
     rubylanguagesupport.cpp
+
+    codegen/refactoring.cpp
 )
 
 kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})

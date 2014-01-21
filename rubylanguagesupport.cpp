@@ -47,6 +47,8 @@
 #include <language/duchain/duchainutils.h>
 #include <language/backgroundparser/backgroundparser.h>
 #include <language/codecompletion/codecompletion.h>
+#include <interfaces/contextmenuextension.h>
+#include <language/interfaces/editorcontext.h>
 
 //Ruby plugin
 #include <rubydefs.h>
@@ -57,6 +59,7 @@
 #include <navigation/railsdataprovider.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
+#include <codegen/refactoring.h>
 #include <version.h>
 //END Includes
 
@@ -89,6 +92,7 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
     setXMLFile("kdevrubysupport.rc");
     m_highlighting = new Ruby::Highlighting(this);
+    m_refactoring = new Ruby::Refactoring(this);
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
@@ -137,6 +141,18 @@ KDevelop::ILanguage * LanguageSupport::language()
 KDevelop::ICodeHighlighting * LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
+}
+
+KDevelop::ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context* context)
+{
+    ContextMenuExtension cm;
+    EditorContext *ed = dynamic_cast<KDevelop::EditorContext *>(context);
+
+    if (ed && ICore::self()->languageController()->languagesForUrl(ed->url()).contains(language())) {
+        // It's safe to add our own ContextMenuExtension.
+        m_refactoring->fillContextMenu(cm, context);
+    }
+    return cm;
 }
 
 bool LanguageSupport::builtinsLoaded() const

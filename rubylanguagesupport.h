@@ -50,6 +50,7 @@ namespace Ruby
 class RailsSwitchers;
 class RailsDataProvider;
 class Highlighting;
+class Refactoring;
 
 /**
  * @class LanguageSupport
@@ -103,6 +104,11 @@ public:
      * @return the Code Highlighting for the Ruby language.
      */
     virtual KDevelop::ICodeHighlighting * codeHighlighting() const;
+
+    /**
+     * @returns the ContextMenuExtension for the Php plugin.
+     */
+    virtual KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context);
 
     /**
      * @return true if the builtins file is loaded, false otherwise.
@@ -187,6 +193,7 @@ private Q_SLOTS:
 
 private:
     Ruby::Highlighting *m_highlighting;
+    Ruby::Refactoring *m_refactoring;
     bool m_builtinsLoaded;
     bool m_isRails;
     KUrl m_rootUrl;
