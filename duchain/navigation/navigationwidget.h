@@ -26,7 +26,7 @@
 #include <language/duchain/navigation/abstractnavigationwidget.h>
 
 
-namespace KDevelop { struct IncludeItem; }
+namespace KDevelop { class IncludeItem; }
 
 namespace Ruby
 {

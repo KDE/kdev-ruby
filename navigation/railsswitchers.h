@@ -44,9 +44,6 @@ public slots:
     void switchToModel();
     void switchToView();
     void switchToTest();
-
-private:
-    LanguageSupport *m_language;
 };
 
 }

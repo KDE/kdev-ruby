@@ -31,9 +31,10 @@
 
 namespace Ruby {
 
-RailsSwitchers::RailsSwitchers(LanguageSupport* language)
-    :QObject(language), m_language(language)
+RailsSwitchers::RailsSwitchers(LanguageSupport *language)
+    : QObject(language)
 {
+    /* There's nothing to do here. */
 }
 
 KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
