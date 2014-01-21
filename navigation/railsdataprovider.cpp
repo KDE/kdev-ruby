@@ -105,7 +105,7 @@ RailsDataProvider::RailsDataProvider(Ruby::RailsDataProvider::Kind kind): m_kind
 
 KDevelop::QuickOpenDataPointer RailsDataProvider::data(uint row) const
 {
-    RailsQuickOpenItem item( Base::filteredItems()[row] );
+    RailsQuickOpenItem item( filteredItems()[row] );
     QString dataExplanation = m_kind == Views ? i18n("View for:") : i18n("Test for:");
     return KDevelop::QuickOpenDataPointer( new RailsQuickOpenData( item, dataExplanation ) );
 }
@@ -117,17 +117,17 @@ void RailsDataProvider::enableData(const QStringList& items, const QStringList& 
 
 uint RailsDataProvider::itemCount() const
 {
-    return Base::filteredItems().count();
+    return filteredItems().count();
 }
 
 uint RailsDataProvider::unfilteredItemCount() const
 {
-    return Base::items().count();
+    return items().count();
 }
 
 void RailsDataProvider::reset()
 {
-    Base::clearFilter();
+    clearFilter();
 
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
 
@@ -154,7 +154,7 @@ QStringList RailsDataProvider::scopes()
 
 void RailsDataProvider::setFilterText(const QString& text)
 {
-    Base::setFilter( text.split('/'), QChar('/') );
+    setFilter( text.split('/') );
 }
 
 QString RailsDataProvider::itemText(const RailsQuickOpenItem& data) const
