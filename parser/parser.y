@@ -25,6 +25,9 @@
 
 
 %{
+// make clang happy
+extern char *strdup(const char *s);
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
