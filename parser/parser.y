@@ -2153,7 +2153,7 @@ static int is_indented_comment(struct parser_t *parser)
 /* Read a comment and store it if possible */
 static void set_comment(struct parser_t *parser)
 {
-    int c, count = 0, scale = 0;
+    int c = ' ', count = 0, scale = 0;
     char *buffer = (char *) malloc(LSIZE);
 
     for (;; ++count) {
