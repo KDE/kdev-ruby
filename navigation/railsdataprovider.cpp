@@ -162,9 +162,4 @@ QString RailsDataProvider::itemText(const RailsQuickOpenItem& data) const
     return data.url.fileName();
 }
 
-QSet< KDevelop::IndexedString > RailsDataProvider::files() const
-{
-    return QSet< KDevelop::IndexedString >();
-}
-
 }

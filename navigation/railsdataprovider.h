@@ -59,8 +59,7 @@ private:
 };
 
 class KDEVRUBYNAVIGATION_EXPORT RailsDataProvider: public KDevelop::QuickOpenDataProviderBase,
-        public KDevelop::PathFilter<RailsQuickOpenItem, RailsDataProvider>,
-        public KDevelop::QuickOpenFileSetInterface
+        public KDevelop::PathFilter<RailsQuickOpenItem, RailsDataProvider>
 {
 public:
     enum Kind { Views, Tests };
@@ -80,8 +79,6 @@ public:
         // TODO: port to Path API
         return KDevelop::Path(data.url);
     }
-
-    virtual QSet<KDevelop::IndexedString> files() const;
 
     ///Returns all scopes supported by this data-provider
     static QStringList scopes();
