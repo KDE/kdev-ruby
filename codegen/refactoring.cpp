@@ -26,7 +26,8 @@
 namespace Ruby
 {
 
-Refactoring::Refactoring(QObject *parent) : BasicRefactoring(parent)
+Refactoring::Refactoring(QObject *parent)
+    : BasicRefactoring(parent)
 {
     /* There's nothing to do here. */
 }

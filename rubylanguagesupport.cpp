@@ -198,8 +198,6 @@ void LanguageSupport::runCurrentFile()
     if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
         return;
 
-    //todo: adymo: disable this action in the UI if current file is not a ruby source
-
     if (!m_rubyFileLaunchConfiguration)
         m_rubyFileLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_FILE_LAUNCH_CONFIGURATION_NAME);
     if (!m_rubyFileLaunchConfiguration)
@@ -222,8 +220,6 @@ void LanguageSupport::runCurrentTestFunction()
     // Get out if this is not a Ruby file.
     if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
         return;
-
-    //todo: adymo: disable this action in the UI if current file is not a ruby source
 
     if (!m_rubyCurrentFunctionLaunchConfiguration)
         m_rubyCurrentFunctionLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME);
@@ -361,8 +357,6 @@ void LanguageSupport::setupQuickOpen()
     }
 }
 
-
 } // End of namespace Ruby
-
 
 #include "rubylanguagesupport.moc"

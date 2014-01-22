@@ -92,6 +92,4 @@ private:
 
 } // End of namespace Ruby
 
-
 #endif // RUBYHIGHLIGHTING_H
-

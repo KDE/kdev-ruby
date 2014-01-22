@@ -209,6 +209,4 @@ private:
 
 } // End of namespace Ruby
 
-
 #endif // KDEVRUBYLANGUAGESUPPORT_H
-

@@ -40,12 +40,10 @@ HighlightingInstance::HighlightingInstance(const KDevelop::CodeHighlighting *hig
 KDevelop::HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(KDevelop::Declaration *decl,
                                                                                     KDevelop::DUContext *context) const
 {
-    if (decl && !decl->isFunctionDeclaration() && decl->abstractType()
-        && !dynamic_cast<VariableDeclaration*>(decl))
-    {
+    VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decl);
+    if (decl && !decl->isFunctionDeclaration() && decl->abstractType() && !vd)
         return EnumType;
-    } else
-        return CodeHighlightingInstance::typeForDeclaration(decl, context);
+    return CodeHighlightingInstance::typeForDeclaration(decl, context);
 }
 
 bool HighlightingInstance::useRainbowColor(KDevelop::Declaration *dec) const
@@ -72,6 +70,4 @@ KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const
 
 } // End of namespace Ruby
 
-
 #include "rubyhighlighting.moc"
-

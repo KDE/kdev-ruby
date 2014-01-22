@@ -55,6 +55,7 @@ ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languag
     , m_parser (new RubyParser)
     , m_duContext (NULL)
 {
+    /* There's nothing to do here. */
 }
 
 ParseJob::~ParseJob()
@@ -210,6 +211,5 @@ void ParseJob::run()
 }
 
 } // End of namespace Ruby
-
 
 #include "rubyparsejob.moc"
