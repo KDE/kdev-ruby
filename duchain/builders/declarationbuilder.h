@@ -46,13 +46,13 @@ class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
     /// Constructor.
-    DeclarationBuilder();
+    explicit DeclarationBuilder();
 
     /**
      * Constructor.
      * @param editor The EditorIntegrator to be used.
      */
-    DeclarationBuilder(EditorIntegrator *editor);
+    explicit DeclarationBuilder(EditorIntegrator *editor);
 
     /// Destructor.
     virtual ~DeclarationBuilder();
@@ -68,35 +68,35 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
-    virtual void closeDeclaration();
-    virtual void closeContext();
+    virtual void closeDeclaration() override;
+    virtual void closeContext() override;
 
     /// Re-implemented from the ContextBuilder.
-    virtual void startVisiting(RubyAst *node);
+    virtual void startVisiting(RubyAst *node) override;
 
     /// Methods re-implemented from RubyAstVisitor.
 
-    virtual void visitClassStatement(RubyAst *node);
-    virtual void visitSingletonClass(RubyAst *node);
-    virtual void visitModuleStatement(RubyAst *node);
-    virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitParameter(RubyAst *node);
-    virtual void visitVariable(RubyAst *node);
-    virtual void visitBlock(RubyAst *node);
-    virtual void visitBlockVariables(RubyAst *node);
-    virtual void visitReturnStatement(RubyAst *node);
-    virtual void visitAssignmentStatement(RubyAst *node);
-    virtual void visitAliasStatement(RubyAst *node);
-    virtual void visitMethodCall(RubyAst *node);
-    virtual void visitMixin(RubyAst *node, bool include);
-    virtual void visitForStatement(RubyAst *node);
-    virtual void visitAccessSpecifier(short int policy);
-    virtual void visitYieldStatement(RubyAst *node);
-    virtual void visitRescueArg(RubyAst *node);
+    virtual void visitClassStatement(RubyAst *node) override;
+    virtual void visitSingletonClass(RubyAst *node) override;
+    virtual void visitModuleStatement(RubyAst *node) override;
+    virtual void visitMethodStatement(RubyAst *node) override;
+    virtual void visitParameter(RubyAst *node) override;
+    virtual void visitVariable(RubyAst *node) override;
+    virtual void visitBlock(RubyAst *node) override;
+    virtual void visitBlockVariables(RubyAst *node) override;
+    virtual void visitReturnStatement(RubyAst *node) override;
+    virtual void visitAssignmentStatement(RubyAst *node) override;
+    virtual void visitAliasStatement(RubyAst *node) override;
+    virtual void visitMethodCall(RubyAst *node) override;
+    virtual void visitMixin(RubyAst *node, bool include) override;
+    virtual void visitForStatement(RubyAst *node) override;
+    virtual void visitAccessSpecifier(short int policy) override;
+    virtual void visitYieldStatement(RubyAst *node) override;
+    virtual void visitRescueArg(RubyAst *node) override;
 
 private:
     /// @returns the range of the name of the given @p node.
-    KDevelop::RangeInRevision getNameRange(const RubyAst *node);
+    const KDevelop::RangeInRevision getNameRange(const RubyAst *node) const;
 
     /// Given a @param node, open a context for a class definition.
     void openContextForClassDefinition(RubyAst *node);
@@ -108,14 +108,17 @@ private:
      * @param range The range in which the declaration is contained.
      * @returns an opened declaration.
      */
-    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range);
+    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
+                                               const RangeInRevision &range);
 
     /**
      * Specialized version of the more generic reopenDeclaration for
      * MethodDeclaration's. It takes an extra argument @p classMethod. Set to
      * true to specify that a class method is being opened, set to false otherwise.
      */
-    MethodDeclaration * reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool classMethod);
+    MethodDeclaration * reopenDeclaration(const QualifiedIdentifier &id,
+                                          const RangeInRevision &range,
+                                          bool classMethod);
 
     /**
      * Declare a variable in the current context.
@@ -124,7 +127,9 @@ private:
      * @param type The type of the new variable declaration.
      * @param node The node that contains this variable declaration.
      */
-    void declareVariable(const KDevelop::QualifiedIdentifier &id, KDevelop::AbstractType::Ptr type, RubyAst *node);
+    void declareVariable(const KDevelop::QualifiedIdentifier &id,
+                         const KDevelop::AbstractType::Ptr &type,
+                         RubyAst *node);
 
     /**
      * Alias a method declaration.
@@ -135,7 +140,7 @@ private:
      */
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
-                                MethodDeclaration *decl);
+                                const MethodDeclaration *decl);
 
     /// @returns the current access policy.
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
@@ -160,14 +165,14 @@ private:
      * @returns the ModuleDeclaration that is being mixed-in, or NULL if this
      * module doesn't actually exist.
      */
-    ModuleDeclaration * getModuleDeclaration(RubyAst *module);
+    ModuleDeclaration * getModuleDeclaration(RubyAst *module) const;
 
     /**
      * @returns the declared methods inside the given declaration @p decl,
      * which is a class or a module.
      * @note This method already acquires a read lock for the DUChain.
      */
-    QList<MethodDeclaration *> getDeclaredMethods(Declaration *decl);
+    QList<MethodDeclaration *> getDeclaredMethods(const Declaration *decl);
 
     /// other stuff.
 
@@ -190,7 +195,7 @@ private:
      * @param mc A list of call args.
      * @param lastMethod The last encountered method call.
      */
-    void visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod);
+    void visitMethodCallArgs(const RubyAst *mc, const DeclarationPointer &lastMethod);
 
     /// @returns true if we're inside a class/module, false otherwise.
     inline bool insideClassModule() const
@@ -215,6 +220,5 @@ private:
 };
 
 } // End of namespace Ruby
-
 
 #endif // DECLARATIONBUILDER_H

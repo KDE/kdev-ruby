@@ -712,7 +712,7 @@ void DeclarationBuilder::visitRescueArg(RubyAst *node)
     declareVariable(id, type, node);
 }
 
-KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node)
+const KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *node) const
 {
     return m_editor->findRange(rb_name_node(node->tree));
 }
@@ -778,7 +778,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     return static_cast<MethodDeclaration *>(res);
 }
 
-void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, AbstractType::Ptr type, RubyAst *node)
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, const AbstractType::Ptr &type, RubyAst *node)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range;
@@ -843,7 +843,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, Abstract
 
 void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
                                                 const RangeInRevision &range,
-                                                MethodDeclaration *decl)
+                                                const MethodDeclaration *decl)
 {
     setComment(decl->comment());
     MethodDeclaration *alias = openDeclaration<MethodDeclaration>(id, range);
@@ -851,7 +851,7 @@ void DeclarationBuilder::aliasMethodDeclaration(const QualifiedIdentifier &id,
     closeDeclaration();
 }
 
-ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
+ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module) const
 {
     ExpressionVisitor ev(currentContext(), m_editor);
     Declaration *d;
@@ -862,7 +862,7 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module)
     return found;
 }
 
-QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(Declaration *decl)
+QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(const Declaration *decl)
 {
     DUChainReadLocker rlock(DUChain::lock());
     QList<MethodDeclaration *> res;
@@ -897,7 +897,7 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
     return true;
 }
 
-void DeclarationBuilder::visitMethodCallArgs(RubyAst *mc, DeclarationPointer lastMethod)
+void DeclarationBuilder::visitMethodCallArgs(const RubyAst *mc, const DeclarationPointer &lastMethod)
 {
     DUChainReadLocker rlock(DUChain::lock());
     RubyAst *node = new RubyAst(mc->tree->r, mc->context);

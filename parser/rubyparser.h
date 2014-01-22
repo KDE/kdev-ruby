@@ -47,7 +47,7 @@ public:
     /**
      * Constructor.
      */
-    RubyParser();
+    explicit RubyParser();
 
     /**
      * Destructor.

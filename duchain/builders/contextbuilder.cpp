@@ -237,7 +237,7 @@ void ContextBuilder::visitRequire(RubyAst *node, bool relative)
         return;
     }
 
-    const IndexedString indexedPath(path); // TODO: return IndexedString
+    const IndexedString indexedPath(path);
     require(indexedPath);
 }
 

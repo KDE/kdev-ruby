@@ -45,10 +45,8 @@ namespace Ruby
 class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 {
 public:
-    /**
-     * Constructor.
-     */
-    EditorIntegrator();
+    /// Constructor.
+    explicit EditorIntegrator();
 
     enum Edge { FrontEdge, BackEdge };
 
@@ -58,7 +56,7 @@ public:
      * @param node the node to localize.
      * @param edge the edge this method has to look at.
      */
-    KDevelop::CursorInRevision findPosition(Node *node, Edge edge = BackEdge) const;
+    const KDevelop::CursorInRevision findPosition(const Node *node, Edge edge = BackEdge) const;
 
     /**
      * Find the range between the given nodes.
@@ -66,14 +64,14 @@ public:
      * @param from the former node.
      * @param to the latter node.
      */
-    KDevelop::RangeInRevision findRange(Node *from, Node *to) const;
+    const KDevelop::RangeInRevision findRange(const Node *from, const Node *to) const;
 
     /**
      * Get the range of the given node.
      *
      * @param node the node to get its range.
      */
-    KDevelop::RangeInRevision findRange(Node *node) const;
+    const KDevelop::RangeInRevision findRange(const Node *node) const;
 
     /**
      * Set the parse session (parser) for this EditorIntegrator.
@@ -87,20 +85,20 @@ public:
      *
      * @return the url of the document we are editing.
      */
-    KDevelop::IndexedString url() const;
+    const KDevelop::IndexedString url() const;
 
     /**
      * Implemented to make the AbstractUseBuilder happy.
      *
      * @return Get the parse session for this EditorIntegrator.
      */
-    RubyParser *parseSession() const;
+    RubyParser * parseSession() const;
 
     /**
      * @return a QString that represents the value of the token
      * (not the node's name).
      */
-    QString tokenToString(Node *node) const;
+    const QString tokenToString(const Node *node) const;
 
 private:
     /**

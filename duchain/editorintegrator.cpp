@@ -32,7 +32,7 @@ EditorIntegrator::EditorIntegrator()
     /* There's nothing to do here! */
 }
 
-KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge) const
+const KDevelop::CursorInRevision EditorIntegrator::findPosition(const Node *node, Edge edge) const
 {
     Q_ASSERT(node);
 
@@ -42,7 +42,7 @@ KDevelop::CursorInRevision EditorIntegrator::findPosition(Node *node, Edge edge)
         return KDevelop::CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to) const
+const KDevelop::RangeInRevision EditorIntegrator::findRange(const Node *from, const Node *to) const
 {
     KDevelop::CursorInRevision c_from = findPosition(from, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(to, BackEdge);
@@ -50,7 +50,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node *from, Node *to) cons
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node) const
+const KDevelop::RangeInRevision EditorIntegrator::findRange(const Node *node) const
 {
     KDevelop::CursorInRevision c_from = findPosition(node, FrontEdge);
     KDevelop::CursorInRevision c_to = findPosition(node, BackEdge);
@@ -58,7 +58,7 @@ KDevelop::RangeInRevision EditorIntegrator::findRange(Node *node) const
     return KDevelop::RangeInRevision(c_from, c_to);
 }
 
-KDevelop::IndexedString EditorIntegrator::url() const
+const KDevelop::IndexedString EditorIntegrator::url() const
 {
     return m_session->currentDocument();
 }
@@ -73,7 +73,7 @@ RubyParser * EditorIntegrator::parseSession() const
     return m_session;
 }
 
-QString EditorIntegrator::tokenToString(Node *node) const
+const QString EditorIntegrator::tokenToString(const Node *node) const
 {
     return m_session->symbol(node);
 }
