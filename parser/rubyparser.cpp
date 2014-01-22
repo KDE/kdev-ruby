@@ -29,7 +29,7 @@ namespace Ruby
 RubyParser::RubyParser()
 {
     m_contents = NULL;
-    m_version = ruby20;
+    m_version = ruby21;
 }
 
 RubyParser::~RubyParser()
