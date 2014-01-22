@@ -259,6 +259,45 @@ void TestUseBuilder::checkMethodLocalDeclarations()
     compareUses(a, RangeInRevision(0, 19, 0, 20));
 }
 
+void TestUseBuilder::globals()
+{
+    //               0         1         2         3         4         5         6         7         8
+    //               01234567890123456789012345678901234567890123456789012345678901234567890123456789012
+    QByteArray code("$a = 1; def foo; $a; end; class Klass; def foo; $a; end; end; module Modul; $a; end");
+    TopDUContext *top = parse(code, "globals");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // Let there be the $a variable.
+    Declaration *a = top->localDeclarations().first();
+    QVERIFY(a);
+    QCOMPARE(a->qualifiedIdentifier(), QualifiedIdentifier("$a"));
+
+    // Let there be uses.
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 17, 0, 19) << RangeInRevision(0, 48, 0, 50)
+           << RangeInRevision(0, 76, 0, 78);
+    compareUses(a, ranges);
+}
+
+void TestUseBuilder::defaultGlobals()
+{
+    //               0         1
+    //               01234567890123456789
+    QByteArray code("def foo; $stdin; end");
+    TopDUContext *top = parse(code, "defaultGlobals");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // Get the declaration of the $stdin default global variable.
+    QList<Declaration *> decls = top->findDeclarations(QualifiedIdentifier("$stdin"));
+    QCOMPARE(decls.size(), 1);
+
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 9, 0, 15);
+    compareUses(decls.first(), ranges);
+}
+
 //END: Contexts
 
 //BEGIN: Method calls

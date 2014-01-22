@@ -68,6 +68,8 @@ private slots:
     void block();
     void checkMethodArgumentsContext();
     void checkMethodLocalDeclarations();
+    void globals();
+    void defaultGlobals();
 
     // Method calls
     void builtinUses();
