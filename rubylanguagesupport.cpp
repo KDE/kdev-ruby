@@ -112,10 +112,14 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     ruby.waitForFinished();
     QString output = ruby.readAllStandardOutput().split(' ')[1];
     QStringList version = output.split('.');
-    if (version[0] == "1") {
-        m_version = (version[1] == "8") ? ruby18 : ruby19;
-    } else
-        m_version = ruby20;
+    if (version.size() > 1) {
+        if (version[0] == "1") {
+            m_version = (version[1] == "8") ? ruby18 : ruby19;
+        } else if (version[1] == "0")
+            m_version = ruby20;
+        else
+            m_version = ruby21;
+    }
 }
 
 LanguageSupport::~LanguageSupport()
