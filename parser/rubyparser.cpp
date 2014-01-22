@@ -83,19 +83,19 @@ RubyAst * RubyParser::parse()
     return ra;
 }
 
-void RubyParser::freeAst(RubyAst *ast)
+void RubyParser::freeAst(const RubyAst *ast)
 {
     if (ast != NULL)
         free_ast(ast->tree);
 }
 
-QString RubyParser::symbol(Node *node) const
+const QString RubyParser::symbol(const Node *node) const
 {
     int len = node->pos.end_col - node->pos.start_col;
     return m_contents.mid(node->pos.offset - len, len);
 }
 
-void RubyParser::appendProblem(struct error_t *error)
+void RubyParser::appendProblem(const struct error_t *error)
 {
     int col = (error->column > 0) ? error->column - 1 : 0;
     ProblemPointer problem(new Problem);

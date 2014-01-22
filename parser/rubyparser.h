@@ -90,7 +90,7 @@ public:
      *
      * @param ast the RubyAst to free.
      */
-    void freeAst(RubyAst *ast);
+    void freeAst(const RubyAst *ast);
 
     /**
      * Implemented to make the AbstractUseBuilder happy.
@@ -105,7 +105,7 @@ public:
      * @return a QString that represents the value of the node
      * (not the node's name).
      */
-    QString symbol(Node *node) const;
+    const QString symbol(const Node *node) const;
 
 private:
     /**
@@ -114,7 +114,7 @@ private:
      *
      * @param error the error provided to this method.
      */
-    void appendProblem(struct error_t *error);
+    void appendProblem(const struct error_t *error);
 
 public:
     QList<KDevelop::ProblemPointer> m_problems;
