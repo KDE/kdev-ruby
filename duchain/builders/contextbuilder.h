@@ -86,37 +86,37 @@ protected:
      * KDevelop::AbstractContextBuilder that deal with contexts and nodes.
      */
 
-    virtual void setContextOnNode(RubyAst *node, DUContext *ctx);
-    virtual KDevelop::DUContext * contextFromNode(RubyAst *node);
-    virtual KDevelop::DUContext * newContext(const RangeInRevision &range);
+    virtual void setContextOnNode(RubyAst *node, DUContext *ctx) override;
+    virtual KDevelop::DUContext * contextFromNode(RubyAst *node) override;
+    virtual KDevelop::DUContext * newContext(const RangeInRevision &range) override;
     virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
-                                                   ParsingEnvironmentFile *file = 0);
+                                                   ParsingEnvironmentFile *file = 0) override;
 
     /// And now methods that deal with nodes, documents and ranges.
 
     /// @returns KDevelop::CursorInRevision at the start of @param node.
-    KDevelop::CursorInRevision startPos(RubyAst *node) const;
+    const KDevelop::CursorInRevision startPos(const RubyAst *node) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange);
+    virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange) override;
 
     /// Given a @param node, it @returns a KDevelop::DocumentRange.
-    KDevelop::DocumentRange getDocumentRange(Node *node) const;
+    const KDevelop::DocumentRange getDocumentRange(const Node *node) const;
 
     /// Given a @param range, it @returns a KDevelop::DocumentRange.
-    KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range) const;
+    const KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name);
+    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name) override;
 
     /// Methods re-implemented from RubyAstVisitor or mere helpers.
 
-    virtual void startVisiting(RubyAst *node);
-    virtual void visitModuleStatement(RubyAst *node);
-    virtual void visitClassStatement(RubyAst *node);
-    virtual void visitMethodStatement(RubyAst *node);
-    virtual void visitBlock(RubyAst *node);
-    virtual void visitRequire(RubyAst *node, bool relative = false);
+    virtual void startVisiting(RubyAst *node) override;
+    virtual void visitModuleStatement(RubyAst *node) override;
+    virtual void visitClassStatement(RubyAst *node) override;
+    virtual void visitMethodStatement(RubyAst *node) override;
+    virtual void visitBlock(RubyAst *node) override;
+    virtual void visitRequire(RubyAst *node, bool relative = false) override;
 
     /**
      * Issue a require. The required file will be scheduled for parsing
@@ -132,7 +132,7 @@ protected:
      * is ProblemData::Error by default.
      * @note that you should call i18n() first.
      */
-    void appendProblem(Node *node, const QString &msg,
+    void appendProblem(const Node *node, const QString &msg,
                        ProblemData::Severity sev = ProblemData::Error);
 
     /**
@@ -154,7 +154,7 @@ private:
      * @returns the range that contains the method arguments
      * contained in @param node.
      */
-    RangeInRevision rangeForMethodArguments(RubyAst *node);
+    const RangeInRevision rangeForMethodArguments(RubyAst *node);
 
 private:
     int m_priority;

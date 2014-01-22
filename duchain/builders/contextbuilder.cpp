@@ -114,7 +114,7 @@ KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &ra
     return top;
 }
 
-KDevelop::CursorInRevision ContextBuilder::startPos(RubyAst *node) const
+const KDevelop::CursorInRevision ContextBuilder::startPos(const RubyAst *node) const
 {
     return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
 }
@@ -124,14 +124,14 @@ KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, Ru
     return m_editor->findRange(fromRange->tree, toRange->tree);
 }
 
-DocumentRange ContextBuilder::getDocumentRange(Node *node) const
+const DocumentRange ContextBuilder::getDocumentRange(const Node *node) const
 {
     SimpleRange range(node->pos.start_line - 1, node->pos.start_col,
                       node->pos.end_line - 1, node->pos.end_col);
     return DocumentRange(m_editor->url(), range);
 }
 
-DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range) const
+const DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &range) const
 {
     return DocumentRange(m_editor->url(), range.castToSimpleRange());
 }
@@ -262,7 +262,7 @@ void ContextBuilder::require(const IndexedString &path)
         currentContext()->addImportedParentContext(ctx);
 }
 
-void ContextBuilder::appendProblem(Node *node, const QString &msg,
+void ContextBuilder::appendProblem(const Node *node, const QString &msg,
                                    ProblemData::Severity sev)
 {
     KDevelop::Problem *p = new KDevelop::Problem();
@@ -290,7 +290,7 @@ void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &
     }
 }
 
-RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
+const RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
 {
     if (!node->tree)
         return RangeInRevision();
