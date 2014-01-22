@@ -186,19 +186,24 @@ void LanguageSupport::updateBuiltins()
 
 void LanguageSupport::runCurrentFile()
 {
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return;
+    KDevelop::IDocument *doc = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!doc)
+        return;
 
-    //todo: adymo: check that this file is actually a ruby source
+    // Get out if this is not a Ruby file.
+    if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
+        return;
+
     //todo: adymo: disable this action in the UI if current file is not a ruby source
 
     if (!m_rubyFileLaunchConfiguration)
         m_rubyFileLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_FILE_LAUNCH_CONFIGURATION_NAME);
-    if (!m_rubyFileLaunchConfiguration) return;
+    if (!m_rubyFileLaunchConfiguration)
+        return;
 
     KConfigGroup cfg = m_rubyFileLaunchConfiguration->config();
-    setUpLaunchConfigurationBeforeRun(cfg, activeDocument);
-    cfg.writeEntry("Arguments", QStringList() << activeDocument->url().toLocalFile());
+    setUpLaunchConfigurationBeforeRun(cfg, doc);
+    cfg.writeEntry("Arguments", QStringList() << doc->url().toLocalFile());
     cfg.sync();
 
     core()->runController()->execute("execute", m_rubyFileLaunchConfiguration);
@@ -206,25 +211,30 @@ void LanguageSupport::runCurrentFile()
 
 void LanguageSupport::runCurrentTestFunction()
 {
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return;
+    KDevelop::IDocument *doc = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!doc)
+        return;
 
-    //todo: adymo: check that this file is actually a ruby source
+    // Get out if this is not a Ruby file.
+    if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
+        return;
+
     //todo: adymo: disable this action in the UI if current file is not a ruby source
 
     if (!m_rubyCurrentFunctionLaunchConfiguration)
         m_rubyCurrentFunctionLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME);
-    if (!m_rubyCurrentFunctionLaunchConfiguration) return;
+    if (!m_rubyCurrentFunctionLaunchConfiguration)
+        return;
 
     //find function under the cursor (if any)
-    QString currentFunction = findFunctionUnderCursor(activeDocument);
+    QString currentFunction = findFunctionUnderCursor(doc);
     kDebug(9047) << "current function" << currentFunction;
     if (currentFunction.isEmpty()) return;
 
     KConfigGroup cfg = m_rubyCurrentFunctionLaunchConfiguration->config();
-    setUpLaunchConfigurationBeforeRun(cfg, activeDocument);
+    setUpLaunchConfigurationBeforeRun(cfg, doc);
     QStringList args;
-    args << activeDocument->url().toLocalFile() << "-n" << currentFunction;
+    args << doc->url().toLocalFile() << "-n" << currentFunction;
     cfg.writeEntry("Arguments", args.join(" "));
     cfg.sync();
 
