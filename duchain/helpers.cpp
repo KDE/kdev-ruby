@@ -59,7 +59,7 @@ const QByteArray getComment(RubyAst *ast)
     return (m_comment) ? QByteArray(m_comment) : QByteArray("");
 }
 
-Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, DUContextPointer context)
+Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, const DUContextPointer &context)
 {
     QList<Declaration *> decls;
 
@@ -85,7 +85,7 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
     return (decls.length()) ? decls.last() : NULL;
 }
 
-TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
+TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
 {
     DUChainReadLocker lock(DUChain::lock());
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
@@ -94,7 +94,7 @@ TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx)
     return type;
 }
 
-DUContext * getClassContext(DUContext *ctx)
+DUContext * getClassContext(const DUContext *ctx)
 {
     DUChainReadLocker lock(DUChain::lock());
     StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
@@ -103,7 +103,7 @@ DUContext * getClassContext(DUContext *ctx)
     return NULL;
 }
 
-bool isUsefulType(AbstractType::Ptr type)
+bool isUsefulType(const AbstractType::Ptr &type)
 {
     if (!type)
         return false;

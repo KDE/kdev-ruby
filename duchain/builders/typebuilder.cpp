@@ -30,10 +30,4 @@ TypeBuilder::TypeBuilder() : TypeBuilderBase()
     /* There's nothing to do here! */
 }
 
-void TypeBuilder::updateCurrentType()
-{
-    /* reimplemented in the DeclarationBuilder */
-}
-
-}
-
+} // End of namespace Ruby.

@@ -50,13 +50,13 @@ class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::Declaratio
 {
 public:
     /// Constructor.
-    ModuleDeclarationData() : isModule(true)
+    explicit ModuleDeclarationData() : isModule(true)
     {
         initializeAppendedLists();
     }
 
     /// Copy constructor.
-    ModuleDeclarationData(const ModuleDeclarationData &rhs)
+    explicit ModuleDeclarationData(const ModuleDeclarationData &rhs)
         : KDevelop::DeclarationData(rhs)
     {
         initializeAppendedLists();
@@ -99,24 +99,24 @@ public:
      * @param data The data for this ModuleDeclaration.
      * @param range The range of this declaration.
      */
-    ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range);
+    explicit ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range);
 
     /**
      * Constructor.
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    ModuleDeclaration(const KDevelop::RangeInRevision &range,
-                      KDevelop::DUContext *context);
+    explicit ModuleDeclaration(const KDevelop::RangeInRevision &range,
+                               KDevelop::DUContext *context);
 
     /// Copy constructor.
-    ModuleDeclaration(const ModuleDeclaration &rhs);
+    explicit ModuleDeclaration(const ModuleDeclaration &rhs);
 
     /**
      * Copy constructor.
      * @param data The data to be copied.
      */
-    ModuleDeclaration(ModuleDeclarationData &data);
+    explicit ModuleDeclaration(ModuleDeclarationData &data);
 
     /// Clean the list of module mix-ins.
     void clearModuleMixins();

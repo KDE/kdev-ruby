@@ -76,7 +76,7 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
                                                         const RangeInRevision &range,
-                                                        DUContextPointer context);
+                                                        const DUContextPointer &context);
 
     /**
      * Get the required builtin type.
@@ -87,7 +87,7 @@ using namespace KDevelop;
      * if it was not found.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, DUContext *ctx);
+    KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx);
 
     /**
      * Get the context of the Class class.
@@ -96,12 +96,12 @@ using namespace KDevelop;
      * @returns a KDevelop::DUContext containing the Class class.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(DUContext *ctx);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(const DUContext *ctx);
 
     /**
      * @returns true if the given @p type is useful, and false otherwise.
      */
-    KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(AbstractType::Ptr type);
+    KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(const AbstractType::Ptr &type);
 
     /**
      * @returns a new type which is a merge of the two given types @p type
@@ -109,7 +109,10 @@ using namespace KDevelop;
      */
     KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
 
-    /// @returns the number of nodes that are next to the given @p node.
+    /**
+     * @returns the number of nodes that are next to the given @p node.o
+     * @note Try to avoid this function since it iterates over all the list.
+     */
     KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
 
     /// @returns the QualifiedIdentifier of the given @p ast.

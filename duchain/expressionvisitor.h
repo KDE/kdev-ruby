@@ -50,13 +50,13 @@ public:
      * @param ctx The DUContext this visitor is related to.
      * @param editor The EditorIntegrator for this visitor.
      */
-    ExpressionVisitor(KDevelop::DUContext *ctx, EditorIntegrator *editor);
+    explicit ExpressionVisitor(KDevelop::DUContext *ctx, EditorIntegrator *editor);
 
     /**
      * Constructor.
      * @param parent The ExpressionVisitor this instance is parented to.
      */
-    ExpressionVisitor(ExpressionVisitor *parent);
+    explicit ExpressionVisitor(ExpressionVisitor *parent);
 
     /// @returns the last type seen.
     inline KDevelop::AbstractType::Ptr lastType() const
@@ -89,36 +89,36 @@ public:
     void setContext(KDevelop::DUContext *ctx);
 
     /// Re-implemented from RubyAstVisitor.
-    virtual void visitParameter(RubyAst *node);
+    virtual void visitParameter(RubyAst *node) override;
 
 protected:
     /// Visitor methods re-implemented from RubyAstVisitor.
 
-    virtual void visitString(RubyAst *node);
-    virtual void visitRegexp(RubyAst *node);
-    virtual void visitNumeric(RubyAst *node);
-    virtual void visitTrue(RubyAst *node);
-    virtual void visitFalse(RubyAst *node);
-    virtual void visitNil(RubyAst *node);
-    virtual void visitLine(RubyAst *node);
-    virtual void visitFile(RubyAst *node);
-    virtual void visitEncoding(RubyAst *node);
-    virtual void visitSelf(RubyAst *node);
-    virtual void visitRange(RubyAst *node);
-    virtual void visitSymbol(RubyAst *node);
-    virtual void visitName(RubyAst *node);
-    virtual void visitArray(RubyAst *node);
-    virtual void visitHash(RubyAst *node);
-    virtual void visitArrayValue(RubyAst *node);
-    virtual void visitMethodCall(RubyAst *node);
-    virtual void visitSuper(RubyAst *node);
-    virtual void visitLambda(RubyAst *node);
-    virtual void visitWhileStatement(RubyAst *node);
-    virtual void visitForStatement(RubyAst *node);
-    virtual void visitBinary(RubyAst *node);
-    virtual void visitBoolean(RubyAst *node);
-    virtual void visitIfStatement(RubyAst *node);
-    virtual void visitCaseStatement(RubyAst *node);
+    virtual void visitString(RubyAst *node) override;
+    virtual void visitRegexp(RubyAst *node) override;
+    virtual void visitNumeric(RubyAst *node) override;
+    virtual void visitTrue(RubyAst *node) override;
+    virtual void visitFalse(RubyAst *node) override;
+    virtual void visitNil(RubyAst *node) override;
+    virtual void visitLine(RubyAst *node) override;
+    virtual void visitFile(RubyAst *node) override;
+    virtual void visitEncoding(RubyAst *node) override;
+    virtual void visitSelf(RubyAst *node) override;
+    virtual void visitRange(RubyAst *node) override;
+    virtual void visitSymbol(RubyAst *node) override;
+    virtual void visitName(RubyAst *node) override;
+    virtual void visitArray(RubyAst *node) override;
+    virtual void visitHash(RubyAst *node) override;
+    virtual void visitArrayValue(RubyAst *node) override;
+    virtual void visitMethodCall(RubyAst *node) override;
+    virtual void visitSuper(RubyAst *node) override;
+    virtual void visitLambda(RubyAst *node) override;
+    virtual void visitWhileStatement(RubyAst *node) override;
+    virtual void visitForStatement(RubyAst *node) override;
+    virtual void visitBinary(RubyAst *node) override;
+    virtual void visitBoolean(RubyAst *node) override;
+    virtual void visitIfStatement(RubyAst *node) override;
+    virtual void visitCaseStatement(RubyAst *node) override;
 
 private:
     /// Set the last type seen to @p type.

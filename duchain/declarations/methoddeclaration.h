@@ -46,7 +46,7 @@ class KDEVRUBYDUCHAIN_EXPORT MethodDeclarationData : public KDevelop::FunctionDe
 {
 public:
     /// Constructor.
-    MethodDeclarationData()
+    explicit MethodDeclarationData()
         : KDevelop::FunctionDeclarationData(), classMethod(false)
         , m_accessPolicy(KDevelop::Declaration::Public)
     {
@@ -57,7 +57,7 @@ public:
      * Copy constructor.
      * @param rhs data to copy.
      */
-    MethodDeclarationData(const MethodDeclarationData &rhs)
+    explicit MethodDeclarationData(const MethodDeclarationData &rhs)
         : KDevelop::FunctionDeclarationData(rhs)
     {
         initializeAppendedLists();
@@ -100,16 +100,16 @@ public:
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    explicit MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
 
     /// Copy constructor.
-    MethodDeclaration(const MethodDeclaration &rhs);
+    explicit MethodDeclaration(const MethodDeclaration &rhs);
 
     /**
      * Copy constructor.
      * @param data The data to be copied.
      */
-    MethodDeclaration(MethodDeclarationData &data);
+    explicit MethodDeclaration(MethodDeclarationData &data);
 
     /**
      * Set if this is a class or an instance method.

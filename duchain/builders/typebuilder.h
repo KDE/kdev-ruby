@@ -36,7 +36,8 @@ typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuil
 /**
  * @class TypeBuilder
  *
- * Create types from a RubyAst.
+ * It's just declared to feed the chain of DUChain classes but it's not
+ * really used for anything.
  */
 class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
 {
@@ -44,14 +45,7 @@ public:
     /**
      * Constructor.
      */
-    TypeBuilder();
-
-protected:
-    /**
-     * The DeclarationBuilder implements this method in order update
-     * the type of the current declaration.
-     */
-    virtual void updateCurrentType();
+    explicit TypeBuilder();
 };
 
 }

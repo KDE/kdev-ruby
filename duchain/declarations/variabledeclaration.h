@@ -45,7 +45,7 @@ public:
     }
 
     /// Copy constructor.
-    VariableDeclarationData(const VariableDeclarationData &rhs)
+    explicit VariableDeclarationData(const VariableDeclarationData &rhs)
         : KDevelop::DeclarationData(rhs)
     {
         m_kind = rhs.m_kind;
@@ -75,26 +75,26 @@ public:
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    VariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext *context);
+    explicit VariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext *context);
 
     /**
      * Constructor.
      * @param data The data to be copied.
      * @param range The range of this declaration.
      */
-    VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range);
+    explicit VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range);
 
     /// Copy constructor
-    VariableDeclaration(const VariableDeclaration &rhs);
+    explicit VariableDeclaration(const VariableDeclaration &rhs);
 
     /// Copy constructor.
-    VariableDeclaration(VariableDeclarationData &data);
+    explicit VariableDeclaration(VariableDeclarationData &data);
 
     /**
      * Copy constructor.
      * @param data The data to be copied.
      */
-    VariableDeclaration(KDevelop::DeclarationData &data);
+    explicit VariableDeclaration(KDevelop::DeclarationData &data);
 
     /// Given a @p node, set the variable kind.
     void setVariableKind(const Node *node);

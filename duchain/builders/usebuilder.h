@@ -46,16 +46,16 @@ public:
      * Constructor.
      * @param editor The EditorIntegrator for this class.
      */
-    UseBuilder(EditorIntegrator *editor);
+    explicit UseBuilder(EditorIntegrator *editor);
 
 protected:
     /// Methods re-implemented from RubyAstVisitor.
 
-    virtual void visitName(RubyAst *node);
-    virtual void visitClassName(RubyAst *node);
-    virtual void visitMixin(RubyAst *node, bool include);
-    virtual void visitMethodCall(RubyAst *node);
-    virtual void visitRequire(RubyAst *node, bool relative = false);
+    virtual void visitName(RubyAst *node) override;
+    virtual void visitClassName(RubyAst *node) override;
+    virtual void visitMixin(RubyAst *node, bool include) override;
+    virtual void visitMethodCall(RubyAst *node) override;
+    virtual void visitRequire(RubyAst *node, bool relative = false) override;
 
 private:
     /// @internal Visit the method call members from the given @p node.
