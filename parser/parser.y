@@ -596,12 +596,7 @@ cname: BASE
 
 cpath: tCOLON3 cname        { $$ = $2; }
     | cname                 { $$ = $1; }
-    | primary tCOLON2 cname
-    {
-        $$ = update_list($1, $3);
-        $$->pos.end_line = $3->pos.end_line;
-        $$->pos.end_col = $3->pos.end_col;
-    }
+    | primary tCOLON2 cname { $$ = update_list($1, $3); }
 ;
 
 fname: base

@@ -55,23 +55,22 @@ void UseBuilder::visitName(RubyAst *node)
 
 void UseBuilder::visitClassName(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
-    Node *last = get_last_expr(node->tree);
-    DUContext *ctx = currentContext();
-    ExpressionVisitor ev(ctx, m_editor);
-    DeclarationPointer d(NULL);
+    DUChainWriteLocker wlock;
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Node *aux = node->tree;
+    Node *last = node->tree->last;
 
-    for (Node *n = node->tree; n && ctx && n != last; n = n->next) {
+    for (Node *n = aux; n && last; n = n->next) {
         node->tree = n;
-        ev.setContext(ctx);
         ev.visitNode(node);
-        d = ev.lastDeclaration();
+        const DeclarationPointer d = ev.lastDeclaration();
         if (d.data()) {
             UseBuilderBase::newUse(node, editorFindRange(node, node), d);
-            ctx = d->internalContext();
+            ev.setContext(d->internalContext());
         } else
-            ctx = NULL;
+            break;
     }
+    node->tree = aux;
 }
 
 void UseBuilder::visitMixin(RubyAst *node, bool include)
@@ -79,7 +78,6 @@ void UseBuilder::visitMixin(RubyAst *node, bool include)
     Q_UNUSED(include);
 
     DUChainWriteLocker lock;
-    RangeInRevision range;
     ExpressionVisitor ev(currentContext(), m_editor);
     Node *aux = node->tree;
     Node *n = (aux->r->l) ? aux->r->l : aux->r;
@@ -89,8 +87,7 @@ void UseBuilder::visitMixin(RubyAst *node, bool include)
         ev.visitNode(node);
         const DeclarationPointer d = ev.lastDeclaration();
         if (d) {
-            range = m_editor->findRange(n);
-            UseBuilderBase::newUse(node, range, d);
+            UseBuilderBase::newUse(node, m_editor->findRange(n), d);
             ev.setContext(d->internalContext());
         } else
             break;
