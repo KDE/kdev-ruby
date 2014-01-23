@@ -736,7 +736,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
     Declaration *res = NULL;
     QList<Declaration *> decls = context->findDeclarations(id);
 
-    /*foreach (Declaration *d, decls) {
+    foreach (Declaration *d, decls) {
         Declaration *fitting = dynamic_cast<T*>(d);
         if (fitting && (d->topContext() == context->topContext())) {
             debug() << "Reopening the following declaration: " << d->toString();
@@ -748,7 +748,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             break;
         } else
             debug() << "Do not reopen since it's not in the same top context";
-    }*/
+    }
 
     if (!res) {
         injectContext(context);
