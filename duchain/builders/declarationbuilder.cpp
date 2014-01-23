@@ -322,8 +322,10 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     }
     node->tree = aux;
 
-    if (!type->returnType())
+    if (!type->returnType()) {
+        // TODO: object
         type->setReturnType(AbstractType::Ptr(new IntegralType(IntegralType::TypeNull)));
+    }
     decl->setType(type);
     decl->setInSymbolTable(true);
 

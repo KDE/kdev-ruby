@@ -210,32 +210,32 @@ void TestDUChain::lambda()
 
 void TestDUChain::self()
 {
-//     QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self; def foo; self; end");
-//     TopDUContext *top = parse(code, "self");
-//     DUChainReleaser releaser(top);
-//     DUChainWriteLocker lock(DUChain::lock());
-//
-//     // a
-//     Declaration *d = top->localDeclarations().first();
-//     Declaration *obj = d->internalContext()->localDeclarations().first();
-//     QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::a"));
-//     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
-//
-//     // b
-//     obj = d->internalContext()->localDeclarations().last()->internalContext()->localDeclarations().first();
-//     QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass::b"));
-//     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
-//
-//     // c
-//     d = top->localDeclarations().at(1);
-//     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
-//     QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
-//
-//     // Return type for foo
-//     d = top->localDeclarations().last();
-//     AbstractType::Ptr rType = d->type<FunctionType>()->returnType();
-//     StructureType::Ptr structT = rType.cast<StructureType>();
-//     QCOMPARE(structT->qualifiedIdentifier(), QualifiedIdentifier("Object"));
+    QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self; def foo; self; end");
+    TopDUContext *top = parse(code, "self");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock(DUChain::lock());
+
+    // a
+    Declaration *d = top->localDeclarations().first();
+    Declaration *obj = d->internalContext()->localDeclarations().first();
+    QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::a"));
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
+
+    // b
+    obj = d->internalContext()->localDeclarations().last()->internalContext()->localDeclarations().first();
+    QCOMPARE(obj->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass::b"));
+    QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
+
+    // c
+    d = top->localDeclarations().at(1);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
+
+    // Return type for foo
+    d = top->localDeclarations().last();
+    AbstractType::Ptr rType = d->type<FunctionType>()->returnType();
+    StructureType::Ptr structT = rType.cast<StructureType>();
+    QCOMPARE(structT->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 //END: Builtin classes

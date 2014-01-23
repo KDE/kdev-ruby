@@ -150,6 +150,8 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
         res = unsure;
     }
 
+    if (res->typesSize() == 0)
+        return type;
     if (res->typesSize() == 1)
         return res->types()[0].abstractType();
     return AbstractType::Ptr::staticCast(res);
