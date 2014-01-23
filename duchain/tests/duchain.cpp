@@ -1215,6 +1215,19 @@ void TestDUChain::mixedExplicitAndImplicitReturn()
     testUnsureTypes(ut, list);
 }
 
+void TestDUChain::nilReturn()
+{
+    QByteArray code("def foo; end");
+    TopDUContext *top = parse(code, "nilReturn");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    Declaration *decl = top->localDeclarations().first();
+    FunctionType::Ptr ft = decl->type<FunctionType>();
+    StructureType::Ptr rt = ft->returnType().cast<StructureType>();
+    QCOMPARE(rt->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
+}
+
 //END: Returning Values
 
 //BEGIN: Methods
