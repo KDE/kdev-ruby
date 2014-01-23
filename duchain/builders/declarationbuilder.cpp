@@ -286,7 +286,9 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 
     bool isClassMethod = (m_injected) ? !m_instance : !instance;
-    MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
+    MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
+    // TODO: not sure about this.
+//     MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
@@ -753,7 +755,9 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
 {
     DUChainReadLocker rlock(DUChain::lock());
     Declaration *res = NULL;
-    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start, 0, DUContext::DontSearchInParent);
+
+//     QList<Declaration *> decls = currentContext()->findDeclarations(id);
 
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
