@@ -19,12 +19,10 @@
 
 
 // KDE + KDevelop
-#include <KDebug>
 #include <KLocale>
 #include <language/duchain/types/functiontype.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
@@ -52,8 +50,6 @@ void UseBuilder::visitName(RubyAst *node)
 
     if (!decl || decl->range() == range)
         return;
-
-    debug() << "New use: " << id << " at " << range;
     UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
 }
 

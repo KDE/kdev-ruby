@@ -134,9 +134,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
         DeclarationPointer baseDecl = ev.lastDeclaration();
-        if (!baseDecl)
-            debug() << "Base class not found";
-        else {
+        if (baseDecl) {
             baseClass = dynamic_cast<ModuleDeclaration *>(baseDecl.data());
             if (!baseClass || baseClass->isModule())
                 appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
@@ -423,8 +421,6 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     QList<AbstractType::Ptr> values;
     QList<DeclarationPointer> declarations;
     QList<bool> alias;
-
-    debug() << "==== Starting with the assignment statement !!!!";
     DUChainReadLocker lock(DUChain::lock());
 
     /* First of all, fetch the types and declaration on the right side */
