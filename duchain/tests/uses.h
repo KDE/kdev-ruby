@@ -76,7 +76,8 @@ private slots:
     void chained();
     void fromClassAndAbove();
     void super();
-    void moduleMixins();
+    void moduleMixins1();
+    void moduleMixins2();
     void exprIsCalling();
     void stringCalling();
 

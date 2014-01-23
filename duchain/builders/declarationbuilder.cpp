@@ -756,6 +756,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     Declaration *res = NULL;
     QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start, 0, DUContext::DontSearchInParent);
 
+    // TODO: I still have to confirm this.
 //     QList<Declaration *> decls = currentContext()->findDeclarations(id);
 
     foreach (Declaration *d, decls) {

@@ -76,19 +76,26 @@ void UseBuilder::visitClassName(RubyAst *node)
 
 void UseBuilder::visitMixin(RubyAst *node, bool include)
 {
-    Node *aux = node->tree;
-    if (!aux->r)
-      return;
-
-    const RangeInRevision &range = m_editor->findRange(get_last_expr(aux->r));
-    ExpressionVisitor ev(currentContext(), m_editor);
-    node->tree = aux->r;
-    ev.visitNode(node);
-    node->tree = aux;
-    if (ev.lastDeclaration())
-        UseBuilderBase::newUse(node, range, ev.lastDeclaration());
-
     Q_UNUSED(include);
+
+    DUChainWriteLocker lock;
+    RangeInRevision range;
+    ExpressionVisitor ev(currentContext(), m_editor);
+    Node *aux = node->tree;
+    Node *n = (aux->r->l) ? aux->r->l : aux->r;
+
+    for (; n; n = n->next) {
+        node->tree = n;
+        ev.visitNode(node);
+        const DeclarationPointer d = ev.lastDeclaration();
+        if (d) {
+            range = m_editor->findRange(n);
+            UseBuilderBase::newUse(node, range, d);
+            ev.setContext(d->internalContext());
+        } else
+            break;
+    }
+    node->tree = aux;
 }
 
 void UseBuilder::visitMethodCall(RubyAst *node)

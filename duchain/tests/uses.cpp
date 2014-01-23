@@ -404,12 +404,12 @@ void TestUseBuilder::super()
     compareUses(d, RangeInRevision(0, 76, 0, 84));
 }
 
-void TestUseBuilder::moduleMixins()
+void TestUseBuilder::moduleMixins1()
 {
     //               0         1         2         3         4         5
     //               0123456789012345678901234567890123456789012345678901234567890
     QByteArray code("module A; end; class Klass; include Enumerable; extend A; end");
-    TopDUContext *top = parse(code, "moduleMixins");
+    TopDUContext *top = parse(code, "moduleMixins1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
@@ -423,6 +423,26 @@ void TestUseBuilder::moduleMixins()
     d = sType->declaration(top);
     QVERIFY(d);
     compareUses(d, RangeInRevision(0, 36, 0, 46));
+}
+
+void TestUseBuilder::moduleMixins2()
+{
+    //               0         1         2         3         4         5
+    //               012345678901234567890123456789012345678901234567890123456
+    QByteArray code("module A; module B; end; end; module C; include A::B; end");
+    TopDUContext *top = parse(code, "moduleMixins2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // module A
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 48, 0, 49));
+
+    // module B
+    d = d->internalContext()->localDeclarations().first();
+    QVERIFY(d);
+    compareUses(d, RangeInRevision(0, 51, 0, 52));
 }
 
 void TestUseBuilder::exprIsCalling()
