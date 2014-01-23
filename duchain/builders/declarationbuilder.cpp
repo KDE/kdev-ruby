@@ -871,9 +871,9 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(const Declarat
     if (!internal)
         return res;
 
-    QList<QPair<Declaration *, int> > list = internal->allDeclarations(internal->range().end, decl->topContext(), false);
-    for (int i = 0; i < list.size(); i++) {
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(list.at(i).first);
+    QVector<Declaration *> decls = internal->localDeclarations();
+    foreach (Declaration *d, decls) {
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
         if (md)
             res << md;
     }
