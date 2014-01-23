@@ -412,7 +412,7 @@ void TestDUChain::hereDoc()
 foo (\n\
 EOS\n\
 ");
-    TopDUContext *top = parse(code, "hereDoc");
+    parse(code, "hereDoc");
 
     DOES_NOT_CRASH;
 }
@@ -466,7 +466,7 @@ void TestDUChain::unsureHash()
     // this test (when run separately from other tests) crashes
     // when storing Hash of unsure (Bar::Foo, String) in the item repository
     QByteArray code("class Bar; class Foo; end; x = [ Foo.new, 'test' ]; end");
-    TopDUContext *top = parse(code, "unsureTypeStorage");
+    parse(code, "unsureTypeStorage");
 
     DOES_NOT_CRASH;
 }
@@ -936,7 +936,7 @@ void TestDUChain::singletonClass3()
 void TestDUChain::singletonMethodVisibility()
 {
     QByteArray code("class << Foo; private; def foo; end; end");
-    TopDUContext *top = parse(code, "singletonMethodVisibility");
+    parse(code, "singletonMethodVisibility");
 
     DOES_NOT_CRASH;
 }
