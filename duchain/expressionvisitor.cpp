@@ -28,7 +28,6 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
@@ -105,8 +104,7 @@ void ExpressionVisitor::visitName(RubyAst *node)
         if (decls.size() > 1)
             m_anotherDeclaration = decls.first();
         encounter(decl->abstractType());
-    } else
-        debug() << "Declaration NOT FOUND";
+    }
 }
 
 void ExpressionVisitor::visitTrue(RubyAst *)
