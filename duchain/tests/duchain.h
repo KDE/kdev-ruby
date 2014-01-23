@@ -133,6 +133,7 @@ private slots:
     void errorOnInvalidRedeclaration2();
     void instanceVariable();
     void classVariable();
+    void classModulesScopes();
 
     // Returning values
     void multipleReturns();

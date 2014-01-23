@@ -1165,6 +1165,31 @@ void TestDUChain::classVariable()
     QCOMPARE(decl->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
+void TestDUChain::classModulesScopes()
+{
+    QByteArray code("module Klass; end; module Modul; end; class Modul::Klass;");
+    code += " ::Klass; module Thing; Klass; ::Klass; end; end;";
+    TopDUContext *top = parse(code, "classModulesScopes");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    QVector<Declaration *> decls = top->localDeclarations();
+    QCOMPARE(decls.size(), 2);
+
+    QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+    QCOMPARE(decls.at(1)->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
+
+    decls = decls.at(1)->internalContext()->localDeclarations();
+    QCOMPARE(decls.size(), 1);
+
+    QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
+
+    decls = decls.first()->internalContext()->localDeclarations();
+    QCOMPARE(decls.size(), 1);
+
+    QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass::Thing"));
+}
+
 //END: Declarations
 
 //BEGIN: Returning Values

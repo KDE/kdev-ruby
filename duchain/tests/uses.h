@@ -70,6 +70,7 @@ private slots:
     void checkMethodLocalDeclarations();
     void globals();
     void defaultGlobals();
+    void classModulesScopes();
 
     // Method calls
     void builtinUses();
@@ -86,6 +87,5 @@ private slots:
 };
 
 }
-
 
 #endif /* RUBY_USES_H */

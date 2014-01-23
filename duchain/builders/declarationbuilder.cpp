@@ -921,7 +921,6 @@ DUContext * DeclarationBuilder::getContainerContext(RubyAst *node)
         ev.visitNode(node);
         const DeclarationPointer d = ev.lastDeclaration();
         if (d) {
-            debug() << "Getting inside : " << d->toString();
             ctx = d->internalContext();
             ev.setContext(ctx);
         } else
