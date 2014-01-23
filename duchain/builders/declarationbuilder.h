@@ -28,6 +28,10 @@
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/builders/typebuilder.h>
 
+/*
+ * TODO: update documentation.
+ */
+
 
 namespace Ruby
 {
@@ -109,7 +113,8 @@ private:
      * @returns an opened declaration.
      */
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
-                                               const RangeInRevision &range);
+                                               const RangeInRevision &range,
+                                               DUContext *context);
 
     /**
      * Specialized version of the more generic reopenDeclaration for
@@ -187,7 +192,12 @@ private:
      * @note If it returns false, it'll also append a new problem (TypeError).
      */
     bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
-                            bool isClass = true);
+                            DUContext *context, bool isClass = true);
+
+    /// TODO: documentation
+    /// TODO: documentation: DUChain has to be locked.
+    // TODO: change name.
+    DUContext * getContainerContext(RubyAst *node);
 
     /**
      * This is a helper method that iterates over the call args of a method

@@ -107,14 +107,15 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
     ModuleDeclaration *baseClass = NULL;
+    DUContext *ctx = getContainerContext(node);
 
-    if (!validReDeclaration(id, range)) {
+    if (!validReDeclaration(id, range, ctx)) {
         node->foundProblems = true;
         return;
     }
 
     /* First of all, open the declaration and set the comment */
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(false);
@@ -131,7 +132,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     if (node->tree) {
-        ExpressionVisitor ev(currentContext(), m_editor);
+        ExpressionVisitor ev(ctx, m_editor);
         ev.visitNode(node);
         DeclarationPointer baseDecl = ev.lastDeclaration();
         if (baseDecl) {
@@ -213,13 +214,15 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
+    DUContext *ctx = getContainerContext(node);
 
-    if (!validReDeclaration(id, range, false)) {
+    // TODO
+    if (!validReDeclaration(id, range, ctx, false)) {
         node->foundProblems = true;
         return;
     }
 
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(true);
@@ -725,15 +728,17 @@ void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
 }
 
 template<typename T>
-T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range)
+T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
+                                          const RangeInRevision &range,
+                                          DUContext *context)
 {
     DUChainReadLocker rlock(DUChain::lock());
     Declaration *res = NULL;
-    QList<Declaration *> decls = currentContext()->findDeclarations(id);
+    QList<Declaration *> decls = context->findDeclarations(id);
 
-    foreach (Declaration *d, decls) {
+    /*foreach (Declaration *d, decls) {
         Declaration *fitting = dynamic_cast<T*>(d);
-        if (fitting && (d->topContext() == currentContext()->topContext())) {
+        if (fitting && (d->topContext() == context->topContext())) {
             debug() << "Reopening the following declaration: " << d->toString();
             openDeclarationInternal(d);
             d->setRange(range);
@@ -743,10 +748,13 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const R
             break;
         } else
             debug() << "Do not reopen since it's not in the same top context";
-    }
+    }*/
 
-    if (!res)
+    if (!res) {
+        injectContext(context);
         res = openDeclaration<T>(id, range);
+        closeInjectedContext();
+    }
     return static_cast<T*>(res);
 }
 
@@ -799,7 +807,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, const Ab
         DUContext *internal = m_classDeclarations.last()->internalContext();
         DUContext *previousCtx = currentContext();
         injectContext(internal);
-        VariableDeclaration *var = reopenDeclaration<VariableDeclaration>(rId, range);
+        VariableDeclaration *var = reopenDeclaration<VariableDeclaration>(rId, range, currentContext());
         var->setRange(RangeInRevision(internal->range().start, internal->range().start));
         var->setAutoDeclaration(true);
         previousCtx->createUse(var->ownIndex(), range);
@@ -879,11 +887,13 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(const Declarat
     return res;
 }
 
-bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool isClass)
+bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id,
+                                            const RangeInRevision &range,
+                                            DUContext *context, bool isClass)
 {
-    DUChainReadLocker rlock(DUChain::lock());
-    QList<Declaration *> decls = currentContext()->findDeclarations(id, range.end, AbstractType::Ptr(NULL),
-                                                                    NULL, DUContext::DontSearchInParent);
+    DUChainReadLocker rlock;
+    QList<Declaration *> decls = context->findDeclarations(id, range.end, AbstractType::Ptr(NULL),
+                                                           NULL, DUContext::DontSearchInParent);
 
     foreach (Declaration *d, decls) {
         ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
@@ -895,6 +905,30 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id, const
         }
     }
     return true;
+}
+
+DUContext * DeclarationBuilder::getContainerContext(RubyAst *node)
+{
+    Node *aux = node->tree;
+    Node *last = aux->r->last;
+    DUContext *ctx = currentContext();
+    ExpressionVisitor ev(currentContext(), m_editor);
+
+    if (!last)
+        return ctx;
+    for (Node *n = aux->r; n != last; n = n->next) {
+        node->tree = n;
+        ev.visitNode(node);
+        const DeclarationPointer d = ev.lastDeclaration();
+        if (d) {
+            debug() << "Getting inside : " << d->toString();
+            ctx = d->internalContext();
+            ev.setContext(ctx);
+        } else
+            break;
+    }
+    node->tree = aux;
+    return ctx;
 }
 
 void DeclarationBuilder::visitMethodCallArgs(const RubyAst *mc, const DeclarationPointer &lastMethod)
