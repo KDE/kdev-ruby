@@ -75,7 +75,6 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
         obj = getBuiltinsType("Proc", m_ctx);
     } else if (is_rest_arg(node->tree)) {
         obj = getBuiltinsType("Array", m_ctx);
-        obj.cast<ClassType>();
     } else if (node->tree->r != NULL) {
         ExpressionVisitor da(this);
         Node *n = node->tree;
@@ -84,7 +83,7 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
         node->tree = n;
         obj = da.lastType();
     } else
-        obj = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+        obj = getBuiltinsType("Object", m_ctx);
     encounter(obj);
 }
 

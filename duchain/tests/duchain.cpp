@@ -308,15 +308,16 @@ void TestDUChain::yield1()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(top->localDeclarations().size() == 3);
+    QVector<Declaration *> decls = top->childContexts().last()->localDeclarations();
 
-    Declaration *dec1 = top->localDeclarations().at(1);
-    Declaration *dec2 = top->localDeclarations().at(2);
+    QCOMPARE(decls.size(), 2);
+    Declaration *dec1 = decls.at(0);
+    Declaration *dec2 = decls.at(1);
 
     QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("a"));
-    QCOMPARE(dec1->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
     QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("b"));
-    QCOMPARE(dec2->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 void TestDUChain::yield2()
@@ -348,17 +349,16 @@ void TestDUChain::yield3()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    QVERIFY(top->localDeclarations().size() == 2);
+    QVector<Declaration *> decls = top->childContexts().last()->localDeclarations();
 
-    // a
-    Declaration *d = top->localDeclarations().first();
-    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
-    QCOMPARE(d->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+    QCOMPARE(decls.size(), 2);
+    Declaration *dec1 = decls.at(0);
+    Declaration *dec2 = decls.at(1);
 
-    // b
-    d = top->localDeclarations().last();
-    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
-    QCOMPARE(d->type<IntegralType>()->dataType(), (uint) IntegralType::TypeMixed);
+    QCOMPARE(dec1->qualifiedIdentifier(), QualifiedIdentifier("a"));
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
+    QCOMPARE(dec2->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    QCOMPARE(dec2->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Object"));
 }
 
 void TestDUChain::ifStatement()

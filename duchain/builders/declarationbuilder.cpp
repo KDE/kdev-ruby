@@ -391,7 +391,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
         if (yieldList && i < max)
             type = yieldList[i].type.abstractType();
         else
-            type = AbstractType::Ptr(new IntegralType(IntegralType::TypeMixed));
+            type = getBuiltinsType("Object", currentContext());
         rlock.unlock();
         declareVariable(getIdentifier(node), type, node);
         rlock.lock();
