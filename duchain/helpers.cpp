@@ -107,8 +107,12 @@ bool isUsefulType(const AbstractType::Ptr &type)
 {
     if (!type)
         return false;
-    if (type->whichType() != AbstractType::TypeIntegral)
+    if (type->whichType() != AbstractType::TypeIntegral) {
+        ClassType::Ptr ct = ClassType::Ptr::dynamicCast(type);
+        if (ct)
+            return ct->isUseful();
         return true;
+    }
     QList<uint> skipTypes;
     skipTypes << IntegralType::TypeMixed << IntegralType::TypeNone << IntegralType::TypeNull;
     if (!skipTypes.contains(type.cast<IntegralType>()->dataType()))

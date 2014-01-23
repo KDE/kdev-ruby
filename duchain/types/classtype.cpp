@@ -68,7 +68,13 @@ const IndexedType & ClassType::contentType() const
     return d_func()->m_contentType;
 }
 
-AbstractType* ClassType::clone() const
+bool ClassType::isUseful() const
+{
+    // TODO: this is utter crap.
+    return KDevelop::StructureType::toString() != "Object";
+}
+
+AbstractType * ClassType::clone() const
 {
     return new ClassType(*this);
 }

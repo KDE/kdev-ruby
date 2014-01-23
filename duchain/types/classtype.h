@@ -89,6 +89,9 @@ public:
     /// @returns the content type.
     const KDevelop::IndexedType & contentType() const;
 
+    /// Get if this class is useful.
+    bool isUseful() const;
+
     /// Create a clone of this type.
     virtual AbstractType * clone() const;
 

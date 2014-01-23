@@ -350,7 +350,6 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     /* Finally, declare the parameter */
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
-        // TODO: !type
         mType->addArgument(type);
         declareVariable(getIdentifier(node), type, node);
     }
