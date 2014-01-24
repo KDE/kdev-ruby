@@ -302,6 +302,23 @@ void TestUseBuilder::globals2()
     compareUses(asd, ranges);
 }
 
+void TestUseBuilder::globals3()
+{
+    //               0         1         2         3         4         5
+    //               0123456789012345678901234567890123456789012345678901234567
+    QByteArray code("class Klass; $asd = 1; end; module Mod; $asd = 'asd'; end");
+    TopDUContext *top = parse(code, "globals3");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    Declaration *asd = top->localDeclarations().at(1);
+    QCOMPARE(asd->qualifiedIdentifier(), QualifiedIdentifier("$asd"));
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 40, 0, 44);
+    compareUses(asd, ranges);
+}
+
+
 void TestUseBuilder::defaultGlobals()
 {
     //               0         1

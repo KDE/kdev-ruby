@@ -70,6 +70,7 @@ private slots:
     void checkMethodLocalDeclarations();
     void globals1();
     void globals2();
+    void globals3();
     void defaultGlobals();
     void classModulesScopes();
 

@@ -1190,11 +1190,11 @@ void TestDUChain::classModulesScopes()
     QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass::Thing"));
 }
 
-void TestDUChain::globals()
+void TestDUChain::globals1()
 {
     QByteArray code("$asd = 1234; class Klass; a = $asd; $asd = 1; class Sub;");
     code += " $asd = 'asd'; end; end";
-    TopDUContext *top = parse(code, "globals");
+    TopDUContext *top = parse(code, "globals1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
 
@@ -1224,7 +1224,33 @@ void TestDUChain::globals()
     QStringList list;
     list << "Fixnum" << "String";
     testUnsureTypes(ut, list);
+}
 
+void TestDUChain::globals2()
+{
+    QByteArray code("class Klass; $asd = 1; end; module Mod; $asd = 'asd'; end");
+    TopDUContext *top = parse(code, "globals2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // The point of this test is to check that the $asd global variable is set
+    // in the top DUContext, so there's just one single $asd declaration.
+    // This $asd variable is expected to be in the top.
+
+    QVector<Declaration *> decls = top->localDeclarations();
+    QCOMPARE(decls.size(), 3);
+    Declaration *d = decls.at(1);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("$asd"));
+
+    // Check that there's no new declaration inside the Mod module.
+    decls = decls.last()->internalContext()->localDeclarations();
+    QVERIFY(decls.empty());
+
+    // Check that $asd is an unsure(Fixnum, String)
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(d->abstractType());
+    QStringList list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
 }
 
 //END: Declarations

@@ -842,11 +842,16 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
         }
     }
 
+    if (is_global_var(node->tree))
+        injectContext(topContext());
     dec = openDefinition<VariableDeclaration>(rId, range);
     dec->setVariableKind(node->tree);
     dec->setKind(Declaration::Instance);
     dec->setType(type);
     DeclarationBuilderBase::closeDeclaration();
+    if (is_global_var(node->tree))
+        closeInjectedContext();
+
     node->tree = aux;
 }
 

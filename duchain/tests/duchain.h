@@ -134,7 +134,8 @@ private slots:
     void instanceVariable();
     void classVariable();
     void classModulesScopes();
-    void globals();
+    void globals1();
+    void globals2();
 
     // Returning values
     void multipleReturns();
