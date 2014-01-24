@@ -188,7 +188,7 @@ enum flags_t {
 struct node {
 /* Node info */
     int kind;
-    int flags;
+    enum flags_t flags;
     char *name;
     void *context;
 
