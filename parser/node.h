@@ -156,6 +156,32 @@ struct pos_t {
 };
 
 /**
+ * These are the values that should go inside the flags
+ * attribute of the node struct.
+ */
+enum flags_t {
+    /* Numeric literals. */
+    int_l = 0,
+    float_l,
+    rational_l,
+    imaginary_l,
+
+    /* Variables */
+    var,
+    ivar,
+    cvar,
+    constant,
+    global,
+
+    /* Args */
+    kwrest,
+    star,
+    label,
+    opt,
+    block,
+};
+
+/**
  * This structure defines a node
  * in the abstract syntax tree
  */
@@ -209,17 +235,6 @@ struct options_t {
     const char *path;
     char *contents;
     enum ruby_version version;
-};
-
-/**
- * Enumeration for the different kind of numeric types that can
- * be declared with from a literal.
- */
-enum numeric_t {
-    int_t = 0,
-    float_t = 1,
-    rational_t = 2,
-    imaginary_t = 3,
 };
 
 /* Interface to the parser */
@@ -301,16 +316,16 @@ void print_errors(struct error_t *errors);
 
 #define get_last_expr(n) ((n->last) ? n->last : n)
 #define is_valid(n) (n->pos.start_line >= 0)
-#define is_rest_arg(n) (n->flags == 1)
-#define is_block_arg(n) (n->flags == 2)
-#define is_global_var(n) (n->flags == 3)
-#define is_ivar(n) (n->flags == 4)
-#define is_cvar(n) (n->flags == 5)
-#define is_constant (n->flags == 6)
+#define is_rest_arg(n) (n->flags == kwrest)
+#define is_block_arg(n) (n->flags == block)
+#define is_global_var(n) (n->flags == global)
+#define is_ivar(n) (n->flags == ivar)
+#define is_cvar(n) (n->flags == cvar)
+#define is_constant (n->flags == constant)
 #define valid_children(n) (n->r && n->l)
 #define is_super(n) (!n->l)
-#define has_star(n) (n->flags == 1 || n->flags == 2)
-#define is_just_a_star(n) (n->flags == 2)
+#define has_star(n) (n->flags == kwrest || n->flags == star)
+#define is_just_a_star(n) (n->flags == star)
 
 
 #ifdef __cplusplus

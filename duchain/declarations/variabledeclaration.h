@@ -107,17 +107,17 @@ public:
 
     // Helper methods
 
-    inline bool isNormal() const { return d_func()->m_kind < 3; }
-    inline bool isGlobal() const { return d_func()->m_kind == 3; }
-    inline bool isIvar() const { return d_func()->m_kind == 4; }
-    inline bool isCvar() const { return d_func()->m_kind == 5; }
-    inline bool isConstant() const { return d_func()->m_kind == 6; }
+    inline bool isNormal() const { return d_func()->m_kind == flags_t::var; }
+    inline bool isGlobal() const { return d_func()->m_kind == flags_t::global; }
+    inline bool isIvar() const { return d_func()->m_kind == flags_t::ivar; }
+    inline bool isCvar() const { return d_func()->m_kind == flags_t::cvar; }
+    inline bool isConstant() const { return d_func()->m_kind == flags_t::constant; }
 
     // Arguments
 
-    inline bool hasStar() const { return d_func()->m_kind == 1; }
-    inline bool isBlock() const { return d_func()->m_kind == 2; }
-    inline bool isOpt() const { return d_func()->m_kind == 10; }
+    inline bool hasStar() const { return d_func()->m_kind == flags_t::kwrest; }
+    inline bool isBlock() const { return d_func()->m_kind == flags_t::block; }
+    inline bool isOpt() const { return d_func()->m_kind == flags_t::opt; }
 
     enum { Identity = 47 /** The id of this Type. */ };
 

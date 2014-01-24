@@ -323,9 +323,9 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     {
         /* Ugly as hell, but it works */
         struct node *l = alloc_node(token_object, NULL, NULL);
-        l->flags = 3;
+        l->flags = global;
         struct node *r = alloc_node(token_object, NULL, NULL);
-        r->flags = 3;
+        r->flags = global;
         pop_pos(parser, r);
         pop_pos(parser, l);
         pop_stack(parser, l);
@@ -493,38 +493,38 @@ mlhs_basic: mlhs_head
     | mlhs_head mlhs_item { $$ = update_list($1, $2); }
     | mlhs_head tSTAR mlhs_node
     {
-        $3->flags = 1;
+        $3->flags = kwrest;
         $$ = update_list($1, $3);
     }
     | mlhs_head tSTAR mlhs_node ',' mlhs_post
     {
-        $3->flags = 1;
+        $3->flags = kwrest;
         $$ = concat_list($1, update_list($3, $5));
     }
     | mlhs_head tSTAR
     {
         $$ = alloc_node(token_object, NULL, NULL);
-        $$->flags = 2;
+        $$->flags = star;
         $$ = update_list($1, $$);
     }
     | mlhs_head tSTAR ',' mlhs_post
     {
         $$ = alloc_node(token_object, NULL, NULL);
-        $$->flags = 2;
+        $$->flags = star;
         $$ = update_list($1, $$);
         $$ = concat_list($$, $4);
     }
-    | tSTAR mlhs_node               { $$ = $2; $$->flags = 1; }
-    | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); $2->flags = 1; }
+    | tSTAR mlhs_node               { $$ = $2; $$->flags = kwrest; }
+    | tSTAR mlhs_node ',' mlhs_post { $$ = update_list($2, $4); $2->flags = kwrest; }
     | tSTAR
     {
         $$ = alloc_node(token_object, NULL, NULL);
-        $$->flags = 2;
+        $$->flags = star;
     }
     | tSTAR ',' mlhs_post
     {
         $$ = alloc_node(token_object, NULL, NULL);
-        $$->flags = 2;
+        $$->flags = star;
         $$ = update_list($$, $3);
     }
 ;
@@ -1272,9 +1272,9 @@ string_content: tSTRING_CONTENT { $$ = 0; }
 ;
 
 string_dvar: backref
-    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
-    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
-    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
+    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = global; POP_STACK; }
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = ivar; POP_STACK; }
+    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = cvar; POP_STACK; }
 ;
 
 symbol: tSYMBEG sym
@@ -1287,9 +1287,9 @@ symbol: tSYMBEG sym
 
 sym: fname
     | strings
-    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
-    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
-    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
+    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = global; POP_STACK; }
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = ivar; POP_STACK; }
+    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = cvar; POP_STACK; }
 ;
 
 numeric: simple_numeric
@@ -1299,28 +1299,28 @@ numeric: simple_numeric
     }
 ;
 
-simple_numeric: tINTEGER        { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 0; }
-    | tFLOAT                    { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 1; }
+simple_numeric: tINTEGER        { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = int_l; }
+    | tFLOAT                    { $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = float_l; }
     | tRATIONAL
     {
         if (parser->version < ruby21) {
             yywarning("Rational literals are only available in Ruby 2.1.x or higher.");
         }
-        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 2;
+        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = rational_l;
     }
     | tIMAGINARY
     {
         if (parser->version < ruby21) {
             yywarning("Imaginary literals are only available in Ruby 2.1.x or higher.");
         }
-        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = 3;
+        $$ = alloc_node(token_numeric, NULL, NULL); $$->flags = imaginary_l;
     }
 ;
 
 variable: base
-    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 3; POP_STACK; }
-    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 4; POP_STACK; }
-    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 5; POP_STACK; }
+    | GLOBAL    { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = global; POP_STACK; }
+    | IVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = ivar; POP_STACK; }
+    | CVAR      { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = cvar; POP_STACK; }
     | const
     | other_vars
 ;
@@ -1471,14 +1471,14 @@ f_arg: f_arg_item
 f_kw: label arg
     {
         $$ = alloc_node(token_object, $1, $2);
-        $$->flags = 4;
+        $$->flags = label;
     }
 ;
 
 f_block_kw: label primary
     {
         $$ = alloc_node(token_object, $1, $2);
-        $$->flags = 4;
+        $$->flags = label;
     }
 ;
 
@@ -1496,12 +1496,12 @@ kwrest_mark: tPOW | tDSTAR
 f_kwrest: kwrest_mark base
     {
         $$ = $2;
-        $$->flags = 5;
+        $$->flags = kwrest;
     }
     | kwrest_mark
     {
         $$ = alloc_node(token_object, NULL, NULL);
-        $$->flags = 5;
+        $$->flags = kwrest;
     }
 ;
 
@@ -1512,7 +1512,7 @@ f_opt: base '='
     arg
     {
         $$ = alloc_node(token_assign, $1, $4);
-        $1->flags = 10; /* TODO: not sure about this */
+        $1->flags = opt; /* TODO: not sure about this */
         $4->pos.start_col = $<num>3;
         $4->pos.end_col = parser->column;
         $4->pos.offset = parser->lex_prev - parser->blob;
@@ -1533,14 +1533,14 @@ f_optarg: f_opt
 restarg_mark: '*' | tSTAR
 ;
 
-f_rest_arg: restarg_mark base { $$ = $2; $$->flags = 1; }
-    | restarg_mark { $$ = alloc_node(token_object, NULL, NULL); $$->flags = 1; }
+f_rest_arg: restarg_mark base { $$ = $2; $$->flags = kwrest; }
+    | restarg_mark { $$ = alloc_node(token_object, NULL, NULL); $$->flags = kwrest; }
 ;
 
 blkarg_mark: '&' | tAMPER
 ;
 
-f_block_arg: blkarg_mark base { $$ = $2; $$->flags = 2; }
+f_block_arg: blkarg_mark base { $$ = $2; $$->flags = block; }
 ;
 
 opt_f_block_arg : ',' f_block_arg { $$ = $2; }
@@ -1566,10 +1566,10 @@ singleton: variable { $$ = $1; }
     }
 ;
 
-const: CONST { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = 6; POP_STACK; }
+const: CONST { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = constant; POP_STACK; }
 ;
 
-base: BASE { $$ = ALLOC_N(token_object, NULL, NULL); POP_STACK; }
+base: BASE { $$ = ALLOC_N(token_object, NULL, NULL); $$->flags = var; POP_STACK; }
 ;
 
 assoc_list: none

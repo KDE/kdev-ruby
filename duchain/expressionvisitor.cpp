@@ -185,13 +185,9 @@ void ExpressionVisitor::visitNumeric(RubyAst *node)
     const char *type;
 
     switch (node->tree->flags) {
-    /*
-     * I'm prefixing each case with numeric_t to avoid
-     * clashes (i.e. float_t).
-     */
-    case numeric_t::float_t: type = "Float"; break;
-    case numeric_t::rational_t: type = "Rational"; break;
-    case numeric_t::imaginary_t: type = "Complex"; break;
+    case float_l: type = "Float"; break;
+    case rational_l: type = "Rational"; break;
+    case imaginary_l: type = "Complex"; break;
     default: type = "Fixnum"; break;
     }
     AbstractType::Ptr obj = getBuiltinsType(type, m_ctx);
