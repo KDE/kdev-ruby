@@ -23,7 +23,7 @@
 
 
 // KDevelop + Ruby
-#include <language/interfaces/iproblem.h>
+#include <language/duchain/problem.h>
 #include <parser/parserexport.h>
 #include <parser/rubyast.h>
 

@@ -28,7 +28,7 @@
 #include <language/duchain/types/unsuretype.h>
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/duchainutils.h>
-#include <language/interfaces/iproblem.h>
+#include <language/duchain/problem.h>
 
 // Ruby
 #include <duchain/tests/duchain.h>
