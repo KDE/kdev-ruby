@@ -117,7 +117,7 @@ public:
 
     inline bool hasStar() const { return d_func()->m_kind == 1; }
     inline bool isBlock() const { return d_func()->m_kind == 2; }
-    inline bool isOpt() const { return d_func()->m_kind == 3; }
+    inline bool isOpt() const { return d_func()->m_kind == 10; }
 
     enum { Identity = 47 /** The id of this Type. */ };
 
