@@ -259,12 +259,12 @@ void TestUseBuilder::checkMethodLocalDeclarations()
     compareUses(a, RangeInRevision(0, 19, 0, 20));
 }
 
-void TestUseBuilder::globals()
+void TestUseBuilder::globals1()
 {
     //               0         1         2         3         4         5         6         7         8
     //               01234567890123456789012345678901234567890123456789012345678901234567890123456789012
     QByteArray code("$a = 1; def foo; $a; end; class Klass; def foo; $a; end; end; module Modul; $a; end");
-    TopDUContext *top = parse(code, "globals");
+    TopDUContext *top = parse(code, "globals1");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
 
@@ -278,6 +278,28 @@ void TestUseBuilder::globals()
     ranges << RangeInRevision(0, 17, 0, 19) << RangeInRevision(0, 48, 0, 50)
            << RangeInRevision(0, 76, 0, 78);
     compareUses(a, ranges);
+}
+
+void TestUseBuilder::globals2()
+{
+    //               0         1         2         3         4         5
+    //               01234567890123456789012345678901234567890123456789012345
+    QByteArray code("$asd = 1234; class Klass; a = $asd; $asd = 1; class Sub;");
+    //           6         7
+    //       67890123456789012345678
+    code += " $asd = 'asd'; end; end";
+    TopDUContext *top = parse(code, "globals2");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // Globals are scoped properly even if they're in assignments.
+
+    Declaration *asd = top->localDeclarations().first();
+    QCOMPARE(asd->qualifiedIdentifier(), QualifiedIdentifier("$asd"));
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 30, 0, 34) << RangeInRevision(0, 36, 0, 40);
+    ranges << RangeInRevision(0, 57, 0, 61);
+    compareUses(asd, ranges);
 }
 
 void TestUseBuilder::defaultGlobals()

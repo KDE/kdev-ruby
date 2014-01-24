@@ -1190,6 +1190,43 @@ void TestDUChain::classModulesScopes()
     QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass::Thing"));
 }
 
+void TestDUChain::globals()
+{
+    QByteArray code("$asd = 1234; class Klass; a = $asd; $asd = 1; class Sub;");
+    code += " $asd = 'asd'; end; end";
+    TopDUContext *top = parse(code, "globals");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    // The goal of this test is to check that there's only 3 declarations:
+    // $asd, Klass and Sub. All assignments of $asd correspond to the same
+    // global variable.
+
+    // Only 2 declarations: $asd and Klass.
+    QVector<Declaration *> decls = top->localDeclarations();
+    Declaration *asd;
+    QCOMPARE(decls.size(), 2);
+    asd = decls.first();
+    QCOMPARE(asd->qualifiedIdentifier(), QualifiedIdentifier("$asd"));
+    QCOMPARE(decls.last()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+
+    // Only 2 declarations: a and Sub.
+    decls = decls.last()->internalContext()->localDeclarations();
+    QCOMPARE(decls.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass::a"));
+    QCOMPARE(decls.last()->qualifiedIdentifier(), QualifiedIdentifier("Klass::Sub"));
+
+    // No declarations.
+    decls = decls.last()->internalContext()->localDeclarations();
+    QVERIFY(decls.empty());
+
+    // Check that $asd is an unsure(Fixnum, String)
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(asd->abstractType());
+    QStringList list;
+    list << "Fixnum" << "String";
+    testUnsureTypes(ut, list);
+
+}
+
 //END: Declarations
 
 //BEGIN: Returning Values

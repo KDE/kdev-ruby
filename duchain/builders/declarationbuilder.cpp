@@ -824,7 +824,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, const Ab
     }
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), 0, DUContext::DontSearchInParent);
+    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node));
     if (!decs.isEmpty()) {
         dec = dynamic_cast<VariableDeclaration *>(decs.last());
         if (dec) {

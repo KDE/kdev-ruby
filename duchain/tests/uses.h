@@ -68,7 +68,8 @@ private slots:
     void block();
     void checkMethodArgumentsContext();
     void checkMethodLocalDeclarations();
-    void globals();
+    void globals1();
+    void globals2();
     void defaultGlobals();
     void classModulesScopes();
 
