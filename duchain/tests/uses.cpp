@@ -86,7 +86,7 @@ void TestUseBuilder::alias()
 {
     //               0          1        2
     //               0123456789012345678901234567
-    QByteArray code("def foo; end; alias asd foo");
+    QByteArray code("def foo; end; alias asd foo ");
     TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
@@ -390,7 +390,7 @@ void TestUseBuilder::chained()
     QByteArray code("module Modul; class Klass; def self.selfish(a, b); ");
     //                6         7         8         9         0         1
     //       12345678901234567890123456789012345678901234567890123456789012345678
-    code += "'string'; end; end; end; a = 0; Modul::Klass.selfish(a, 1).bytesize";
+    code += "'string'; end; end; end; a = 0; Modul::Klass.selfish(a, 1).bytesize ";
     TopDUContext *top = parse(code, "chained");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
@@ -507,7 +507,7 @@ void TestUseBuilder::exprIsCalling()
 {
     //               0         1         2
     //               012345678901234567890123456
-    QByteArray code("a = 0; b = 0; (a - b).to_s");
+    QByteArray code("a = 0; b = 0; (a - b).to_s ");
     TopDUContext *top = parse(code, "exprIsCalling");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
