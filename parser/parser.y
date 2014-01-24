@@ -1512,7 +1512,7 @@ f_opt: base '='
     arg
     {
         $$ = alloc_node(token_assign, $1, $4);
-        $1->flags = 3;
+        $1->flags = 10; /* TODO: not sure about this */
         $4->pos.start_col = $<num>3;
         $4->pos.end_col = parser->column;
         $4->pos.offset = parser->lex_prev - parser->blob;
