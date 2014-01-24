@@ -28,10 +28,6 @@
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/builders/typebuilder.h>
 
-/*
- * TODO: update documentation.
- */
-
 
 namespace Ruby
 {
@@ -110,6 +106,7 @@ private:
      *
      * @param id The qualified identifier for the declaration.
      * @param range The range in which the declaration is contained.
+     * @param context The context in which the declaration is being performed.
      * @returns an opened declaration.
      */
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
@@ -194,10 +191,20 @@ private:
     bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
                             DUContext *context, bool isClass = true);
 
-    /// TODO: documentation
-    /// TODO: documentation: DUChain has to be locked.
-    // TODO: change name.
-    DUContext * getContainerContext(RubyAst *node);
+    /**
+     * Get the context that contains the name of the class/module being
+     * declared. If the container of the name does not exist, then the
+     * current context is returned. For example, for the following declaration:
+     *
+     *   class; A::B; end
+     *
+     * The returned context will be the internal context of A. In this same
+     * example, if A does not exist, then the current context would've been
+     * returned.
+     * @param node The node of the class/module declaration.
+     * @note The DUChain *must* be locked before calling this method.
+     */
+    DUContext * getContainedNameContext(RubyAst *node);
 
     /**
      * This is a helper method that iterates over the call args of a method

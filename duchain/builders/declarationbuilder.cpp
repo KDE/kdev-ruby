@@ -107,7 +107,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
     ModuleDeclaration *baseClass = NULL;
-    DUContext *ctx = getContainerContext(node);
+    DUContext *ctx = getContainedNameContext(node);
 
     if (!validReDeclaration(id, range, ctx)) {
         node->foundProblems = true;
@@ -214,9 +214,8 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
-    DUContext *ctx = getContainerContext(node);
+    DUContext *ctx = getContainedNameContext(node);
 
-    // TODO
     if (!validReDeclaration(id, range, ctx, false)) {
         node->foundProblems = true;
         return;
@@ -290,12 +289,11 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
     bool isClassMethod = (m_injected) ? !m_instance : !instance;
     MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
-    // TODO: not sure about this.
-//     MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
     decl->setClassMethod(isClassMethod);
+
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
     if (currentContext()->type() == DUContext::Class)
         decl->setAccessPolicy(currentAccessPolicy());
@@ -907,7 +905,7 @@ bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id,
     return true;
 }
 
-DUContext * DeclarationBuilder::getContainerContext(RubyAst *node)
+DUContext * DeclarationBuilder::getContainedNameContext(RubyAst *node)
 {
     Node *aux = node->tree;
     Node *last = aux->r->last;
