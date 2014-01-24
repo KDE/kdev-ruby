@@ -31,11 +31,6 @@
 // Ruby
 #include <duchain/duchainexport.h>
 
-
-// Defined so tests can be marked as pending.
-#define DO_PRAGMA(x) _Pragma (#x)
-#define PENDING(x) DO_PRAGMA(message ("PENDING: " x))
-
 /*
  * This macro is used to annotate that the only purpose of a test is to
  * check that the code does not crash.

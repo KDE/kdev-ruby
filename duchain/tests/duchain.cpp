@@ -1374,7 +1374,7 @@ void TestDUChain::chainedCalls3()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
-    PENDING("This test is expected to fail, since the feature is covering is still under construction");
+    // TODO TODO: pending !!!!
     return;
 
     // a

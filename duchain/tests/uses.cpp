@@ -369,7 +369,8 @@ void TestUseBuilder::classModulesScopes()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
 
-    PENDING("This test is covering a feature that has not been implemented yet");
+    // TODO: pending !
+    return;
 
     // Klass
 //     Declaration *d = top->localDeclarations().first();
