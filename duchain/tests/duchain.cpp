@@ -37,6 +37,7 @@
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
+#include <rubydefs.h>
 
 
 QTEST_MAIN(Ruby::TestDUChain)
@@ -60,6 +61,7 @@ void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, const QStringList &l
 {
     for (uint i = 0; i < type->typesSize(); i++) {
         QualifiedIdentifier qi = type->types()[i].type<StructureType>()->qualifiedIdentifier();
+        debug() << qi.toString() << " " << list[i];
         QCOMPARE(qi, QualifiedIdentifier(list[i]));
     }
 }
@@ -1116,22 +1118,60 @@ void TestDUChain::errorOnInvalidRedeclaration2()
 
 void TestDUChain::instanceVariable()
 {
-    QByteArray code("class Klass; def foo; @lala = 1; end; def asd; @lala = 'asd'; end; end");
-    TopDUContext *top = parse(code, "instanceVariable");
+    // class Klass
+    //   @asd = 1
+    //
+    //   def foo
+    //     @asd = 'asd'
+    //     @asd
+    //   end
+    //
+    //   class Mod
+    //     def lala
+    //       @asd = 12i
+    //       @asd
+    //     end
+    //   end
+    // end
+    //
+    // a = Klass.new
+    // b = a.foo
+    // c = Klass::Mod.new
+    // d = c.lala
+
+    QByteArray code("class Klass; @asd = 1; def foo; @asd = 'asd'; @asd; end;");
+    code += " class Mod; def lala; @asd = 12i; @asd; end; end; end;";
+    code += " a = Klass.new; b = a.foo; c = Klass::Mod.new; d = c.lala";
+    TopDUContext *top = parse(code, "instanceVariable1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QList<Declaration *> ds;
     foreach (Declaration *d, top->childContexts().first()->localDeclarations())
         if (dynamic_cast<VariableDeclaration *>(d))
             ds << d;
     QCOMPARE(ds.size(), 1);
+    QCOMPARE(ds.first()->qualifiedIdentifier(), QualifiedIdentifier("Klass::@asd"));
+    QVERIFY(ds.first()->isAutoDeclaration());
 
-    Declaration *decl = ds.first();
-    QVERIFY(decl->isAutoDeclaration());
-    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(decl->abstractType());
+    // It's an unsure(Fixnum, String, Complex)
+    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(ds.first()->abstractType());
     QStringList list;
-    list << "Fixnum" << "String";
+    list << "Fixnum" << "String" << "Complex";
+    testUnsureTypes(ut, list);
+
+    // b is an unsure(Fixnum, String, Complex)
+    QVector<Declaration *> decls = top->localDeclarations();
+    Declaration *d = decls.at(2);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    ut = UnsureType::Ptr::dynamicCast(d->abstractType());
+    QVERIFY(ut);
+    testUnsureTypes(ut, list);
+
+    // d is also an unsure(Fixnum, String, Complex)
+    QCOMPARE(decls.at(4)->qualifiedIdentifier(), QualifiedIdentifier("d"));
+    ut = UnsureType::Ptr::dynamicCast(decls.at(4)->abstractType());
+    QVERIFY(ut);
     testUnsureTypes(ut, list);
 }
 
