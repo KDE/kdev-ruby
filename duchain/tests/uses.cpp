@@ -226,7 +226,7 @@ void TestUseBuilder::checkMethodArgumentsContext()
     // the context of the parameters
     DUContext *body = d->internalContext();
     QVERIFY(body);
-    QCOMPARE(body->range(), RangeInRevision(0, 15, 0, 16));
+    QCOMPARE(body->range(), RangeInRevision(0, 13, 0, 18));
     QCOMPARE(body->importedParentContexts().count(), 1);
     QCOMPARE(body->importedParentContexts().first().context(top), params);
 
