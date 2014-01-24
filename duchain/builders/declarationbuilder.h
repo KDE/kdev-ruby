@@ -131,7 +131,8 @@ private:
      */
     void declareVariable(const KDevelop::QualifiedIdentifier &id,
                          const KDevelop::AbstractType::Ptr &type,
-                         RubyAst *node);
+                         RubyAst *node,
+                         DUContext::SearchFlag flags = DUContext::NoSearchFlags);
 
     /**
      * Alias a method declaration.

@@ -352,7 +352,7 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     FunctionType::Ptr mType = currentType<FunctionType>();
     if (mType) {
         mType->addArgument(type);
-        declareVariable(getIdentifier(node), type, node);
+        declareVariable(getIdentifier(node), type, node, DUContext::DontSearchInParent);
     }
 }
 
@@ -393,7 +393,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
         else
             type = getBuiltinsType("Object", currentContext());
         rlock.unlock();
-        declareVariable(getIdentifier(node), type, node);
+        declareVariable(getIdentifier(node), type, node, DUContext::DontSearchInParent);
         rlock.lock();
     }
 }
@@ -784,7 +784,10 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     return static_cast<MethodDeclaration *>(res);
 }
 
-void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, const AbstractType::Ptr &type, RubyAst *node)
+void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
+                                         const AbstractType::Ptr &type,
+                                         RubyAst *node,
+                                         DUContext::SearchFlag flags)
 {
     DUChainWriteLocker wlock(DUChain::lock());
     RangeInRevision range;
@@ -824,7 +827,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id, const Ab
     }
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node));
+    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), 0, flags);
     if (!decs.isEmpty()) {
         dec = dynamic_cast<VariableDeclaration *>(decs.last());
         if (dec) {
