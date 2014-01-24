@@ -145,20 +145,21 @@ void TestCompletion::checkSubclassing()
     DUChainWriteLocker lock(DUChain::lock());
 
     {
-        RubyCompletionTester tester(top, "obj = Klass.new; obj.");
+        RubyCompletionTester tester(top, testBase + testKlass + "obj = Klass.new; obj.");
         shouldContain(tester.names, QStringList() << "somewhere" << "over", true);
     }
 }
 
 void TestCompletion::classMemberAccess()
 {
+    // TODO: I think that the text should not be in here anymore...
     QByteArray code("module MyModule; class Klass; end; end\n");
     TopDUContext *top = parse(code, "classMemberAccess");
     DUChainReleaser releaseTop(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     {
-        RubyCompletionTester tester(top, "MyModule::");
+        RubyCompletionTester tester(top, "module MyModule; class Klass; end; end\nMyModule::");
         shouldContain(tester.names, QStringList() << "Klass", true);
     }
 }
