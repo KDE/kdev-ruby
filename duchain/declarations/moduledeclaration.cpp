@@ -129,7 +129,7 @@ void ModuleDeclaration::clearBaseClass()
 {
     bool wasInSymbolTable = inSymbolTable();
     setInSymbolTable(false);
-    d_func_dynamic()->baseClass = KDevelop::IndexedType(0);
+    d_func_dynamic()->baseClass = KDevelop::IndexedType();
     setInSymbolTable(wasInSymbolTable);
 }
 
