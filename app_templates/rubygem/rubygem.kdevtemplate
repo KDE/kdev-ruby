@@ -5,4 +5,4 @@ Name[x-test]=xxRubyGemxx
 Category=Ruby
 Comment=Generate a simple RubyGem
 Comment[x-test]=xxGenerate a simple RubyGemxx
-ShowFilesAfterGeneration=%{dest}/lib/%{APPNAMELC}.rb
+ShowFilesAfterGeneration=%{PROJECTDIR}/lib/%{APPNAMELC}.rb
