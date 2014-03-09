@@ -356,13 +356,6 @@ void DeclarationBuilder::visitParameter(RubyAst *node)
     }
 }
 
-void DeclarationBuilder::visitVariable(RubyAst *node)
-{
-    QualifiedIdentifier id = getIdentifier(node);
-    AbstractType::Ptr type = getBuiltinsType("Object", currentContext());
-    declareVariable(id, type, node);
-}
-
 void DeclarationBuilder::visitBlock(RubyAst *node)
 {
     m_accessPolicy.push(Declaration::Public);

@@ -81,7 +81,6 @@ protected:
     virtual void visitModuleStatement(RubyAst *node) override;
     virtual void visitMethodStatement(RubyAst *node) override;
     virtual void visitParameter(RubyAst *node) override;
-    virtual void visitVariable(RubyAst *node) override;
     virtual void visitBlock(RubyAst *node) override;
     virtual void visitBlockVariables(RubyAst *node) override;
     virtual void visitReturnStatement(RubyAst *node) override;

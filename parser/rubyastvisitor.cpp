@@ -55,11 +55,6 @@ void RubyAstVisitor::visitCode(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitVariable(RubyAst *node)
-{
-    Q_UNUSED(node)
-}
-
 void RubyAstVisitor::visitName(RubyAst *node)
 {
     Q_UNUSED(node)
