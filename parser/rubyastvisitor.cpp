@@ -746,7 +746,7 @@ void RubyAstVisitor::visitWhenStatements(RubyAst *list)
     /* Check whether this is a when or an else statement */
     if (n->kind == token_when) {
         list->tree = n->cond;
-        visitNode(list);
+        visitStatements(list);
         list->tree = n->l;
         visitStatements(list);
         list->tree = n->r;
