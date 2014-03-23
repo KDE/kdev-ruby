@@ -217,7 +217,7 @@ void RubyAstVisitor::visitReturnStatement(RubyAst *node)
 void RubyAstVisitor::visitUndefStatement(RubyAst *node)
 {
     /*
-     * l -> list of undef items.
+     * r -> list of undef items.
      */
 
     Node *n = node->tree;
