@@ -21,6 +21,7 @@
 
 
 #include <QtCore/QDir>
+#include <language/duchain/indexedstring.h>
 #include <duchain/rails/autoloader.h>
 
 
