@@ -200,12 +200,16 @@ void TestDUChain::symbol()
 
 void TestDUChain::lambda()
 {
-    QByteArray code("a = ->(a) { puts a }");
+    QByteArray code("a = ->(a) { puts a }; b = lambda { |x| return x + 1 }");
     TopDUContext *top = parse(code, "lambda");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock(DUChain::lock());
 
     Declaration *dec = top->localDeclarations().at(0);
+    QVERIFY(dec->type<StructureType>());
+    QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
+
+    dec = top->localDeclarations().at(1);
     QVERIFY(dec->type<StructureType>());
     QCOMPARE(dec->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Proc"));
 }

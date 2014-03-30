@@ -776,6 +776,8 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
             visitMixin(mc, false);
         else if (name == "require_relative")
             visitRequire(mc, true);
+        else if (name == "lambda")
+            visitLambda(mc);
         else
             visitMethodCall(mc);
     } else
