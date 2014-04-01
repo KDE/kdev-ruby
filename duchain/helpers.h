@@ -72,6 +72,7 @@ using namespace KDevelop;
      * @param id The qualified identifier that identifies our node.
      * @param range The range for this node.
      * @param context A pointer to the DUContext of this node.
+     * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
@@ -85,6 +86,7 @@ using namespace KDevelop;
      * @param ctx The context where this type is available.
      * @returns a TypePtr< AbstractType > containing the required type or null
      * if it was not found.
+     * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx);
@@ -94,6 +96,7 @@ using namespace KDevelop;
      *
      * @param ctx The current context.
      * @returns a KDevelop::DUContext containing the Class class.
+     * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(const DUContext *ctx);

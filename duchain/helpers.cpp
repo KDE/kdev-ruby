@@ -63,6 +63,9 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
 {
     QList<Declaration *> decls;
 
+    // As specified by the documentation, the context *has* to be valid.
+    Q_ASSERT(context);
+
     {
         DUChainReadLocker lock(DUChain::lock());
 
@@ -87,6 +90,9 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
 
 TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
 {
+    // As specified by the documentation, the context *has* to be valid.
+    Q_ASSERT(ctx);
+
     DUChainReadLocker lock(DUChain::lock());
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
     Declaration *dec = (decls.isEmpty()) ? nullptr : decls.first();
@@ -96,6 +102,9 @@ TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
 
 DUContext * getClassContext(const DUContext *ctx)
 {
+    // As specified by the documentation, the context *has* to be valid.
+    Q_ASSERT(ctx);
+
     DUChainReadLocker lock(DUChain::lock());
     StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
     if (klass)
