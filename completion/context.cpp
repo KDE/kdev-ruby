@@ -261,7 +261,7 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     parser->setContents(expr.toUtf8());
     RubyAst *ast = parser->parse();
     if (!ast || !ast->tree)
-        return AbstractType::Ptr(NULL);
+        return AbstractType::Ptr(nullptr);
     ev.visitCode(ast);
     res = ev.lastType();
     parser->freeAst(ast);

@@ -58,7 +58,7 @@ QWidget * RubyNormalDUContext::createNavigationWidget(Declaration *decl, TopDUCo
     if (!decl) {
         if (owner())
             return new NavigationWidget(DeclarationPointer(owner()), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
-        return NULL;
+        return nullptr;
     }
     return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
 }

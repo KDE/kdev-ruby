@@ -45,7 +45,7 @@ public:
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
-    RubyAst(Node *n, KDevelop::DUContext *ctx = NULL)
+    RubyAst(Node *n, KDevelop::DUContext *ctx = nullptr)
         : tree(n), context(ctx), foundProblems(false)
     {
         /* There's nothing to do here! */
@@ -79,7 +79,7 @@ public:
      */
     NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
     {
-        if (tree == NULL)
+        if (tree == nullptr)
             value = "nil";
         else if (tree->kind == token_class || tree->kind == token_module)
             value = QString(rb_name_node(tree)->name);

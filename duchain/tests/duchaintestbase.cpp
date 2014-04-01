@@ -68,7 +68,7 @@ Declaration * DUChainTestBase::getBuiltinDeclaration(const QString &name, TopDUC
 
     QualifiedIdentifier id(list.first() + "::" + list.last());
     QList<Declaration *> decls = d->internalContext()->findDeclarations(id);
-    return (decls.isEmpty()) ? NULL : decls.last();
+    return (decls.isEmpty()) ? nullptr : decls.last();
 }
 
 void DUChainTestBase::initTestCase()

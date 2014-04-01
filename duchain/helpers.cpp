@@ -82,15 +82,15 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
             }
         }
     }
-    return (decls.length()) ? decls.last() : NULL;
+    return (decls.length()) ? decls.last() : nullptr;
 }
 
 TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
 {
     DUChainReadLocker lock(DUChain::lock());
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
-    Declaration *dec = (decls.isEmpty()) ? NULL : decls.first();
-    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(NULL);
+    Declaration *dec = (decls.isEmpty()) ? nullptr : decls.first();
+    AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(nullptr);
     return type;
 }
 
@@ -100,7 +100,7 @@ DUContext * getClassContext(const DUContext *ctx)
     StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
     if (klass)
         return klass->declaration(ctx->topContext())->internalContext();
-    return NULL;
+    return nullptr;
 }
 
 bool isUsefulType(const AbstractType::Ptr &type)
@@ -160,7 +160,7 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 int nodeListSize(Node *node)
 {
     int i = 0;
-    for (Node *n = node; n != NULL; n = n->next, i++);
+    for (Node *n = node; n != nullptr; n = n->next, i++);
     return i;
 }
 

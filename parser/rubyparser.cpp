@@ -28,7 +28,7 @@ namespace Ruby
 
 RubyParser::RubyParser()
 {
-    m_contents = NULL;
+    m_contents = nullptr;
     m_version = ruby21;
 }
 
@@ -72,7 +72,7 @@ RubyAst * RubyParser::parse()
         for (aux = res->errors; aux; aux = aux->next)
             appendProblem(aux);
         rb_free(res);
-        return NULL;
+        return nullptr;
     } else {
         m_problems.clear();
         for (aux = res->errors; aux; aux = aux->next)
@@ -85,7 +85,7 @@ RubyAst * RubyParser::parse()
 
 void RubyParser::freeAst(const RubyAst *ast)
 {
-    if (ast != NULL)
+    if (ast != nullptr)
         free_ast(ast->tree);
 }
 

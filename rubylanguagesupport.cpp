@@ -82,10 +82,10 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     , KDevelop::ILanguageSupport()
     , m_builtinsLoaded(false)
     , m_railsSwitchers(new Ruby::RailsSwitchers(this))
-    , m_viewsQuickOpenDataProvider(NULL)
-    , m_testsQuickOpenDataProvider(NULL)
-    , m_rubyFileLaunchConfiguration(NULL)
-    , m_rubyCurrentFunctionLaunchConfiguration(NULL)
+    , m_viewsQuickOpenDataProvider(nullptr)
+    , m_testsQuickOpenDataProvider(nullptr)
+    , m_rubyFileLaunchConfiguration(nullptr)
+    , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
     m_builtinsLock.lockForWrite();
 

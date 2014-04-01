@@ -184,7 +184,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
 {
     Node *aux = node->tree;
     NameAst name(node);
-    DUContext *params = NULL;
+    DUContext *params = nullptr;
 
     node->tree = aux->r;
     if (node->tree) {

@@ -136,7 +136,7 @@ private:
      * @param node The container. Used to retrieve the contents type.
      * @param hasKey False by default. Set to true if the container has
      * key values (i.e. Hash).
-     * @return the ClassType retrieved from the given parameters or NULL.
+     * @return the ClassType retrieved from the given parameters or nullptr.
      */
     ClassType::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node,
                                 bool hasKey = false);

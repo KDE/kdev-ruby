@@ -71,7 +71,7 @@ protected:
     /**
      * Parse the given @p code that belongs to the test identified by @p id.
      *
-     * @returns the KDevelop::TopDUContext for the given code, or NULL if
+     * @returns the KDevelop::TopDUContext for the given code, or nullptr if
      * something failed (i.e. parse error).
      */
     virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
@@ -87,7 +87,7 @@ protected:
      * @returns the Declaration of the required builtin method.
      */
     KDevelop::Declaration * getBuiltinDeclaration(const QString &name, KDevelop::TopDUContext *top,
-                                                  KDevelop::DUContext *ctx = NULL);
+                                                  KDevelop::DUContext *ctx = nullptr);
 
 public slots:
     void initTestCase();

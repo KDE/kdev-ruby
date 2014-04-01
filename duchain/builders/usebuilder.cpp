@@ -37,7 +37,7 @@ namespace Ruby
 UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 {
     m_editor = editor;
-    m_lastCtx = NULL;
+    m_lastCtx = nullptr;
     mcDepth = 0;
     classMethod = false;
 }
@@ -109,7 +109,7 @@ void UseBuilder::visitMethodCall(RubyAst *node)
     classMethod = false;
     visitMethodCallMembers(node);
     if (!mcDepth)
-        m_lastCtx = NULL;
+        m_lastCtx = nullptr;
 
     /* Visit the method arguments */
     node->tree = n->r;
@@ -180,10 +180,10 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
             // It's not a StructureType, therefore it's a variable or a method.
             FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
             if (!fType)
-                ctx = (last) ? last->internalContext() : NULL;
+                ctx = (last) ? last->internalContext() : nullptr;
             else {
                 StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
-                ctx = (rType) ? rType->internalContext(topContext()) : NULL;
+                ctx = (rType) ? rType->internalContext(topContext()) : nullptr;
             }
         } else
             ctx = sType->internalContext(topContext());

@@ -53,7 +53,7 @@ namespace Ruby
 ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
     , m_parser (new RubyParser)
-    , m_duContext (NULL)
+    , m_duContext (nullptr)
 {
     /* There's nothing to do here. */
 }

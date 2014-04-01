@@ -164,7 +164,7 @@ private:
      * Get the module declaration that is being mixed-in.
      *
      * @param module The include/extend AST.
-     * @returns the ModuleDeclaration that is being mixed-in, or NULL if this
+     * @returns the ModuleDeclaration that is being mixed-in, or nullptr if this
      * module doesn't actually exist.
      */
     ModuleDeclaration * getModuleDeclaration(RubyAst *module) const;

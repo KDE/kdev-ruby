@@ -67,7 +67,7 @@ using namespace KDevelop;
 
     /**
      * Find the declaration for a specified node. If no declaration was found,
-     * it will return NULL.
+     * it will return nullptr.
      *
      * @param id The qualified identifier that identifies our node.
      * @param range The range for this node.
