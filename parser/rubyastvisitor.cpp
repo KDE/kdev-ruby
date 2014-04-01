@@ -26,7 +26,7 @@
  * Note that each visitor method has a comment that explains how the AST
  * is structured for the specific statement. Only the following attributes
  * will be considered: l, r, cond and ensure. If any of these pointers are not
- * specified, it means that its value is just NULL.
+ * specified, it means that its value is just nullptr.
  */
 
 
@@ -197,7 +197,7 @@ void RubyAstVisitor::visitHash(RubyAst *node)
 
     Node *n = node->tree;
     node->tree = n->l;
-    for (; node->tree != NULL; node->tree = node->tree->next)
+    for (; node->tree != nullptr; node->tree = node->tree->next)
         visitBinary(node);
     node->tree = n;
 }
@@ -379,7 +379,7 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
     /* Just iterate over the "next" pointer. */
 
     Node *aux = node->tree;
-    for (Node *n = aux; n != NULL; n = n->next) {
+    for (Node *n = aux; n != nullptr; n = n->next) {
         visitParameter(node);
         node->tree = n->next;
     }
@@ -469,7 +469,7 @@ void RubyAstVisitor::visitSuper(RubyAst *node)
 
     Node *n = node->tree;
     node->tree = n->r;
-    for (Node *aux = n->r; aux != NULL; aux = aux->next) {
+    for (Node *aux = n->r; aux != nullptr; aux = aux->next) {
         visitNode(node);
         node->tree = aux->next;
     }
@@ -512,7 +512,7 @@ void RubyAstVisitor::visitBlockVariables(RubyAst *node)
      */
 
     Node *aux = node->tree;
-    for (Node *n = node->tree; n != NULL; n = n->next) {
+    for (Node *n = node->tree; n != nullptr; n = n->next) {
         visitNode(node);
         node->tree = n->next;
     }
@@ -725,11 +725,11 @@ void RubyAstVisitor::visitStatements(RubyAst *list)
 void RubyAstVisitor::visitIfTail(RubyAst *tail)
 {
     Node *n = tail->tree;
-    if (n == NULL)
+    if (n == nullptr)
         return;
 
     /* Check if this is an elsif or an else statement */
-    if (n->cond == NULL) {
+    if (n->cond == nullptr) {
         tail->tree = n->l;
         visitStatements(tail);
     } else
@@ -763,10 +763,10 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
     /*
      * The method call body resides in the left child. Check if this
      * is either a require, an include/extend or just a normal method call.
-     * If the left child is NULL, this is not a method call but a lambda
+     * If the left child is nullptr, this is not a method call but a lambda
      * expression.
      */
-    if (mc->tree->l != NULL) {
+    if (mc->tree->l != nullptr) {
         const QByteArray &name = QByteArray(mc->tree->l->name);
         if (name == "require")
             visitRequire(mc);

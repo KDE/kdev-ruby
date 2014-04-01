@@ -40,30 +40,30 @@ namespace Ruby
 {
 
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
-    : m_ctx(ctx), m_editor(editor), m_lastDeclaration(NULL), m_alias(false)
+    : m_ctx(ctx), m_editor(editor), m_lastDeclaration(nullptr), m_alias(false)
 {
-    m_anotherDeclaration = NULL;
-    m_lastType = AbstractType::Ptr(NULL);
-    m_lastCtx = NULL;
+    m_anotherDeclaration = nullptr;
+    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastCtx = nullptr;
 }
 
 ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     : m_ctx(parent->m_ctx), m_editor(parent->m_editor),
-        m_lastDeclaration(NULL), m_alias(false)
+        m_lastDeclaration(nullptr), m_alias(false)
 {
-    m_anotherDeclaration = NULL;
-    m_lastType = AbstractType::Ptr(NULL);
-    m_lastCtx = NULL;
+    m_anotherDeclaration = nullptr;
+    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastCtx = nullptr;
 }
 
 void ExpressionVisitor::setContext(DUContext *ctx)
 {
     m_ctx = ctx;
-    m_lastType = AbstractType::Ptr(NULL);
-    m_lastDeclaration = NULL;
-    m_anotherDeclaration = NULL;
+    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastDeclaration = nullptr;
+    m_anotherDeclaration = nullptr;
     m_alias = false;
-    m_lastCtx = NULL;
+    m_lastCtx = nullptr;
 }
 
 void ExpressionVisitor::visitParameter(RubyAst *node)
@@ -74,7 +74,7 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
         obj = getBuiltinsType("Proc", m_ctx);
     } else if (is_rest_arg(node->tree)) {
         obj = getBuiltinsType("Array", m_ctx);
-    } else if (node->tree->r != NULL) {
+    } else if (node->tree->r != nullptr) {
         ExpressionVisitor da(this);
         Node *n = node->tree;
         node->tree = node->tree->r;
@@ -96,7 +96,7 @@ void ExpressionVisitor::visitName(RubyAst *node)
     RangeInRevision range = m_editor->findRange(node->tree);
     QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
-    m_anotherDeclaration = NULL;
+    m_anotherDeclaration = nullptr;
     if (decls.size() > 0) {
         Declaration *decl = decls.last();
         m_alias = dynamic_cast<AliasDeclaration *>(decl);
@@ -250,7 +250,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
 void ExpressionVisitor::visitSuper(RubyAst *)
 {
     DUChainReadLocker lock(DUChain::lock());
-    ModuleDeclaration *mDecl = NULL;
+    ModuleDeclaration *mDecl = nullptr;
     DUContext *ctx = m_ctx->parentContext();
     Declaration *md = m_ctx->owner();
 
@@ -345,7 +345,7 @@ void ExpressionVisitor::visitCaseStatement(RubyAst *node)
     Node *aux = node->tree;
     AbstractType::Ptr res;
 
-    for (Node *n = aux->l; n != NULL; n = n->r) {
+    for (Node *n = aux->l; n != nullptr; n = n->r) {
         node->tree = n->l;
         ExpressionVisitor::visitLastStatement(node);
         res = mergeTypes(res, lastType());
@@ -366,7 +366,7 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
     if (ct) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
-        for (Node *n = ast->tree; n != NULL; n = n->next) {
+        for (Node *n = ast->tree; n != nullptr; n = n->next) {
             if (hasKey) {
                 Node *aux = ast->tree;
                 ast->tree = ast->tree->r;
@@ -425,7 +425,7 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
             // It's not a StructureType, therefore it's a variable or a method.
             FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
             if (!fType)
-                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : NULL;
+                ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : nullptr;
             else {
                 StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
                 if (rType) {
@@ -435,7 +435,7 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
                     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(fType->returnType());
                     if (ut)
                         encounter<UnsureType>(ut);
-                    ctx = NULL;
+                    ctx = nullptr;
                 }
             }
         } else {
