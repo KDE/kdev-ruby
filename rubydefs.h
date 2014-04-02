@@ -17,8 +17,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+
+
 #ifndef RUBYDEFS_H
 #define RUBYDEFS_H
+
+
+#include <KDebug>
+
 
 static int debugArea()
 {
@@ -27,4 +33,5 @@ static int debugArea()
 }
 #define debug() kDebug(debugArea())
 
-#endif
+
+#endif /* RUBYDEFS_H */
