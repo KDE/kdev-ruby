@@ -54,6 +54,8 @@ TopDUContext * DUChainTestBase::parse(const QByteArray &code, const QString &id)
     f.write(code);
     f.close();
 
+    // TODO: try to remove this line :/
+    DUChain::self()->waitForUpdate(internalBuiltinsFile(), static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
     return DUChain::self()->waitForUpdate(KDevelop::IndexedString(url),
                                             static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
 }

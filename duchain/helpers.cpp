@@ -61,7 +61,7 @@ const QByteArray getComment(RubyAst *ast)
     return (m_comment) ? QByteArray(m_comment) : QByteArray("");
 }
 
-Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, const DUContextPointer &context)
+DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, const DUContextPointer &context)
 {
     QList<Declaration *> decls;
 
@@ -88,13 +88,15 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
                 // TODO: check that this is not a bare variable.
                 if (decls.isEmpty()) {
                     lock.unlock();
-                    return getDeclarationFromPST(id, context).data();
+                    return getDeclarationFromPST(id, context);
                 }
             }
         }
     }
 
-    return (decls.length()) ? decls.last() : nullptr;
+    if (decls.isEmpty())
+        return DeclarationPointer(nullptr);
+    return DeclarationPointer(decls.last());
 }
 
 DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id, const DUContextPointer &context)

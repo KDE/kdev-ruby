@@ -74,9 +74,9 @@ using namespace KDevelop;
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
-                                                        const RangeInRevision &range,
-                                                        const DUContextPointer &context);
+    KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclaration(const QualifiedIdentifier &id,
+                                                             const RangeInRevision &range,
+                                                             const DUContextPointer &context);
 
     /**
      * Find a declaration from the Persistent Symbol Table.

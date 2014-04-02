@@ -96,14 +96,14 @@ void ExpressionVisitor::visitName(RubyAst *node)
 //     DUChainReadLocker lock;
 //     QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
-    Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx));
     DUChainReadLocker lock;
 
     m_anotherDeclaration = nullptr;
 //     if (decls.size() > 0) {
     if (decl) {
 //         Declaration *decl = decls.last();
-        m_alias = dynamic_cast<AliasDeclaration *>(decl);
+        m_alias = dynamic_cast<AliasDeclaration *>(decl.data());
         m_lastDeclaration = decl;
         // TODO: this is a regression!
 //         if (decls.size() > 1)
@@ -230,7 +230,7 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
     RangeInRevision range = m_editor->findRange(child->tree);
-    Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx));
 
     if (decl) {
         ClassType::Ptr vc = decl->abstractType().cast<ClassType>();

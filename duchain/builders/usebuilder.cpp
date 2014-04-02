@@ -46,11 +46,11 @@ void UseBuilder::visitName(RubyAst *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
-    Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
+    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (!decl || decl->range() == range)
         return;
-    UseBuilderBase::newUse(node, range, DeclarationPointer(decl));
+    UseBuilderBase::newUse(node, range, decl);
 }
 
 void UseBuilder::visitClassName(RubyAst *node)

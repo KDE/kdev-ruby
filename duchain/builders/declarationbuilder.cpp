@@ -514,7 +514,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
     RubyAst *right = new RubyAst(node->tree->r, node->context);
     QualifiedIdentifier id = QualifiedIdentifier(QString(right->tree->name));
     const RangeInRevision &range = editorFindRange(right, right);
-    KDevelop::Declaration *decl = getDeclaration(id, range, DUContextPointer(currentContext()));
+    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
         DUChainWriteLocker wlock(DUChain::lock());
@@ -534,8 +534,8 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
         AbstractType::Ptr type = decl->abstractType();
         declareVariable(aid, type, node);
     } else if (decl && decl->isFunctionDeclaration()) {
-        DUChainWriteLocker wlock(DUChain::lock());
-        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl);
+        DUChainWriteLocker wlock;
+        MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decl.data());
         node->tree = node->tree->l;
         const RangeInRevision & arange = editorFindRange(node, node);
         QualifiedIdentifier aid = getIdentifier(node);
