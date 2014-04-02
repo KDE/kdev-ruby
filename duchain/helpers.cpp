@@ -75,7 +75,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
 
         /*
          * Search first for local declarations. If no local declarations have
-         * been found, then take a look at imported contexts (p.e. method
+         * been found, then take a look at imported contexts (e.g. method
          * arguments). Otherwise, we'll search for global declarations. If
          * we're still failing at getting a valid declaration, then we check
          * the PST. The PST will only go for classes, modules and methods.
@@ -99,7 +99,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
     }
 
     if (decls.isEmpty())
-        return DeclarationPointer(nullptr);
+        return DeclarationPointer();
     return DeclarationPointer(decls.last());
 }
 
@@ -154,7 +154,7 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
         context->topContext()->updateImportsCache();
         return DeclarationPointer(decls[i].declaration());
     }
-    return DeclarationPointer(nullptr);
+    return DeclarationPointer();
 }
 
 TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
