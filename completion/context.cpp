@@ -39,7 +39,6 @@
 #include <completion/items/requirefileitem.h>
 
 
-#define LOCKDUCHAIN DUChainReadLocker rlock(DUChain::lock())
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
 #define ADD_ONE_LINER(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
@@ -256,14 +255,16 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     EditorIntegrator e;
     ExpressionVisitor ev(m_duContext.data(), &e);
 
-    LOCKDUCHAIN;
+    DUChainReadLocker lock;
     parser->setCurrentDocument(IndexedString());
     parser->setContents(expr.toUtf8());
     RubyAst *ast = parser->parse();
     if (!ast || !ast->tree)
         return AbstractType::Ptr(nullptr);
+    lock.unlock();
     ev.visitCode(ast);
     res = ev.lastType();
+    lock.lock();
     parser->freeAst(ast);
     delete parser;
 
@@ -290,7 +291,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
     StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
 
     {
-        LOCKDUCHAIN;
+        DUChainReadLocker lock;
         if (!sType || !sType->internalContext(m_duContext->topContext()))
             return QList<CompletionTreeItemPointer>();
         DUContext *current = sType->internalContext(m_duContext->topContext());
@@ -342,7 +343,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
     QList<DeclarationPair> decls;
 
     {
-        LOCKDUCHAIN;
+        DUChainReadLocker lock;
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
@@ -360,7 +361,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
     QList<DeclarationPair> decls;
 
     {
-        LOCKDUCHAIN;
+        DUChainReadLocker lock;
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
@@ -392,7 +393,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
 
     // Find everything that is accessible at this point
     {
-        LOCKDUCHAIN;
+        DUChainReadLocker lock;
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
     foreach (DeclarationPair d, decls)
