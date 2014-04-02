@@ -745,7 +745,8 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
 {
     DUChainReadLocker rlock;
     Declaration *res = nullptr;
-    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start, 0, DUContext::DontSearchInParent);
+    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start,
+                                                                    nullptr, DUContext::DontSearchInParent);
 
     // TODO: I still have to confirm this.
 //     QList<Declaration *> decls = currentContext()->findDeclarations(id);
@@ -812,7 +813,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
     }
 
     /* Let's check if this variable is already declared */
-    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), 0, flags);
+    QList<Declaration *> decs = currentContext()->findDeclarations(rId.first(), startPos(node), nullptr, flags);
     if (!decs.isEmpty()) {
         dec = dynamic_cast<VariableDeclaration *>(decs.last());
         if (dec) {

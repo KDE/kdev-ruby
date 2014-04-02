@@ -171,7 +171,7 @@ void ParseJob::run()
                 DUChainWriteLocker lock;
                 KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document(),
                                      static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled), parsePriority(),
-                                     0, ParseJob::FullSequentialProcessing);
+                                     nullptr, ParseJob::FullSequentialProcessing);
             }
         }
 

@@ -256,7 +256,7 @@ void ContextBuilder::require(const IndexedString &path)
         if (backgroundParser->isQueued(path))
             backgroundParser->removeDocument(path);
         backgroundParser->addDocument(path, TopDUContext::ForceUpdate,
-            m_priority - 1, 0, ParseJob::FullSequentialProcessing);
+            m_priority - 1, nullptr, ParseJob::FullSequentialProcessing);
         return;
     } else
         currentContext()->addImportedParentContext(ctx);

@@ -90,7 +90,7 @@ protected:
     virtual KDevelop::DUContext * contextFromNode(RubyAst *node) override;
     virtual KDevelop::DUContext * newContext(const RangeInRevision &range) override;
     virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
-                                                   ParsingEnvironmentFile *file = 0) override;
+                                                   ParsingEnvironmentFile *file = nullptr) override;
 
     /// And now methods that deal with nodes, documents and ranges.
 

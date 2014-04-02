@@ -65,7 +65,7 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
         }
         case CodeCompletionModel::Arguments:
             if (FunctionType::Ptr fType = dec->type<FunctionType>())
-                return getArgumentList(m_declaration.data(), 0);
+                return getArgumentList(m_declaration.data(), nullptr);
             break;
         }
         break;
