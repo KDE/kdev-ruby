@@ -93,17 +93,21 @@ void ExpressionVisitor::visitName(RubyAst *node)
 
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
+//     DUChainReadLocker lock;
+//     QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
+    Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
     DUChainReadLocker lock;
-    QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
     m_anotherDeclaration = nullptr;
-    if (decls.size() > 0) {
-        Declaration *decl = decls.last();
+//     if (decls.size() > 0) {
+    if (decl) {
+//         Declaration *decl = decls.last();
         m_alias = dynamic_cast<AliasDeclaration *>(decl);
         m_lastDeclaration = decl;
-        if (decls.size() > 1)
-            m_anotherDeclaration = decls.first();
+        // TODO: this is a regression!
+//         if (decls.size() > 1)
+//             m_anotherDeclaration = decls.first();
         encounter(decl->abstractType());
     }
 }

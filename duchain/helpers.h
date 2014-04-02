@@ -66,18 +66,30 @@ using namespace KDevelop;
     KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(RubyAst *ast);
 
     /**
-     * Find the declaration for a specified node. If no declaration was found,
-     * it will return nullptr.
+     * Find a specified declaration.
      *
-     * @param id The qualified identifier that identifies our node.
-     * @param range The range for this node.
-     * @param context A pointer to the DUContext of this node.
+     * @param id The qualified identifier of the declaration.
+     * @param range The range of the declaration.
+     * @param context The current context.
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT Declaration * getDeclaration(const QualifiedIdentifier &id,
                                                         const RangeInRevision &range,
                                                         const DUContextPointer &context);
+
+    /**
+     * Find a declaration from the Persistent Symbol Table.
+     *
+     * @param id The qualified indentifier of the declaration.
+     * @param context The current context.
+     * @returns the first declaration that matches the given parameters from
+     * the Persistent Symbol Table.
+     * @note The given context has to be valid.
+     * @note This method already acquires a write lock for the DUChain.
+     */
+    KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
+                                                                    const DUContextPointer &context);
 
     /**
      * Get the required builtin type.

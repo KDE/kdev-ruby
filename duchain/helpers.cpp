@@ -29,6 +29,8 @@
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/types/unsuretype.h>
 #include <language/duchain/types/integraltype.h>
+#include <language/duchain/parsingenvironment.h>
+#include <language/duchain/persistentsymboltable.h>
 
 // Ruby
 #include <duchain/helpers.h>
@@ -67,7 +69,7 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
     Q_ASSERT(context);
 
     {
-        DUChainReadLocker lock(DUChain::lock());
+        DUChainReadLocker lock;
 
         /*
          * Search first for local declarations. If no local declaration has
@@ -82,10 +84,49 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
                     decls = context->topContext()->findDeclarations(id, range.end);
                 else
                     decls = context->topContext()->findDeclarations(id);
+
+                // TODO: check that this is not a bare variable.
+                if (decls.isEmpty()) {
+                    lock.unlock();
+                    return getDeclarationFromPST(id, context).data();
+                }
             }
         }
     }
+
     return (decls.length()) ? decls.last() : nullptr;
+}
+
+DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id, const DUContextPointer &context)
+{
+    // As specified by the documentation, the context *has* to be valid.
+    Q_ASSERT(context);
+    DUChainWriteLocker lock;
+
+    uint nr;
+    static const IndexedString lang("Ruby");
+    const IndexedDeclaration *decls = nullptr;
+    PersistentSymbolTable::self().declarations(id, nr, decls);
+
+    for (uint i = 0; i < nr; ++i) {
+        // Check that the file matches the environment.
+        ParsingEnvironmentFilePointer env = DUChain::self()->environmentFileForDocument(decls[i].indexedTopContext());
+        if(!env || env->language() != lang)
+            continue;
+
+        // It doesn't have a declaration, skipping.
+        if (!decls[i].declaration())
+            continue;
+
+        // Get the declaration and add its top context to the current one.
+        TopDUContext *top = decls[i].declaration()->context()->topContext();
+        context->topContext()->addImportedParentContext(top);
+        context->topContext()->parsingEnvironmentFile()
+            ->addModificationRevisions(top->parsingEnvironmentFile()->allModificationRevisions());
+        context->topContext()->updateImportsCache();
+        return DeclarationPointer(decls[i].declaration());
+    }
+    return DeclarationPointer(nullptr);
 }
 
 TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
