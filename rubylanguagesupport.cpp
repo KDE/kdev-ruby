@@ -228,7 +228,7 @@ void LanguageSupport::runCurrentTestFunction()
 
     // Find function under the cursor (if any)
     QString currentFunction = findFunctionUnderCursor(doc);
-    kDebug(9047) << "current function" << currentFunction;
+    debug() << "current function" << currentFunction;
     if (currentFunction.isEmpty())
         return;
 
@@ -256,7 +256,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     if (!context)
         return "";
 
-    kDebug(9047) << "CONTEXT ID" << context->localScopeIdentifier();
+    debug() << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
 }
 

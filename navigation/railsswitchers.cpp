@@ -18,16 +18,19 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#include "railsswitchers.h"
 
-#include <QDir>
-#include <QFileInfo>
 
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+
+#include <interfaces/icore.h>
+#include <interfaces/iplugincontroller.h>
+#include <interfaces/idocumentcontroller.h>
 #include <language/interfaces/iquickopen.h>
 
-#include "interfaces/icore.h"
-#include "interfaces/iplugincontroller.h"
-#include "interfaces/idocumentcontroller.h"
+#include <rubydefs.h>
+#include <navigation/railsswitchers.h>
+
 
 namespace Ruby {
 
@@ -41,9 +44,9 @@ KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
 {
     KUrl currentUrl = url;
     KUrl upUrl = currentUrl.upUrl();
-    kDebug(9047) << "starting:" << upUrl;
+    debug() << "starting:" << upUrl;
     while (upUrl != currentUrl) {
-        kDebug(9047) << "checking:" << upUrl;
+        debug() << "checking:" << upUrl;
         if ( (upUrl.fileName() == "controllers" and upUrl.upUrl().fileName() == "app")
              || (upUrl.fileName() == "models" and upUrl.upUrl().fileName() == "app")
              || (upUrl.fileName() == "views" and upUrl.upUrl().fileName() == "app") )
@@ -59,7 +62,7 @@ KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
 
 void RailsSwitchers::switchToController()
 {
-    kDebug(9047) << "switching to controller";
+    debug() << "switching to controller";
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) return;
 
@@ -70,7 +73,7 @@ void RailsSwitchers::switchToController()
     QString name = file.baseName();
     QString switchTo = "";
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug(9047) << "   rails root found:" << railsRoot;
+    debug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return;
 
     if ((ext == "rb") && !name.endsWith("_controller"))
@@ -90,7 +93,7 @@ void RailsSwitchers::switchToController()
         //the controller basing on the directory information
         switchTo = file.dir().dirName();
     }
-    kDebug(9047) << "   switching to:" << switchTo;
+    debug() << "   switching to:" << switchTo;
 
     if (!switchTo.isEmpty())
     {
@@ -105,8 +108,8 @@ void RailsSwitchers::switchToController()
         KUrl plural = controllerUrl;
         plural.addPath(switchTo + "s_controller.rb");
 
-        kDebug(9047) << "   plural:" << plural;
-        kDebug(9047) << "   singular:" << singular;
+        debug() << "   plural:" << plural;
+        debug() << "   singular:" << singular;
 
         KUrl url = KUrl(QFile::exists(singular.toLocalFile()) ? singular : plural);
         KDevelop::ICore::self()->documentController()->openDocument(url);
@@ -126,7 +129,7 @@ void RailsSwitchers::switchToModel()
     QString switchTo = "";
 
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug(9047) << "   rails root found:" << railsRoot;
+    debug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return;
 
     if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
@@ -162,7 +165,7 @@ void RailsSwitchers::switchToView()
     KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        kDebug(9047) << "   showing quickopen";
+        debug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Views"));
     }
 }
@@ -196,7 +199,7 @@ KUrl::List RailsSwitchers::viewsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
 
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug(9047) << "   rails root found:" << railsRoot;
+    debug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return urls;
 
     KUrl viewsUrl = railsRoot;
@@ -224,7 +227,7 @@ KUrl::List RailsSwitchers::viewsToSwitch()
             urls << viewUrl;
         }
     }
-    kDebug(9047) << "   views found:" << urls;
+    debug() << "   views found:" << urls;
 
     return urls;
 }
@@ -305,7 +308,7 @@ void RailsSwitchers::switchToTest()
     KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        kDebug(9047) << "   showing quickopen";
+        debug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
     }
 }
