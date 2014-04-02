@@ -91,9 +91,10 @@ void ExpressionVisitor::visitName(RubyAst *node)
     if (!node->tree)
         return;
 
-    DUChainReadLocker lock(DUChain::lock());
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
+
+    DUChainReadLocker lock;
     QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
 
     m_anotherDeclaration = nullptr;
@@ -222,11 +223,11 @@ void ExpressionVisitor::visitHash(RubyAst *node)
 
 void ExpressionVisitor::visitArrayValue(RubyAst *node)
 {
-    DUChainReadLocker lock(DUChain::lock());
     RubyAst *child = new RubyAst(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
     RangeInRevision range = m_editor->findRange(child->tree);
     Declaration *decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+
     if (decl) {
         ClassType::Ptr vc = decl->abstractType().cast<ClassType>();
         if (vc)
@@ -237,7 +238,6 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
-    DUChainReadLocker rlock(DUChain::lock());
     Node *n = node->tree;
 
     node->tree = n->l;
@@ -249,7 +249,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
 
 void ExpressionVisitor::visitSuper(RubyAst *)
 {
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
     ModuleDeclaration *mDecl = nullptr;
     DUContext *ctx = m_ctx->parentContext();
     Declaration *md = m_ctx->owner();
@@ -361,8 +361,8 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 
 ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
 {
-    DUChainReadLocker lock(DUChain::lock());
     ClassType::Ptr ct = ptr.cast<ClassType>();
+
     if (ct) {
         ExpressionVisitor ev(this);
         RubyAst *ast = new RubyAst(node->tree->l, node->context);
@@ -378,8 +378,7 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
             ast->tree = n->next;
         }
         delete ast;
-    } else
-        kWarning() << "Something went wrong! Fix code...";
+    }
     return ct;
 }
 
@@ -397,6 +396,7 @@ void ExpressionVisitor::visitLastStatement(RubyAst *node)
 
 void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
 {
+    DUChainReadLocker rlock;
     RangeInRevision range;
     DUContext *ctx = (m_lastCtx) ? m_lastCtx : m_ctx;
     ExpressionVisitor ev(this);
@@ -413,9 +413,11 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
         node->tree = aux;
         range = m_editor->findRange(node->tree);
         ev.setContext(ctx);
+        rlock.unlock();
         ev.visitNode(node);
         m_lastDeclaration = ev.lastDeclaration().data();
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+        rlock.lock();
 
         /*
          * If this is a StructureType, it means that we're in a case like;

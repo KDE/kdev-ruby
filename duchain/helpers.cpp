@@ -81,7 +81,7 @@ Declaration * getDeclaration(const QualifiedIdentifier &id, const RangeInRevisio
                 if (context.data() == context->topContext())
                     decls = context->topContext()->findDeclarations(id, range.end);
                 else
-                    decls = context->topContext()->findDeclarations(id, CursorInRevision::invalid());
+                    decls = context->topContext()->findDeclarations(id);
             }
         }
     }

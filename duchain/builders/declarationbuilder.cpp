@@ -426,8 +426,8 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         lock.unlock();
         // TODO: improve this
         DeclarationBuilderBase::visitNode(aux);
-        lock.lock();
         v.visitNode(aux);
+        lock.lock();
         values << v.lastType();
         alias << v.lastAlias();
         declarations << v.lastDeclaration();
@@ -546,7 +546,6 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
 
 void DeclarationBuilder::visitMethodCall(RubyAst *node)
 {
-    DUChainReadLocker lock(DUChain::lock());
     Node *aux = node->tree;
 
     /*
@@ -554,11 +553,8 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
      * RubyAstVisitor::visitMethodCall() for more details.
      */
     node->tree = aux->l;
-    if (node->tree->kind == token_method_call) {
-        lock.unlock();
+    if (node->tree->kind == token_method_call)
         visitMethodCall(node);
-        lock.lock();
-    }
     node->tree = aux;
 
     ExpressionVisitor v(currentContext(), m_editor);
@@ -566,16 +562,12 @@ void DeclarationBuilder::visitMethodCall(RubyAst *node)
     DeclarationPointer lastMethod = v.lastDeclaration();
 
     /* Let's take a look at the method arguments */
-    lock.unlock();
     visitMethodCallArgs(node, lastMethod);
-    lock.lock();
 
     /* And last but not least, go for the block */
     node->tree = aux->cond;
     m_lastMethodCall = lastMethod.data();
-    lock.unlock();
     visitBlock(node);
-    lock.lock();
     m_lastMethodCall = nullptr;
     node->tree = aux;
 }

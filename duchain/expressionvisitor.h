@@ -41,6 +41,9 @@ class EditorIntegrator;
  * It's a visitor specialized in retrieving the types that can be extracted
  * for a particular AST. It also retrieves the last declaration that has been
  * found for a given expression.
+ *
+ * @note The DUChain should *never* be locked when calling a visit method of
+ * this class. This class already takes care of locking issues.
  */
 class KDEVRUBYDUCHAIN_EXPORT ExpressionVisitor : public RubyAstVisitor
 {
