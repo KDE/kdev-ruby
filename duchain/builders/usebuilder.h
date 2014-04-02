@@ -69,13 +69,13 @@ private:
      * The method call visitor uses this to track the depth of
      * the recursion level.
      */
-    int mcDepth;
+    int m_depth;
 
     /**
      * Used in the method call to tell if the previous recursion level
      * consisted of a class/module.
      */
-    bool classMethod;
+    bool m_classMethod;
 };
 
 } // End of namespace Ruby

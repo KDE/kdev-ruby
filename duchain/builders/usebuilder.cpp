@@ -38,8 +38,8 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 {
     m_editor = editor;
     m_lastCtx = nullptr;
-    mcDepth = 0;
-    classMethod = false;
+    m_depth = 0;
+    m_classMethod = false;
 }
 
 void UseBuilder::visitName(RubyAst *node)
@@ -102,13 +102,13 @@ void UseBuilder::visitMethodCall(RubyAst *node)
     /* Visit the method call members */
     node->tree = n->l;
     if (node->tree->kind == token_method_call) {
-        mcDepth++;
+        m_depth++;
         visitMethodCall(node);
-        mcDepth--;
+        m_depth--;
     }
-    classMethod = false;
+    m_classMethod = false;
     visitMethodCallMembers(node);
-    if (!mcDepth)
+    if (!m_depth)
         m_lastCtx = nullptr;
 
     /* Visit the method arguments */
@@ -148,7 +148,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         }
         range = editorFindRange(node, node);
         ev.setContext(ctx);
-        ev.setIsClassMethod(classMethod);
+        ev.setIsClassMethod(m_classMethod);
         ev.visitNode(node);
         if (!ev.lastType()) {
             ModuleDeclaration *cdecl = dynamic_cast<ModuleDeclaration *>(ctx->owner());
@@ -162,9 +162,9 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
 
         /* Handle the difference between instance & class methods */
         if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
-            classMethod = true;
+            m_classMethod = true;
         else
-            classMethod = false;
+            m_classMethod = false;
 
         // Mark a new use if possible
         if (last && node->tree->kind != token_self)
