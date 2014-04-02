@@ -244,7 +244,7 @@ void LanguageSupport::runCurrentTestFunction()
 QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 {
     QString function;
-    KDevelop::DUChainReadLocker lock( KDevelop::DUChain::lock() );
+    KDevelop::DUChainReadLocker lock;
 
     KDevelop::TopDUContext* topContext = KDevelop::DUChainUtils::standardContextForUrl( doc->url() );
     if (!topContext) return "";

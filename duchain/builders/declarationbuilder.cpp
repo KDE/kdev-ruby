@@ -67,7 +67,7 @@ DeclarationBuilder::~DeclarationBuilder()
 void DeclarationBuilder::closeDeclaration()
 {
     if (currentDeclaration() && lastType()) {
-        DUChainWriteLocker wlock(DUChain::lock());
+        DUChainWriteLocker wlock;
         currentDeclaration()->setType(lastType());
     }
     eventuallyAssignInternalContext();
@@ -102,7 +102,7 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
@@ -166,7 +166,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
 void DeclarationBuilder::visitSingletonClass(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     ExpressionVisitor ev(currentContext(), m_editor);
     Node *aux = node->tree;
 
@@ -210,7 +210,7 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
 
 void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
@@ -249,7 +249,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
@@ -334,7 +334,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 
 void DeclarationBuilder::visitParameter(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(currentDeclaration());
     ExpressionVisitor ev(currentContext(), m_editor);
     ev.visitParameter(node);
@@ -365,7 +365,7 @@ void DeclarationBuilder::visitBlock(RubyAst *node)
 
 void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
     Node *n = node->tree;
     if (!n)
@@ -394,7 +394,7 @@ void DeclarationBuilder::visitBlockVariables(RubyAst *node)
 void DeclarationBuilder::visitReturnStatement(RubyAst *node)
 {
     RubyAstVisitor::visitReturnStatement(node);
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     if (node->tree->l != nullptr) {
         node->tree = node->tree->l;
         if (!hasCurrentType()) {
@@ -416,7 +416,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
     QList<AbstractType::Ptr> values;
     QList<DeclarationPointer> declarations;
     QList<bool> alias;
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
 
     /* First of all, fetch the types and declaration on the right side */
     RubyAst *aux = new RubyAst(node->tree->r, node->context);
@@ -474,7 +474,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             int rest = nodeListSize(n) - 1;
             int pack = rsize - i - rest;
             ClassType::Ptr newType = getBuiltinsType("Array", currentContext()).cast<ClassType>();
-            DUChainWriteLocker wlock(DUChain::lock());
+            DUChainWriteLocker wlock;
             for (int j = pack; j > 0; j--, i++)
                 newType->addContentType(values.at(i));
             wlock.unlock();
@@ -485,7 +485,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
             }
         } else if (i < rsize) {
             if (alias.at(i)) {
-                DUChainWriteLocker wlock(DUChain::lock());
+                DUChainWriteLocker wlock;
                 RangeInRevision range = getNameRange(aux);
                 QualifiedIdentifier id = getIdentifier(aux);
                 AliasDeclaration *d = openDeclaration<AliasDeclaration>(id, range);
@@ -517,7 +517,7 @@ void DeclarationBuilder::visitAliasStatement(RubyAst *node)
     DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (is_global_var(node->tree->l) && is_global_var(right->tree)) {
-        DUChainWriteLocker wlock(DUChain::lock());
+        DUChainWriteLocker wlock;
         // If the global variable on the right is not declared, declare it as nil
         if (!decl) {
             AbstractType::Ptr type = topContext()->findDeclarations(QualifiedIdentifier("NilClass")).first()->abstractType();
@@ -587,7 +587,7 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
         if (insideClassModule()) {
             ModuleDeclaration *current = dynamic_cast<ModuleDeclaration *>(lastClassModule());
             if (current) {
-                DUChainWriteLocker lock(DUChain::lock());
+                DUChainWriteLocker lock;
                 ModuleMixin mixin;
                 mixin.included = include;
                 mixin.module = decl->indexedType();
@@ -601,7 +601,7 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
         QList<MethodDeclaration *> eMethods = getDeclaredMethods(decl);
         foreach (MethodDeclaration *md, eMethods) {
             if (md->isClassMethod() ^ include) {
-                DUChainWriteLocker wlock(DUChain::lock());
+                DUChainWriteLocker wlock;
                 aliasMethodDeclaration(md->qualifiedIdentifier(), md->range(), md);
             }
         }
@@ -611,7 +611,7 @@ void DeclarationBuilder::visitMixin(RubyAst *node, bool include)
 
 void DeclarationBuilder::visitForStatement(RubyAst *node)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     Node *aux = node->tree;
     node->tree = node->tree->cond;
     ExpressionVisitor ev(currentContext(), m_editor);
@@ -654,7 +654,7 @@ void DeclarationBuilder::visitAccessSpecifier(short int policy)
 
 void DeclarationBuilder::visitYieldStatement(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     MethodDeclaration *mDecl = currentDeclaration<MethodDeclaration>();
     Node *n = node->tree;
     if (mDecl && n->l) {
@@ -702,7 +702,7 @@ const KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *
 
 void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getName(node));
 
@@ -715,7 +715,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
                                           const RangeInRevision &range,
                                           DUContext *context)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     Declaration *res = nullptr;
     QList<Declaration *> decls = context->findDeclarations(id);
 
@@ -743,7 +743,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
 
 MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool classMethod)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     Declaration *res = nullptr;
     QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start, 0, DUContext::DontSearchInParent);
 
@@ -774,7 +774,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
                                          RubyAst *node,
                                          DUContext::SearchFlag flags)
 {
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     RangeInRevision range;
     Node *aux = node->tree;
     QualifiedIdentifier rId(id);
@@ -863,7 +863,7 @@ ModuleDeclaration * DeclarationBuilder::getModuleDeclaration(RubyAst *module) co
 
 QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(const Declaration *decl)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     QList<MethodDeclaration *> res;
     DUContext *internal = decl->internalContext();
     if (!internal)
@@ -923,7 +923,7 @@ DUContext * DeclarationBuilder::getContainedNameContext(RubyAst *node)
 
 void DeclarationBuilder::visitMethodCallArgs(const RubyAst *mc, const DeclarationPointer &lastMethod)
 {
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
     RubyAst *node = new RubyAst(mc->tree->r, mc->context);
     VariableDeclaration *vd;
     int total, left = 0, right = 0;
@@ -993,7 +993,7 @@ void DeclarationBuilder::visitMethodCallArgs(const RubyAst *mc, const Declaratio
      */
     int i = 0;
     int rest = nCaller - left - right;
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     for (Node *n = node->tree; n; i++) {
         vd = dynamic_cast<VariableDeclaration *>(args.at(i));
         node->tree = n;

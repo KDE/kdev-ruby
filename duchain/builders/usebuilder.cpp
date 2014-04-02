@@ -127,7 +127,7 @@ void UseBuilder::visitMethodCall(RubyAst *node)
 void UseBuilder::visitMethodCallMembers(RubyAst *node)
 {
     RangeInRevision range;
-    DUChainWriteLocker wlock(DUChain::lock());
+    DUChainWriteLocker wlock;
     DUContext *ctx = (m_lastCtx) ? m_lastCtx : currentContext();
     Declaration *last;
     ExpressionVisitor ev(ctx, editor());

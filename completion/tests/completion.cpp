@@ -85,7 +85,7 @@ void TestCompletion::standardAccess()
     QByteArray code("obj = 1; ");
     TopDUContext *top = parse(code, "standardAccess");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, "");
@@ -98,7 +98,7 @@ void TestCompletion::baseClass()
     QByteArray code("class BaseClass; end;");
     TopDUContext *top = parse(code, "baseClass");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, "class Klass < ");
@@ -111,7 +111,7 @@ void TestCompletion::moduleMixins()
     QByteArray code("module Awesome; end; ");
     TopDUContext *top = parse(code, "moduleMixins");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, "module MyModule; include ");
@@ -129,7 +129,7 @@ void TestCompletion::memberAccess()
     QByteArray code(testBase);
     TopDUContext *top = parse(code, "memberAccess");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, "obj = Base.new; obj.");
@@ -142,7 +142,7 @@ void TestCompletion::checkSubclassing()
     QByteArray code(testBase + testKlass);
     TopDUContext *top = parse(code, "checkSubclassing");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, testBase + testKlass + "obj = Klass.new; obj.");
@@ -156,7 +156,7 @@ void TestCompletion::classMemberAccess()
     QByteArray code("module MyModule; class Klass; end; end\n");
     TopDUContext *top = parse(code, "classMemberAccess");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         RubyCompletionTester tester(top, "module MyModule; class Klass; end; end\nMyModule::");
@@ -169,7 +169,7 @@ void TestCompletion::fileChoose()
     QByteArray code("a = 0\n");
     TopDUContext *top = parse(code, "fileChoose");
     DUChainReleaser releaseTop(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     {
         // Using the stdlib. It's ok if you've installed ruby 1.8.x or 1.9.x

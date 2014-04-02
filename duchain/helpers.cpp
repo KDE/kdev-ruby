@@ -151,7 +151,7 @@ TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
     // As specified by the documentation, the context *has* to be valid.
     Q_ASSERT(ctx);
 
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
     QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
     Declaration *dec = (decls.isEmpty()) ? nullptr : decls.first();
     AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(nullptr);
@@ -163,7 +163,7 @@ DUContext * getClassContext(const DUContext *ctx)
     // As specified by the documentation, the context *has* to be valid.
     Q_ASSERT(ctx);
 
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
     StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
     if (klass)
         return klass->declaration(ctx->topContext())->internalContext();
@@ -189,7 +189,7 @@ bool isUsefulType(const AbstractType::Ptr &type)
 
 AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 {
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(type);
     UnsureType::Ptr newUnsure = UnsureType::Ptr::dynamicCast(newType);
     UnsureType::Ptr res;

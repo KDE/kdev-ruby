@@ -149,7 +149,7 @@ void ExpressionVisitor::visitEncoding(RubyAst *)
 
 void ExpressionVisitor::visitSelf(RubyAst *)
 {
-    DUChainReadLocker lock(DUChain::lock());
+    DUChainReadLocker lock;
     AbstractType::Ptr obj;
     DUContext *ctx = m_ctx;
 

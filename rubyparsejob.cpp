@@ -103,7 +103,7 @@ void ParseJob::run()
     /* Setting up the TopDUContext features */
     KDevelop::ReferencedTopDUContext toUpdate;
     {
-        KDevelop::DUChainReadLocker duchainlock(KDevelop::DUChain::lock());
+        DUChainReadLocker lock;
         toUpdate = KDevelop::DUChainUtils::standardContextForUrl(document().toUrl());
     }
 
@@ -135,7 +135,7 @@ void ParseJob::run()
         m_duContext = builder.build(editor.url(), ast, toUpdate);
 
         // Add warnings
-        DUChainWriteLocker wlock(DUChain::lock());
+        DUChainWriteLocker wlock;
         foreach (ProblemPointer p, m_parser->m_problems)
             m_duContext->addProblem(p);
         wlock.unlock();
@@ -168,7 +168,7 @@ void ParseJob::run()
             // this prevents infinite loops in case something goes wrong (optimally, shouldn't reach here if
             // the document was already rescheduled, but there's many cases where this might still happen)
             if (!(minimumFeatures() & Rescheduled) && dependencyInQueue) {
-                DUChainWriteLocker lock(DUChain::lock());
+                DUChainWriteLocker lock;
                 KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document(),
                                      static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled), parsePriority(),
                                      0, ParseJob::FullSequentialProcessing);
@@ -190,7 +190,7 @@ void ParseJob::run()
         debug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         m_duContext = DUChain::self()->chainForDocument(document());
         if (m_duContext) {
             m_duContext->parsingEnvironmentFile()->clearModificationRevisions();

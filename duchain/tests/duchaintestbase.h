@@ -49,7 +49,7 @@ struct DUChainReleaser {
     DUChainReleaser(KDevelop::TopDUContext *top) : m_top(top) {}
     ~DUChainReleaser()
     {
-        KDevelop::DUChainWriteLocker lock(KDevelop::DUChain::lock());
+        KDevelop::DUChainWriteLocker lock;
         KDevelop::DUChain::self()->removeDocumentChain(m_top);
     }
     KDevelop::TopDUContext *m_top;

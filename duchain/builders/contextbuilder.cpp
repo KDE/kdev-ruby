@@ -56,12 +56,12 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
                                              ReferencedTopDUContext updateContext)
 {
     if (!updateContext) {
-        DUChainReadLocker lock(DUChain::lock());
+        DUChainReadLocker lock;
         updateContext = DUChain::self()->chainForDocument(url);
     }
     if (updateContext) {
         debug() << "Re-compiling" << url.str();
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
@@ -152,11 +152,11 @@ void ContextBuilder::startVisiting(RubyAst *node)
         Q_ASSERT(top);
         bool hasImports;
         {
-            DUChainReadLocker rlock(DUChain::lock());
+            DUChainReadLocker rlock;
             hasImports = !top->importedParentContexts().isEmpty();
         }
         if (!hasImports && top->url() != builtins) {
-            DUChainWriteLocker wlock(DUChain::lock());
+            DUChainWriteLocker wlock;
             TopDUContext* import = DUChain::self()->chainForDocument(builtins);
             if (!import) {
                 debug() << "importing the builtins file failed";
@@ -197,7 +197,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux->l;
     DUContext *body = openContext(node, DUContext::Other, &name);
     if (compilingContexts()) {
-        DUChainWriteLocker wlock(DUChain::lock());
+        DUChainWriteLocker wlock;
         if (params)
             body->addImportedParentContext(params);
         body->setInSymbolTable(false);
@@ -214,7 +214,7 @@ void ContextBuilder::visitBlock(RubyAst *node)
 
     DUContext *block = openContext(node, DUContext::Other);
     if (compilingContexts()) {
-        DUChainWriteLocker wlock(DUChain::lock());
+        DUChainWriteLocker wlock;
         block->setInSymbolTable(false);
     }
     RubyAstVisitor::visitBlock(node);
@@ -271,7 +271,7 @@ void ContextBuilder::appendProblem(const Node *node, const QString &msg,
     p->setDescription(msg);
     p->setSeverity(sev);
     {
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         topContext()->addProblem(ProblemPointer(p));
     }
 }
@@ -285,7 +285,7 @@ void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &
     p->setDescription(msg);
     p->setSeverity(sev);
     {
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         topContext()->addProblem(ProblemPointer(p));
     }
 }

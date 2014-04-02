@@ -47,7 +47,7 @@ QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompleti
 {
     if (!m_declaration)
         return QVariant();
-    DUChainReadLocker rlock(DUChain::lock());
+    DUChainReadLocker rlock;
 
     Declaration* dec = const_cast<Declaration*>(m_declaration.data());
     switch (role) {

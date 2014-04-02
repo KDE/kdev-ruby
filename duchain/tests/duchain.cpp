@@ -85,7 +85,7 @@ void TestDUChain::numeric()
     QByteArray code("a = 1; b = 1.2; c = 12i; d = 34r");
     TopDUContext *top = parse(code, "numeric");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec1 = top->localDeclarations().at(0);
     QVERIFY(dec1->type<StructureType>());
@@ -109,7 +109,7 @@ void TestDUChain::range()
     QByteArray code("a = 1..42");
     TopDUContext *top = parse(code, "range");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec1 = top->localDeclarations().at(0);
     QVERIFY(dec1->type<StructureType>());
@@ -121,7 +121,7 @@ void TestDUChain::stringAndRegexp()
     QByteArray code("a = 'string'; b = //");
     TopDUContext *top = parse(code, "stringAndRegexp");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -141,7 +141,7 @@ void TestDUChain::booleanAndNil()
     QByteArray code("a = true; b = false; c = nil");
     TopDUContext *top = parse(code, "booleanAndNil");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -166,7 +166,7 @@ void TestDUChain::lineFileEncoding()
     QByteArray code("a = __LINE__; b = __FILE__; c = __ENCODING__");
     TopDUContext *top = parse(code, "lineFileEncoding");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -191,7 +191,7 @@ void TestDUChain::symbol()
     QByteArray code("a = :a");
     TopDUContext *top = parse(code, "symbol");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     QVERIFY(dec->type<StructureType>());
@@ -203,7 +203,7 @@ void TestDUChain::lambda()
     QByteArray code("a = ->(a) { puts a }; b = lambda { |x| return x + 1 }");
     TopDUContext *top = parse(code, "lambda");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     QVERIFY(dec->type<StructureType>());
@@ -219,7 +219,7 @@ void TestDUChain::self()
     QByteArray code("module Modul; a = self; class Klass; b = self; end; end; c = self; def foo; self; end");
     TopDUContext *top = parse(code, "self");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // a
     Declaration *d = top->localDeclarations().first();
@@ -253,7 +253,7 @@ void TestDUChain::alias()
     QByteArray code("def foo; 'a' end; alias asd foo");
     TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     /* def foo; end */
     Declaration *dec1 = top->localDeclarations().at(0);
@@ -276,7 +276,7 @@ void TestDUChain::aliasGlobal1()
     QByteArray code("$a = 0; alias $b $a");
     TopDUContext *top = parse(code, "aliasGlobal1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -294,7 +294,7 @@ void TestDUChain::aliasGlobal2()
     QByteArray code("alias $b $a");
     TopDUContext *top = parse(code, "aliasGlobal2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -312,7 +312,7 @@ void TestDUChain::yield1()
     QByteArray code("def foo; yield; end; foo { |a, b| puts a + b }");
     TopDUContext *top = parse(code, "yield1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVector<Declaration *> decls = top->childContexts().last()->localDeclarations();
 
@@ -331,7 +331,7 @@ void TestDUChain::yield2()
     QByteArray code("def foo; yield 1, 2; yield 'a', 'b'; end; foo { |a, b| puts a + b }");
     TopDUContext *top = parse(code, "yield2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVector<Declaration *> decls = top->childContexts().last()->localDeclarations();
     QVERIFY(decls.size() == 2);
@@ -354,7 +354,7 @@ void TestDUChain::yield3()
     QByteArray code("foo { |a, b| puts a + b }");
     TopDUContext *top = parse(code, "yield3");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVector<Declaration *> decls = top->childContexts().last()->localDeclarations();
 
@@ -373,7 +373,7 @@ void TestDUChain::ifStatement()
     QByteArray code("a = if d; 1; elsif b; nil; else; 'asd'; end");
     TopDUContext *top = parse(code, "ifStatement");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
@@ -387,7 +387,7 @@ void TestDUChain::caseStatement()
     QByteArray code("f = case a; when 1; 2; nil; when 2; 1; else; 'asd'; end");
     TopDUContext *top = parse(code, "caseStatement");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(dec->abstractType());
@@ -401,7 +401,7 @@ void TestDUChain::forStatement()
     QByteArray code("for i in [1, 'str'] do; end");
     TopDUContext *top = parse(code, "forStatement");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QCOMPARE(top->localDeclarations().size(), 1);
     Declaration *d = top->localDeclarations().first();
@@ -430,7 +430,7 @@ void TestDUChain::exceptions()
     {
         TopDUContext *top = parse(code, "exceptions");
         DUChainReleaser releaser(top);
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         Declaration *d = top->localDeclarations().first();
         QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("e"));
         UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(d->abstractType());
@@ -443,7 +443,7 @@ void TestDUChain::exceptions()
         code = "begin; 1 / 0; rescue ZeroDivisionError, LoadError; end";
         TopDUContext *top = parse(code, "exceptions");
         DUChainReleaser releaser(top);
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         DOES_NOT_CRASH;
     }
 }
@@ -457,7 +457,7 @@ void TestDUChain::simpleUnsure()
     QByteArray code("a = 1; a = 'string'");
     TopDUContext *top = parse(code, "simpleUnsure");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 1);
     Declaration *d = top->localDeclarations().first();
@@ -482,7 +482,7 @@ void TestDUChain::multipleAssignment1()
     QByteArray code("a, b = 1, 'a'");
     TopDUContext *top = parse(code, "multipleAssignment1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -502,7 +502,7 @@ void TestDUChain::multipleAssignment2()
     QByteArray code("a, b = 1, [1, 2, 3]");
     TopDUContext *top = parse(code, "multipleAssignment2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -521,7 +521,7 @@ void TestDUChain::multipleAssignmentLeft()
     QByteArray code("a, b, c = 1, 2");
     TopDUContext *top = parse(code, "multipleAssignmentLeft");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -546,7 +546,7 @@ void TestDUChain::multipleAssignmentRight1()
     QByteArray code("a = 1, 2, 3");
     TopDUContext *top = parse(code, "multipleAssignmentRight1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 1);
 
@@ -560,7 +560,7 @@ void TestDUChain::multipleAssignmentRight2()
     QByteArray code("a, = 1, 2, 3");
     TopDUContext *top = parse(code, "multipleAssignmentRight2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 1);
 
@@ -574,7 +574,7 @@ void TestDUChain::multipleAssignmentStar()
     QByteArray code("b = 0; a, *, c = b, nil, 3, 4, 5, 'asd'");
     TopDUContext *top = parse(code, "multipleAssignmentStar");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -590,7 +590,7 @@ void TestDUChain::multipleAssignmentNamedStar()
     QByteArray code("a, *b, c = nil, nil, 3, 4, 5, 'asd'");
     TopDUContext *top = parse(code, "multipleAssignmentNamedStar");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -614,7 +614,7 @@ void TestDUChain::starAtTheBeginning()
     QByteArray code("*, i = 1, 2, nil");
     TopDUContext *top = parse(code, "starAtTheBeginning");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec1 = top->localDeclarations().at(0);
     QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
@@ -625,7 +625,7 @@ void TestDUChain::starAtTheEnd()
     QByteArray code("q, * = //, 1, 2");
     TopDUContext *top = parse(code, "starAtTheEnd");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec1 = top->localDeclarations().at(0);
     QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Regexp"));
@@ -636,7 +636,7 @@ void TestDUChain::emptyStar()
     QByteArray code("r, *t, w = 1, 'as'");
     TopDUContext *top = parse(code, "emptyStar");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 3);
 
@@ -655,7 +655,7 @@ void TestDUChain::unpackArray1()
     QByteArray code("a, b = [1, 2]");
     TopDUContext *top = parse(code, "unpackArray1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -671,7 +671,7 @@ void TestDUChain::unpackArray2()
     QByteArray code("a = [1, 2, 3]; b, c, d = a");
     TopDUContext *top = parse(code, "unpackArray2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 4);
 
@@ -690,7 +690,7 @@ void TestDUChain::unpackArray3()
     QByteArray code("a, b = [1, 2], 1");
     TopDUContext *top = parse(code, "unpackArray3");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -706,7 +706,7 @@ void TestDUChain::aliasedAssignment()
     QByteArray code("a = 1..2; b = 1; c, d = a, b");
     TopDUContext *top = parse(code, "aliasedAssignment");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 4);
 
@@ -724,7 +724,7 @@ void TestDUChain::withMethodCallAndBlock()
     QByteArray code("a = Class.new do; def foo; b = 0; end; end.foo(1, 2)");
     TopDUContext *top = parse(code, "withMethodCallAndBlock");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     DOES_NOT_CRASH;
 }
@@ -738,7 +738,7 @@ void TestDUChain::assignFromArrayItem1()
     QByteArray code("a = [1, 2, 3]; b = a[0]");
     TopDUContext *top = parse(code, "assignFromArrayItem1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -756,7 +756,7 @@ void TestDUChain::assignFromArrayItem2()
     QByteArray code("a = [1, '2']; b = a[0]");
     TopDUContext *top = parse(code, "assignFromArrayItem2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -776,7 +776,7 @@ void TestDUChain::assignFromHashItem()
     QByteArray code("a = { :a => 'a', b: 1 }; b = a[:a]");
     TopDUContext *top = parse(code, "assignFromHashItem");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QVERIFY(top->localDeclarations().size() == 2);
 
@@ -796,7 +796,7 @@ void TestDUChain::assignToArrayItem()
     QByteArray code("a = [1, nil]; a[1] = 'asd'");
     TopDUContext *top = parse(code, "assignToArrayItem");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().at(0);
     UnsureType::Ptr cont = d->type<ClassType>()->contentType().type<UnsureType>();
@@ -810,7 +810,7 @@ void TestDUChain::arrayInstanceVariable()
     QByteArray code("class Klass; def foo; @var = [1, 'str']; @var[0]; end; end");
     TopDUContext *top = parse(code, "arrayInstanceVariable");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     d = d->internalContext()->localDeclarations().first();
@@ -834,7 +834,7 @@ void TestDUChain::checkVariableKind()
     QByteArray code("$a = 0; @a = 0; @@a = 0; a = 0; A = 0");
     TopDUContext *top = parse(code, "checkVariableKind");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     VariableDeclaration *obj = dynamic_cast<VariableDeclaration *>(top->localDeclarations().at(0));
     QVERIFY(obj->isGlobal());
@@ -858,7 +858,7 @@ void TestDUChain::instanceClassMethodDeclaration()
     code += "def self.selfish; end; def Klass.selfis; end; end";
     TopDUContext *top = parse(code, "instanceClassMethodDeclaration");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
 
     // Instance methods
@@ -881,7 +881,7 @@ void TestDUChain::singletonMethods()
     QByteArray code("def Hash.foo; end; a = 0; def a.lala; end");
     TopDUContext *top = parse(code, "singletonMethods");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Hash.foo
     Declaration *d = getBuiltinDeclaration("Hash#foo", top, top);
@@ -901,7 +901,7 @@ void TestDUChain::singletonClass1()
     QByteArray code("a = 0; class << a; def foo; 'string'; end; end");
     TopDUContext *top = parse(code, "singletonClass1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = getBuiltinDeclaration("Fixnum#foo", top, top);
     MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
@@ -917,7 +917,7 @@ void TestDUChain::singletonClass2()
     QByteArray code("class Klass; class << self; def foo; 'string'; end; end; end");
     TopDUContext *top = parse(code, "singletonClass2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     DUContext *ctx = top->localDeclarations().first()->internalContext();
     Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
@@ -934,7 +934,7 @@ void TestDUChain::singletonClass3()
     QByteArray code("a = 0; a = 'str'; class << a; end");
     TopDUContext *top = parse(code, "singletonClass3");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     DOES_NOT_CRASH;
 }
@@ -953,7 +953,7 @@ void TestDUChain::accessPolicyMethodInClass()
     code += "private; def zxc; end; public; def iop; end; end";
     TopDUContext *top = parse(code, "accessPolicyMethodInClass");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
 
     MethodDeclaration *d1 = dynamic_cast<MethodDeclaration *>(decs.first());
@@ -975,7 +975,7 @@ void TestDUChain::accessPolicyMethodInModule()
     code += "private; def zxc; end; public; def iop; end; end";
     TopDUContext *top = parse(code, "accessPolicyMethodInClass");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
 
     MethodDeclaration *d1 = dynamic_cast<MethodDeclaration *>(decs.first());
@@ -996,7 +996,7 @@ void TestDUChain::accessPolicyOnBlock()
     QByteArray code("class Klass; end; Klass.class_eval { private; def foo; end }");
     TopDUContext *top = parse(code, "accessPolicyOnBlock");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     DOES_NOT_CRASH;
 }
@@ -1007,7 +1007,7 @@ void TestDUChain::nestedAccessPolicy()
     code += "end; def outerFoo; end; end";
     TopDUContext *top = parse(code, "nestedAccessPolicy");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
     QVector<Declaration *> decs = top->childContexts().first()->localDeclarations();
 
     // innerFoo
@@ -1024,7 +1024,7 @@ void TestDUChain::checkSubClassing1()
     QByteArray code("class Base; end; class Final < Base; end");
     TopDUContext *top = parse(code, "checkSubClassing1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Base
     ModuleDeclaration *base = dynamic_cast<ModuleDeclaration *>(top->localDeclarations().first());
@@ -1048,7 +1048,7 @@ void TestDUChain::checkSubClassing2()
     QByteArray code("module A; class B; end; end; class C < A::B; end");
     TopDUContext *top = parse(code, "checkSubClassing2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // B
     Declaration *decl = top->localDeclarations().first(); // A
@@ -1077,7 +1077,7 @@ void TestDUChain::checkSubClassingErrors()
         QByteArray code("module A; end; class B < A; end;");
         TopDUContext *top = parse(code, "checkSubClassingErrors");
         DUChainReleaser releaser(top);
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         testProblems(top, errors);
     }
 
@@ -1085,7 +1085,7 @@ void TestDUChain::checkSubClassingErrors()
         QByteArray code("A = 0; class B < A; end;");
         TopDUContext *top = parse(code, "checkSubClassingErrors");
         DUChainReleaser releaser(top);
-        DUChainWriteLocker lock(DUChain::lock());
+        DUChainWriteLocker lock;
         testProblems(top, errors);
     }
 }
@@ -1095,7 +1095,7 @@ void TestDUChain::errorOnInvalidRedeclaration1()
     QByteArray code("class Klass; end; module Module; end; class Kernel; end");
     TopDUContext *top = parse(code, "errorOnInvalidRedeclaration1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QStringList errors;
     errors << "TypeError: Module is not a module"
@@ -1108,7 +1108,7 @@ void TestDUChain::errorOnInvalidRedeclaration2()
     QByteArray code("module Klass; end; module Mod; class Klass; end; end");
     TopDUContext *top = parse(code, "errorOnInvalidRedeclaration2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     /*
      * This test just checks that no problems are being raised, since the
@@ -1184,7 +1184,7 @@ void TestDUChain::classVariable()
     QByteArray code("class Base; @@lala = 1; end; class Klass < Base; @@lala; end");
     TopDUContext *top = parse(code, "classVariable");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QList<Declaration *> ds;
     foreach (Declaration *d, top->childContexts().first()->localDeclarations())
@@ -1306,7 +1306,7 @@ void TestDUChain::multipleReturns()
     QByteArray code("def foo(a, b); return nil if a.nil?; return 'a'; end");
     TopDUContext *top = parse(code, "multipleReturns");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *decl = top->localDeclarations().first();
     FunctionType::Ptr ft = decl->type<FunctionType>();
@@ -1322,7 +1322,7 @@ void TestDUChain::implicitReturn()
     code += "a = Klass.new; b = a.item";
     TopDUContext *top = parse(code, "returnFromInstanceMethod");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().last();
     UnsureType::Ptr ut = d->type<UnsureType>();
@@ -1337,7 +1337,7 @@ void TestDUChain::mixedExplicitAndImplicitReturn()
     QByteArray code("def foo(a); return nil if a.nil?; 'a'; end");
     TopDUContext *top = parse(code, "mixedExplicitAndImplicitReturn");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *decl = top->localDeclarations().first();
     FunctionType::Ptr ft = decl->type<FunctionType>();
@@ -1369,7 +1369,7 @@ void TestDUChain::callingToInstanceMethod()
     QByteArray code("class Klass; def foo; 1; end; end; obj = Klass.new; a = obj.foo");
     TopDUContext *top = parse(code, "callingToInstanceMethod");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *obj = top->localDeclarations().at(1);
     QCOMPARE(obj->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
@@ -1384,7 +1384,7 @@ void TestDUChain::chainedCalls1()
     code += "'str'; end; end; end; a = Modul::Klass.selfish(1, 2)";
     TopDUContext *top = parse(code, "chainedCalls1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().last();
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("a"));
@@ -1397,7 +1397,7 @@ void TestDUChain::chainedCalls2()
     code += "def foo1; a = Base.new; a.foo; end; end; b = Klass.new; c = b.foo1";
     TopDUContext *top = parse(code, "chainedCalls2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // b
     Declaration *d = top->localDeclarations().at(2);
@@ -1416,7 +1416,7 @@ void TestDUChain::chainedCalls3()
     code += "end; b = A::B.new.foo";
     TopDUContext *top = parse(code, "chainedCalls3");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // TODO TODO: pending !!!!
     return;
@@ -1439,7 +1439,7 @@ void TestDUChain::super()
     code += "Base; def foo; super; end; end";
     TopDUContext *top = parse(code, "super");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     DUContext *ctx = top->localDeclarations().last()->internalContext();
     Declaration *d = ctx->findDeclarations(QualifiedIdentifier("foo")).first();
@@ -1457,7 +1457,7 @@ void TestDUChain::guessArgumentsType1()
     QByteArray code(foo + "foo 1, 'str', //");
     TopDUContext *top = parse(code, "guessArgumentsType1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
@@ -1485,7 +1485,7 @@ void TestDUChain::guessArgumentsType2()
     QByteArray code(foo + "foo 1, 'str', 1.2, //");
     TopDUContext *top = parse(code, "guessArgumentsType2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
@@ -1520,7 +1520,7 @@ void TestDUChain::guessArgumentsType3()
     QByteArray code(foo + "foo 1, 'str', 1, 2, 'str', 1.2, //");
     TopDUContext *top = parse(code, "guessArgumentsType3");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
@@ -1558,7 +1558,7 @@ void TestDUChain::showErrorOnTooFewArguments()
     QByteArray code("def foo(a, b = 0, c = 0, *d, e, f, &blk); end; foo 1, 2");
     TopDUContext *top = parse(code, "showErrorOnTooFewArguments");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QStringList errors;
     errors << "wrong number of arguments (2 for 3) (ArgumentError)";
@@ -1570,7 +1570,7 @@ void TestDUChain::showErrorOnTooManyArguments()
     QByteArray code("def foo(a, b); end; foo 1, 2, 3");
     TopDUContext *top = parse(code, "showErrorOnTooManyArguments");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QStringList errors;
     errors << "wrong number of arguments (3 for 2) (ArgumentError)";
@@ -1582,7 +1582,7 @@ void TestDUChain::hashArgument()
     QByteArray code("def foo(a, *b, c); end; foo 1, 2, 'string', :a => 'a', :b => 1");
     TopDUContext *top = parse(code, "hashArgument");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
@@ -1611,7 +1611,7 @@ void TestDUChain::setUnsureArgument()
     QByteArray code("def foo(a, b); end; foo 1, 2; foo 'asd', 2");
     TopDUContext *top = parse(code, "setUnsureArgument");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
     QVERIFY(md);
@@ -1638,7 +1638,7 @@ void TestDUChain::include1()
     code += "end; end; class Klass; include AA::BB; end";
     TopDUContext *top = parse(code, "include1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
     ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
@@ -1670,7 +1670,7 @@ void TestDUChain::include2()
     code += "include ::AA::BB; end; end; class Klass; include AA::CC; end";
     TopDUContext *top = parse(code, "include2");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
     ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(obj);
@@ -1688,7 +1688,7 @@ void TestDUChain::extend()
     code += "end; end; class Klass; extend AA::BB; end";
     TopDUContext *top = parse(code, "extend");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Check for the moduleMixins list of the class Klass
     Declaration *obj = top->findLocalDeclarations(Identifier("Klass")).first();
@@ -1713,7 +1713,7 @@ void TestDUChain::problemOnInvalidMixin()
     QByteArray code("class Lala; end; class Klass; include Lala; end");
     TopDUContext *top = parse(code, "problemOnInvalidMixin");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     QStringList list;
     list << "TypeError: wrong argument type (expected Module)";

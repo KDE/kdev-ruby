@@ -72,7 +72,7 @@ void TestUseBuilder::stringInterpolation()
     QByteArray code("a = 1; \"#{a}\"");
     TopDUContext *top = parse(code, "stringInterpolation");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     compareUses(dec, RangeInRevision(0, 10, 0, 11));
@@ -89,7 +89,7 @@ void TestUseBuilder::alias()
     QByteArray code("def foo; end; alias asd foo ");
     TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     compareUses(dec, RangeInRevision(0, 24, 0, 27));
@@ -102,7 +102,7 @@ void TestUseBuilder::assignment()
     QByteArray code("b = 0; a, *, c = b, nil, 3, 4, 5, 'asd'");
     TopDUContext *top = parse(code, "alias");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *dec = top->localDeclarations().at(0);
     compareUses(dec, RangeInRevision(0, 17, 0, 18));
@@ -115,7 +115,7 @@ void TestUseBuilder::checkSubClassing()
     QByteArray code("class Base; end; class Final < Base; end");
     TopDUContext *top = parse(code, "checkSubClassing");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QCOMPARE(d->uses().count(), 1);
@@ -132,7 +132,7 @@ void TestUseBuilder::instanceVariable()
     code += "class SubClass < Klass; @lala; end";
     TopDUContext *top = parse(code, "instanceVariable");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *decl = top->localDeclarations().first();
     decl = decl->internalContext()->findDeclarations(QualifiedIdentifier("@lala")).first();
@@ -150,7 +150,7 @@ void TestUseBuilder::classVariable()
     QByteArray code("class Base; @@lala = 1; end; class Klass < Base; @@lala; end");
     TopDUContext *top = parse(code, "classVariable");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *decl = top->localDeclarations().first();
     decl = decl->internalContext()->findDeclarations(QualifiedIdentifier("@@lala")).first();
@@ -167,7 +167,7 @@ void TestUseBuilder::exceptions()
     QByteArray code("def defas; a = 1; 1 / 0; rescue ZeroDivisionError; puts a; end");
     TopDUContext *top = parse(code, "exceptions");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // a
     Declaration *decl = top->localDeclarations().first();
@@ -191,7 +191,7 @@ void TestUseBuilder::block()
     QByteArray code("a = ''; 5.times do |a, b|; puts a; puts b; end");
     TopDUContext *top = parse(code, "block");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Outer "a" has no uses
     Declaration *a = top->localDeclarations().first();
@@ -211,7 +211,7 @@ void TestUseBuilder::checkMethodArgumentsContext()
     QByteArray code("def foo(a, b); a; end; a");
     TopDUContext *top = parse(code, "checkMethodArgumentsContext");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Check that exists a method declaration and that it has a proper
     // context for its parameters
@@ -246,7 +246,7 @@ void TestUseBuilder::checkMethodLocalDeclarations()
     QByteArray code("a = 0; def foo(a); a; end");
     TopDUContext *top = parse(code, "checkMethodLocalDeclarations");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Outer "a" has no uses
     Declaration *a = top->localDeclarations().first();
@@ -409,7 +409,7 @@ void TestUseBuilder::builtinUses()
     QByteArray code("a = 0; a.zero?; 1.zero?");
     TopDUContext *top = parse(code, "builtinUses");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // a
     Declaration *d = top->localDeclarations().first();
@@ -435,7 +435,7 @@ void TestUseBuilder::chained()
     code += "'string'; end; end; end; a = 0; Modul::Klass.selfish(a, 1).bytesize ";
     TopDUContext *top = parse(code, "chained");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Module
     Declaration *d = top->localDeclarations().first();
@@ -479,7 +479,7 @@ void TestUseBuilder::fromClassAndAbove()
     QByteArray code("class Klass; attr_reader :asd; end");
     TopDUContext *top = parse(code, "fromClassAndAbove");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // Module#attr_reader
     Declaration *d = getBuiltinDeclaration("Module#attr_reader", top);
@@ -497,7 +497,7 @@ void TestUseBuilder::super()
     code += "Base; def foo; super.bytesize; end; end";
     TopDUContext *top = parse(code, "super");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = getBuiltinDeclaration("String#bytesize", top);
     QVERIFY(d);
@@ -511,7 +511,7 @@ void TestUseBuilder::moduleMixins1()
     QByteArray code("module A; end; class Klass; include Enumerable; extend A; end");
     TopDUContext *top = parse(code, "moduleMixins1");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVERIFY(d);
@@ -552,7 +552,7 @@ void TestUseBuilder::exprIsCalling()
     QByteArray code("a = 0; b = 0; (a - b).to_s ");
     TopDUContext *top = parse(code, "exprIsCalling");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // a
     Declaration *d = top->localDeclarations().first();
@@ -577,7 +577,7 @@ void TestUseBuilder::stringCalling()
     QByteArray code("calling = 0; `String is #{calling}`.foo");
     TopDUContext *top = parse(code, "stringCalling");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     // calling
     Declaration *d = top->localDeclarations().first();
@@ -596,7 +596,7 @@ void TestUseBuilder::nestedIdentifier()
     QByteArray code("module Modul; end; class Modul::Klass; end; module Modul::Nodule; end");
     TopDUContext *top = parse(code, "nestedIdentifier");
     DUChainReleaser releaser(top);
-    DUChainWriteLocker lock(DUChain::lock());
+    DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
     QVERIFY(d);
