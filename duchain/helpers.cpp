@@ -61,7 +61,8 @@ const QByteArray getComment(RubyAst *ast)
     return (m_comment) ? QByteArray(m_comment) : QByteArray("");
 }
 
-DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, const DUContextPointer &context)
+DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
+                                  const DUContextPointer &context, DeclarationKind kind)
 {
     QList<Declaration *> decls;
 
@@ -88,7 +89,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 // TODO: check that this is not a bare variable.
                 if (decls.isEmpty()) {
                     lock.unlock();
-                    return getDeclarationFromPST(id, context);
+                    return getDeclarationFromPST(id, context, kind);
                 }
             }
         }
@@ -99,7 +100,9 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
     return DeclarationPointer(decls.last());
 }
 
-DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id, const DUContextPointer &context)
+DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
+                                         const DUContextPointer &context,
+                                         DeclarationKind kind)
 {
     // As specified by the documentation, the context *has* to be valid.
     Q_ASSERT(context);
@@ -117,8 +120,20 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id, const DU
             continue;
 
         // It doesn't have a declaration, skipping.
-        if (!decls[i].declaration())
+        Declaration *d = decls[i].declaration();
+        if (!d)
             continue;
+
+        // If it's a method declaration, check that we've got the proper one.
+        if (kind != Unknown) {
+            MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(d);
+            if (mDecl) {
+                if ((mDecl->isClassMethod() && kind != ClassMethod) ||
+                    (!mDecl->isClassMethod() && kind != InstanceMethod)) {
+                    continue;
+                }
+            }
+        }
 
         // Get the declaration and add its top context to the current one.
         TopDUContext *top = decls[i].declaration()->context()->topContext();

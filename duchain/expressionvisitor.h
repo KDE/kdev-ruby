@@ -23,8 +23,9 @@
 #define RUBY_EXPRESSIONVISITOR_H
 
 
-#include <duchain/duchainexport.h>
 #include <parser/rubyastvisitor.h>
+#include <duchain/helpers.h>
+#include <duchain/duchainexport.h>
 #include <duchain/types/classtype.h>
 
 
@@ -79,17 +80,11 @@ public:
         return m_lastDeclaration;
     }
 
-    /**
-     * @returns the other declaration (not the last one).
-     * @note use this only when dealing with method calls.
-     */
-    inline const DeclarationPointer & anotherDeclaration() const
-    {
-        return m_anotherDeclaration;
-    }
-
     /// Set the internal context to @p ctx and reset all the other attributes.
     void setContext(KDevelop::DUContext *ctx);
+
+    /// Set whether the type for the last declaration.
+    void setIsClassMethod(bool isClassMethod);
 
     /// Re-implemented from RubyAstVisitor.
     virtual void visitParameter(RubyAst *node) override;
@@ -166,11 +161,11 @@ private:
     /// The last DeclarationPointer that has been found.
     DeclarationPointer m_lastDeclaration;
 
-    /// Another declaration than the last one. Used for method calls.
-    DeclarationPointer m_anotherDeclaration;
-
     /// Tells us whether the last found declaration was an alias or not.
     bool m_alias;
+
+    /// The kind for the last declaration.
+    DeclarationKind m_declarationKind;
 };
 
 } // End of namespace Ruby

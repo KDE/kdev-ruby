@@ -39,6 +39,16 @@ class EditorIntegrator;
 using namespace KDevelop;
 
     /**
+     * The kind for the declaration to be fetched in the getDeclaration
+     * and the getDeclarationFromPST methods.
+     */
+    enum DeclarationKind {
+        Unknown         = 0,
+        ClassMethod     = 1,
+        InstanceMethod  = 2,
+    };
+
+    /**
      * Get the url of the Ruby builtins file.
      *
      * @return A KDevelop::IndexedString that contains the url of the Ruby
@@ -71,25 +81,29 @@ using namespace KDevelop;
      * @param id The qualified identifier of the declaration.
      * @param range The range of the declaration.
      * @param context The current context.
+     * @param kind The kind of the declaration.
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclaration(const QualifiedIdentifier &id,
                                                              const RangeInRevision &range,
-                                                             const DUContextPointer &context);
+                                                             const DUContextPointer &context,
+                                                             DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
      * Find a declaration from the Persistent Symbol Table.
      *
      * @param id The qualified indentifier of the declaration.
      * @param context The current context.
+     * @param kind The kind of the declaration.
      * @returns the first declaration that matches the given parameters from
      * the Persistent Symbol Table.
      * @note The given context has to be valid.
      * @note This method already acquires a write lock for the DUChain.
      */
     KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
-                                                                    const DUContextPointer &context);
+                                                                    const DUContextPointer &context,
+                                                                    DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
      * Get the required builtin type.

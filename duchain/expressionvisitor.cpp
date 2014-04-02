@@ -42,18 +42,18 @@ namespace Ruby
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(nullptr), m_alias(false)
 {
-    m_anotherDeclaration = nullptr;
     m_lastType = AbstractType::Ptr(nullptr);
     m_lastCtx = nullptr;
+    m_declarationKind = DeclarationKind::Unknown;
 }
 
 ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     : m_ctx(parent->m_ctx), m_editor(parent->m_editor),
         m_lastDeclaration(nullptr), m_alias(false)
 {
-    m_anotherDeclaration = nullptr;
     m_lastType = AbstractType::Ptr(nullptr);
     m_lastCtx = nullptr;
+    m_declarationKind = DeclarationKind::Unknown;
 }
 
 void ExpressionVisitor::setContext(DUContext *ctx)
@@ -61,9 +61,17 @@ void ExpressionVisitor::setContext(DUContext *ctx)
     m_ctx = ctx;
     m_lastType = AbstractType::Ptr(nullptr);
     m_lastDeclaration = nullptr;
-    m_anotherDeclaration = nullptr;
     m_alias = false;
     m_lastCtx = nullptr;
+    m_declarationKind = DeclarationKind::Unknown;
+}
+
+void ExpressionVisitor::setIsClassMethod(bool isClassMethod)
+{
+    if (isClassMethod)
+        m_declarationKind = DeclarationKind::ClassMethod;
+    else
+        m_declarationKind = DeclarationKind::InstanceMethod;
 }
 
 void ExpressionVisitor::visitParameter(RubyAst *node)
@@ -93,21 +101,12 @@ void ExpressionVisitor::visitName(RubyAst *node)
 
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
-//     DUChainReadLocker lock;
-//     QList<Declaration *> decls = m_ctx->findDeclarations(id, range.end);
-
-    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx));
+    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx), m_declarationKind);
     DUChainReadLocker lock;
 
-    m_anotherDeclaration = nullptr;
-//     if (decls.size() > 0) {
     if (decl) {
-//         Declaration *decl = decls.last();
         m_alias = dynamic_cast<AliasDeclaration *>(decl.data());
         m_lastDeclaration = decl;
-        // TODO: this is a regression!
-//         if (decls.size() > 1)
-//             m_anotherDeclaration = decls.first();
         encounter(decl->abstractType());
     }
 }

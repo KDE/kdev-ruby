@@ -148,6 +148,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         }
         range = editorFindRange(node, node);
         ev.setContext(ctx);
+        ev.setIsClassMethod(classMethod);
         ev.visitNode(node);
         if (!ev.lastType()) {
             ModuleDeclaration *cdecl = dynamic_cast<ModuleDeclaration *>(ctx->owner());
@@ -160,9 +161,6 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
 
         /* Handle the difference between instance & class methods */
-        MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(last);
-        if (mDecl && (mDecl->isClassMethod() != classMethod) && ev.anotherDeclaration())
-            last = ev.anotherDeclaration().data();
         if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
             classMethod = true;
         else
