@@ -226,10 +226,11 @@ void LanguageSupport::runCurrentTestFunction()
     if (!m_rubyCurrentFunctionLaunchConfiguration)
         return;
 
-    //find function under the cursor (if any)
+    // Find function under the cursor (if any)
     QString currentFunction = findFunctionUnderCursor(doc);
     kDebug(9047) << "current function" << currentFunction;
-    if (currentFunction.isEmpty()) return;
+    if (currentFunction.isEmpty())
+        return;
 
     KConfigGroup cfg = m_rubyCurrentFunctionLaunchConfiguration->config();
     setUpLaunchConfigurationBeforeRun(cfg, doc);
@@ -246,12 +247,14 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     QString function;
     KDevelop::DUChainReadLocker lock;
 
-    KDevelop::TopDUContext* topContext = KDevelop::DUChainUtils::standardContextForUrl( doc->url() );
-    if (!topContext) return "";
+    KDevelop::TopDUContext *topContext = KDevelop::DUChainUtils::standardContextForUrl(doc->url());
+    if (!topContext)
+        return "";
 
     KDevelop::CursorInRevision cursor = KDevelop::CursorInRevision(doc->cursorPosition().line(), doc->cursorPosition().column());
     KDevelop::DUContext* context = topContext->findContextAt(cursor);
-    if (!context) return "";
+    if (!context)
+        return "";
 
     kDebug(9047) << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
@@ -278,28 +281,32 @@ void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDeve
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
 }
 
-KDevelop::ILaunchConfiguration* LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)
+KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)
 {
     foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
-        if (config->name() == name) return config;
+        if (config->name() == name)
+            return config;
     }
-    KDevelop::ILaunchConfiguration *config = 0;
+    KDevelop::ILaunchConfiguration *config = nullptr;
 
     IExecutePlugin* executePlugin = core()->pluginController()->pluginForExtension("org.kdevelop.IExecutePlugin")->extension<IExecutePlugin>();
     KDevelop::LaunchConfigurationType* type = core()->runController()->launchConfigurationTypeForId(executePlugin->nativeAppConfigTypeId());
-    if (!type) return 0;
+    if (!type)
+        return nullptr;
 
     KDevelop::ILaunchMode* mode = core()->runController()->launchModeForId("execute");
-    if (!mode) return 0;
+    if (!mode)
+        return nullptr;
 
     KDevelop::ILauncher *launcher = 0;
     foreach (KDevelop::ILauncher *l, type->launchers()) {
         if (l->supportedModes().contains("execute"))
             launcher = l;
     }
-    if (!launcher) return 0;
+    if (!launcher)
+        return nullptr;
 
-    config = core()->runController()->createLaunchConfiguration(type, qMakePair(mode->id(), launcher->id()), 0, name);
+    config = core()->runController()->createLaunchConfiguration(type, qMakePair(mode->id(), launcher->id()), nullptr, name);
 
     KConfigGroup cfg = config->config();
     cfg.writeEntry("isExecutable", true);
@@ -347,7 +354,7 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow* /*window*/
 
 void LanguageSupport::setupQuickOpen()
 {
-    KDevelop::IQuickOpen* quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
+    KDevelop::IQuickOpen * quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
         m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
         quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
