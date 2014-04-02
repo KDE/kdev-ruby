@@ -36,6 +36,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/variabledeclaration.h>
 #include <duchain/types/classtype.h>
 
 
@@ -73,9 +74,11 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         DUChainReadLocker lock;
 
         /*
-         * Search first for local declarations. If no local declaration has
+         * Search first for local declarations. If no local declarations have
          * been found, then take a look at imported contexts (p.e. method
-         * arguments). Otherwise, we'll search for global declarations.
+         * arguments). Otherwise, we'll search for global declarations. If
+         * we're still failing at getting a valid declaration, then we check
+         * the PST. The PST will only go for classes, modules and methods.
          */
         decls = context->findLocalDeclarations(id.last(), range.end);
         if (decls.isEmpty()) {
@@ -86,7 +89,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 else
                     decls = context->topContext()->findDeclarations(id);
 
-                // TODO: check that this is not a bare variable.
+                // If it's empty, then we're going for some PST time!
                 if (decls.isEmpty()) {
                     lock.unlock();
                     return getDeclarationFromPST(id, context, kind);
@@ -122,6 +125,14 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
         // It doesn't have a declaration, skipping.
         Declaration *d = decls[i].declaration();
         if (!d)
+            continue;
+
+        /*
+         * Only global variables should be available for other files, but
+         * global variables are always fetched by the getDeclaration method.
+         * Therefore, at this point, we discard variable declarations.
+         */
+        if (dynamic_cast<VariableDeclaration *>(d))
             continue;
 
         // If it's a method declaration, check that we've got the proper one.
@@ -237,5 +248,5 @@ const QualifiedIdentifier getIdentifier(const RubyAst *ast)
     return KDevelop::QualifiedIdentifier(nameAst.value);
 }
 
-} // End of namespace Ruby
 
+} // End of namespace Ruby
