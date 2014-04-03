@@ -99,13 +99,14 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     ModuleDeclaration *baseClass = nullptr;
     DUContext *ctx = getContainedNameContext(node);
 
-    if (!validReDeclaration(id, range, ctx)) {
+    /* First of all, open the declaration. */
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, Class);
+    if (!decl) {
         node->foundProblems = true;
         return;
     }
 
-    /* First of all, open the declaration and set the comment */
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx);
+    // Initialize the declaration.
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(false);
@@ -163,7 +164,7 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
     node->tree = node->tree->r;
     ev.visitNode(node);
     if (ev.lastType()) {
-        Declaration *d = ev.lastDeclaration().data();
+        DeclarationPointer d = ev.lastDeclaration();
         if (d) {
             m_instance = false;
             if (!d->internalContext()) {
@@ -177,10 +178,10 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
                     d = sType->declaration(topContext());
                     m_instance = true;
                 } else
-                    d = nullptr;
+                    d = DeclarationPointer();
             }
             if (d) {
-                m_classDeclarations.push(DeclarationPointer(d));
+                m_classDeclarations.push(d);
                 m_injected = true;
                 injectContext(d->internalContext());
             }
@@ -206,12 +207,14 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     const QByteArray comment = getComment(node);
     DUContext *ctx = getContainedNameContext(node);
 
-    if (!validReDeclaration(id, range, ctx, false)) {
+    /* First of all, open the declaration. */
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, Module);
+    if (!decl) {
         node->foundProblems = true;
         return;
     }
 
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx);
+    // Initialize the declaration.
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(true);
@@ -257,7 +260,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
         if (ev.lastType()) {
-            Declaration *d = ev.lastDeclaration().data();
+            DeclarationPointer d = ev.lastDeclaration();
             if (d) {
                 if (!d->internalContext()) {
                     StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
@@ -703,15 +706,21 @@ void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
 template<typename T>
 T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
                                           const RangeInRevision &range,
-                                          DUContext *context)
+                                          DUContext *context,
+                                          DeclarationKind kind)
 {
-    DUChainReadLocker rlock;
     Declaration *res = nullptr;
+    DUChainReadLocker rlock;
     QList<Declaration *> decls = context->findDeclarations(id);
+    rlock.unlock();
 
     foreach (Declaration *d, decls) {
         Declaration *fitting = dynamic_cast<T*>(d);
-        if (fitting && (d->topContext() == context->topContext())) {
+        if (fitting) {
+            const bool valid = validReDeclaration(d, id, range, kind);
+            if (!valid)
+                return nullptr;
+
             debug() << "Reopening the following declaration: " << d->toString();
             openDeclarationInternal(d);
             d->setRange(range);
@@ -869,22 +878,25 @@ QList<MethodDeclaration *> DeclarationBuilder::getDeclaredMethods(const Declarat
     return res;
 }
 
-bool DeclarationBuilder::validReDeclaration(const QualifiedIdentifier &id,
-                                            const RangeInRevision &range,
-                                            DUContext *context, bool isClass)
+bool DeclarationBuilder::validReDeclaration(Declaration *decl, const QualifiedIdentifier &id,
+                                            const RangeInRevision &range, DeclarationKind kind)
 {
-    DUChainReadLocker rlock;
-    QList<Declaration *> decls = context->findDeclarations(id, range.end, AbstractType::Ptr(nullptr),
-                                                           nullptr, DUContext::DontSearchInParent);
+    // Check that we'll deal just with a class or a module.
+    if (kind != Class && kind != Module)
+        return true;
+    ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(decl);
+    if (!md)
+        return true;
 
-    foreach (Declaration *d, decls) {
-        ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
-        if (md && (md->isModule() == isClass)) {
-            const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), (isClass) ? "class" : "module");
-            rlock.unlock();
-            appendProblem(range, msg);
-            return false;
-        }
+    // Now let's check that we're not trying to redeclare a class as
+    // a module and viceversa.
+    const bool mod = md->isModule();
+    if ((mod && kind == Class) || (!mod && kind == Module)) {
+        const QString str = (kind == Class) ? "class" : "module";
+        const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), str);
+
+        appendProblem(range, msg);
+        return false;
     }
     return true;
 }

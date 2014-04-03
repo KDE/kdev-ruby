@@ -46,6 +46,8 @@ using namespace KDevelop;
         Unknown         = 0, /// We don't care about the declaration kind.
         ClassMethod     = 1, /// It has to be a class method.
         InstanceMethod  = 2, /// It has to be an instance method.
+        Module          = 3, /// It has to be a module.
+        Class           = 4, /// It has to be a class.
     };
 
     /**

@@ -27,6 +27,7 @@
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
 #include <duchain/builders/typebuilder.h>
+#include <duchain/helpers.h>
 
 
 namespace Ruby
@@ -101,7 +102,8 @@ private:
      */
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
                                                const RangeInRevision &range,
-                                               DUContext *context);
+                                               DUContext *context,
+                                               DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
      * Specialized version of the more generic reopenDeclaration for
@@ -170,17 +172,16 @@ private:
     /// other stuff.
 
     /**
-     * This is a helper method that tells us if this is a valid re-declaration.
-     * @param id The identifier of the declaration.
-     * @param range The range of this declaration.
-     * @param isClass Optional parameter, set to false if this is a module. The
-     * default value is true, meaning that this is expected to be a class.
-     * @returns false if we expected this to be a Class/Module and it's
-     * something else, true otherwise.
-     * @note If it returns false, it'll also append a new problem (TypeError).
+     * Check whether the given declaration can be redeclared or not.
+     *
+     * @param decl The declaration to be redeclared.
+     * @param id The id of the declaration.
+     * @param range The range of the declaration.
+     * @param kind The kind that the declaration has to have.
+     * @returns true if it's a valid re-declaration, and false otherwise.
      */
-    bool validReDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
-                            DUContext *context, bool isClass = true);
+    bool validReDeclaration(Declaration *decl, const QualifiedIdentifier &id,
+                            const RangeInRevision &range, DeclarationKind kind);
 
     /**
      * Get the context that contains the name of the class/module being
