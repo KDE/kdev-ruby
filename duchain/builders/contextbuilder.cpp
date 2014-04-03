@@ -65,9 +65,16 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
+        updateContext->updateImportsCache();
     } else
         debug() << "Compiling";
-    return ContextBuilderBase::build(url, node, updateContext);
+
+    ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
+    {
+        DUChainWriteLocker lock(DUChain::lock());
+        top->updateImportsCache();
+    }
+    return top;
 }
 
 void ContextBuilder::setEditor(EditorIntegrator *editor)
@@ -149,6 +156,12 @@ void ContextBuilder::startVisiting(RubyAst *node)
 
     if (compilingContexts()) {
         TopDUContext *top = dynamic_cast<TopDUContext *>(currentContext());
+        {
+            // Mark that we will use a cached import-structure.
+            DUChainWriteLocker lock;
+            top->updateImportsCache();
+        }
+
         Q_ASSERT(top);
         bool hasImports;
         {
@@ -161,8 +174,10 @@ void ContextBuilder::startVisiting(RubyAst *node)
             if (!import) {
                 debug() << "importing the builtins file failed";
                 Q_ASSERT(false);
-            } else
+            } else {
                 top->addImportedParentContext(import);
+                top->updateImportsCache();
+            }
         }
     }
     RubyAstVisitor::visitCode(node);
