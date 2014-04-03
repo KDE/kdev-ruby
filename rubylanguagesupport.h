@@ -125,12 +125,6 @@ public:
      */
     enum ruby_version version() const;
 
-    /// @returns true if the current project is using Rails, false otherwise.
-    inline bool isRails() const
-    {
-        return m_isRails;
-    }
-
     /// @returns the current project's root directory.
     inline const KUrl & projectRoot() const
     {
@@ -182,20 +176,10 @@ private Q_SLOTS:
     /// The slot that allows this plugin to run the current test function.
     void runCurrentTestFunction();
 
-    /** 
-     * When a project is about to be opened, we want to know if this is
-     * a Rails project.
-     */
-    void projectOpened(KDevelop::IProject *project);
-
-    /// Listening the IProjectController::projectClosed signal.
-    void projectClosed(KDevelop::IProject *project);
-
 private:
     Ruby::Highlighting *m_highlighting;
     Ruby::Refactoring *m_refactoring;
     bool m_builtinsLoaded;
-    bool m_isRails;
     KUrl m_rootUrl;
     QReadWriteLock m_builtinsLock;
     enum ruby_version m_version;

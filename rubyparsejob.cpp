@@ -41,11 +41,9 @@
 #include <duchain/builders/usebuilder.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/helpers.h>
-#include <duchain/rails/autoloader.h>
 
 
 using namespace KDevelop;
-using namespace Rails;
 
 namespace Ruby
 {
@@ -128,10 +126,8 @@ void ParseJob::run()
 
         EditorIntegrator editor;
         editor.setParseSession(m_parser);
-        AutoLoader::setProjectRoot(ruby()->projectRoot());
         DeclarationBuilder builder(&editor);
         builder.setPriority(parsePriority());
-        builder.setRails(ruby()->isRails());
         m_duContext = builder.build(editor.url(), ast, toUpdate);
 
         // Add warnings

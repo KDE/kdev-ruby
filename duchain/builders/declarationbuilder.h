@@ -57,15 +57,6 @@ public:
     /// Destructor.
     virtual ~DeclarationBuilder();
 
-    /**
-     * Tell the builder that the current project is using Rails through
-     * the @p isRails.
-     */
-    inline void setRails(bool isRails)
-    {
-        m_isRails = isRails;
-    }
-
 protected:
     /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
     virtual void closeDeclaration() override;
@@ -232,7 +223,6 @@ private:
     QStack<DeclarationPointer> m_classDeclarations;
     bool m_injected;
     bool m_instance;
-    bool m_isRails;
     Declaration *m_lastMethodCall;
 };
 

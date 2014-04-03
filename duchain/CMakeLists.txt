@@ -5,8 +5,6 @@ set(rubyduchain_SRCS
     helpers.cpp
     loader.cpp
 
-    rails/autoloader.cpp
-
     builders/declarationbuilder.cpp
     builders/usebuilder.cpp
     builders/contextbuilder.cpp

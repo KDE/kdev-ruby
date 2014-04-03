@@ -40,22 +40,19 @@
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
-#include <duchain/rails/autoloader.h>
 
 
-using namespace Rails;
 namespace Ruby
 {
 
 DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
 {
-    m_isRails = false;
+    /* There's nothing to do here. */
 }
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
     : DeclarationBuilderBase(), m_editor(editor)
 {
-    m_isRails = false;
     setEditor(editor);
 }
 
@@ -89,13 +86,6 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
     m_unresolvedImports.clear();
     m_injected = false;
     m_lastMethodCall = nullptr;
-
-    // If it's a Rails project, do all the auto-requiring magic.
-    if (m_isRails) {
-        QList<IndexedString> dirs = AutoLoader::computePaths(m_editor->url());
-        foreach (const IndexedString &d, dirs)
-            require(d);
-    }
 
     DeclarationBuilderBase::startVisiting(node);
 }
