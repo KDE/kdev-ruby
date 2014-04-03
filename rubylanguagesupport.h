@@ -125,12 +125,6 @@ public:
      */
     enum ruby_version version() const;
 
-    /// @returns the current project's root directory.
-    inline const KUrl & projectRoot() const
-    {
-        return m_rootUrl;
-    }
-
     /**
      * Setup the actions defined by this plugin.
      */
@@ -180,7 +174,6 @@ private:
     Ruby::Highlighting *m_highlighting;
     Ruby::Refactoring *m_refactoring;
     bool m_builtinsLoaded;
-    KUrl m_rootUrl;
     QReadWriteLock m_builtinsLock;
     enum ruby_version m_version;
 

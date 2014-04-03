@@ -98,11 +98,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
 
     setupQuickOpen();
 
-    m_rootUrl = KUrl();
-    connect(core()->projectController(), SIGNAL(projectOpened(KDevelop::IProject *)),
-            this, SLOT(projectOpened(KDevelop::IProject *)));
-    connect(core()->projectController(), SIGNAL(projectClosed(KDevelop::IProject*)),
-            this, SLOT(projectClosed(KDevelop::IProject*)));
     QTimer::singleShot(0, this, SLOT(updateBuiltins()));
 
     /* Retrieving Ruby version */
