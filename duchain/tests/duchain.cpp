@@ -876,6 +876,29 @@ void TestDUChain::instanceClassMethodDeclaration()
     QVERIFY(d4->isClassMethod());
 }
 
+void TestDUChain::reopenMethodDeclaration()
+{
+    QByteArray code("class Klass; def foo; ''; end; end; def foo; 'str'; end; def foo; 0; end");
+    TopDUContext *top = parse(code, "reopenMethodDeclaration");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    QVector<Declaration *> decls = top->localDeclarations();
+    QCOMPARE(decls.size(), 2);
+
+    Declaration *d = decls.first()->internalContext()->localDeclarations().first();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Klass::foo"));
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
+    AbstractType::Ptr type = md->type<FunctionType>()->returnType();
+    QCOMPARE(type->toString(), QString("String"));
+
+    d = decls.last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("foo"));
+    md = dynamic_cast<MethodDeclaration *>(d);
+    type = md->type<FunctionType>()->returnType();
+    QCOMPARE(type->toString(), QString("Fixnum"));
+}
+
 void TestDUChain::singletonMethods()
 {
     QByteArray code("def Hash.foo; end; a = 0; def a.lala; end");

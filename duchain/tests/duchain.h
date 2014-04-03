@@ -117,6 +117,7 @@ private slots:
     // Declarations
     void checkVariableKind();
     void instanceClassMethodDeclaration();
+    void reopenMethodDeclaration();
     void singletonMethods();
     void singletonClass1();
     void singletonClass2();

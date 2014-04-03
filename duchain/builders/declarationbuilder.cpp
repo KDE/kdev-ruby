@@ -288,7 +288,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 
     bool isClassMethod = (m_injected) ? !m_instance : !instance;
-    MethodDeclaration *decl = openDeclaration<MethodDeclaration>(id, range);
+    MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
@@ -741,27 +741,27 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
     return static_cast<T*>(res);
 }
 
-MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range, bool classMethod)
+MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
+                                                          const RangeInRevision &range,
+                                                          bool classMethod)
 {
     DUChainReadLocker rlock;
     Declaration *res = nullptr;
-    QList<Declaration *> decls = currentContext()->findDeclarations(id.first(), range.start,
-                                                                    nullptr, DUContext::DontSearchInParent);
 
-    // TODO: I still have to confirm this.
-//     QList<Declaration *> decls = currentContext()->findDeclarations(id);
-
+    /**
+     * Just get declarations from the current context. Moreover, we don't
+     * want declarations from imported contexts either (base classes).
+     */
+    QList<Declaration *> decls = currentContext()->findLocalDeclarations(id.first(), range.start);
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
-        if (method && (d->topContext() == currentContext()->topContext())) {
-            if (method->isClassMethod() == classMethod) {
-                debug() << "Reopening the following method: " << d->toString();
-                openDeclarationInternal(method);
-                method->setRange(range);
-                setEncountered(method);
-                res = d;
-                break;
-            }
+        if (method && (method->isClassMethod() == classMethod)) {
+            debug() << "Reopening the following method: " << d->toString();
+            openDeclarationInternal(method);
+            method->setRange(range);
+            setEncountered(method);
+            res = d;
+            break;
         }
     }
 
