@@ -92,8 +92,19 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 // If it's empty, then we're going for some PST time!
                 if (decls.isEmpty()) {
                     lock.unlock();
-                    return getDeclarationFromPST(id, context, kind);
+                    decls << getDeclarationFromPST(id, context, kind).data();
                 }
+            }
+        }
+    }
+
+    // Filter out unwanted class/instance methods.
+    if (kind == ClassMethod || kind == InstanceMethod) {
+        foreach (Declaration *d, decls) {
+            MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
+            if (md && ((md->isClassMethod() && kind == ClassMethod) ||
+                (!md->isClassMethod() && kind == InstanceMethod))) {
+                return DeclarationPointer(d);
             }
         }
     }

@@ -28,6 +28,7 @@
 // Ruby
 #include <duchain/helpers.h>
 #include <duchain/tests/uses.h>
+#include <duchain/declarations/methoddeclaration.h>
 
 
 QTEST_MAIN(Ruby::TestUseBuilder)
@@ -257,6 +258,30 @@ void TestUseBuilder::checkMethodLocalDeclarations()
     a = method->localDeclarations().first();
     QCOMPARE(a->range(), RangeInRevision(0, 15, 0, 16));
     compareUses(a, RangeInRevision(0, 19, 0, 20));
+}
+
+void TestUseBuilder::instanceClassMethods()
+{
+    // TODO
+    QSKIP("This works manually, but not in the tests :(", SkipAll);
+
+    //               0         1         2         3         4         5         6         7         8
+    //               01234567890123456789012345678901234567890123456789012345678901234567890123456789012
+    QByteArray code("class Klass; def self.foo; end; def foo; end; end; a = Klass.new; a.foo; Klass.foo");
+    TopDUContext *top = parse(code, "instanceClassMethods");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    QVector<Declaration *> decls = top->localDeclarations().first()->internalContext()->localDeclarations();
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decls.first());
+    QVERIFY(md);
+    QVERIFY(md->isClassMethod());
+    compareUses(decls.first(), RangeInRevision(0, 79, 0, 81));
+
+    md = dynamic_cast<MethodDeclaration *>(decls.last());
+    QVERIFY(md);
+    QVERIFY(!md->isClassMethod());
+    compareUses(decls.last(), RangeInRevision(0, 68, 0, 71));
 }
 
 void TestUseBuilder::globals1()
