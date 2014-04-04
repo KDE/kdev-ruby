@@ -1,6 +1,7 @@
 /* This file is part of KDevelop
  *
  * Copyright 2011 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright (C) 2014 Miquel Sabaté Solà <mikisabate@gmail.com)>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as

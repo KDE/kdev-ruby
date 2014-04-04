@@ -6,7 +6,7 @@ KDevelop Ruby Support
 - Alexander Dymo <adymo@kdevelop.org>
   (Started the plugin)
 
-- Miquel Sabaté <mikisabate@gmail.com>
+- Miquel Sabaté Solà <mikisabate@gmail.com>
   (Maintainer, Parser)
 
 == Hacking ==
@@ -15,7 +15,7 @@ Are you without a nice project and just dying to cut your teeth
 on the Ruby plugin for KDevelop?
 
 Go ahead then! You might want to get in touch with
-Miquel Sabaté (mssola), the current maintainer; and Alexander Dymo (adymo),
+Miquel Sabaté Solà (mssola), the current maintainer; and Alexander Dymo (adymo),
 the original author.
 
 You can find information here: http://techbase.kde.org/Projects/KDevelop4/Ruby
