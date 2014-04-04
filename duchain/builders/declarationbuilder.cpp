@@ -92,11 +92,10 @@ void DeclarationBuilder::startVisiting(RubyAst *node)
 
 void DeclarationBuilder::visitClassStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock;
-    RangeInRevision range = getNameRange(node);
-    QualifiedIdentifier id = getIdentifier(node);
-    const QByteArray comment = getComment(node);
     ModuleDeclaration *baseClass = nullptr;
+    RangeInRevision range = getNameRange(node);
+    const QByteArray comment = getComment(node);
+    QualifiedIdentifier id = getIdentifier(node);
     DUContext *ctx = getContainedNameContext(node);
 
     /* First of all, open the declaration. */
@@ -107,6 +106,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     }
 
     // Initialize the declaration.
+    DUChainWriteLocker lock;
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(false);
@@ -124,8 +124,10 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     node->tree = node->tree->cond;
     if (node->tree) {
         ExpressionVisitor ev(ctx, m_editor);
+        lock.unlock();
         ev.visitNode(node);
         DeclarationPointer baseDecl = ev.lastDeclaration();
+        lock.lock();
         if (baseDecl) {
             baseClass = dynamic_cast<ModuleDeclaration *>(baseDecl.data());
             if (!baseClass || baseClass->isModule())
@@ -157,7 +159,6 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
 
 void DeclarationBuilder::visitSingletonClass(RubyAst *node)
 {
-    DUChainWriteLocker wlock;
     ExpressionVisitor ev(currentContext(), m_editor);
     Node *aux = node->tree;
 
@@ -175,6 +176,7 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
                 else
                     sType = StructureType::Ptr::dynamicCast(ev.lastType());
                 if (sType) {
+                    DUChainWriteLocker lock;
                     d = sType->declaration(topContext());
                     m_instance = true;
                 } else
@@ -201,7 +203,6 @@ void DeclarationBuilder::visitSingletonClass(RubyAst *node)
 
 void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 {
-    DUChainWriteLocker wlock;
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
@@ -215,6 +216,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     }
 
     // Initialize the declaration.
+    DUChainWriteLocker wlock;
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->setIsModule(true);
@@ -242,7 +244,6 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
 
 void DeclarationBuilder::visitMethodStatement(RubyAst *node)
 {
-    DUChainWriteLocker lock;
     RangeInRevision range = getNameRange(node);
     QualifiedIdentifier id = getIdentifier(node);
     const QByteArray comment = getComment(node);
@@ -263,6 +264,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
             DeclarationPointer d = ev.lastDeclaration();
             if (d) {
                 if (!d->internalContext()) {
+                    DUChainWriteLocker lock;
                     StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
                     d = (sType) ? sType->declaration(topContext()) : nullptr;
                     instance = true;
@@ -280,8 +282,11 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     }
     node->tree = aux;
 
+    // Re-open the declaration.
     bool isClassMethod = (m_injected) ? !m_instance : !instance;
     MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
+
+    DUChainWriteLocker lock;
     if (!comment.isEmpty())
         decl->setComment(comment);
     decl->clearYieldTypes();
@@ -295,7 +300,9 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     decl->setInSymbolTable(false);
     decl->setType(type);
     decl->clearDefaultParameters();
+    lock.unlock();
     DeclarationBuilderBase::visitMethodStatement(node);
+    lock.lock();
     closeDeclaration();
     closeType();
 
@@ -308,10 +315,12 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
     if (node->tree && node->tree->l) {
         node->tree = get_last_expr(node->tree->l);
         if (node->tree->kind != token_return) {
+            lock.unlock();
             ExpressionVisitor ev(node->context, m_editor);
             ev.visitNode(node);
             if (ev.lastType())
                 type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
+            lock.lock();
         }
     }
     node->tree = aux;
@@ -733,6 +742,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
     }
 
     if (!res) {
+        DUChainWriteLocker lock;
         injectContext(context);
         res = openDeclaration<T>(id, range);
         closeInjectedContext();
@@ -752,6 +762,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
      * want declarations from imported contexts either (base classes).
      */
     QList<Declaration *> decls = currentContext()->findLocalDeclarations(id.first(), range.start);
+    rlock.unlock();
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
         if (method && (method->isClassMethod() == classMethod)) {
@@ -764,8 +775,10 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
         }
     }
 
-    if (!res)
+    if (!res) {
+        DUChainWriteLocker lock;
         res = openDeclaration<MethodDeclaration>(id, range);
+    }
     return static_cast<MethodDeclaration *>(res);
 }
 

@@ -98,7 +98,8 @@ private:
      * @param id The qualified identifier for the declaration.
      * @param range The range in which the declaration is contained.
      * @param context The context in which the declaration is being performed.
-     * @returns an opened declaration.
+     * @returns an opened declaration. It returns nullptr if something
+     * went wrong.
      */
     template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
                                                const RangeInRevision &range,
@@ -106,9 +107,15 @@ private:
                                                DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
-     * Specialized version of the more generic reopenDeclaration for
-     * MethodDeclaration's. It takes an extra argument @p classMethod. Set to
-     * true to specify that a class method is being opened, set to false otherwise.
+     * Open or re-open a method declaration in the current context. This is,
+     * indeed, an specialization of the reopenDeclaration method.
+     *
+     * @param id The qualified identifier for the declaration.
+     * @param range The range in which the declaration is contained.
+     * @param classMethod Set to true of this is a class method, otherwise set
+     * false if this is an instance method.
+     * @returns an opened method declaration. It returns nullptr if something
+     * went wrong.
      */
     MethodDeclaration * reopenDeclaration(const QualifiedIdentifier &id,
                                           const RangeInRevision &range,
@@ -132,6 +139,7 @@ private:
      * @param id The id of the new method.
      * @param range The range of the new method.
      * @param decl The MethodDeclaration that it's being aliased.
+     * @note the DUChain *must* be locked before calling this method.
      */
     void aliasMethodDeclaration(const KDevelop::QualifiedIdentifier &id,
                                 const KDevelop::RangeInRevision &range,
@@ -165,7 +173,6 @@ private:
     /**
      * @returns the declared methods inside the given declaration @p decl,
      * which is a class or a module.
-     * @note This method already acquires a read lock for the DUChain.
      */
     QList<MethodDeclaration *> getDeclaredMethods(const Declaration *decl);
 
@@ -194,7 +201,6 @@ private:
      * example, if A does not exist, then the current context would've been
      * returned.
      * @param node The node of the class/module declaration.
-     * @note The DUChain *must* be locked before calling this method.
      */
     DUContext * getContainedNameContext(RubyAst *node);
 
