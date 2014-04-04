@@ -110,7 +110,7 @@ protected:
     virtual void visitFile(RubyAst *node);
     virtual void visitEncoding(RubyAst *node);
     virtual void visitSelf(RubyAst *node);
-    virtual void visitAccessSpecifier(short policy);
+    virtual void visitAccessSpecifier(const short int policy);
     virtual void visitClassName(RubyAst *node);
     virtual void visitRescue(RubyAst *node);
     virtual void visitRescueArg(RubyAst *node);

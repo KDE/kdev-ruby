@@ -648,7 +648,7 @@ void DeclarationBuilder::visitForStatement(RubyAst *node)
     node->tree = aux;
 }
 
-void DeclarationBuilder::visitAccessSpecifier(short int policy)
+void DeclarationBuilder::visitAccessSpecifier(const short int policy)
 {
     switch (policy) {
     case 0:

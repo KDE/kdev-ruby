@@ -81,7 +81,7 @@ protected:
     virtual void visitMethodCall(RubyAst *node) override;
     virtual void visitMixin(RubyAst *node, bool include) override;
     virtual void visitForStatement(RubyAst *node) override;
-    virtual void visitAccessSpecifier(short int policy) override;
+    virtual void visitAccessSpecifier(const short int policy) override;
     virtual void visitYieldStatement(RubyAst *node) override;
     virtual void visitRescueArg(RubyAst *node) override;
 

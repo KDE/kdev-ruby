@@ -578,7 +578,7 @@ void RubyAstVisitor::visitSelf(RubyAst *node)
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitAccessSpecifier(short int policy)
+void RubyAstVisitor::visitAccessSpecifier(const short int policy)
 {
     Q_UNUSED(policy)
 }
