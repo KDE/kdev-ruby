@@ -92,7 +92,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 // If it's empty, then we're going for some PST time!
                 if (decls.isEmpty()) {
                     lock.unlock();
-                    decls << getDeclarationFromPST(id, context, kind).data();
+                    return getDeclarationFromPST(id, context, kind);
                 }
             }
         }
