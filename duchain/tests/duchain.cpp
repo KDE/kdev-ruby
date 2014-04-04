@@ -1383,6 +1383,25 @@ void TestDUChain::nilReturn()
     QCOMPARE(rt->qualifiedIdentifier(), QualifiedIdentifier("NilClass"));
 }
 
+void TestDUChain::instanceClassMethodsReturn()
+{
+    QByteArray code("class Klass; def self.foo; 0; end; def foo; ''; end; end; a = Klass.new; b = a.foo; c = Klass.foo");
+    TopDUContext *top = parse(code, "instanceClassMethodsReturn");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    debug() << top->localDeclarations().size();
+
+    Declaration *d = top->localDeclarations().at(2);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("String"));
+
+    d = top->localDeclarations().last();
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
+    debug() << d->type<StructureType>()->qualifiedIdentifier().toString();
+    QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
+}
+
 //END: Returning Values
 
 //BEGIN: Methods

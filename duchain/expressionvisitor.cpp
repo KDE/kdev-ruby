@@ -74,6 +74,11 @@ void ExpressionVisitor::setIsClassMethod(bool isClassMethod)
         m_declarationKind = DeclarationKind::InstanceMethod;
 }
 
+void ExpressionVisitor::setDeclarationKind(const DeclarationKind kind)
+{
+    m_declarationKind = kind;
+}
+
 void ExpressionVisitor::visitParameter(RubyAst *node)
 {
     AbstractType::Ptr obj;
@@ -243,10 +248,16 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
 {
     Node *n = node->tree;
 
+    // Handle recursive method calls here.
     node->tree = n->l;
     if (node->tree->kind == token_method_call)
         visitMethodCall(node);
+
+    // Let's evaluate now the members of the current method call.
+    DeclarationKind oldKind = m_declarationKind;
+    m_declarationKind = DeclarationKind::InstanceMethod;
     visitMethodCallMembers(node);
+    m_declarationKind = oldKind;
     node->tree = n;
 }
 
@@ -416,6 +427,7 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
         node->tree = aux;
         range = m_editor->findRange(node->tree);
         ev.setContext(ctx);
+        ev.setDeclarationKind(m_declarationKind);
         rlock.unlock();
         ev.visitNode(node);
         m_lastDeclaration = ev.lastDeclaration().data();
@@ -447,6 +459,12 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
             encounter(ev.lastType());
             ctx = sType->internalContext(ctx->topContext());
         }
+
+        /* Handle the difference between instance & class methods */
+        if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
+            m_declarationKind = ClassMethod;
+        else
+            m_declarationKind = InstanceMethod;
 
         // No context found, we can't go any further.
         if (!ctx)

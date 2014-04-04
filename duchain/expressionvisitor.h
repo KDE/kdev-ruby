@@ -86,6 +86,9 @@ public:
     /// Set whether the type for the last declaration.
     void setIsClassMethod(bool isClassMethod);
 
+    /// Set the declaration kind to @param kind.
+    void setDeclarationKind(const DeclarationKind kind);
+
     /// Re-implemented from RubyAstVisitor.
     virtual void visitParameter(RubyAst *node) override;
 

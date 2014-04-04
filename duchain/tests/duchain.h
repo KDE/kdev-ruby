@@ -143,6 +143,7 @@ private slots:
     void implicitReturn();
     void mixedExplicitAndImplicitReturn();
     void nilReturn();
+    void instanceClassMethodsReturn();
 
     // Methods
     void callingToInstanceMethod();
