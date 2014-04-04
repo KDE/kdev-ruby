@@ -55,10 +55,9 @@ void UseBuilder::visitName(RubyAst *node)
 
 void UseBuilder::visitClassName(RubyAst *node)
 {
-    DUChainWriteLocker wlock;
-    ExpressionVisitor ev(currentContext(), m_editor);
     Node *aux = node->tree;
     Node *last = node->tree->last;
+    ExpressionVisitor ev(currentContext(), m_editor);
 
     for (Node *n = aux; n && last; n = n->next) {
         node->tree = n;
@@ -77,7 +76,6 @@ void UseBuilder::visitMixin(RubyAst *node, bool include)
 {
     Q_UNUSED(include);
 
-    DUChainWriteLocker lock;
     ExpressionVisitor ev(currentContext(), m_editor);
     Node *aux = node->tree;
     Node *n = (aux->r->l) ? aux->r->l : aux->r;
@@ -127,7 +125,6 @@ void UseBuilder::visitMethodCall(RubyAst *node)
 void UseBuilder::visitMethodCallMembers(RubyAst *node)
 {
     RangeInRevision range;
-    DUChainWriteLocker wlock;
     DUContext *ctx = (m_lastCtx) ? m_lastCtx : currentContext();
     Declaration *last;
     ExpressionVisitor ev(ctx, editor());
@@ -151,7 +148,9 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
         ev.setIsClassMethod(m_classMethod);
         ev.visitNode(node);
         if (!ev.lastType()) {
+            DUChainReadLocker lock;
             ModuleDeclaration *cdecl = dynamic_cast<ModuleDeclaration *>(ctx->owner());
+            lock.unlock();
             if (cdecl && !cdecl->isModule()) {
                 ev.setContext(getClassContext(currentContext()));
                 ev.visitNode(node);
@@ -180,11 +179,14 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
             if (!fType)
                 ctx = (last) ? last->internalContext() : nullptr;
             else {
+                DUChainReadLocker lock;
                 StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
                 ctx = (rType) ? rType->internalContext(topContext()) : nullptr;
             }
-        } else
+        } else {
+            DUChainReadLocker lock;
             ctx = sType->internalContext(topContext());
+        }
     }
     m_lastCtx = ctx;
 }
