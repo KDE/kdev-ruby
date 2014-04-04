@@ -1435,14 +1435,14 @@ void TestDUChain::chainedCalls2()
 
 void TestDUChain::chainedCalls3()
 {
+    // TODO
+    QSKIP("There's still some work to do before getting this test to pass", SkipAll);
+
     QByteArray code("module A; class B; def foo; //; end; end; a = B.new.foo;");
     code += "end; b = A::B.new.foo";
     TopDUContext *top = parse(code, "chainedCalls3");
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
-
-    // TODO TODO: pending !!!!
-    return;
 
     // a
     Declaration *d = top->localDeclarations().first();

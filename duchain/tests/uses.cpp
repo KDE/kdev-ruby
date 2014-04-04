@@ -364,6 +364,9 @@ void TestUseBuilder::defaultGlobals()
 
 void TestUseBuilder::classModulesScopes()
 {
+    // TODO
+    QSKIP("There's still some work to do before getting this test to pass", SkipAll);
+
     // module Klass
     // end
     //
@@ -382,8 +385,6 @@ void TestUseBuilder::classModulesScopes()
     // ::Klass
     // Modul::Klass
 
-    // TODO: it's failing !!!!
-
     //               0         1         2         3         4         5
     //               012345678901234567890123456789012345678901234567890123456
     QByteArray code("module Klass; end; module Modul; end; class Modul::Klass;");
@@ -394,33 +395,30 @@ void TestUseBuilder::classModulesScopes()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
 
-    // TODO: pending !
-    return;
-
     // Klass
-//     Declaration *d = top->localDeclarations().first();
-//     QVERIFY(d);
-//     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
-//     QList<RangeInRevision> ranges;
-//     ranges << RangeInRevision(0, 60, 0, 65) << RangeInRevision(0, 90, 0, 95);
-//     ranges << RangeInRevision(0, 109, 0, 114);
-//     compareUses(d, ranges);
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Klass"));
+    QList<RangeInRevision> ranges;
+    ranges << RangeInRevision(0, 60, 0, 65) << RangeInRevision(0, 90, 0, 95);
+    ranges << RangeInRevision(0, 109, 0, 114);
+    compareUses(d, ranges);
 
     // Modul
-//     d = top->localDeclarations().at(1);
-//     QVERIFY(d);
-//     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
-//     ranges.clear();
-//     ranges << RangeInRevision(0, 44, 0, 49) << RangeInRevision(0, 116, 0, 121);
-//     compareUses(d, ranges);
+    d = top->localDeclarations().at(1);
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul"));
+    ranges.clear();
+    ranges << RangeInRevision(0, 44, 0, 49) << RangeInRevision(0, 116, 0, 121);
+    compareUses(d, ranges);
 
     // Modul::Klass
-//     d = d->internalContext()->localDeclarations().first();
-//     QVERIFY(d);
-//     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
-//     ranges.clear();
-//     ranges << RangeInRevision(0, 81, 0, 86) << RangeInRevision(0, 123, 0, 128);
-//     compareUses(d, ranges);
+    d = d->internalContext()->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("Modul::Klass"));
+    ranges.clear();
+    ranges << RangeInRevision(0, 81, 0, 86) << RangeInRevision(0, 123, 0, 128);
+    compareUses(d, ranges);
 }
 
 //END: Contexts
