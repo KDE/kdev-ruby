@@ -125,6 +125,11 @@ void ModuleDeclaration::setBaseClass(KDevelop::IndexedType base)
     d_func_dynamic()->baseClass = base;
 }
 
+void ModuleDeclaration::setEigenClass(KDevelop::DUContext *ctx)
+{
+    d_func_dynamic()->eigenClass = ctx;
+}
+
 void ModuleDeclaration::clearBaseClass()
 {
     bool wasInSymbolTable = inSymbolTable();
@@ -136,6 +141,11 @@ void ModuleDeclaration::clearBaseClass()
 KDevelop::IndexedType ModuleDeclaration::baseClass() const
 {
     return d_func()->baseClass;
+}
+
+KDevelop::DUContext * ModuleDeclaration::eigenClass() const
+{
+    return d_func()->eigenClass;
 }
 
 QString ModuleDeclaration::toString() const

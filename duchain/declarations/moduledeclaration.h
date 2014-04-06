@@ -50,7 +50,7 @@ class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::Declaratio
 {
 public:
     /// Constructor.
-    explicit ModuleDeclarationData() : isModule(true)
+    explicit ModuleDeclarationData() : isModule(true), eigenClass(nullptr)
     {
         initializeAppendedLists();
     }
@@ -63,6 +63,7 @@ public:
         copyListsFrom(rhs);
         isModule = rhs.isModule;
         baseClass = rhs.baseClass;
+        eigenClass = rhs.eigenClass;
     }
 
     /// Destructor.
@@ -79,6 +80,9 @@ public:
 
     /// True if it's a module, false if it's a class.
     bool isModule;
+
+    /// The eigen class for this module/class.
+    KDevelop::DUContext *eigenClass;
 
     /// The base class type (if this is actually a class).
     KDevelop::IndexedType baseClass;
@@ -154,11 +158,17 @@ public:
     /// Set the type @p base as the new base class for this class declaration.
     void setBaseClass(KDevelop::IndexedType base);
 
+    /// Set @p ctx as the new context for the eigenclass.
+    void setEigenClass(KDevelop::DUContext *ctx);
+
     /// Invalidate the current base class.
     void clearBaseClass();
 
     /// @returns the base class for this class declaration.
     KDevelop::IndexedType baseClass() const;
+
+    /// @returns the eigen class for this module/class declaration.
+    KDevelop::DUContext *eigenClass() const;
 
     /// Re-implemented from KDevelop::Declaration.
     QString toString() const;

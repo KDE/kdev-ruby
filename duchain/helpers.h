@@ -48,6 +48,7 @@ using namespace KDevelop;
         InstanceMethod  = 2, /// It has to be an instance method.
         Module          = 3, /// It has to be a module.
         Class           = 4, /// It has to be a class.
+        Local           = 5, /// Anything that is local (imported included).
     };
 
     /**

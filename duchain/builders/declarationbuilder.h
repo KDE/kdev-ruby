@@ -89,8 +89,14 @@ private:
     /// @returns the range of the name of the given @p node.
     const KDevelop::RangeInRevision getNameRange(const RubyAst *node) const;
 
-    /// Given a @param node, open a context for a class definition.
-    void openContextForClassDefinition(RubyAst *node);
+    /**
+     * Open a context for a class/module declaration. It will also open the
+     * context for the eigen class.
+     *
+     * @param decl The declaration itself.
+     * @param node The node where the declaration resides.
+     */
+    void openContextForClassDefinition(ModuleDeclaration *decl, RubyAst *node);
 
     /**
      * Open or re-open if already exists a declaration in the current context.

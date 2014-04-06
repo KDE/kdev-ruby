@@ -144,7 +144,7 @@ void DeclarationBuilder::visitClassStatement(RubyAst *node)
     decl->setType(type);
     openType(type);
 
-    openContextForClassDefinition(node);
+    openContextForClassDefinition(decl, node);
     if (baseClass && baseClass->internalContext())
         currentContext()->addImportedParentContext(baseClass->internalContext());
     decl->setInternalContext(currentContext());
@@ -233,7 +233,7 @@ void DeclarationBuilder::visitModuleStatement(RubyAst *node)
     decl->setType(type);
     openType(type);
 
-    openContextForClassDefinition(node);
+    openContextForClassDefinition(decl, node);
     decl->setInternalContext(currentContext());
     wlock.unlock();
     DeclarationBuilderBase::visitModuleStatement(node);
@@ -259,6 +259,7 @@ void DeclarationBuilder::visitMethodStatement(RubyAst *node)
      * Check if this is a singleton method. If it is so, we have to determine
      * what's the context to be injected in order to get everything straight.
      */
+    // TODO: this will change with the introduction of the eigen class.
     node->tree = aux->cond;
     if (valid_children(node->tree)) {
         node->tree = node->tree->l;
@@ -713,14 +714,21 @@ const KDevelop::RangeInRevision DeclarationBuilder::getNameRange(const RubyAst *
     return m_editor->findRange(rb_name_node(node->tree));
 }
 
-void DeclarationBuilder::openContextForClassDefinition(RubyAst *node)
+void DeclarationBuilder::openContextForClassDefinition(ModuleDeclaration *decl, RubyAst *node)
 {
     RangeInRevision range = editorFindRange(node, node);
     KDevelop::QualifiedIdentifier className(getName(node));
 
     DUChainWriteLocker wlock;
+
+    // Class/Module.
     openContext(node, range, DUContext::Class, className);
     currentContext()->setLocalScopeIdentifier(className);
+
+    // Eigen class.
+    DUContext *ctx = openContextInternal(range, DUContext::Other, className);
+    decl->setEigenClass(ctx);
+    closeContext();
 }
 
 template<typename T>
@@ -767,16 +775,27 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
 {
     DUChainReadLocker rlock;
     Declaration *res = nullptr;
+    DUContext *ctx = currentContext();
+
+    // Handle class methods here.
+    if (classMethod) {
+        Declaration *d = currentContext()->owner();
+        ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
+        if (!md)
+            return nullptr;
+        ctx = md->eigenClass();
+    }
 
     /**
-     * Just get declarations from the current context. Moreover, we don't
-     * want declarations from imported contexts either (base classes).
+     * We just want declarations from the current (or eigen) context.
+     * Moreover, we don't want declarations from imported contexts
+     * either (base classes).
      */
-    QList<Declaration *> decls = currentContext()->findLocalDeclarations(id.first(), range.start);
+    QList<Declaration *> decls = ctx->findLocalDeclarations(id.first(), range.start);
     rlock.unlock();
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
-        if (method && (method->isClassMethod() == classMethod)) {
+        if (method) {
             debug() << "Reopening the following method: " << d->toString();
             openDeclarationInternal(method);
             method->setRange(range);
@@ -788,7 +807,9 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
 
     if (!res) {
         DUChainWriteLocker lock;
+        injectContext(ctx);
         res = openDeclaration<MethodDeclaration>(id, range);
+        closeInjectedContext();
     }
     return static_cast<MethodDeclaration *>(res);
 }

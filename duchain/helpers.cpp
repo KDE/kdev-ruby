@@ -36,6 +36,7 @@
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/declarations/methoddeclaration.h>
+#include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/types/classtype.h>
 
@@ -73,6 +74,19 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
     {
         DUChainReadLocker lock;
 
+        // If this is a class method, look at the eigen class and get out.
+        if (kind == ClassMethod) {
+            Declaration *d = context->owner();
+            ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
+            if (md) {
+                DUContext *ctx = md->eigenClass();
+                if (ctx) {
+                    return getDeclaration(id, range, DUContextPointer(ctx),
+                                          DeclarationKind::Local);
+                }
+            }
+        }
+
         /*
          * Search first for local declarations. If no local declarations have
          * been found, then take a look at imported contexts (e.g. method
@@ -83,28 +97,17 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         decls = context->findLocalDeclarations(id.last(), range.end);
         if (decls.isEmpty()) {
             decls = context->findDeclarations(id.last(), range.end);
-            if (decls.isEmpty()) {
+            if (decls.isEmpty() && kind != Local) {
                 if (context.data() == context->topContext())
                     decls = context->topContext()->findDeclarations(id, range.end);
                 else
                     decls = context->topContext()->findDeclarations(id);
 
                 // If it's empty, then we're going for some PST time!
-                if (decls.isEmpty()) {
+                if (decls.isEmpty() && kind != ClassMethod) {
                     lock.unlock();
                     return getDeclarationFromPST(id, context, kind);
                 }
-            }
-        }
-    }
-
-    // Filter out unwanted class/instance methods.
-    if (kind == ClassMethod || kind == InstanceMethod) {
-        foreach (Declaration *d, decls) {
-            MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d);
-            if (md && ((md->isClassMethod() && kind == ClassMethod) ||
-                (!md->isClassMethod() && kind == InstanceMethod))) {
-                return DeclarationPointer(d);
             }
         }
     }
@@ -150,6 +153,7 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
         if (kind != Unknown) {
             MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(d);
             if (mDecl) {
+                // TODO: remove this.
                 if ((mDecl->isClassMethod() && kind != ClassMethod) ||
                     (!mDecl->isClassMethod() && kind != InstanceMethod)) {
                     continue;
