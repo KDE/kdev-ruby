@@ -455,16 +455,13 @@ void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
                     ctx = nullptr;
                 }
             }
+            // TODO
+            // m_declarationKind = InstanceMethod;
         } else {
             encounter(ev.lastType());
+            m_declarationKind = ClassMethod;
             ctx = sType->internalContext(ctx->topContext());
         }
-
-        /* Handle the difference between instance & class methods */
-        if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
-            m_declarationKind = ClassMethod;
-        else
-            m_declarationKind = InstanceMethod;
 
         // No context found, we can't go any further.
         if (!ctx)

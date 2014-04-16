@@ -104,7 +104,7 @@ void UseBuilder::visitMethodCall(RubyAst *node)
         visitMethodCall(node);
         m_depth--;
     }
-    m_classMethod = false;
+    m_classMethod = true;
     visitMethodCallMembers(node);
     if (!m_depth)
         m_lastCtx = nullptr;

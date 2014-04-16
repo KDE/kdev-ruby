@@ -75,16 +75,18 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         DUChainReadLocker lock;
 
         // If this is a class method, look at the eigen class and get out.
-        if (kind == ClassMethod) {
+        if (kind == ClassMethod || kind == Unknown) {
             Declaration *d = context->owner();
             ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
             if (md) {
                 DUContext *ctx = md->eigenClass();
                 if (ctx) {
-                    return getDeclaration(id, range, DUContextPointer(ctx),
-                                          DeclarationKind::Local);
+                    decls = ctx->findLocalDeclarations(id.last(), range.end);
+                    if (!decls.isEmpty())
+                        return DeclarationPointer(decls.last());
                 }
             }
+            kind = DeclarationKind::Unknown;
         }
 
         /*
