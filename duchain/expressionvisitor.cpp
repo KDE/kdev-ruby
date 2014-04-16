@@ -368,6 +368,12 @@ void ExpressionVisitor::visitCaseStatement(RubyAst *node)
     node->tree = aux;
 }
 
+void ExpressionVisitor::visitMethodStatement(RubyAst *)
+{
+    AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
+    encounter(obj);
+}
+
 template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
 {
     encounter(AbstractType::Ptr::staticCast(type));

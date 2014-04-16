@@ -448,6 +448,30 @@ void TestDUChain::exceptions()
     }
 }
 
+void TestDUChain::method()
+{
+    QByteArray code("a = def foo; 0; end");
+    TopDUContext *top = parse(code, "method");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->abstractType()->toString(), QString("Symbol"));
+}
+
+void TestDUChain::classStatement()
+{
+    QByteArray code("a = class Klass; 0; ''; end");
+    TopDUContext *top = parse(code, "classStatement");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    Declaration *d = top->localDeclarations().first();
+    QVERIFY(d);
+    QCOMPARE(d->abstractType()->toString(), QString("String"));
+}
+
 //END: Statements
 
 //BEGIN: Assignments

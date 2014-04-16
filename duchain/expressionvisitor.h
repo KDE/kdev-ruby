@@ -120,6 +120,7 @@ protected:
     virtual void visitBoolean(RubyAst *node) override;
     virtual void visitIfStatement(RubyAst *node) override;
     virtual void visitCaseStatement(RubyAst *node) override;
+    virtual void visitMethodStatement(RubyAst *node) override;
 
 private:
     /// Set the last type seen to @p type.
