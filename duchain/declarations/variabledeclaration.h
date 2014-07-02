@@ -39,7 +39,8 @@ class KDEVRUBYDUCHAIN_EXPORT VariableDeclarationData : public KDevelop::Declarat
 {
 public:
     /// Constructor
-    VariableDeclarationData() : KDevelop::DeclarationData(), m_kind(2)
+    explicit VariableDeclarationData()
+        : KDevelop::DeclarationData(), m_kind(2)
     {
         /* There's nothing to do here */
     }
@@ -75,14 +76,16 @@ public:
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    explicit VariableDeclaration(const KDevelop::RangeInRevision& range, KDevelop::DUContext *context);
+    explicit VariableDeclaration(const KDevelop::RangeInRevision &range,
+                                 KDevelop::DUContext *context);
 
     /**
      * Constructor.
      * @param data The data to be copied.
      * @param range The range of this declaration.
      */
-    explicit VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range);
+    explicit VariableDeclaration(VariableDeclarationData &data,
+                                 const KDevelop::RangeInRevision &range);
 
     /// Copy constructor
     explicit VariableDeclaration(const VariableDeclaration &rhs);

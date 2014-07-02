@@ -44,25 +44,25 @@ public:
      * @param item The include item in which we want to retrieve the info.
      * @param topContext The top context associated with the given item.
      */
-    IncludeNavigationContext(const KDevelop::IncludeItem &item,
-                             KDevelop::TopDUContextPointer topContext);
+    explicit IncludeNavigationContext(const KDevelop::IncludeItem &item,
+                                      KDevelop::TopDUContextPointer topContext);
 
 protected:
     /// Re-implemented from KDevelop::AbstractIncludeNavigationContext
-    virtual void getFileInfo(KDevelop::TopDUContext *duchain);
+    virtual void getFileInfo(KDevelop::TopDUContext *duchain) override;
 
     /**
      * Re-implemented from KDevelop::AbstractIncludeNavigationContext to
      * prevent variable declarations to appear on the widget.
      */
-    virtual bool filterDeclaration(KDevelop::Declaration *decl);
+    virtual bool filterDeclaration(KDevelop::Declaration *decl) override;
 
     /**
      * Re-implemented from KDevelop::AbstractNavigationContext so we can also
      * show to the user if this declaration has some special meaning for
      * the Ruby interpreter.
      */
-    virtual QString declarationKind(KDevelop::DeclarationPointer decl);
+    virtual QString declarationKind(KDevelop::DeclarationPointer decl) override;
 };
 
 } // End of namespace Ruby

@@ -103,7 +103,8 @@ public:
      * @param data The data for this ModuleDeclaration.
      * @param range The range of this declaration.
      */
-    explicit ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range);
+    explicit ModuleDeclaration(ModuleDeclarationData &data,
+                               const KDevelop::RangeInRevision &range);
 
     /**
      * Constructor.
@@ -188,7 +189,8 @@ private:
 
 private:
     /// Re-implemented from KDevelop::Declaration.
-    virtual KDevelop::Declaration * clonePrivate() const;
+    virtual KDevelop::Declaration * clonePrivate() const override;
+
     DUCHAIN_DECLARE_DATA(ModuleDeclaration)
 };
 

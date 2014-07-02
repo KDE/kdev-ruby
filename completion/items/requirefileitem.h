@@ -39,10 +39,12 @@ class RequireFileItem : public BaseIncludeFileItem
 {
 public:
     /// Constructor
-    RequireFileItem(const KDevelop::IncludeItem &include, const char closing);
+    explicit RequireFileItem(const KDevelop::IncludeItem &include,
+                             const char closing);
 
     /// Re-implemented from KDevelop::AbstractIncludeFileCompletionItem
-    virtual void execute(KTextEditor::Document *document, const KTextEditor::Range &word);
+    virtual void execute(KTextEditor::Document *document,
+                         const KTextEditor::Range &word) override;
 
 private:
     /// The character that may enclose this item.

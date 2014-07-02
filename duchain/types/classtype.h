@@ -39,13 +39,14 @@ class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
     /// Default constructor.
-    ClassTypeData() : KDevelop::StructureTypeData(), m_contentType()
+    explicit ClassTypeData()
+        : KDevelop::StructureTypeData(), m_contentType()
     {
         /* There's nothing to do here! */
     }
 
     /// Copy constructor. @param rhs data to copy.
-    ClassTypeData(const ClassTypeData &rhs)
+    explicit ClassTypeData(const ClassTypeData &rhs)
         : KDevelop::StructureTypeData(rhs), m_contentType(rhs.m_contentType)
     {
         /* There's nothing to do here! */
@@ -69,19 +70,19 @@ public:
     typedef TypePtr<ClassType> Ptr;
 
     /// Constructor.
-    ClassType();
+    explicit ClassType();
 
     /**
      * Copy constructor.
      * @param rhs data to copy.
      */
-    ClassType(const ClassType &rhs);
+    explicit ClassType(const ClassType &rhs);
 
     /**
      * Copy constructor.
      * @param data data to copy.
      */
-    ClassType(ClassTypeData &data);
+    explicit ClassType(ClassTypeData &data);
 
     /// Add the given type @p typeToAdd to the contents.
     void addContentType(AbstractType::Ptr typeToAdd);
@@ -93,16 +94,16 @@ public:
     bool isUseful() const;
 
     /// Create a clone of this type.
-    virtual AbstractType * clone() const;
+    virtual AbstractType * clone() const override;
 
     /// The hash-value for this type.
-    virtual uint hash() const;
+    virtual uint hash() const override;
 
     /// @returns this type as a string.
-    virtual QString toString() const;
+    virtual QString toString() const override;
 
     /// @returns true if @p rhs is the same as this type
-    virtual bool equals(const AbstractType *rhs) const;
+    virtual bool equals(const AbstractType *rhs) const override;
 
     /// @returns the container's type as a string.
     QString containerToString() const;

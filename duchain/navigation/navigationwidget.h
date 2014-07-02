@@ -51,10 +51,10 @@ public:
      * @param htmlSuffix Html-formatted text that should be appended to any
      * information shown by this widget
      */
-    NavigationWidget(KDevelop::DeclarationPointer decl,
-                     KDevelop::TopDUContextPointer topContext,
-                     const QString &htmlPrefix = QString(),
-                     const QString &htmlSuffix = QString());
+    explicit NavigationWidget(KDevelop::DeclarationPointer decl,
+                              KDevelop::TopDUContextPointer topContext,
+                              const QString &htmlPrefix = QString(),
+                              const QString &htmlSuffix = QString());
 
     /**
      * Constructor.
@@ -66,10 +66,10 @@ public:
      * @param htmlSuffix Html-formatted text that should be appended to any
      * information shown by this widget
      */
-    NavigationWidget(const KDevelop::IncludeItem &item,
-                     KDevelop::TopDUContextPointer topContext,
-                     const QString &htmlPrefix = QString(),
-                     const QString &htmlSuffix = QString());
+    explicit NavigationWidget(const KDevelop::IncludeItem &item,
+                              KDevelop::TopDUContextPointer topContext,
+                              const QString &htmlPrefix = QString(),
+                              const QString &htmlSuffix = QString());
 
     /**
      * Creates a compact html description given a Declaration.

@@ -72,7 +72,7 @@ public:
      * @param parent The QObject this LanguageSupport is parented to.
      * @param args A QVariantList that can be passed to this plugin as parameters.
      */
-    LanguageSupport(QObject *parent, const QVariantList &args = QVariantList());
+    explicit LanguageSupport(QObject *parent, const QVariantList &args = QVariantList());
 
     /**
      * Destructor.
@@ -87,28 +87,28 @@ public:
     /**
      * @return the name of the language.
      */
-    virtual QString name() const;
+    virtual QString name() const override;
 
     /**
      * @return the ParseJob that is going to be used by the Background
      * parser to parse the given @p url.
      */
-    virtual KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url);
+    virtual KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url) override;
 
     /**
      * @return the language for this support.
      */
-    virtual KDevelop::ILanguage * language();
+    virtual KDevelop::ILanguage * language() override;
 
     /**
      * @return the Code Highlighting for the Ruby language.
      */
-    virtual KDevelop::ICodeHighlighting * codeHighlighting() const;
+    virtual KDevelop::ICodeHighlighting * codeHighlighting() const override;
 
     /**
      * @returns the ContextMenuExtension for the Php plugin.
      */
-    virtual KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context);
+    virtual KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context) override;
 
     /**
      * @return true if the builtins file is loaded, false otherwise.
@@ -128,8 +128,9 @@ public:
     /**
      * Setup the actions defined by this plugin.
      */
-    virtual void createActionsForMainWindow(Sublime::MainWindow* window, QString& xmlFile,
-                                            KActionCollection& actions);
+    virtual void createActionsForMainWindow(Sublime::MainWindow *window,
+                                            QString &xmlFile,
+                                            KActionCollection &actions) override;
 private:
     /**
      * @internal Find or create a launch for a the given @p name.

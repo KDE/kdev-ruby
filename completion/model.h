@@ -40,14 +40,14 @@ class KDEVRUBYCOMPLETION_EXPORT CodeCompletionModel : public KDevelop::CodeCompl
 
 public:
     /// Constructor.
-    CodeCompletionModel(QObject *parent);
+    explicit CodeCompletionModel(QObject *parent);
 
     /// Destructor.
     virtual ~CodeCompletionModel();
 
 protected:
     /// Re-implemented from KDevelop::CodeCompletionModel.
-    virtual KDevelop::CodeCompletionWorker *createCompletionWorker();
+    virtual KDevelop::CodeCompletionWorker *createCompletionWorker() override;
 };
 
 } // End of namespace Ruby

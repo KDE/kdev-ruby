@@ -56,7 +56,8 @@ public:
      * @param node the node to localize.
      * @param edge the edge this method has to look at.
      */
-    const KDevelop::CursorInRevision findPosition(const Node *node, Edge edge = BackEdge) const;
+    const KDevelop::CursorInRevision findPosition(const Node *node,
+                                                  Edge edge = BackEdge) const;
 
     /**
      * Find the range between the given nodes.
@@ -64,7 +65,8 @@ public:
      * @param from the former node.
      * @param to the latter node.
      */
-    const KDevelop::RangeInRevision findRange(const Node *from, const Node *to) const;
+    const KDevelop::RangeInRevision findRange(const Node *from,
+                                              const Node *to) const;
 
     /**
      * Get the range of the given node.

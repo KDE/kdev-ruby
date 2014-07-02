@@ -52,14 +52,18 @@ public:
     typedef KSharedPtr<CodeCompletionContext> Ptr;
 
     /// Constructor.
-    CodeCompletionContext(KDevelop::DUContextPointer ctxt, const QString &text, const QString &followingText,
-                          const KDevelop::CursorInRevision &pos, int depth = 0);
+    explicit CodeCompletionContext(KDevelop::DUContextPointer ctxt,
+                                   const QString &text,
+                                   const QString &followingText,
+                                   const KDevelop::CursorInRevision &pos,
+                                   int depth = 0);
 
     /// Destructor.
     virtual ~CodeCompletionContext();
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
-    virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort, bool fullCompletion = true);
+    virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort,
+                                                                       bool fullCompletion = true);
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
     virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements();
@@ -99,14 +103,16 @@ private:
      * assume the case of obj.method.
      * @note that the type can be anything, even unsure.
      */
-    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type, bool scoped = false);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsFromType(KDevelop::AbstractType::Ptr type,
+                                                                          bool scoped = false);
 
     /**
      * @returns the completion items for the given @p type which is not unsure.
      * @note this is just a helper method for the previous one, so you
      * shouldn't call this directly.
      */
-    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type, bool scoped);
+    QList<KDevelop::CompletionTreeItemPointer> getCompletionItemsForOneType(KDevelop::AbstractType::Ptr type,
+                                                                            bool scoped);
 
     /// @returns true if the parent items should be added to this one.
     bool shouldAddParentItems(bool fullCompletion);
@@ -127,7 +133,8 @@ private:
      * @param priority The given priority for this new group.
      * @param items The items that should constitute this new group.
      */
-    void eventuallyAddGroup(const QString &name, int priority, QList<KSharedPtr<KDevelop::CompletionTreeItem> > items);
+    void eventuallyAddGroup(const QString &name, int priority,
+                            QList<KSharedPtr<KDevelop::CompletionTreeItem> > items);
 
     /// Group adding methods.
     void addRubyKeywords();

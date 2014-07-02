@@ -100,7 +100,8 @@ public:
      * @param range The range of this declaration.
      * @param ctx The context of this declaration.
      */
-    explicit MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx);
+    explicit MethodDeclaration(const KDevelop::RangeInRevision &range,
+                               KDevelop::DUContext *ctx);
 
     /// Copy constructor.
     explicit MethodDeclaration(const MethodDeclaration &rhs);
@@ -149,7 +150,7 @@ public:
 
 private:
     /// Re-implemented from KDevelop::Declaration.
-    virtual KDevelop::Declaration * clonePrivate() const;
+    virtual KDevelop::Declaration * clonePrivate() const override;
 
 private:
     DUCHAIN_DECLARE_DATA(MethodDeclaration)

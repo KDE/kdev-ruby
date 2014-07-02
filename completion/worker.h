@@ -43,12 +43,14 @@ class KDEVRUBYCOMPLETION_EXPORT CodeCompletionWorker : public KDevelop::CodeComp
 
 public:
     /// Constructor
-    CodeCompletionWorker(CodeCompletionModel *parent);
+    explicit CodeCompletionWorker(CodeCompletionModel *parent);
 
 protected:
     /// Re-implemented from KDevelop::CodeCompletionWorker
-    virtual KDevelop::CodeCompletionContext *createCompletionContext(KDevelop::DUContextPointer context, const QString &contextText,
-                                                                     const QString &followingText, const KDevelop::CursorInRevision &position) const;
+    virtual KDevelop::CodeCompletionContext *createCompletionContext(KDevelop::DUContextPointer context,
+                                                                     const QString &contextText,
+                                                                     const QString &followingText,
+                                                                     const KDevelop::CursorInRevision &position) const override;
 };
 
 } // End of namespace Ruby

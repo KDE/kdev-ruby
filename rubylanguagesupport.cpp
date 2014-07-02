@@ -298,8 +298,9 @@ KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguratio
     return config;
 }
 
-void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow* /*window*/, QString& _xmlFile,
-                                                 KActionCollection& actions)
+void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*/,
+                                                 QString &_xmlFile,
+                                                 KActionCollection &actions)
 {
     _xmlFile = xmlFile();
 

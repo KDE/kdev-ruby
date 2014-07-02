@@ -193,8 +193,10 @@ private:
      * @param kind The kind that the declaration has to have.
      * @returns true if it's a valid re-declaration, and false otherwise.
      */
-    bool validReDeclaration(Declaration *decl, const QualifiedIdentifier &id,
-                            const RangeInRevision &range, DeclarationKind kind);
+    bool validReDeclaration(Declaration *decl,
+                            const QualifiedIdentifier &id,
+                            const RangeInRevision &range,
+                            DeclarationKind kind);
 
     /**
      * Get the context that contains the name of the class/module being

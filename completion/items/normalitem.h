@@ -37,12 +37,14 @@ class KDEVRUBYCOMPLETION_EXPORT NormalItem : public KDevelop::NormalDeclarationC
 {
 public:
     /// Constructor.
-    NormalItem(KDevelop::DeclarationPointer decl = KDevelop::DeclarationPointer(),
-               KSharedPtr<KDevelop::CodeCompletionContext> context = KSharedPtr<KDevelop::CodeCompletionContext>(),
-               int inheritanceDepth = 0);
+    explicit NormalItem(KDevelop::DeclarationPointer decl = KDevelop::DeclarationPointer(),
+                        KSharedPtr<KDevelop::CodeCompletionContext> context = KSharedPtr<KDevelop::CodeCompletionContext>(),
+                        int inheritanceDepth = 0);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QVariant data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const;
+    virtual QVariant data(const QModelIndex &index,
+                          int role,
+                          const KDevelop::CodeCompletionModel *model) const override;
 
 protected:
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.

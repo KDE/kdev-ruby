@@ -31,19 +31,19 @@ namespace Ruby
 
 //BEGIN RubyHighlightingInstance
 
-HighlightingInstance::HighlightingInstance(const KDevelop::CodeHighlighting *highlighting)
-    : CodeHighlightingInstance(highlighting)
+HighlightingInstance::HighlightingInstance(const KDevelop::CodeHighlighting *h)
+    : CodeHighlightingInstance(h)
 {
     /* There's nothing to do here */
 }
 
 KDevelop::HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(KDevelop::Declaration *decl,
-                                                                                    KDevelop::DUContext *context) const
+                                                                                    KDevelop::DUContext *ctx) const
 {
     VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decl);
     if (decl && !decl->isFunctionDeclaration() && decl->abstractType() && !vd)
         return EnumType;
-    return CodeHighlightingInstance::typeForDeclaration(decl, context);
+    return CodeHighlightingInstance::typeForDeclaration(decl, ctx);
 }
 
 bool HighlightingInstance::useRainbowColor(KDevelop::Declaration *dec) const

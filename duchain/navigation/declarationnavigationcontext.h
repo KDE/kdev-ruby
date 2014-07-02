@@ -47,29 +47,29 @@ public:
      * @param topContext The top context where this declaration is.
      * @param prevContext A pointer to the previous context.
      */
-    DeclarationNavigationContext(KDevelop::DeclarationPointer decl,
-                                 KDevelop::TopDUContextPointer topContext,
-                                 KDevelop::AbstractNavigationContext *prevContext = 0);
+    explicit DeclarationNavigationContext(KDevelop::DeclarationPointer decl,
+                                          KDevelop::TopDUContextPointer topContext,
+                                          KDevelop::AbstractNavigationContext *prevContext = nullptr);
 
 protected:
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
      * because the default implementation is just to "C++ centric".
      */
-    virtual QString html(bool shorten = false);
+    virtual QString html(bool shorten = false) override;
 
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
      * because the default implementation assumes that default arguments
      * are always at the end, and in Ruby this is not true.
      */
-    virtual void htmlFunction();
+    virtual void htmlFunction() override;
 
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
      * we can improve the html to be rendered with Ruby-specific stuff.
      */
-    virtual void htmlClass();
+    virtual void htmlClass() override;
 
     /**
      * Re-implemented from KDevelop::AbstractNavigationContext so we can also
@@ -79,8 +79,9 @@ protected:
      * @param declaration The involved declaration.
      * @param actionType Important if this is a JumpToSource action.
      */
-    virtual void makeLink(const QString &name, KDevelop::DeclarationPointer declaration,
-                          KDevelop::NavigationAction::Type actionType);
+    virtual void makeLink(const QString &name,
+                          KDevelop::DeclarationPointer declaration,
+                          KDevelop::NavigationAction::Type actionType) override;
 
 private:
     /**

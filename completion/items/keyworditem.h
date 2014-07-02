@@ -51,14 +51,19 @@ public:
      * @param line Set to true if you want that the whole line gets replaced.
      * False by default.
      */
-    KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
-                const QString &customReplacement = QString(""), bool line = false);
+    explicit KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx,
+                         const QString &keyword,
+                         const QString &customReplacement = QString(""),
+                         bool line = false);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual void execute(KTextEditor::Document *document, const KTextEditor::Range &word);
+    virtual void execute(KTextEditor::Document *document,
+                         const KTextEditor::Range &word) override;
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QVariant data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const;
+    virtual QVariant data(const QModelIndex &index,
+                          int role,
+                          const KDevelop::CodeCompletionModel *model) const override;
 
 private:
     QString m_keyword;

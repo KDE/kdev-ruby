@@ -39,20 +39,20 @@ public:
     /**
      * Constructor.
      *
-     * @param highlighting The CodeHighlighting in which an instance
-     * of this class belongs to.
+     * @param h The CodeHighlighting in which an instance of this class
+     * belongs to.
      */
-    HighlightingInstance(const KDevelop::CodeHighlighting *highlighting);
+    explicit HighlightingInstance(const KDevelop::CodeHighlighting *h);
 
     /**
      * Return type of highlighting to be applied according
      * to the given declaration.
      *
      * @param decl The involved declaration.
-     * @param context The context from where the declaration is used.
+     * @param ctx The context from where the declaration is used.
      */
     virtual Types typeForDeclaration(KDevelop::Declaration *decl,
-                                     KDevelop::DUContext *context) const;
+                                     KDevelop::DUContext *ctx) const override;
 
     /**
      * Re-implemented from CodeHighlightingInstance to decide whether to
@@ -60,7 +60,7 @@ public:
      *
      * @param dec The involved declaration.
      */
-    virtual bool useRainbowColor(KDevelop::Declaration *dec) const;
+    virtual bool useRainbowColor(KDevelop::Declaration *dec) const override;
 };
 
 
@@ -80,14 +80,14 @@ public:
      *
      * @param parent the QObject this Highlighting is parented to.
      */
-    Highlighting(QObject *parent);
+    explicit Highlighting(QObject *parent);
 
 private:
     /**
      * Extends base class CodeHighlighting's createInstance() method to use
      * this plugin's defined one.
      */
-    virtual KDevelop::CodeHighlightingInstance* createInstance() const;
+    virtual KDevelop::CodeHighlightingInstance* createInstance() const override;
 };
 
 } // End of namespace Ruby

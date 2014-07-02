@@ -39,7 +39,7 @@ class RubyDUContext : public BaseContext
 {	
 public:
     template<class Data>
-    RubyDUContext(Data &data) : BaseContext(data)
+    explicit RubyDUContext(Data &data) : BaseContext(data)
     {
         /* There's nothing to do here */
     };
@@ -48,7 +48,8 @@ public:
      * Parameters will be reached to the base-class.
      */
     template<class Param1, class Param2>
-    RubyDUContext(const Param1 &p1, const Param2 &p2, bool isInstantiationContext)
+    explicit RubyDUContext(const Param1 &p1, const Param2 &p2,
+                           bool isInstantiationContext)
 		: BaseContext(p1, p2, isInstantiationContext)
     {
         static_cast<KDevelop::DUChainBase*>(this)->d_func_dynamic()->setClassId(this);
@@ -58,14 +59,14 @@ public:
      * Both parameters will be reached to the base-class. This fits TopDUContext.
      */
     template<class Param1, class Param2, class Param3>
-    RubyDUContext(const Param1 &p1, const Param2 &p2, const Param3 &p3)
+    explicit RubyDUContext(const Param1 &p1, const Param2 &p2, const Param3 &p3)
         : BaseContext(p1, p2, p3)
     {
         static_cast<KDevelop::DUChainBase*>(this)->d_func_dynamic()->setClassId(this);
     }
 
     template<class Param1, class Param2>
-    RubyDUContext(const Param1 &p1, const Param2 &p2)
+    explicit RubyDUContext(const Param1 &p1, const Param2 &p2)
         : BaseContext(p1, p2)
     {
         static_cast<KDevelop::DUChainBase*>(this)->d_func_dynamic()->setClassId(this);
@@ -82,7 +83,7 @@ public:
     virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl = nullptr,
                                             KDevelop::TopDUContext *topContext = nullptr,
                                             const QString &htmlPrefix = QString(),
-                                            const QString &htmlSuffix = QString()) const;
+                                            const QString &htmlSuffix = QString()) const override;
 
 public:
     enum { Identity = BaseContext::Identity + 41 };

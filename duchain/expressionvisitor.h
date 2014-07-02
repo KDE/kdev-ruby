@@ -54,7 +54,8 @@ public:
      * @param ctx The DUContext this visitor is related to.
      * @param editor The EditorIntegrator for this visitor.
      */
-    explicit ExpressionVisitor(KDevelop::DUContext *ctx, EditorIntegrator *editor);
+    explicit ExpressionVisitor(KDevelop::DUContext *ctx,
+                               EditorIntegrator *editor);
 
     /**
      * Constructor.
@@ -140,7 +141,8 @@ private:
      * key values (i.e. Hash).
      * @return the ClassType retrieved from the given parameters or nullptr.
      */
-    ClassType::Ptr getContainer(AbstractType::Ptr ptr, const RubyAst *node,
+    ClassType::Ptr getContainer(AbstractType::Ptr ptr,
+                                const RubyAst *node,
                                 bool hasKey = false);
 
     /// Visit the last statement from @p node. Used for the implicit return.

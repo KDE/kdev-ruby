@@ -50,7 +50,8 @@ public:
      *
      * @param url the url of the file to parse.
      */
-    ParseJob(const KDevelop::IndexedString &url, KDevelop::ILanguageSupport *languageSupport);
+    explicit ParseJob(const KDevelop::IndexedString &url,
+                      KDevelop::ILanguageSupport *languageSupport);
 
     /**
      * Destructor.
@@ -61,7 +62,7 @@ protected:
     /**
      * Runs this ParseJob.
      */
-    virtual void run();
+    virtual void run() override;
 
 private:
     /**

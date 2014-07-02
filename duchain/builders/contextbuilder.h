@@ -57,7 +57,7 @@ public:
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, RubyAst *node,
-        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext());
+        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext()) override;
 
     /// @returns a list of unresolved imports.
     inline const QVector<IndexedString> unresolvedImports() const
