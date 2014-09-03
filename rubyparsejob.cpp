@@ -22,7 +22,6 @@
 
 // Qt + KDE
 #include <QReadLocker>
-#include <KDebug>
 
 // KDevelop
 #include <interfaces/ilanguage.h>
@@ -33,7 +32,6 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
 #include <parser/rubyparser.h>
@@ -76,7 +74,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
     /* Make sure that the builtins file is already loaded */
     if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
-        debug() << "waiting for builtins file to finish parsing";
+        kDebug() << "waiting for builtins file to finish parsing";
         QReadLocker(ruby()->builtinsLock());
     }
 
@@ -186,7 +184,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         m_parser->freeAst(ast);
 
         highlightDUChain();
-        debug() << "**** Parsing Succeeded ****";
+        kDebug() << "**** Parsing Succeeded ****";
     } else {
         kWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
@@ -202,7 +200,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         foreach (ProblemPointer p, m_parser->m_problems) {
-            debug() << "Added problem to context";
+            kDebug() << "Added problem to context";
             m_duContext->addProblem(p);
         }
         setDuChain(m_duContext);
@@ -211,4 +209,3 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
 } // End of namespace Ruby
 
-#include "rubyparsejob.moc"

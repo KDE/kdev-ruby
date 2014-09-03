@@ -26,7 +26,6 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <parser/rubyparser.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
@@ -321,7 +320,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
     if (type)
         list << getCompletionItemsFromType(type);
     else
-        debug() << "Oops: cannot access at the member";
+        kDebug() << "Oops: cannot access at the member";
     return list;
 }
 
@@ -332,7 +331,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
     if (type)
         list << getCompletionItemsFromType(type, true);
     else
-        debug() << "Oops: cannot access at the member";
+        kDebug() << "Oops: cannot access at the member";
 
     return list;
 }

@@ -24,7 +24,6 @@
 #include <KDebug>
 
 // Ruby
-#include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/declarationbuilder.h>
@@ -82,4 +81,3 @@ void Benchmarks::declarationBuilder()
 
 } // End of namespace Ruby
 
-#include "benchmarks.moc"

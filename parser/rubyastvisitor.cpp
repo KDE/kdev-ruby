@@ -19,7 +19,6 @@
 
 
 #include <parser/rubyastvisitor.h>
-#include <rubydefs.h>
 
 
 /*
@@ -45,7 +44,7 @@ RubyAstVisitor::~RubyAstVisitor()
 
 void RubyAstVisitor::visitCode(RubyAst *node)
 {
-    debug() << "Visiting Code...";
+    kDebug() << "Visiting Code...";
     Node *aux = node->tree;
 
     for (Node *n = aux; n; n = n->next) {
@@ -622,7 +621,7 @@ void RubyAstVisitor::visitEnsure(RubyAst *node)
     /*
      * l -> The inner statements.
      */
-    
+
     Node *n = node->tree;
     node->tree = n->l;
     visitStatements(node);

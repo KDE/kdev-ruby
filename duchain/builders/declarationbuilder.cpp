@@ -32,7 +32,6 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/editorintegrator.h>
@@ -749,7 +748,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             if (!valid)
                 return nullptr;
 
-            debug() << "Reopening the following declaration: " << d->toString();
+            kDebug() << "Reopening the following declaration: " << d->toString();
             openDeclarationInternal(d);
             d->setRange(range);
             setEncountered(d);
@@ -757,7 +756,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             res = d;
             break;
         } else
-            debug() << "Do not reopen since it's not in the same top context";
+            kDebug() << "Do not reopen since it's not in the same top context";
     }
 
     if (!res) {
@@ -796,7 +795,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
         if (method) {
-            debug() << "Reopening the following method: " << d->toString();
+            kDebug() << "Reopening the following method: " << d->toString();
             openDeclarationInternal(method);
             method->setRange(range);
             setEncountered(method);

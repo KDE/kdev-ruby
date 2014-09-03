@@ -28,7 +28,6 @@
 #include <interfaces/idocumentcontroller.h>
 #include <language/interfaces/iquickopen.h>
 
-#include <rubydefs.h>
 #include <navigation/railsswitchers.h>
 
 
@@ -44,9 +43,9 @@ KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
 {
     KUrl currentUrl = url;
     KUrl upUrl = currentUrl.upUrl();
-    debug() << "starting:" << upUrl;
+    kDebug() << "starting:" << upUrl;
     while (upUrl != currentUrl) {
-        debug() << "checking:" << upUrl;
+        kDebug() << "checking:" << upUrl;
         if ( (upUrl.fileName() == "controllers" and upUrl.upUrl().fileName() == "app")
              || (upUrl.fileName() == "models" and upUrl.upUrl().fileName() == "app")
              || (upUrl.fileName() == "views" and upUrl.upUrl().fileName() == "app") )
@@ -62,7 +61,7 @@ KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
 
 void RailsSwitchers::switchToController()
 {
-    debug() << "switching to controller";
+    kDebug() << "switching to controller";
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) return;
 
@@ -73,7 +72,7 @@ void RailsSwitchers::switchToController()
     QString name = file.baseName();
     QString switchTo = "";
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    debug() << "   rails root found:" << railsRoot;
+    kDebug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return;
 
     if ((ext == "rb") && !name.endsWith("_controller"))
@@ -93,7 +92,7 @@ void RailsSwitchers::switchToController()
         //the controller basing on the directory information
         switchTo = file.dir().dirName();
     }
-    debug() << "   switching to:" << switchTo;
+    kDebug() << "   switching to:" << switchTo;
 
     if (!switchTo.isEmpty())
     {
@@ -108,8 +107,8 @@ void RailsSwitchers::switchToController()
         KUrl plural = controllerUrl;
         plural.addPath(switchTo + "s_controller.rb");
 
-        debug() << "   plural:" << plural;
-        debug() << "   singular:" << singular;
+        kDebug() << "   plural:" << plural;
+        kDebug() << "   singular:" << singular;
 
         KUrl url = KUrl(QFile::exists(singular.toLocalFile()) ? singular : plural);
         KDevelop::ICore::self()->documentController()->openDocument(url);
@@ -129,7 +128,7 @@ void RailsSwitchers::switchToModel()
     QString switchTo = "";
 
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    debug() << "   rails root found:" << railsRoot;
+    kDebug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return;
 
     if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
@@ -165,7 +164,7 @@ void RailsSwitchers::switchToView()
     KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        debug() << "   showing quickopen";
+        kDebug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Views"));
     }
 }
@@ -199,7 +198,7 @@ KUrl::List RailsSwitchers::viewsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
 
     KUrl railsRoot = findRailsRoot(activeDocument->url());
-    debug() << "   rails root found:" << railsRoot;
+    kDebug() << "   rails root found:" << railsRoot;
     if (railsRoot.isEmpty()) return urls;
 
     KUrl viewsUrl = railsRoot;
@@ -227,7 +226,7 @@ KUrl::List RailsSwitchers::viewsToSwitch()
             urls << viewUrl;
         }
     }
-    debug() << "   views found:" << urls;
+    kDebug() << "   views found:" << urls;
 
     return urls;
 }
@@ -308,7 +307,7 @@ void RailsSwitchers::switchToTest()
     KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        debug() << "   showing quickopen";
+        kDebug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
     }
 }

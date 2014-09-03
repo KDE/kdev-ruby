@@ -51,7 +51,6 @@
 #include <language/interfaces/editorcontext.h>
 
 //Ruby plugin
-#include <rubydefs.h>
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
 #include <rubyhighlighting.h>
@@ -171,14 +170,14 @@ enum ruby_version LanguageSupport::version() const
 void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
 {
     Q_UNUSED(topContext)
-    debug() << "builtins file is up to date " << url.str();
+    kDebug() << "builtins file is up to date " << url.str();
     m_builtinsLoaded = true;
     m_builtinsLock.unlock();
 }
 
 void LanguageSupport::updateBuiltins()
 {
-    debug() << "making sure that the builtins file is up to date";
+    kDebug() << "making sure that the builtins file is up to date";
     DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
@@ -222,7 +221,7 @@ void LanguageSupport::runCurrentTestFunction()
 
     // Find function under the cursor (if any)
     QString currentFunction = findFunctionUnderCursor(doc);
-    debug() << "current function" << currentFunction;
+    kDebug() << "current function" << currentFunction;
     if (currentFunction.isEmpty())
         return;
 
@@ -250,7 +249,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     if (!context)
         return "";
 
-    debug() << "CONTEXT ID" << context->localScopeIdentifier();
+    kDebug() << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
 }
 

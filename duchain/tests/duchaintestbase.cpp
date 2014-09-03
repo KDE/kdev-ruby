@@ -34,7 +34,6 @@
 #include <duchain/builders/declarationbuilder.h>
 #include <parser/rubyparser.h>
 #include <parser/rubyast.h>
-#include <rubydefs.h>
 
 
 using namespace KDevelop;

@@ -30,7 +30,6 @@
 #include <language/backgroundparser/backgroundparser.h>
 
 // Ruby
-#include <rubydefs.h>
 #include <duchain/helpers.h>
 #include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
@@ -60,14 +59,14 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *
         updateContext = DUChain::self()->chainForDocument(url);
     }
     if (updateContext) {
-        debug() << "Re-compiling" << url.str();
+        kDebug() << "Re-compiling" << url.str();
         DUChainWriteLocker lock;
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
         updateContext->updateImportsCache();
     } else
-        debug() << "Compiling";
+        kDebug() << "Compiling";
 
     ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
     {
@@ -172,7 +171,7 @@ void ContextBuilder::startVisiting(RubyAst *node)
             DUChainWriteLocker wlock;
             TopDUContext* import = DUChain::self()->chainForDocument(builtins);
             if (!import) {
-                debug() << "importing the builtins file failed";
+                kDebug() << "importing the builtins file failed";
                 Q_ASSERT(false);
             } else {
                 top->addImportedParentContext(import);

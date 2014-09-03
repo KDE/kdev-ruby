@@ -70,4 +70,3 @@ KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const
 
 } // End of namespace Ruby
 
-#include "rubyhighlighting.moc"
