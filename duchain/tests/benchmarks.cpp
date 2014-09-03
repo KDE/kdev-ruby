@@ -48,7 +48,7 @@ QIODevice * Benchmarks::getBuiltinsFile()
 {
     const QString fileName = internalBuiltinsFile().str();
     QString mimeType = KMimeType::findByPath(fileName, 0, false)->name();
-    QIODevice *file = KFilterDev::deviceForFile (fileName, mimeType, false);
+    QIODevice *file = KFilterDev::deviceForFile(fileName, mimeType, false);
     bool opened = file->open(QIODevice::ReadOnly);
     Q_ASSERT(opened);
     return file;

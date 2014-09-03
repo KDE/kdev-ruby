@@ -1,5 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -12,11 +12,12 @@ set(completiontest_SRCS
 )
 
 kde4_add_unit_test(completion ${completiontest_SRCS})
+
 target_link_libraries(completion
-    kdev4rubycompletion
-    kdev4rubyduchain
-    kdev4rubyparser
     ${QT_QTTEST_LIBRARY}
     ${KDEVPLATFORM_TESTS_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    kdevrubycompletion
+    kdevrubyduchain
+    kdevrubyparser
 )

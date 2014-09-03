@@ -13,24 +13,20 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_library(kdev4rubyparser SHARED ${rubyparser_SRCS})
+add_library(kdevrubyparser SHARED ${rubyparser_SRCS})
 
-target_link_libraries( kdev4rubyparser LINK_PRIVATE
-    ${QT_QTCORE_LIBRARY}
-    KF5::I18n
-)
-target_link_libraries( kdev4rubyparser LINK_PUBLIC
+target_link_libraries(kdevrubyparser LINK_PRIVATE
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_UTIL_LIBRARIES}
-    ${KDEVPLATFORM_PROJECT_LIBRARIES}
 )
 
 # Compile & install the tests if needed.
-if((${KDE4_BUILD_TESTS} STREQUAL "ON") OR (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DBUILD_TESTS)
-    add_executable( ruby-parser main.c )
+    add_executable(ruby-parser main.c)
     install(DIRECTORY tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    target_link_libraries(ruby-parser kdev4rubyparser)
-endif((${KDE4_BUILD_TESTS} STREQUAL "ON") OR (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
+    target_link_libraries(ruby-parser kdevrubyparser)
+endif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
-install(TARGETS kdev4rubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+

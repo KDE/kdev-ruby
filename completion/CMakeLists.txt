@@ -1,9 +1,10 @@
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 set(rubycompletion_SRCS
     context.cpp
@@ -16,14 +17,14 @@ set(rubycompletion_SRCS
     items/requirefileitem.cpp
 )
 
-add_library(kdev4rubycompletion SHARED ${rubycompletion_SRCS})
-target_link_libraries( kdev4rubycompletion LINK_PRIVATE
-    ${KDE4_KDECORE_LIBS}
+add_library(kdevrubycompletion SHARED ${rubycompletion_SRCS})
+
+target_link_libraries(kdevrubycompletion LINK_PRIVATE
     ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_PROJECT_LIBRARIES}
-    kdev4rubyduchain
-    kdev4rubyparser
+    KF5::I18n
+    kdevrubyduchain
+    kdevrubyparser
 )
 
-install(TARGETS kdev4rubycompletion DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubycompletion DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

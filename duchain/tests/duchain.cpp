@@ -967,7 +967,7 @@ void TestDUChain::singletonClass1()
 
 void TestDUChain::singletonClass2()
 {
-    QSKIP("It crashes right now since I'm not done with the eigenclass thing", SkipAll);
+    QSKIP("It crashes right now since I'm not done with the eigenclass thing");
 
     QByteArray code("class Klass; class << self; def foo; 'string'; end; end; end");
     TopDUContext *top = parse(code, "singletonClass2");
@@ -1487,7 +1487,7 @@ void TestDUChain::chainedCalls2()
 void TestDUChain::chainedCalls3()
 {
     // TODO
-    QSKIP("There's still some work to do before getting this test to pass", SkipAll);
+    QSKIP("There's still some work to do before getting this test to pass");
 
     QByteArray code("module A; class B; def foo; //; end; end; a = B.new.foo;");
     code += "end; b = A::B.new.foo";

@@ -24,6 +24,7 @@
 
 
 #include <duchain/tests/duchaintestbase.h>
+#include <language/duchain/types/typepointer.h>
 
 
 namespace KDevelop {
@@ -55,7 +56,8 @@ private:
      * @p list of class identifiers.
      * @note that the order of the @p list items is important.
      */
-    void testUnsureTypes(TypePtr<KDevelop::UnsureType> type, const QStringList &list);
+    void testUnsureTypes(KDevelop::TypePtr<KDevelop::UnsureType> type,
+                         const QStringList &list);
 
     /**
      * Given a top context @p ctx, get all the encountered problems and

@@ -1,4 +1,4 @@
-project(ruby)
+project(kdev-ruby)
 
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 90)
@@ -14,10 +14,9 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings)
 
-find_package(Qt5 REQUIRED Core Declarative Widgets Test Qml QuickWidgets)
-find_package(KF5 REQUIRED COMPONENTS KDELibs4Support ThreadWeaver TextEditor Declarative I18n)
+find_package(Qt5 REQUIRED Core Widgets Test)
+find_package(KF5 REQUIRED COMPONENTS KDELibs4Support ThreadWeaver TextEditor I18n)
 find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
-find_package(KDevelop REQUIRED)
 find_package(BISON REQUIRED)
 
 configure_file(
@@ -26,7 +25,7 @@ configure_file(
   @ONLY
 )
 
-#enable_testing()
+enable_testing()
 
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
@@ -44,7 +43,7 @@ add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(navigation)
 add_subdirectory(completion)
-#add_subdirectory(app_templates)
+add_subdirectory(app_templates)
 
 add_library(kdevrubylanguagesupport MODULE
     rubyparsejob.cpp
@@ -52,16 +51,18 @@ add_library(kdevrubylanguagesupport MODULE
     rubylanguagesupport.cpp
     codegen/refactoring.cpp
 )
+
 target_link_libraries(kdevrubylanguagesupport
-    kdev4rubyparser
-    kdev4rubyduchain
-    kdev4rubynavigation
-    kdev4rubycompletion
+    ${QT_QTCORE_LIBRARY}
+    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    ${KDEVPLATFORM_UTIL_LIBRARIES}
     Qt5::Widgets
-    Qt5::Declarative
-    Qt5::QuickWidgets
-    KF5::Declarative
     KF5::KDELibs4Support
+    KF5::I18n
+    kdevrubyparser
+    kdevrubyduchain
+    kdevrubynavigation
+    kdevrubycompletion
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -1,3 +1,4 @@
+
 set(rubyduchain_SRCS
     expressionvisitor.cpp
     editorintegrator.cpp
@@ -19,20 +20,15 @@ set(rubyduchain_SRCS
     declarations/moduledeclaration.cpp
 )
 
-add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
+add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
 
-target_link_libraries( kdev4rubyduchain LINK_PRIVATE
-    ${QT_QTCORE_LIBRARY}
-    KF5::I18n
-)
-
-target_link_libraries( kdev4rubyduchain LINK_PUBLIC
+target_link_libraries(kdevrubyduchain LINK_PRIVATE
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_UTIL_LIBRARIES}
-    ${KDEVPLATFORM_PROJECT_LIBRARIES}
-    kdev4rubyparser
+    kdevrubyparser
 )
 
-install(TARGETS kdev4rubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-#add_subdirectory(tests)
+add_subdirectory(tests)
+

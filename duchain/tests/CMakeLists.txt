@@ -1,46 +1,28 @@
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${KDEVPLATFORM_INCLUDE_DIR}
-)
+include(ECMAddTests)
 
-set(benchmarks_SRCS
-    benchmarks.cpp
-    duchaintestbase.cpp)
-kde4_add_unit_test(benchmarks ${benchmarks_SRCS})
-target_link_libraries(benchmarks
-    kdev4rubyduchain
-    kdev4rubyparser
-    ${QT_QTTEST_LIBRARY}
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-    ${KDEVPLATFORM_TESTS_LIBRARIES}
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-)
+macro(ruby_unit_test testname)
+    ecm_add_test(
+        ${testname}.cpp duchaintestbase.cpp TEST_NAME ${testname}
 
-set(duchain_SRCS
-    duchain.cpp
-    duchaintestbase.cpp)
-kde4_add_unit_test(duchain ${duchain_SRCS})
-target_link_libraries(duchain
-    kdev4rubyduchain
-    kdev4rubyparser
-    ${QT_QTTEST_LIBRARY}
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-    ${KDEVPLATFORM_TESTS_LIBRARIES}
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-)
+        LINK_LIBRARIES
 
-set(uses_SRCS
-    uses.cpp
-    duchaintestbase.cpp)
-kde4_add_unit_test(uses ${uses_SRCS})
-target_link_libraries(uses
-    kdev4rubyduchain
-    kdev4rubyparser
-    ${QT_QTTEST_LIBRARY}
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-    ${KDEVPLATFORM_TESTS_LIBRARIES}
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-)
+        ${QT_QTTEST_LIBRARY}
+        ${KDEVPLATFORM_INTERFACES_LIBRARIES}
+        ${KDEVPLATFORM_TESTS_LIBRARIES}
+        ${KDEVPLATFORM_UTIL_LIBRARIES}
+        ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+        kdevrubyduchain
+        kdevrubyparser
+
+        # TODO: remove this stupid dependency.
+        KF5::Archive
+    )
+endmacro()
+
+ruby_unit_test(benchmarks)
+ruby_unit_test(duchain)
+ruby_unit_test(uses)

@@ -366,7 +366,7 @@ void TestUseBuilder::defaultGlobals()
 void TestUseBuilder::classModulesScopes()
 {
     // TODO
-    QSKIP("There's still some work to do before getting this test to pass", SkipAll);
+    QSKIP("There's still some work to do before getting this test to pass");
 
     // module Klass
     // end
@@ -452,7 +452,7 @@ void TestUseBuilder::builtinUses()
 void TestUseBuilder::chained()
 {
     // TODO
-    QSKIP("Not ready...", SkipAll);
+    QSKIP("Not ready...");
 
     //               0         1         2         3         4         5
     //               012345678901234567890123456789012345678901234567890
