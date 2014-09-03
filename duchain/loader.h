@@ -58,7 +58,7 @@ public:
      * document (used for the require_relative statement).
      * @returns a KUrl containing the path to the required file.
      */
-    static KUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
+    static QUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 
     /**
      * Get all the files/directories inside the given directory except for
@@ -72,7 +72,7 @@ public:
      * @returns a list of IncludeItem's containing all the files/directories
      * that fit the given parameters.
      */
-    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative = KUrl());
+    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative = QUrl());
 
 protected:
     /**
@@ -82,7 +82,7 @@ protected:
      * @returns the path for the given gem name.
      * @note that it assumes that it does not end with ".rb".
      */
-    static KUrl getGem(const QString &name);
+    static QUrl getGem(const QString &name);
 
     /**
      * Fill the m_urlCache attribute with the urls available from Ruby
@@ -103,7 +103,7 @@ protected:
      * for the Ruby standard library. The second element is the list of search
      * paths for the gems.
      */
-    static QPair<QList<KUrl>, QList<KUrl> > m_urlCache;
+    static QPair<QList<QUrl>, QList<QUrl> > m_urlCache;
 };
 
 } // End of namespace Ruby

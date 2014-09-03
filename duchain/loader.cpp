@@ -30,19 +30,21 @@
 namespace Ruby
 {
 
-QPair<QList<KUrl>, QList<KUrl> > Loader::m_urlCache;
+QPair<QList<QUrl>, QList<QUrl> > Loader::m_urlCache;
 
-KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
+QUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
 {
-    QList<KUrl> searchPaths;
+    QList<QUrl> searchPaths;
     QString name("");
 
     /* Get the name of the file and update the cache of search paths. */
     name = editor->tokenToString(node);
-    if (name.startsWith("'") || name.startsWith("\""))
+    if (name.startsWith("'") || name.startsWith("\"")) {
         name.replace(name[0], ""); // remove surrounding '
-    if (!name.endsWith(".rb"))
+    }
+    if (!name.endsWith(".rb")) {
         name += ".rb";
+    }
     searchPaths << editor->url().toUrl().directory();
     if (!local) {
         fillUrlCache();
@@ -51,8 +53,8 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
 
     /* Check first in the standard search path */
     int i = 0;
-    foreach (const KUrl &path, searchPaths) {
-        QString url = path.path(KUrl::AddTrailingSlash) + name;
+    foreach (const QUrl &path, searchPaths) {
+        QString url = path.path() + "/" + name;
         QFile script(url);
         QFileInfo info(url);
         if (script.exists() && !info.isDir()) {
@@ -61,14 +63,15 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
                 m_urlCache.first.prepend(m_urlCache.first.at(i - 1));
                 m_urlCache.first.removeAt(i);
             }
-            KUrl res(url);
-            res.cleanPath();
+            QUrl res = QUrl::fromLocalFile(url);
+            res.setPath(QDir::cleanPath(res.path()));
             return res;
         }
         i++;
     }
-    if (local)
-        return KUrl();
+    if (local) {
+        return QUrl();
+    }
 
     /*
      * This is not a local search and we haven't found it yet, go for the gems.
@@ -77,17 +80,18 @@ KUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     return getGem(name);
 }
 
-KUrl Loader::getGem(const QString &name)
+QUrl Loader::getGem(const QString &name)
 {
     const QString &real = name + ".rb";
     QStringList filter;
 
-    if (name.isEmpty())
-      return KUrl();
+    if (name.isEmpty()) {
+      return QUrl();
+    }
 
     filter = QStringList() << QString(name[0]) + "*";
-    foreach (const KUrl &path, m_urlCache.second) {
-        QString basePath = path.path(KUrl::AddTrailingSlash);
+    foreach (const QUrl &path, m_urlCache.second) {
+        QString basePath = path.path() + "/";
         QDir dir(basePath);
         QStringList list = dir.entryList(filter, QDir::Dirs);
         foreach (const QString &inside, list) {
@@ -95,38 +99,40 @@ KUrl Loader::getGem(const QString &name)
             QFile script(url);
             QFileInfo info(url);
             if (script.exists() && !info.isDir()) {
-                KUrl res(url);
-                res.cleanPath();
+                QUrl res = QUrl::fromLocalFile(url);
+                res.setPath(QDir::cleanPath(res.path()));
                 return res;
             }
         }
     }
-    return KUrl();
+    return QUrl();
 }
 
-QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const KUrl &relative)
+QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative)
 {
     int number = 0;
     QList<IncludeItem> res;
-    QList<KUrl> paths;
+    QList<QUrl> paths;
 
     if (relative.isEmpty()) {
         fillUrlCache();
         paths = m_urlCache.first;
 
         /* Gem paths need some extra work :P */
-        foreach (const KUrl &path, m_urlCache.second) {
-            QString basePath = path.path(KUrl::AddTrailingSlash);
+        foreach (const QUrl &path, m_urlCache.second) {
+            QString basePath = path.path() + "/";
             QDir dir(basePath);
             QStringList list = dir.entryList(QStringList() << hint + "*");
-            foreach (const QString &inside, list)
+            foreach (const QString &inside, list) {
                 paths << basePath + inside + "/lib/";
+            }
         }
-    } else
+    } else {
         paths << relative;
+    }
 
-    foreach (const KUrl &path, paths) {
-        QString p = path.path(KUrl::AddTrailingSlash) + url;
+    foreach (const QUrl &path, paths) {
+        QString p = path.path() + "/" + url;
         QDirIterator it(p);
         while (it.hasNext()) {
             it.next();
@@ -153,10 +159,11 @@ void Loader::fillUrlCache()
     QStringList code;
     QList<QByteArray> rpaths, epaths;
 
-    if (urlsCached())
+    if (urlsCached()) {
         return;
-    m_urlCache.first = QList<KUrl>();
-    m_urlCache.second = QList<KUrl>();
+    }
+    m_urlCache.first = QList<QUrl>();
+    m_urlCache.second = QList<QUrl>();
 
     code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
     ruby.start("/usr/bin/env", code);
@@ -165,10 +172,12 @@ void Loader::fillUrlCache()
     epaths = ruby.readAllStandardError().split('\n');
 
     /* For both rpaths and epaths, the last item is empty */
-    for (it = 0; it < rpaths.size() - 1; it++)
-        m_urlCache.first << KUrl(rpaths.at(it));
-    for (it = 0; it < epaths.size() - 1; it++)
-        m_urlCache.second << KUrl(epaths.at(it) + "/gems");
+    for (it = 0; it < rpaths.size() - 1; it++) {
+        m_urlCache.first << QUrl::fromLocalFile(rpaths.at(it));
+    }
+    for (it = 0; it < epaths.size() - 1; it++) {
+        m_urlCache.second << QUrl::fromLocalFile(epaths.at(it) + "/gems");
+    }
 }
 
 } // End of namespace Ruby

@@ -244,9 +244,9 @@ void ContextBuilder::visitRequire(RubyAst *node, bool relative)
     if (aux->kind != token_string)
         return;
 
-    KUrl path = Loader::getRequiredFile(aux, m_editor, relative);
+    QUrl path = Loader::getRequiredFile(aux, m_editor, relative);
     if (path.isEmpty()) {
-        QString msg = i18n("LoadError: cannot load such file: %1", path.pathOrUrl());
+        QString msg = i18n("LoadError: cannot load such file: %1", path.path());
         appendProblem(aux, msg, ProblemData::Warning);
         return;
     }

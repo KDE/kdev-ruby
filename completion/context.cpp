@@ -221,7 +221,7 @@ bool CodeCompletionContext::isValidPosition()
 bool CodeCompletionContext::doRequireCompletion()
 {
     QString line = lastNLines(m_text, 1).trimmed();
-    KUrl relative("");
+    QUrl relative;
     int idx = 8;
 
     if (!line.startsWith("require ")) {
