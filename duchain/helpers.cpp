@@ -21,7 +21,7 @@
 
 // Qt + KDE
 #include <QtCore/QProcess>
-#include <KStandardDirs>
+#include <QtCore/QStandardPaths>
 
 // KDevelop
 #include <language/duchain/identifier.h>
@@ -47,9 +47,10 @@ using namespace KDevelop;
 
 const IndexedString & internalBuiltinsFile()
 {
-    static IndexedString doc_url(KStandardDirs::locate("data",
+    static IndexedString doc(QStandardPaths::locate(
+                                QStandardPaths::GenericDataLocation,
                                 "kdevrubysupport/documentation/builtins.rb"));
-    return doc_url;
+    return doc;
 }
 
 const QString getName(RubyAst *ast)
