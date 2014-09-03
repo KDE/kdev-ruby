@@ -455,7 +455,7 @@ void DeclarationBuilder::visitAssignmentStatement(RubyAst *node)
         ClassType::Ptr ct = values.first().cast<ClassType>();
         if (rest > 1 && ct && ct->contentType()) {
             lock.lock();
-            QualifiedIdentifier qi = ct.unsafeData()->declaration(topContext())->qualifiedIdentifier();
+            QualifiedIdentifier qi = ct.data()->declaration(topContext())->qualifiedIdentifier();
             lock.unlock();
             if (qi == QualifiedIdentifier("Array")) {
                 for (Node *n = node->tree->l; n != nullptr; n = n->next) {

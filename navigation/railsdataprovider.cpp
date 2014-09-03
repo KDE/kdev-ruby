@@ -29,7 +29,6 @@
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
-#include <language/duchain/indexedstring.h>
 
 #include "railsswitchers.h"
 

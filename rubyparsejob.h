@@ -62,7 +62,8 @@ protected:
     /**
      * Runs this ParseJob.
      */
-    virtual void run() override;
+    virtual void run(ThreadWeaver::JobPointer pointer,
+                     ThreadWeaver::Thread *thread) override;
 
 private:
     /**

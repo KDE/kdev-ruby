@@ -100,8 +100,8 @@ void RubyParser::appendProblem(const struct error_t *error)
     int col = (error->column > 0) ? error->column - 1 : 0;
     ProblemPointer problem(new Problem);
 
-    SimpleCursor cursor(error->line - 1, col);
-    SimpleRange range(cursor, cursor);
+    KTextEditor::Cursor cursor(error->line - 1, col);
+    KTextEditor::Range range(cursor, cursor);
     DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
     problem->setDescription(QString(error->msg));

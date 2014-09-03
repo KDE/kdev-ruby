@@ -38,7 +38,7 @@ class KDEVRUBYCOMPLETION_EXPORT NormalItem : public KDevelop::NormalDeclarationC
 public:
     /// Constructor.
     explicit NormalItem(KDevelop::DeclarationPointer decl = KDevelop::DeclarationPointer(),
-                        KSharedPtr<KDevelop::CodeCompletionContext> context = KSharedPtr<KDevelop::CodeCompletionContext>(),
+                        QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext> context = QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext>(),
                         int inheritanceDepth = 0);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.

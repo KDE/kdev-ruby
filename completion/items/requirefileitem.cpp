@@ -37,15 +37,17 @@ RequireFileItem::RequireFileItem(const KDevelop::IncludeItem &include, const cha
     /* There's nothing to do here */
 }
 
-void RequireFileItem::execute(Document *document, const Range &word)
+void RequireFileItem::execute(View *view, const Range &word)
 {
+    /* TODO: KF5 */
+    /*
     QString text = includeItem.name;
     if (includeItem.isDirectory)
         text += "/";
     else if (text.endsWith(".rb"))
         text.chop(3); // .rb
 
-    /* Close the item if needed. */
+    // Close the item if needed.
     const QString textAfter = document->text(Range(word.end(), document->documentEnd()));
     bool found = false;
     for (int i = 0; textAfter[i] != '\n' && i < textAfter.length(); i++) {
@@ -58,6 +60,7 @@ void RequireFileItem::execute(Document *document, const Range &word)
         text += m_closing;
 
     document->replaceText(word, text);
+    */
 }
 
 } // End of namespace Ruby

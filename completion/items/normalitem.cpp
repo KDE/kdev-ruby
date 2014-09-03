@@ -37,7 +37,7 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-NormalItem::NormalItem(DeclarationPointer decl, KSharedPtr<CodeCompletionContext> context, int inheritanceDepth)
+NormalItem::NormalItem(DeclarationPointer decl, QExplicitlySharedDataPointer<CodeCompletionContext> context, int inheritanceDepth)
     : NormalDeclarationCompletionItem(decl, context, inheritanceDepth)
 {
     /* There's nothing to do here */

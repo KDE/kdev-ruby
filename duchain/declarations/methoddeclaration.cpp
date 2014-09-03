@@ -87,7 +87,7 @@ void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
         IndexedType old = d_func_dynamic()->yieldTypesList()[n].type;
         YieldType res;
         AbstractType::Ptr merged = mergeTypes(old.abstractType(), yield.type.abstractType());
-        res.type = merged.unsafeData()->indexed();
+        res.type = merged.data()->indexed();
         d_func_dynamic()->yieldTypesList()[n] = res;
     } else
         d_func_dynamic()->yieldTypesList().append(yield);

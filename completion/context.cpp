@@ -402,7 +402,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
 }
 
 void CodeCompletionContext::eventuallyAddGroup(const QString &name, int priority,
-                                               QList<KSharedPtr<CompletionTreeItem> > items)
+                                               QList<QExplicitlySharedDataPointer<CompletionTreeItem> > items)
 {
     KDevelop::CompletionCustomGroupNode *node = new KDevelop::CompletionCustomGroupNode(name, priority);
     node->appendChildren(items);

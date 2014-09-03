@@ -66,8 +66,11 @@ LanguageSupport * ParseJob::ruby() const
     return dynamic_cast<LanguageSupport *>(languageSupport());
 }
 
-void ParseJob::run()
+void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *thread)
 {
+    Q_UNUSED(pointer);
+    Q_UNUSED(thread);
+
     if (!ruby() || abortRequested())
         return abortJob();
 

@@ -1,22 +1,24 @@
 project(ruby)
 
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 6)
-set(VERSION_PATCH 60)
+set(VERSION_MINOR 90)
+set(VERSION_PATCH 90)
 # KDevplatform dependency version
 set( KDEVPLATFORM_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ruby_SOURCE_DIR}/cmake/)
+cmake_minimum_required(VERSION 2.8.12)
+find_package (ECM 0.0.9 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
-cmake_minimum_required(VERSION 2.8.9)
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings)
 
-find_package(KDE4 REQUIRED)
+find_package(Qt5 REQUIRED Core Declarative Widgets Test Qml QuickWidgets)
+find_package(KF5 REQUIRED COMPONENTS KDELibs4Support ThreadWeaver TextEditor Declarative I18n)
 find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
+find_package(KDevelop REQUIRED)
 find_package(BISON REQUIRED)
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
@@ -24,14 +26,14 @@ configure_file(
   @ONLY
 )
 
-enable_testing()
+#enable_testing()
 
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
-    ${KDE4_INCLUDES}
-    ${KDE4_INCLUDE_DIR}/threadweaver
+    ${KDEVELOP_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs
 )
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
@@ -42,28 +44,24 @@ add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(navigation)
 add_subdirectory(completion)
-add_subdirectory(app_templates)
+#add_subdirectory(app_templates)
 
-set(kdevrubylanguagesupport_PART_SRCS
+add_library(kdevrubylanguagesupport MODULE
     rubyparsejob.cpp
     rubyhighlighting.cpp
     rubylanguagesupport.cpp
-
     codegen/refactoring.cpp
 )
-
-kde4_add_plugin(kdevrubylanguagesupport ${kdevrubylanguagesupport_PART_SRCS})
-target_link_libraries(kdevrubylanguagesupport LINK_PRIVATE
-    ${KDE4_KDEUI_LIBS}
-    ${KDE4_KTEXTEDITOR_LIBS}
-    ${KDE4_THREADWEAVER_LIBRARIES}
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_PROJECT_LIBRARIES}
+target_link_libraries(kdevrubylanguagesupport
     kdev4rubyparser
     kdev4rubyduchain
     kdev4rubynavigation
     kdev4rubycompletion
+    Qt5::Widgets
+    Qt5::Declarative
+    Qt5::QuickWidgets
+    KF5::Declarative
+    KF5::KDELibs4Support
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})

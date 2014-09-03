@@ -78,7 +78,8 @@ namespace Ruby
 {
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
-    : KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
+    //: KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
+    : KDevelop::IPlugin(QLatin1String("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
     , m_builtinsLoaded(false)
     , m_railsSwitchers(new Ruby::RailsSwitchers(this))
@@ -257,9 +258,12 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
     KUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url());
+    // TODO: KF5
+    /*
     if (!railsRoot.isEmpty())
         cfg.writeEntry("Working Directory", railsRoot);
     else
+    */
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
 }
 
@@ -304,7 +308,7 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*
 {
     _xmlFile = xmlFile();
 
-    KAction *action = actions.addAction("ruby_switch_to_controller");
+    QAction *action = actions.addAction("ruby_switch_to_controller");
     action->setText(i18n("Switch To Controller"));
     action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_1);
     connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToController()));

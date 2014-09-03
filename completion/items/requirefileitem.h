@@ -43,7 +43,7 @@ public:
                              const char closing);
 
     /// Re-implemented from KDevelop::AbstractIncludeFileCompletionItem
-    virtual void execute(KTextEditor::Document *document,
+    virtual void execute(KTextEditor::View *View,
                          const KTextEditor::Range &word) override;
 
 private:

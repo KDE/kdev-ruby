@@ -29,7 +29,6 @@
 // KDevelop
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
-#include <language/duchain/indexedstring.h>
 #include <language/duchain/topducontext.h>
 
 #include <parser/node.h>

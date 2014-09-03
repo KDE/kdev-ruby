@@ -19,15 +19,20 @@ set(rubyduchain_SRCS
     declarations/moduledeclaration.cpp
 )
 
-kde4_add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
+add_library(kdev4rubyduchain SHARED ${rubyduchain_SRCS})
+
 target_link_libraries( kdev4rubyduchain LINK_PRIVATE
-    ${KDE4_KDECORE_LIBS}
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
+    ${QT_QTCORE_LIBRARY}
+    KF5::I18n
+)
+
+target_link_libraries( kdev4rubyduchain LINK_PUBLIC
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDE4_KTEXTEDITOR_LIBS}
+    ${KDEVPLATFORM_UTIL_LIBRARIES}
+    ${KDEVPLATFORM_PROJECT_LIBRARIES}
     kdev4rubyparser
 )
 
 install(TARGETS kdev4rubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-add_subdirectory(tests)
+#add_subdirectory(tests)

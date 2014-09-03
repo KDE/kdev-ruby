@@ -35,7 +35,7 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-KeywordItem::KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
+KeywordItem::KeywordItem(QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
                          const QString &customReplacement, bool line)
     : NormalDeclarationCompletionItem(DeclarationPointer(), ctx)
     , m_keyword(keyword), m_replacement(customReplacement), m_wholeLine(line)
@@ -43,8 +43,10 @@ KeywordItem::KeywordItem(KSharedPtr<KDevelop::CodeCompletionContext> ctx, const 
     /* There's nothing to do here */
 }
 
-void KeywordItem::execute(Document *document, const Range &word)
+void KeywordItem::execute(View *view, const Range &word)
 {
+    /* TODO: KF5 */
+    /*
     if (!m_replacement.isEmpty()) {
         QString replacement = m_replacement;
         replacement = replacement.replace("%END%", getIndendation(document->line(word.start().line())) + "end");
@@ -58,7 +60,7 @@ void KeywordItem::execute(Document *document, const Range &word)
         if (cursor != -1) {
             const QString ind = indentString(document);
             replacement = replacement.replace("%INDENT%", ind);
-            cursor -= 8 - ind.size(); /* "%INDENT%" -> 8 */
+            cursor -= 8 - ind.size(); // "%INDENT%" -> 8
             replacement.remove("%CURSOR%");
         } else {
             cursor = replacement.indexOf("%SELECT%");
@@ -110,6 +112,7 @@ void KeywordItem::execute(Document *document, const Range &word)
         }
     } else
         document->replaceText(word, m_keyword);
+    */
 }
 
 QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const

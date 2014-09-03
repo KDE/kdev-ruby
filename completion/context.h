@@ -29,7 +29,7 @@
 
 
 namespace KDevelop {
-    typedef KSharedPtr<CompletionTreeItem> CompletionTreeItemPointer;
+    typedef QExplicitlySharedDataPointer<CompletionTreeItem> CompletionTreeItemPointer;
     class IncludeItem;
 }
 
@@ -134,7 +134,7 @@ private:
      * @param items The items that should constitute this new group.
      */
     void eventuallyAddGroup(const QString &name, int priority,
-                            QList<KSharedPtr<KDevelop::CompletionTreeItem> > items);
+                            QList<QExplicitlySharedDataPointer<KDevelop::CompletionTreeItem> > items);
 
     /// Group adding methods.
     void addRubyKeywords();

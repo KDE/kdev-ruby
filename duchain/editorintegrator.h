@@ -26,7 +26,6 @@
 
 
 // KDevelop
-#include <language/duchain/indexedstring.h>
 #include <language/editor/rangeinrevision.h>
 
 // Ruby

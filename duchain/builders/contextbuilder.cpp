@@ -133,8 +133,8 @@ KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, Ru
 
 const DocumentRange ContextBuilder::getDocumentRange(const Node *node) const
 {
-    SimpleRange range(node->pos.start_line - 1, node->pos.start_col,
-                      node->pos.end_line - 1, node->pos.end_col);
+    KTextEditor::Range range(node->pos.start_line - 1, node->pos.start_col,
+                             node->pos.end_line - 1, node->pos.end_col);
     return DocumentRange(m_editor->url(), range);
 }
 
