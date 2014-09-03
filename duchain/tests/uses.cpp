@@ -636,5 +636,3 @@ void TestUseBuilder::nestedIdentifier()
 
 } // End of namespace Ruby
 
-
-#include "uses.moc"

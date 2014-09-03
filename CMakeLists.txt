@@ -66,8 +66,8 @@ target_link_libraries(kdevrubylanguagesupport
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
-
 configure_file(kdevrubysupport.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdevrubysupport.desktop)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kdevrubysupport.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES kdevrubysupport.rc DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport)
 install(FILES documentation/builtins.rb DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport/documentation/)
+

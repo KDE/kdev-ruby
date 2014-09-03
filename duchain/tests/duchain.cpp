@@ -1798,5 +1798,3 @@ void TestDUChain::problemOnInvalidMixin()
 
 } // End of namespace Ruby
 
-
-#include "duchain.moc"
