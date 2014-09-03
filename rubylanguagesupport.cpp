@@ -78,7 +78,6 @@ namespace Ruby
 {
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
-    //: KDevelop::IPlugin(KDevRubySupportFactory::componentData(), parent)
     : KDevelop::IPlugin(QLatin1String("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
     , m_builtinsLoaded(false)

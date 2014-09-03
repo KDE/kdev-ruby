@@ -91,7 +91,6 @@ protected:
     static void fillUrlCache();
 
 private:
-
     /// @returns true if the url cache has been filled with search paths.
     static inline bool urlsCached()
     {

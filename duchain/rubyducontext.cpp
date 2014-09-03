@@ -18,12 +18,10 @@
  */
 
 
-// KDevelop
+#include <kio/global.h>
 #include <language/duchain/topducontextdata.h>
 #include <language/duchain/duchainregister.h>
 #include <language/util/includeitem.h>
-
-// Ruby
 #include <duchain/rubyducontext.h>
 #include <duchain/navigation/navigationwidget.h>
 
@@ -40,12 +38,12 @@ QWidget * RubyTopDUContext::createNavigationWidget(Declaration *decl, TopDUConte
                                                    const QString &htmlPrefix, const QString &htmlSuffix) const
 {
     if (!decl) {
-        KUrl u(url().str());
+        QUrl u = QUrl::fromLocalFile(url().str());
         IncludeItem i;
         i.pathNumber = -1;
         i.name = u.fileName();
         i.isDirectory = false;
-        i.basePath = u.upUrl();
+        i.basePath = KIO::upUrl(u);
         return new NavigationWidget(i, TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
     }
     return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
