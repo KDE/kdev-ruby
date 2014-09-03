@@ -89,7 +89,7 @@ QString DeclarationNavigationContext::html(bool shorten)
         htmlAdditionalNavigation();
         modifyHtml() += "<br />";
         modifyHtml() += labelHighlight(i18n("Def.: "));
-        makeLink(QString("%1 :%2").arg(KUrl(m_declaration->url().str()).fileName()).arg(m_declaration->rangeInCurrentRevision().start().line() + 1), m_declaration, NavigationAction::JumpToSource);
+        makeLink(QString("%1 :%2").arg(QUrl(m_declaration->url().str()).fileName()).arg(m_declaration->rangeInCurrentRevision().start().line() + 1), m_declaration, NavigationAction::JumpToSource);
         modifyHtml() += " ";
         modifyHtml() += createLink(i18n("Show uses"), "show_uses", NavigationAction(m_declaration, NavigationAction::NavigateUses));
         if(!shorten && !m_declaration->comment().isEmpty()) {

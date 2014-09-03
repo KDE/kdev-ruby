@@ -56,7 +56,7 @@ public:
      * @param editor The EditorIntegrator from the current builder.
      * @param local Set to true if the required file is relative to the current
      * document (used for the require_relative statement).
-     * @returns a KUrl containing the path to the required file.
+     * @returns a QUrl containing the path to the required file.
      */
     static QUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
 

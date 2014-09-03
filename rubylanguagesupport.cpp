@@ -255,11 +255,12 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
-    KUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url().toString());
-    if (!railsRoot.isEmpty())
+    QUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url().toString());
+    if (!railsRoot.isEmpty()) {
         cfg.writeEntry("Working Directory", railsRoot.url());
-    else
+    } else {
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
+    }
 }
 
 KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)

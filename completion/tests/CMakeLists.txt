@@ -6,18 +6,21 @@ include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
 )
 
-set(completiontest_SRCS
+ecm_add_test(
     completion.cpp
     ../../duchain/tests/duchaintestbase.cpp
-)
 
-kde4_add_unit_test(completion ${completiontest_SRCS})
+    TEST_NAME completion
 
-target_link_libraries(completion
+    LINK_LIBRARIES
+
     ${QT_QTTEST_LIBRARY}
+    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_TESTS_LIBRARIES}
+    ${KDEVPLATFORM_UTIL_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    kdevrubycompletion
     kdevrubyduchain
     kdevrubyparser
+    kdevrubycompletion
 )
+
