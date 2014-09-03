@@ -19,3 +19,4 @@ target_link_libraries(kdevrubynavigation LINK_PRIVATE
 )
 
 install(TARGETS kdevrubynavigation DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+

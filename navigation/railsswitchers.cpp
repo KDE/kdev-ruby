@@ -2,6 +2,7 @@
 * This file is part of KDevelop
 *
 * Copyright 2007-2010 Alexander Dymo <adymo@kdevelop.org>
+* Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Library General Public License as
@@ -22,6 +23,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <kio/global.h>
 
 #include <interfaces/icore.h>
 #include <interfaces/iplugincontroller.h>
@@ -30,87 +32,88 @@
 
 #include <navigation/railsswitchers.h>
 
+/*
+ * TODO: add tests + style.
+ */
 
 namespace Ruby {
 
-RailsSwitchers::RailsSwitchers(LanguageSupport *language)
-    : QObject(language)
+RailsSwitchers::RailsSwitchers(LanguageSupport *language) : QObject(language)
 {
     /* There's nothing to do here. */
 }
 
-KUrl RailsSwitchers::findRailsRoot(const KUrl& url)
+QUrl RailsSwitchers::findRailsRoot(const QUrl &url)
 {
-    KUrl currentUrl = url;
-    KUrl upUrl = currentUrl.upUrl();
-    kDebug() << "starting:" << upUrl;
+    QUrl currentUrl = url;
+    QUrl upUrl = KIO::upUrl(currentUrl);
+
     while (upUrl != currentUrl) {
-        kDebug() << "checking:" << upUrl;
-        if ( (upUrl.fileName() == "controllers" and upUrl.upUrl().fileName() == "app")
-             || (upUrl.fileName() == "models" and upUrl.upUrl().fileName() == "app")
-             || (upUrl.fileName() == "views" and upUrl.upUrl().fileName() == "app") )
-            return upUrl.upUrl().upUrl();
-        else if (upUrl.fileName() == "test")
-            return upUrl.upUrl();
+        QUrl aux = KIO::upUrl(upUrl);
+        if ((upUrl.fileName() == "controllers" && aux.fileName() == "app")
+             || (upUrl.fileName() == "models" && aux.fileName() == "app")
+             || (upUrl.fileName() == "views" && aux.fileName() == "app") ) {
+            return KIO::upUrl(aux);
+        } else if (upUrl.fileName() == "test") {
+            return aux;
+        }
 
         currentUrl = upUrl;
-        upUrl = currentUrl.upUrl();
+        upUrl = aux;
     }
-    return KUrl();
+    return QUrl();
 }
 
 void RailsSwitchers::switchToController()
 {
-    kDebug() << "switching to controller";
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return;
+    if (!activeDocument) {
+        return;
+    }
 
     QFileInfo file(activeDocument->url().toLocalFile());
-    if (!file.exists()) return;
+    if (!file.exists()) {
+        return;
+    }
 
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
-    KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug() << "   rails root found:" << railsRoot;
-    if (railsRoot.isEmpty()) return;
-
-    if ((ext == "rb") && !name.endsWith("_controller"))
-    {
-        if (name.endsWith("_test"))
-        {
-            switchTo = name.remove(QRegExp("_test$"));  //the file is the test
-            switchTo = name.remove(QRegExp("_controller$"));  //remove functional test name parts
-        }
-        else
-            switchTo = name;
+    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    if (railsRoot.isEmpty()) {
+        return;
     }
-    else if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" ||
-        ext == "xml.builder" || ext == "html.erb" || ext == "erb" )
-    {
-        //this is a view, we need to find the directory of this view and try to find
-        //the controller basing on the directory information
+
+    if ((ext == "rb") && !name.endsWith("_controller")) {
+        if (name.endsWith("_test")) {
+            switchTo = name.remove(QRegExp("_test$"));
+            switchTo = name.remove(QRegExp("_controller$"));
+        } else {
+            switchTo = name;
+        }
+    } else if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" ||
+                ext == "xml.builder" || ext == "html.erb" || ext == "erb" ) {
+
+        /*
+         * This is a view, we need to find the directory of this view and try
+         * to find the controller basing on the directory information
+         */
         switchTo = file.dir().dirName();
     }
-    kDebug() << "   switching to:" << switchTo;
 
-    if (!switchTo.isEmpty())
-    {
-        KUrl controllerUrl = railsRoot;
-        controllerUrl.addPath("app");
-        controllerUrl.addPath("controllers");
+    if (!switchTo.isEmpty()) {
+        QUrl controllerUrl = railsRoot;
+        controllerUrl.setPath(controllerUrl.path() + "/app/controllers");
 
-        if (switchTo.endsWith("s"))
+        if (switchTo.endsWith("s")) {
             switchTo = switchTo.mid(0, switchTo.length()-1);
-        KUrl singular = controllerUrl;
-        singular.addPath(switchTo + "_controller.rb");
-        KUrl plural = controllerUrl;
-        plural.addPath(switchTo + "s_controller.rb");
+        }
+        QUrl singular = controllerUrl;
+        singular.setPath(singular.path() + switchTo + "_controller.rb");
+        QUrl plural = controllerUrl;
+        plural.setPath(plural.path() + switchTo + "s_controller.rb");
 
-        kDebug() << "   plural:" << plural;
-        kDebug() << "   singular:" << singular;
-
-        KUrl url = KUrl(QFile::exists(singular.toLocalFile()) ? singular : plural);
+        QUrl url = QUrl::fromLocalFile(QFile::exists(singular.toLocalFile()) ? singular.path() : plural.path());
         KDevelop::ICore::self()->documentController()->openDocument(url);
     }
 }
@@ -118,200 +121,208 @@ void RailsSwitchers::switchToController()
 void RailsSwitchers::switchToModel()
 {
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return;
+    if (!activeDocument) {
+        return;
+    }
 
     QFileInfo file(activeDocument->url().toLocalFile());
-    if (!file.exists()) return;
+    if (!file.exists()) {
+        return;
+    }
 
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
 
-    KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug() << "   rails root found:" << railsRoot;
-    if (railsRoot.isEmpty()) return;
+    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    if (railsRoot.isEmpty()) {
+        return;
+    }
 
     if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
-        || ext == "html.erb" || ext == "erb")
-    {
-        //this is a view already, let's show the list of all views for this model
+        || ext == "html.erb" || ext == "erb") {
+        // This is a view already, let's show the list of all views for this model
         switchTo = file.dir().dirName();
-    }
-    else if (ext == "rb" && (name.endsWith("_controller") || name.endsWith("_test")))
-    {
+    } else if (ext == "rb" && (name.endsWith("_controller") || name.endsWith("_test"))) {
         switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
     }
 
-    if (switchTo.isEmpty())
+    if (switchTo.isEmpty()) {
         return;
+    }
 
-    KUrl modelUrl = railsRoot;
-    modelUrl.addPath("app");
-    modelUrl.addPath("models");
-
-    if (switchTo.endsWith("s"))
+    QUrl modelUrl = QUrl::fromLocalFile(railsRoot.path() + "/app/models");
+    if (switchTo.endsWith("s")) {
         switchTo = switchTo.mid(0, switchTo.length()-1);
-    modelUrl.addPath(switchTo + ".rb");
-
+    }
+    modelUrl.setPath(modelUrl.path() + "/" + switchTo + ".rb");
     KDevelop::ICore::self()->documentController()->openDocument(modelUrl);
 }
 
 void RailsSwitchers::switchToView()
 {
-    if (viewsToSwitch().isEmpty())
+    if (viewsToSwitch().isEmpty()) {
         return;
+    }
 
-    KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
+    KDevelop::IQuickOpen *quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        kDebug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Views"));
     }
 }
 
-KUrl::List RailsSwitchers::viewsToSwitch()
+QList<QUrl> RailsSwitchers::viewsToSwitch()
 {
-    KUrl::List urls;
+    QList<QUrl> urls;
 
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return urls;
+    if (!activeDocument) {
+        return urls;
+    }
 
     QFileInfo file(activeDocument->url().toLocalFile());
-    if (!file.exists()) return urls;
+    if (!file.exists()) {
+        return urls;
+    }
 
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder" || ext == "html.erb")
-    {
-        //this is a view already, let's show the list of all views for this model
+    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs"
+            || ext == "xml.builder" || ext == "html.erb") {
+        /*
+         * This is a view already, let's show the list of all views
+         * for this model.
+         */
         switchTo = file.dir().dirName();
-    }
-    else if (ext == "rb")
+    } else if (ext == "rb") {
         switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+    }
 
-    if (switchTo.isEmpty())
+    if (switchTo.isEmpty()) {
         return urls;
-
-    if (switchTo.endsWith("s"))
+    }
+    if (switchTo.endsWith("s")) {
         switchTo = switchTo.mid(0, switchTo.length() - 1);
+    }
 
-    KUrl railsRoot = findRailsRoot(activeDocument->url());
-    kDebug() << "   rails root found:" << railsRoot;
-    if (railsRoot.isEmpty()) return urls;
-
-    KUrl viewsUrl = railsRoot;
-    viewsUrl.addPath("app");
-    viewsUrl.addPath("views");
-    KUrl viewsUrlS = viewsUrl;
-    viewsUrlS.addPath(switchTo);
-    KUrl viewsUrlP = viewsUrl;
-    viewsUrlP.addPath(switchTo + "s");
-
-    if (QFile::exists(viewsUrlS.toLocalFile()))
-        viewsUrl = viewsUrlS;
-    else if (QFile::exists(viewsUrlP.toLocalFile()))
-        viewsUrl = viewsUrlP;
-    else
+    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    if (railsRoot.isEmpty()) {
         return urls;
+    }
+
+    QUrl viewsUrl = QUrl::fromLocalFile(railsRoot.path() + "/app/views");
+    QUrl viewsUrlS = QUrl::fromLocalFile(viewsUrl.path() + switchTo);
+    QUrl viewsUrlP = QUrl::fromLocalFile(viewsUrl.path() + switchTo + "s");
+
+    if (QFile::exists(viewsUrlS.toLocalFile())) {
+        viewsUrl = viewsUrlS;
+    } else if (QFile::exists(viewsUrlP.toLocalFile())) {
+        viewsUrl = viewsUrlP;
+    } else {
+        return urls;
+    }
 
     QDir viewsDir(viewsUrl.toLocalFile());
     QStringList views = viewsDir.entryList();
 
     foreach (const QString &viewName, views) {
-        if ( !(viewName.endsWith("~") || viewName == "." || viewName == "..") ) {
-            KUrl viewUrl(viewsDir.absolutePath());
-            viewUrl.addPath(viewName);
+        if (!(viewName.endsWith("~") || viewName == "." || viewName == "..")) {
+            QUrl viewUrl = QUrl::fromLocalFile(viewsDir.absolutePath() + "/" + viewName);
             urls << viewUrl;
         }
     }
-    kDebug() << "   views found:" << urls;
-
     return urls;
 }
 
-KUrl::List RailsSwitchers::testsToSwitch()
+QList<QUrl> RailsSwitchers::testsToSwitch()
 {
-    KUrl::List urls;
+    QList<QUrl> urls;
 
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) return urls;
+    if (!activeDocument) {
+        return urls;
+    }
 
     QFileInfo file(activeDocument->url().toLocalFile());
-    if (!file.exists()) return urls;
+    if (!file.exists()) {
+        return urls;
+    }
 
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" || ext == "xml.builder"
-        || ext == "html.erb" || ext == "erb")
+    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs"
+            || ext == "xml.builder" || ext == "html.erb" || ext == "erb") {
         switchTo = file.dir().dirName();
-    else if (ext == "rb")
+    } else if (ext == "rb") {
         switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+    }
 
-    if (switchTo.isEmpty())
+    if (switchTo.isEmpty()) {
         return urls;
-
-    if (switchTo.endsWith("s"))
+    }
+    if (switchTo.endsWith("s")) {
         switchTo = switchTo.mid(0, switchTo.length() - 1);
+    }
 
-    KUrl testsUrl = findRailsRoot(activeDocument->url());
-    testsUrl.addPath("test");
+    QUrl testsUrl = findRailsRoot(activeDocument->url());
+    testsUrl.setPath(testsUrl.path() + "/test");
 
-    KUrl functionalTestsUrlS = testsUrl;
-    functionalTestsUrlS.addPath("functional");
-    functionalTestsUrlS.addPath(switchTo + "_controller_test.rb");
-    if (QFile::exists(functionalTestsUrlS.toLocalFile()))
+    QUrl functionalTestsUrlS = QUrl::fromLocalFile(testsUrl.path() + "/functional/" +
+                                    switchTo + "_controller_test.rb");
+    if (QFile::exists(functionalTestsUrlS.toLocalFile())) {
         urls << functionalTestsUrlS;
+    }
 
-    KUrl functionalTestsUrlP = testsUrl;
-    functionalTestsUrlP.addPath("functional");
-    functionalTestsUrlP.addPath(switchTo + "s_controller_test.rb");
-    if (QFile::exists(functionalTestsUrlP.toLocalFile()))
+    QUrl functionalTestsUrlP = QUrl::fromLocalFile(testsUrl.path() + "/functional/" +
+                                    switchTo + "s_controller_test.rb");
+    if (QFile::exists(functionalTestsUrlP.toLocalFile())) {
         urls << functionalTestsUrlP;
+    }
 
-    KUrl integrationTestsUrlS = testsUrl;
-    integrationTestsUrlS.addPath("integration");
-    integrationTestsUrlS.addPath(switchTo + "_test.rb");
-    if (QFile::exists(integrationTestsUrlS.toLocalFile()))
+    QUrl integrationTestsUrlS = QUrl::fromLocalFile(testsUrl.path() + "/integration/" +
+                                    switchTo + "_test.rb");
+    if (QFile::exists(integrationTestsUrlS.toLocalFile())) {
         urls << integrationTestsUrlS;
+    }
 
-    KUrl integrationTestsUrlP = testsUrl;
-    integrationTestsUrlP.addPath("integration");
-    integrationTestsUrlP.addPath(switchTo + "s_test.rb");
-    if (QFile::exists(integrationTestsUrlP.toLocalFile()))
+    QUrl integrationTestsUrlP = QUrl::fromLocalFile(testsUrl.path() + "/integration/" +
+                                    switchTo + "s_test.rb");
+    if (QFile::exists(integrationTestsUrlP.toLocalFile())) {
         urls << integrationTestsUrlP;
+    }
 
-    KUrl unitTestsUrlS = testsUrl;
-    unitTestsUrlS.addPath("unit");
-    unitTestsUrlS.addPath(switchTo + "_test.rb");
-    if (QFile::exists(unitTestsUrlS.toLocalFile()))
+    QUrl unitTestsUrlS = QUrl::fromLocalFile(testsUrl.path() + "/unit/" +
+                                                switchTo + "_test.rb");
+    if (QFile::exists(unitTestsUrlS.toLocalFile())) {
         urls << unitTestsUrlS;
+    }
 
-    KUrl unitTestsUrlP = testsUrl;
-    unitTestsUrlP.addPath("unit");
-    unitTestsUrlP.addPath(switchTo + "s_test.rb");
-    if (QFile::exists(unitTestsUrlP.toLocalFile()))
+    QUrl unitTestsUrlP = QUrl::fromLocalFile(testsUrl.path() + "/unit/" +
+                                                switchTo + "s_test.rb");
+    if (QFile::exists(unitTestsUrlP.toLocalFile())) {
         urls << unitTestsUrlP;
+    }
 
     return urls;
 }
 
 void RailsSwitchers::switchToTest()
 {
-    if (testsToSwitch().isEmpty())
+    if (testsToSwitch().isEmpty()) {
         return;
+    }
 
-    KDevelop::IQuickOpen* quickOpen = KDevelop::ICore::self()->pluginController()
+    KDevelop::IQuickOpen *quickOpen = KDevelop::ICore::self()->pluginController()
         ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        kDebug() << "   showing quickopen";
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
     }
 }
 
 }
 
-#include "railsswitchers.moc"

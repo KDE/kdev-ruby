@@ -2,6 +2,7 @@
 * This file is part of KDevelop
 *
 * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+* Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Library General Public License as
@@ -18,19 +19,20 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#include "railsdataprovider.h"
+
 
 #include <QDir>
 #include <QIcon>
 #include <QFileInfo>
 #include <QTextCharFormat>
-
-#include <klocale.h>
+#include <KLocale>
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 
-#include "railsswitchers.h"
+#include <navigation/railsswitchers.h>
+#include <navigation/railsdataprovider.h>
+
 
 namespace Ruby {
 
@@ -41,8 +43,9 @@ RailsQuickOpenData::RailsQuickOpenData(const RailsQuickOpenItem& item, const QSt
 
 QString RailsQuickOpenData::text() const
 {
-    KUrl u(m_item.url.url());
-    return KUrl::relativeUrl( RailsSwitchers::findRailsRoot(m_item.url.url()), u );
+    QUrl u = m_item.url.path();
+    QUrl base = RailsSwitchers::findRailsRoot(m_item.url);
+    return base.path() + "/" + u.path();
 }
 
 QString RailsQuickOpenData::htmlDescription() const
@@ -131,16 +134,18 @@ void RailsDataProvider::reset()
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
 
     QList<RailsQuickOpenItem> items;
-    KUrl::List urlsToSwitch;
-    if (m_kind == Views)
+    QList<QUrl> urlsToSwitch;
+    if (m_kind == Views) {
         urlsToSwitch = RailsSwitchers::viewsToSwitch();
-    else if (m_kind == Tests)
+    } else if (m_kind == Tests) {
         urlsToSwitch = RailsSwitchers::testsToSwitch();
-    foreach (const KUrl &url, urlsToSwitch) {
+    }
+    foreach (const QUrl &url, urlsToSwitch) {
         RailsQuickOpenItem item;
         item.url = url;
-        if (activeDocument)
+        if (activeDocument) {
             item.originUrl = activeDocument->url();
+        }
         items << item;
     }
     setItems(items);

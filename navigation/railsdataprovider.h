@@ -2,6 +2,7 @@
 * This file is part of KDevelop
 *
 * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+* Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Library General Public License as
@@ -18,28 +19,36 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
+
 #ifndef RAILSDATAPROVIDER_H
 #define RAILSDATAPROVIDER_H
+
 
 #include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
 
-#include "navigationexport.h"
+#include <navigation/navigationexport.h>
+
+/*
+ * TODO: clean it up.
+ */
 
 namespace Ruby {
 
 class RailsSwitchers;
 
 struct KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenItem {
-    //the url of the view or test
-    KUrl url;
-    //the url of the file for which we show views/tests
-    KUrl originUrl;
+    // The url of the view or test
+    QUrl url;
+
+    // The url of the file for which we show views/tests
+    QUrl originUrl;
 };
 
-class KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenData : public KDevelop::QuickOpenDataBase {
+class KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenData : public KDevelop::QuickOpenDataBase
+{
 public:
-    RailsQuickOpenData( const RailsQuickOpenItem& item, const QString &explanation );
+    explicit RailsQuickOpenData(const RailsQuickOpenItem &item, const QString &explanation);
 
     virtual QString text() const;
     virtual QString htmlDescription() const;
@@ -90,3 +99,4 @@ private:
 }
 
 #endif
+
