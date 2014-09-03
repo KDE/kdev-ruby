@@ -45,8 +45,8 @@ KeywordItem::KeywordItem(QExplicitlySharedDataPointer<KDevelop::CodeCompletionCo
 
 void KeywordItem::execute(View *view, const Range &word)
 {
-    /* TODO: KF5 */
-    /*
+    KTextEditor::Document *document = view->document();
+
     if (!m_replacement.isEmpty()) {
         QString replacement = m_replacement;
         replacement = replacement.replace("%END%", getIndendation(document->line(word.start().line())) + "end");
@@ -90,7 +90,6 @@ void KeywordItem::execute(View *view, const Range &word)
         }
 
         if (cursor != -1) {
-            if (KTextEditor::View *view = document->activeView()) {
                 replacement = replacement.left(cursor);
                 KTextEditor::Cursor newPos(
                     word.start().line() + replacement.count('\n'),
@@ -108,11 +107,10 @@ void KeywordItem::execute(View *view, const Range &word)
                         )
                     );
                 }
-            }
         }
-    } else
+    } else {
         document->replaceText(word, m_keyword);
-    */
+    }
 }
 
 QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::CodeCompletionModel *model) const

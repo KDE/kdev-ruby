@@ -39,8 +39,8 @@ RequireFileItem::RequireFileItem(const KDevelop::IncludeItem &include, const cha
 
 void RequireFileItem::execute(View *view, const Range &word)
 {
-    /* TODO: KF5 */
-    /*
+    KTextEditor::Document *document = view->document();
+
     QString text = includeItem.name;
     if (includeItem.isDirectory)
         text += "/";
@@ -60,7 +60,6 @@ void RequireFileItem::execute(View *view, const Range &word)
         text += m_closing;
 
     document->replaceText(word, text);
-    */
 }
 
 } // End of namespace Ruby
