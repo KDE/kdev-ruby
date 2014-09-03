@@ -21,8 +21,6 @@
 
 // Qt + KDE
 #include <QtTest/QtTest>
-#include <KFilterDev>
-#include <KMimeType>
 #include <KDebug>
 
 // Ruby
@@ -44,19 +42,21 @@ Benchmarks::Benchmarks()
     /* There's nothing to do here */
 }
 
-QIODevice * Benchmarks::getBuiltinsFile()
+const QByteArray Benchmarks::getBuiltinsFile()
 {
     const QString fileName = internalBuiltinsFile().str();
-    QString mimeType = KMimeType::findByPath(fileName, 0, false)->name();
-    QIODevice *file = KFilterDev::deviceForFile(fileName, mimeType, false);
-    bool opened = file->open(QIODevice::ReadOnly);
+    QFile file(fileName);
+    bool opened = file.open(QIODevice::ReadOnly);
     Q_ASSERT(opened);
-    return file;
+    const QByteArray &txt = file.readAll();
+    file.close();
+    return txt;
 }
 
 void Benchmarks::parser()
 {
-    const QByteArray &contents = getBuiltinsFile()->readAll();
+    const QByteArray &contents = getBuiltinsFile();
+
     QBENCHMARK {
         RubyParser parser;
         parser.setContents(contents);
@@ -66,7 +66,7 @@ void Benchmarks::parser()
 
 void Benchmarks::declarationBuilder()
 {
-    const QByteArray &contents = getBuiltinsFile()->readAll();
+    const QByteArray &contents = getBuiltinsFile();
     RubyParser *parser = new RubyParser();
     parser->setContents(contents);
     parser->setCurrentDocument(internalBuiltinsFile());

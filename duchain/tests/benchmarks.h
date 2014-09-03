@@ -42,7 +42,7 @@ public:
 
 private:
     /// @returns the builtins file as a QIODevice opened in ReadOnly mode.
-    QIODevice * getBuiltinsFile();
+    const QByteArray getBuiltinsFile();
 
 private slots:
     /// Benchmarks the parser.

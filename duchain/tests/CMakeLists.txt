@@ -17,9 +17,6 @@ macro(ruby_unit_test testname)
         ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
         kdevrubyduchain
         kdevrubyparser
-
-        # TODO: remove this stupid dependency.
-        KF5::Archive
     )
 endmacro()
 
