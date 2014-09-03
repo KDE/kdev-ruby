@@ -24,7 +24,6 @@ add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
 
 target_link_libraries(kdevrubyduchain LINK_PRIVATE
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_UTIL_LIBRARIES}
     kdevrubyparser
 )
 

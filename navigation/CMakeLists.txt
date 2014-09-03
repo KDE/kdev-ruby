@@ -12,7 +12,6 @@ set(rubynavigation_SRCS
 add_library(kdevrubynavigation SHARED ${rubynavigation_SRCS})
 
 target_link_libraries(kdevrubynavigation LINK_PRIVATE
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_PROJECT_LIBRARIES}
     kdevrubyparser

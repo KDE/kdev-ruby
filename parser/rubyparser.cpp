@@ -61,7 +61,7 @@ RubyAst * RubyParser::parse()
 {
     struct options_t opts;
     struct error_t *aux;
-    opts.path = m_currentDocument.str().toAscii();
+    opts.path = m_currentDocument.str().toUtf8();
     opts.contents = m_contents.data();
     opts.version = m_version;
 

@@ -29,7 +29,6 @@ enable_testing()
 
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
-    ${KDEVELOP_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/libs
@@ -53,16 +52,15 @@ add_library(kdevrubylanguagesupport MODULE
 )
 
 target_link_libraries(kdevrubylanguagesupport
-    ${QT_QTCORE_LIBRARY}
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_UTIL_LIBRARIES}
-    Qt5::Widgets
-    KF5::KDELibs4Support
-    KF5::I18n
     kdevrubyparser
     kdevrubyduchain
     kdevrubynavigation
     kdevrubycompletion
+
+    KF5::I18n
+    KF5::TextEditor
+    KF5::KDELibs4Support
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
