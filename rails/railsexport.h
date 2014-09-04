@@ -2,6 +2,7 @@
 * This file is part of KDevelop
 *
 * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
+* Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Library General Public License as
@@ -18,17 +19,17 @@
 * Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef NAVIGATIONEXPORT_H
-#define NAVIGATIONEXPORT_H
+#ifndef RAILSEXPORT_H
+#define RAILSEXPORT_H
 
 /* needed for KDE_EXPORT macros */
 #include <kdemacros.h>
 
-#ifndef KDEVRUBYNAVIGATION_EXPORT
-# ifdef MAKE_KDEVRUBYNAVIGATION_LIB
-#  define KDEVRUBYNAVIGATION_EXPORT KDE_EXPORT
+#ifndef KDEVRUBYRAILS_EXPORT
+# ifdef MAKE_KDEVRUBYRAILS_LIB
+#  define KDEVRUBYRAILS_EXPORT KDE_EXPORT
 # else
-#  define KDEVRUBYNAVIGATION_EXPORT KDE_IMPORT
+#  define KDEVRUBYRAILS_EXPORT KDE_IMPORT
 # endif
 #endif
 

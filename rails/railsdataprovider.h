@@ -27,17 +27,18 @@
 #include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
 
-#include <navigation/navigationexport.h>
+#include <rails/railsexport.h>
 
 /*
  * TODO: clean it up.
  */
 
-namespace Rails {
+namespace Rails
+{
 
 class Switchers;
 
-struct KDEVRUBYNAVIGATION_EXPORT QuickOpenItem {
+struct KDEVRUBYRAILS_EXPORT QuickOpenItem {
     // The url of the view or test
     QUrl url;
 
@@ -45,7 +46,7 @@ struct KDEVRUBYNAVIGATION_EXPORT QuickOpenItem {
     QUrl originUrl;
 };
 
-class KDEVRUBYNAVIGATION_EXPORT QuickOpenData : public KDevelop::QuickOpenDataBase
+class KDEVRUBYRAILS_EXPORT QuickOpenData : public KDevelop::QuickOpenDataBase
 {
 public:
     explicit QuickOpenData(const QuickOpenItem &item, const QString &explanation);
@@ -67,7 +68,7 @@ private:
     QString m_explanation;
 };
 
-class KDEVRUBYNAVIGATION_EXPORT DataProvider: public KDevelop::QuickOpenDataProviderBase,
+class KDEVRUBYRAILS_EXPORT DataProvider: public KDevelop::QuickOpenDataProviderBase,
         public KDevelop::PathFilter<QuickOpenItem, DataProvider>
 {
 public:

@@ -25,7 +25,7 @@
 
 
 #include <util/path.h>
-#include <navigation/navigationexport.h>
+#include <rails/railsexport.h>
 #include <rubylanguagesupport.h>
 
 
@@ -38,7 +38,7 @@ namespace Rails
  * This class has all the logic to switch between controllers, models, views
  * and tests, in a Rails application.
  */
-class KDEVRUBYNAVIGATION_EXPORT Switchers : public QObject
+class KDEVRUBYRAILS_EXPORT Switchers : public QObject
 {
     Q_OBJECT
 

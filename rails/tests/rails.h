@@ -19,8 +19,8 @@
  */
 
 
-#ifndef RAILS_SWITCHERS_TEST_H
-#define RAILS_SWITCHERS_TEST_H
+#ifndef RAILS_TEST_H
+#define RAILS_TEST_H
 
 
 #include <QtCore/QObject>
@@ -29,18 +29,18 @@
 namespace Rails
 {
 
-class SwitchersTest : public QObject
+class Test : public QObject
 {
     Q_OBJECT
 
 public:
-    SwitchersTest();
+    Test();
 
 private slots:
     void TestFindRailsRoot();
 };
 
-} // End of namespace Rails
+}
 
 
-#endif /* RAILS_SWITCHERS_TEST */
+#endif /* RAILS_TEST */

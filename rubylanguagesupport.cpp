@@ -54,8 +54,8 @@
 #include <rubylanguagesupport.h>
 #include <rubyparsejob.h>
 #include <rubyhighlighting.h>
-#include <navigation/railsswitchers.h>
-#include <navigation/railsdataprovider.h>
+#include <rails/railsswitchers.h>
+#include <rails/railsdataprovider.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
 #include <codegen/refactoring.h>

@@ -16,8 +16,8 @@ macro(ruby_unit_test testname)
         ${KDEVPLATFORM_UTIL_LIBRARIES}
         ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
         kdevrubyparser
-        kdevrubynavigation
+        kdevrubyrails
     )
 endmacro()
 
-ruby_unit_test(switchers)
+ruby_unit_test(rails)

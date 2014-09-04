@@ -30,8 +30,8 @@
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 
-#include <navigation/railsswitchers.h>
-#include <navigation/railsdataprovider.h>
+#include <rails/railsswitchers.h>
+#include <rails/railsdataprovider.h>
 
 
 namespace Rails

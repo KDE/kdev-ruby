@@ -20,22 +20,22 @@
 
 
 #include <QtTest/QtTest>
-#include <navigation/railsswitchers.h>
-#include <navigation/tests/switchers.h>
+#include <rails/railsswitchers.h>
+#include <rails/tests/rails.h>
 #include <util/path.h>
 
 
-QTEST_MAIN(Rails::SwitchersTest)
+QTEST_MAIN(Rails::Test)
 
 namespace Rails
 {
 
-SwitchersTest::SwitchersTest()
+Test::Test()
 {
     /* There's nothing to do here. */
 }
 
-void SwitchersTest::TestFindRailsRoot()
+void Test::TestFindRailsRoot()
 {
     KDevelop::Path path;
 

@@ -40,7 +40,7 @@ endif()
 
 add_subdirectory(parser)
 add_subdirectory(duchain)
-add_subdirectory(navigation)
+add_subdirectory(rails)
 add_subdirectory(completion)
 add_subdirectory(app_templates)
 
@@ -56,8 +56,8 @@ target_link_libraries(kdevrubylanguagesupport
     ${KDEVPLATFORM_UTIL_LIBRARIES}
     kdevrubyparser
     kdevrubyduchain
-    kdevrubynavigation
     kdevrubycompletion
+    kdevrubyrails
 
     KF5::I18n
     KF5::TextEditor

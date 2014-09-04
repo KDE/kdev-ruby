@@ -30,7 +30,7 @@
 #include <interfaces/idocumentcontroller.h>
 #include <language/interfaces/iquickopen.h>
 
-#include <navigation/railsswitchers.h>
+#include <rails/railsswitchers.h>
 
 /*
  * TODO: add tests + style.
