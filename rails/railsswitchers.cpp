@@ -23,7 +23,6 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <kio/global.h>
 
 #include <interfaces/icore.h>
 #include <interfaces/iplugincontroller.h>
@@ -31,10 +30,8 @@
 #include <language/interfaces/iquickopen.h>
 
 #include <rails/railsswitchers.h>
+#include <rails/helpers.h>
 
-/*
- * TODO: add tests + style.
- */
 
 namespace Rails
 {
@@ -42,27 +39,6 @@ namespace Rails
 Switchers::Switchers(Ruby::LanguageSupport *language) : QObject(language)
 {
     /* There's nothing to do here. */
-}
-
-KDevelop::Path Switchers::findRailsRoot(const QUrl &url)
-{
-    KDevelop::Path current(url.toString());
-    KDevelop::Path upUrl(current.parent());
-
-    while (upUrl != current) {
-        KDevelop::Path aux = upUrl.parent();
-        if (aux.lastPathSegment() == "app") {
-            const QString &dir = upUrl.lastPathSegment();
-            if (dir == "controllers" || dir == "models" || dir == "views") {
-                return aux.parent();
-            }
-        } else if (upUrl.lastPathSegment() == "test") {
-            return aux;
-        }
-        current = upUrl;
-        upUrl = aux;
-    }
-    return KDevelop::Path();
 }
 
 QVector<KDevelop::Path> Switchers::viewsToSwitch()
@@ -84,15 +60,12 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs"
-            || ext == "xml.builder" || ext == "html.erb") {
-        /*
-         * This is a view already, let's show the list of all views
-         * for this model.
-         */
+    if (Helpers::isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     } else if (ext == "rb") {
-        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+        switchTo = name.remove(QRegExp("_controller$"));
+        switchTo = switchTo.remove(QRegExp("_controller_test$"));
+        switchTo = switchTo.remove(QRegExp("_test$"));
     }
 
     if (switchTo.isEmpty()) {
@@ -102,7 +75,7 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    KDevelop::Path root = findRailsRoot(url);
+    KDevelop::Path root = Helpers::findRailsRoot(url);
     if (!root.isValid()) {
         return urls;
     }
@@ -149,13 +122,11 @@ QVector<KDevelop::Path> Switchers::testsToSwitch()
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs"
-            || ext == "xml.builder" || ext == "html.erb" || ext == "erb") {
+    if (Helpers::isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     } else if (ext == "rb") {
         switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
     }
-
     if (switchTo.isEmpty()) {
         return urls;
     }
@@ -163,7 +134,7 @@ QVector<KDevelop::Path> Switchers::testsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    KDevelop::Path testsUrl(findRailsRoot(activeDocument->url()), "test");
+    KDevelop::Path testsUrl(Helpers::findRailsRoot(activeDocument->url()), "test");
     KDevelop::Path functionalTestsUrlS(testsUrl, "functional/" + switchTo + "_controller_test.rb");
     if (QFile::exists(functionalTestsUrlS.toLocalFile())) {
         urls << functionalTestsUrlS;
@@ -212,7 +183,7 @@ void Switchers::switchToController()
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
-    KDevelop::Path root = findRailsRoot(activeDocument->url());
+    KDevelop::Path root = Helpers::findRailsRoot(activeDocument->url());
     if (!root.isValid()) {
         return;
     }
@@ -224,13 +195,7 @@ void Switchers::switchToController()
         } else {
             switchTo = name;
         }
-    } else if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs" ||
-                ext == "xml.builder" || ext == "html.erb" || ext == "erb" ) {
-
-        /*
-         * This is a view, we need to find the directory of this view and try
-         * to find the controller basing on the directory information
-         */
+    } else if (Helpers::isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     }
 
@@ -269,17 +234,17 @@ void Switchers::switchToModel()
     QString name = file.baseName();
     QString switchTo = "";
 
-    KDevelop::Path root = findRailsRoot(activeDocument->url());
+    KDevelop::Path root = Helpers::findRailsRoot(activeDocument->url());
     if (!root.isValid()) {
         return;
     }
 
-    if (ext == "rjs" || ext == "rxml" || ext == "rhtml" || ext == "js.rjs"
-            || ext == "xml.builder" || ext == "html.erb" || ext == "erb") {
-        // This is a view already, let's show the list of all views for this model
+    if (Helpers::isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     } else if (ext == "rb" && (name.endsWith("_controller") || name.endsWith("_test"))) {
-        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+        switchTo = name.remove(QRegExp("_controller$"));
+        switchTo = switchTo.remove(QRegExp("_controller_test$"));
+        switchTo = switchTo.remove(QRegExp("_test$"));
     }
     if (switchTo.isEmpty()) {
         return;

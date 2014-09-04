@@ -20,45 +20,33 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#ifndef RAILS_SWITCHERS_H
-#define RAILS_SWITCHERS_H
 
-
-#include <util/path.h>
-#include <rails/railsexport.h>
-#include <rubylanguagesupport.h>
+#include <rails/helpers.h>
 
 
 namespace Rails
 {
 
-/**
- * @class Switchers
- *
- * This class has all the logic to switch between controllers, models, views
- * and tests, in a Rails application.
- */
-class KDEVRUBYRAILS_EXPORT Switchers : public QObject
+KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
 {
-    Q_OBJECT
+    KDevelop::Path current(url.toString());
+    KDevelop::Path upUrl(current.parent());
 
-public:
-    explicit Switchers(Ruby::LanguageSupport *language);
-
-    /// @returns all the views that we can switch to.
-    static QVector<KDevelop::Path> viewsToSwitch();
-
-    /// @returns all the tests that we can switch to.
-    static QVector<KDevelop::Path> testsToSwitch();
-
-public slots:
-    void switchToController();
-    void switchToModel();
-    void switchToView();
-    void switchToTest();
-};
-
+    while (upUrl != current) {
+        KDevelop::Path aux = upUrl.parent();
+        if (aux.lastPathSegment() == "app") {
+            const QString &dir = upUrl.lastPathSegment();
+            if (dir == "controllers" || dir == "models" || dir == "views") {
+                return aux.parent();
+            }
+        } else if (upUrl.lastPathSegment() == "test") {
+            return aux;
+        }
+        current = upUrl;
+        upUrl = aux;
+    }
+    return KDevelop::Path();
 }
 
-#endif /* RAILS_SWITCHERS_H */
+}
 

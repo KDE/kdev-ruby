@@ -56,6 +56,7 @@
 #include <rubyhighlighting.h>
 #include <rails/railsswitchers.h>
 #include <rails/railsdataprovider.h>
+#include <rails/helpers.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
 #include <codegen/refactoring.h>
@@ -255,7 +256,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
-    KDevelop::Path root = Rails::Switchers::findRailsRoot(activeDocument->url());
+    KDevelop::Path root = Rails::Helpers::findRailsRoot(activeDocument->url());
     if (root.isValid()) {
         cfg.writeEntry("Working Directory", root.toLocalFile());
     } else {

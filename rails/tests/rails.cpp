@@ -21,6 +21,7 @@
 
 #include <QtTest/QtTest>
 #include <rails/railsswitchers.h>
+#include <rails/helpers.h>
 #include <rails/tests/rails.h>
 #include <util/path.h>
 
@@ -40,32 +41,32 @@ void Test::TestFindRailsRoot()
     KDevelop::Path path;
 
     // Empty URL.
-    path = Switchers::findRailsRoot(QUrl(""));
+    path = Helpers::findRailsRoot(QUrl(""));
     Q_ASSERT(!path.isValid());
 
     // App.
-    path = Switchers::findRailsRoot(QUrl("/rails/app/controllers/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/app/controllers/file.rb"));
     Q_ASSERT(path.isValid());
     QCOMPARE(path.toLocalFile(), QString("/rails"));
-    path = Switchers::findRailsRoot(QUrl("/rails/app/models/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/app/models/file.rb"));
     Q_ASSERT(path.isValid());
     QCOMPARE(path.toLocalFile(), QString("/rails"));
-    path = Switchers::findRailsRoot(QUrl("/rails/app/views/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/app/views/file.rb"));
     Q_ASSERT(path.isValid());
     QCOMPARE(path.toLocalFile(), QString("/rails"));
 
     // Tests.
-    path = Switchers::findRailsRoot(QUrl("/rails/test/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/test/file.rb"));
     Q_ASSERT(path.isValid());
     QCOMPARE(path.toLocalFile(), QString("/rails"));
-    path = Switchers::findRailsRoot(QUrl("/rails/dir/test/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/dir/test/file.rb"));
     Q_ASSERT(path.isValid());
     QCOMPARE(path.toLocalFile(), QString("/rails/dir"));
 
     // Invalids
-    path = Switchers::findRailsRoot(QUrl("/rails/app/test/file.rb"));
+    path = Helpers::findRailsRoot(QUrl("/rails/app/test/file.rb"));
     Q_ASSERT(!path.isValid());
-    path = Switchers::findRailsRoot(QUrl("/rails/app/controllers"));
+    path = Helpers::findRailsRoot(QUrl("/rails/app/controllers"));
     Q_ASSERT(!path.isValid());
 }
 

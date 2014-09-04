@@ -32,6 +32,7 @@
 
 #include <rails/railsswitchers.h>
 #include <rails/railsdataprovider.h>
+#include <rails/helpers.h>
 
 
 namespace Rails
@@ -45,7 +46,7 @@ QuickOpenData::QuickOpenData(const QuickOpenItem& item, const QString &explanati
 QString QuickOpenData::text() const
 {
     QUrl u = m_item.url.path();
-    QUrl base = Switchers::findRailsRoot(m_item.url).toUrl();
+    QUrl base = Helpers::findRailsRoot(m_item.url).toUrl();
     return base.path() + "/" + u.path();
 }
 

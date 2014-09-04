@@ -7,6 +7,7 @@ include_directories(
 set(rubynavigation_SRCS
     railsswitchers.cpp
     railsdataprovider.cpp
+    helpers.cpp
 )
 
 add_library(kdevrubyrails SHARED ${rubynavigation_SRCS})
