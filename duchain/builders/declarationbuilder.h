@@ -47,7 +47,7 @@ class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
     /// Constructor.
-    explicit DeclarationBuilder();
+    DeclarationBuilder();
 
     /**
      * Constructor.

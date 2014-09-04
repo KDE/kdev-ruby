@@ -1,5 +1,5 @@
 /* This file is part of KDevelop
- * 
+ *
  * Copyright (C) 2011-2014 Miquel Sabaté Solà <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ public:
     /**
      * Constructor.
      */
-    explicit RubyParser();
+    RubyParser();
 
     /**
      * Destructor.

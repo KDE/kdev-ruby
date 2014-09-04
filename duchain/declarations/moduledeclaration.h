@@ -50,7 +50,7 @@ class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::Declaratio
 {
 public:
     /// Constructor.
-    explicit ModuleDeclarationData() : isModule(true), eigenClass(nullptr)
+    ModuleDeclarationData() : isModule(true), eigenClass(nullptr)
     {
         initializeAppendedLists();
     }

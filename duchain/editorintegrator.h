@@ -45,7 +45,7 @@ class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 {
 public:
     /// Constructor.
-    explicit EditorIntegrator();
+    EditorIntegrator();
 
     enum Edge { FrontEdge, BackEdge };
 

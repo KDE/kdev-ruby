@@ -39,8 +39,7 @@ class KDEVRUBYDUCHAIN_EXPORT VariableDeclarationData : public KDevelop::Declarat
 {
 public:
     /// Constructor
-    explicit VariableDeclarationData()
-        : KDevelop::DeclarationData(), m_kind(2)
+    VariableDeclarationData() : KDevelop::DeclarationData(), m_kind(2)
     {
         /* There's nothing to do here */
     }

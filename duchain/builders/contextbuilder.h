@@ -50,7 +50,7 @@ class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public 
 {
 public:
     /// Constructor
-    explicit ContextBuilder();
+    ContextBuilder();
 
     /// Destructor
     virtual ~ContextBuilder();

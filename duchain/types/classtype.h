@@ -39,8 +39,7 @@ class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
 {
 public:
     /// Default constructor.
-    explicit ClassTypeData()
-        : KDevelop::StructureTypeData(), m_contentType()
+    ClassTypeData() : KDevelop::StructureTypeData(), m_contentType()
     {
         /* There's nothing to do here! */
     }
@@ -70,7 +69,7 @@ public:
     typedef TypePtr<ClassType> Ptr;
 
     /// Constructor.
-    explicit ClassType();
+    ClassType();
 
     /**
      * Copy constructor.

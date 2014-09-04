@@ -45,7 +45,7 @@ public:
     /**
      * Constructor.
      */
-    explicit TypeBuilder();
+    TypeBuilder();
 };
 
 }
