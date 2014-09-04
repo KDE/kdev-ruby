@@ -21,8 +21,6 @@
 #include <parser/rubyparser.h>
 
 
-using namespace KDevelop;
-
 namespace Ruby
 {
 
@@ -42,7 +40,7 @@ void RubyParser::setContents(const QByteArray &contents)
     m_contents = contents;
 }
 
-void RubyParser::setCurrentDocument(const IndexedString &fileName)
+void RubyParser::setCurrentDocument(const KDevelop::IndexedString &fileName)
 {
     m_currentDocument = fileName;
 }
@@ -52,7 +50,7 @@ void RubyParser::setRubyVersion(enum ruby_version version)
     m_version = version;
 }
 
-const IndexedString & RubyParser::currentDocument() const
+const KDevelop::IndexedString & RubyParser::currentDocument() const
 {
     return m_currentDocument;
 }
@@ -69,14 +67,16 @@ RubyAst * RubyParser::parse()
     struct ast_t *res = rb_compile_file(&opts);
     RubyAst *ra = new RubyAst(res->tree);
     if (res->unrecoverable) {
-        for (aux = res->errors; aux; aux = aux->next)
+        for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
+        }
         rb_free(res);
         return nullptr;
     } else {
         m_problems.clear();
-        for (aux = res->errors; aux; aux = aux->next)
+        for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
+        }
         free_errors(res);
         free(res);
     }
@@ -85,8 +85,15 @@ RubyAst * RubyParser::parse()
 
 void RubyParser::freeAst(const RubyAst *ast)
 {
-    if (ast != nullptr)
+    if (ast) {
         free_ast(ast->tree);
+    }
+}
+
+void RubyParser::mapAstUse(RubyAst *node, const SimpleUse &use)
+{
+    Q_UNUSED(node);
+    Q_UNUSED(use);
 }
 
 const QString RubyParser::symbol(const Node *node) const
@@ -98,20 +105,21 @@ const QString RubyParser::symbol(const Node *node) const
 void RubyParser::appendProblem(const struct error_t *error)
 {
     int col = (error->column > 0) ? error->column - 1 : 0;
-    ProblemPointer problem(new Problem);
+    KDevelop::ProblemPointer problem(new KDevelop::Problem);
 
     KTextEditor::Cursor cursor(error->line - 1, col);
     KTextEditor::Range range(cursor, cursor);
-    DocumentRange location(m_currentDocument, range);
+    KDevelop::DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
     problem->setDescription(QString(error->msg));
     problem->setSource(KDevelop::ProblemData::Parser);
-    if (error->warning)
+    if (error->warning) {
         problem->setSeverity(KDevelop::ProblemData::Error);
-    else
+    } else {
         problem->setSeverity(KDevelop::ProblemData::Warning);
+    }
     m_problems << problem;
 }
 
-} // End of namespace: Ruby
+}
 

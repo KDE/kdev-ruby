@@ -28,12 +28,10 @@
 #include <parser/rubyast.h>
 
 
-using namespace KDevelop;
-
 namespace Ruby
 {
 /// Convenient typedef that packs a DUContextPointer and a RangeInRevision.
-typedef QPair<DUContextPointer, RangeInRevision> SimpleUse;
+typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 
 /**
  * @class RubyParser
@@ -66,12 +64,12 @@ public:
      *
      * @param fileName the name of the current document.
      */
-    void setCurrentDocument(const IndexedString &fileName);
+    void setCurrentDocument(const KDevelop::IndexedString &fileName);
 
     /**
      * @return the name of the current document.
      */
-    const IndexedString & currentDocument() const;
+    const KDevelop::IndexedString & currentDocument() const;
 
     /**
      * Set the version of the Ruby interpreter.
@@ -95,11 +93,7 @@ public:
     /**
      * Implemented to make the AbstractUseBuilder happy.
      */
-    void mapAstUse(RubyAst *node, const SimpleUse &use)
-    {
-        Q_UNUSED(node);
-        Q_UNUSED(use);
-    }
+    void mapAstUse(RubyAst *node, const SimpleUse &use);
 
     /**
      * @return a QString that represents the value of the node
@@ -117,17 +111,15 @@ private:
     void appendProblem(const struct error_t *error);
 
 public:
-    QList<KDevelop::ProblemPointer> m_problems;
+    QVector<KDevelop::ProblemPointer> m_problems;
 
 private:
-    IndexedString m_currentDocument;
+    KDevelop::IndexedString m_currentDocument;
     QByteArray m_contents;
     enum ruby_version m_version;
 };
 
-
-} // End of namespace: Ruby
-
+}
 
 #endif // RUBYPARSER_H
 
