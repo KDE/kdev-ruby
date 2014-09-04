@@ -24,74 +24,48 @@
 #define RAILSDATAPROVIDER_H
 
 
-#include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
-
 #include <rails/export.h>
+#include <rails/quickopendata.h>
 
-/*
- * TODO: clean it up.
- */
 
 namespace Rails
 {
 
-class Switchers;
-
-struct KDEVRUBYRAILS_EXPORT QuickOpenItem {
-    // The url of the view or test
-    QUrl url;
-
-    // The url of the file for which we show views/tests
-    QUrl originUrl;
-};
-
-class KDEVRUBYRAILS_EXPORT QuickOpenData : public KDevelop::QuickOpenDataBase
-{
-public:
-    explicit QuickOpenData(const QuickOpenItem &item, const QString &explanation);
-
-    virtual QString text() const;
-    virtual QString htmlDescription() const;
-
-    bool execute( QString& filterText );
-
-    virtual bool isExpandable() const;
-    virtual QWidget* expandingWidget() const;
-
-    virtual QIcon icon() const;
-
-    QList<QVariant> highlighting() const;
-
-private:
-    QuickOpenItem m_item;
-    QString m_explanation;
-};
-
-class KDEVRUBYRAILS_EXPORT DataProvider: public KDevelop::QuickOpenDataProviderBase,
-        public KDevelop::PathFilter<QuickOpenItem, DataProvider>
+/**
+ * @class DataProvider.
+ *
+ * This class takes the Rails::QuickOpenData class to provide all the
+ * data that we need to feed the QuickOpen.
+ */
+class KDEVRUBYRAILS_EXPORT DataProvider :
+    public KDevelop::QuickOpenDataProviderBase,
+    public KDevelop::PathFilter<QuickOpenItem, DataProvider>
 {
 public:
     enum Kind { Views, Tests };
 
-    DataProvider(Kind kind);
-    virtual void setFilterText( const QString& text );
-    virtual void reset();
-    virtual uint itemCount() const;
-    virtual uint unfilteredItemCount() const;
-    virtual KDevelop::QuickOpenDataPointer data( uint row ) const;
-    virtual void enableData( const QStringList& items, const QStringList& scopes );
+    explicit DataProvider(const Kind kind);
 
-    virtual QString itemText( const QuickOpenItem& data ) const;
-
-    inline KDevelop::Path itemPath( const QuickOpenItem& data ) const
+    /// @returns the item as a KDevelop::Path.
+    /// NOTE: currently we use QUrl internally because KDevPlatform hasn't
+    /// moved away from KUrl yet.
+    inline KDevelop::Path itemPath(const QuickOpenItem &data) const
     {
-        // TODO: port to Path API
         return KDevelop::Path(data.url);
     }
 
-    ///Returns all scopes supported by this data-provider
+    /// @returns all scopes supported by this data-provider.
     static QStringList scopes();
+
+protected:
+    virtual void setFilterText(const QString &text) override;
+    virtual void reset() override;
+    virtual uint itemCount() const override;
+    virtual uint unfilteredItemCount() const override;
+    virtual KDevelop::QuickOpenDataPointer data(uint row) const override;
+    virtual void enableData(const QStringList &items,
+                            const QStringList &scopes) override;
 
 private:
     Kind m_kind;

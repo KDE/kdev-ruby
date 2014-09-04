@@ -8,6 +8,7 @@ set(rubyrails_SRCS
     switchers.cpp
     dataprovider.cpp
     helpers.cpp
+    quickopendata.cpp
 )
 
 add_library(kdevrubyrails SHARED ${rubyrails_SRCS})

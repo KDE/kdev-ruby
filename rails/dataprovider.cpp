@@ -22,9 +22,7 @@
 
 
 #include <QDir>
-#include <QIcon>
 #include <QFileInfo>
-#include <QTextCharFormat>
 #include <KLocale>
 
 #include <interfaces/icore.h>
@@ -38,86 +36,46 @@
 namespace Rails
 {
 
-QuickOpenData::QuickOpenData(const QuickOpenItem& item, const QString &explanation)
-    : QuickOpenDataBase(), m_item(item), m_explanation(explanation)
-{
-}
-
-QString QuickOpenData::text() const
-{
-    QUrl u = m_item.url.path();
-    QUrl base = Helpers::findRailsRoot(m_item.url).toUrl();
-    return base.path() + "/" + u.path();
-}
-
-QString QuickOpenData::htmlDescription() const
-{
-    return "<small><small>" + m_explanation + ' ' + m_item.originUrl.fileName() + "</small></small>";
-}
-
-/* TODO: to adymo from mssola: what is this parameter ? */
-bool QuickOpenData::execute(QString & filterText)
-{
-    Q_UNUSED(filterText);
-    KDevelop::ICore::self()->documentController()->openDocument( m_item.url );
-    return true;
-}
-
-bool QuickOpenData::isExpandable() const
-{
-    return false;
-}
-
-QWidget* QuickOpenData::expandingWidget() const
-{
-    return KDevelop::QuickOpenDataBase::expandingWidget();
-}
-
-QIcon QuickOpenData::icon() const
-{
-    return KDevelop::QuickOpenDataBase::icon();
-}
-
-QList<QVariant> QuickOpenData::highlighting() const
-{
-    QTextCharFormat boldFormat;
-    boldFormat.setFontWeight(QFont::Bold);
-    QTextCharFormat normalFormat;
-
-    QString txt = text();
-
-    QList<QVariant> ret;
-
-    int fileNameLength = m_item.url.fileName().length();
-
-    ret << 0;
-    ret << txt.length() - fileNameLength;
-    ret << QVariant(normalFormat);
-    ret << txt.length() - fileNameLength;
-    ret << fileNameLength;
-    ret << QVariant(boldFormat);
-
-    return ret;
-}
-
-
-
-DataProvider::DataProvider(Rails::DataProvider::Kind kind): m_kind(kind)
+DataProvider::DataProvider(Rails::DataProvider::Kind kind) : m_kind(kind)
 {
     reset();
 }
 
-KDevelop::QuickOpenDataPointer DataProvider::data(uint row) const
+QStringList DataProvider::scopes()
 {
-    QuickOpenItem item( filteredItems()[row] );
-    QString dataExplanation = m_kind == Views ? i18n("View for:") : i18n("Test for:");
-    return KDevelop::QuickOpenDataPointer( new QuickOpenData( item, dataExplanation ) );
+    return QStringList() << "Project";
 }
 
-void DataProvider::enableData(const QStringList& items, const QStringList& scopes)
+void DataProvider::setFilterText(const QString &text)
 {
-    KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
+    setFilter(text.split('/'));
 }
+
+void DataProvider::reset()
+{
+    clearFilter();
+
+    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+
+    QVector<KDevelop::Path> urlsToSwitch;
+    if (m_kind == Views) {
+        urlsToSwitch = Switchers::viewsToSwitch();
+    } else if (m_kind == Tests) {
+        urlsToSwitch = Switchers::testsToSwitch();
+    }
+
+    QList<QuickOpenItem> items;
+    foreach (const KDevelop::Path &url, urlsToSwitch) {
+        QuickOpenItem item;
+        item.url = url.toUrl();;
+        if (activeDocument) {
+            item.originUrl = KDevelop::Path(activeDocument->url()).toUrl();
+        }
+        items << item;
+    }
+    setItems(items);
+}
+
 
 uint DataProvider::itemCount() const
 {
@@ -129,43 +87,17 @@ uint DataProvider::unfilteredItemCount() const
     return items().count();
 }
 
-void DataProvider::reset()
+KDevelop::QuickOpenDataPointer DataProvider::data(uint row) const
 {
-    clearFilter();
-
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-
-    QList<QuickOpenItem> items;
-    QVector<KDevelop::Path> urlsToSwitch;
-    if (m_kind == Views) {
-        urlsToSwitch = Switchers::viewsToSwitch();
-    } else if (m_kind == Tests) {
-        urlsToSwitch = Switchers::testsToSwitch();
-    }
-    foreach (const KDevelop::Path &url, urlsToSwitch) {
-        QuickOpenItem item;
-        item.url = url.toUrl();
-        if (activeDocument) {
-            item.originUrl = activeDocument->url();
-        }
-        items << item;
-    }
-    setItems(items);
+    QuickOpenItem item(filteredItems()[row]);
+    const QString &s = (m_kind == Views) ? i18n("View for:") : i18n("Test for:");
+    return KDevelop::QuickOpenDataPointer(new QuickOpenData(item, s));
 }
 
-QStringList DataProvider::scopes()
+void DataProvider::enableData(const QStringList &items, const QStringList &scopes)
 {
-    return QStringList() << "Project";
-}
-
-void DataProvider::setFilterText(const QString& text)
-{
-    setFilter( text.split('/') );
-}
-
-QString DataProvider::itemText(const QuickOpenItem& data) const
-{
-    return data.url.fileName();
+    KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
 }
 
 }
+
