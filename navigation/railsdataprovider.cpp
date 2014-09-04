@@ -135,15 +135,15 @@ void DataProvider::reset()
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
 
     QList<QuickOpenItem> items;
-    QList<QUrl> urlsToSwitch;
+    QVector<KDevelop::Path> urlsToSwitch;
     if (m_kind == Views) {
         urlsToSwitch = Switchers::viewsToSwitch();
     } else if (m_kind == Tests) {
         urlsToSwitch = Switchers::testsToSwitch();
     }
-    foreach (const QUrl &url, urlsToSwitch) {
+    foreach (const KDevelop::Path &url, urlsToSwitch) {
         QuickOpenItem item;
-        item.url = url;
+        item.url = url.toUrl();
         if (activeDocument) {
             item.originUrl = activeDocument->url();
         }

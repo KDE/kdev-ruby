@@ -29,13 +29,15 @@
 #include <rubylanguagesupport.h>
 
 
-/*
- * TODO: add tests + style.
- */
-
 namespace Rails
 {
 
+/**
+ * @class Switchers
+ *
+ * This class has all the logic to switch between controllers, models, views
+ * and tests, in a Rails application.
+ */
 class KDEVRUBYNAVIGATION_EXPORT Switchers : public QObject
 {
     Q_OBJECT
@@ -43,13 +45,24 @@ class KDEVRUBYNAVIGATION_EXPORT Switchers : public QObject
 public:
     explicit Switchers(Ruby::LanguageSupport *language);
 
-    static QList<QUrl> viewsToSwitch();
-    static QList<QUrl> testsToSwitch();
-
-    /*
-     * TODO: QUrl or QString ? or both ?
+    /**
+     * Finds the root directory of the Rails application. Not all the paths are
+     * being looked up by this method, only the ones that the different
+     * switchers might use: controllers, models, views and tests.
+     *
+     * @param url The current file or directory that is included inside a
+     * Rails application.
+     * @returns an invalid Path if an error has been found. Otherwise this
+     * method returns a valid Path that points to the root of the Rails
+     * application.
      */
     static KDevelop::Path findRailsRoot(const QUrl &url);
+
+    /// @returns all the views that we can switch to.
+    static QVector<KDevelop::Path> viewsToSwitch();
+
+    /// @returns all the tests that we can switch to.
+    static QVector<KDevelop::Path> testsToSwitch();
 
 public slots:
     void switchToController();
