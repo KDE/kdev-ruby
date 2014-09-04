@@ -29,7 +29,7 @@
 #include <interfaces/idocumentcontroller.h>
 #include <language/interfaces/iquickopen.h>
 
-#include <rails/railsswitchers.h>
+#include <rails/switchers.h>
 #include <rails/helpers.h>
 
 

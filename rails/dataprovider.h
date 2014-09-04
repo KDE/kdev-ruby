@@ -27,7 +27,7 @@
 #include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
 
-#include <rails/railsexport.h>
+#include <rails/export.h>
 
 /*
  * TODO: clean it up.

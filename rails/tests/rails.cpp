@@ -20,7 +20,7 @@
 
 
 #include <QtTest/QtTest>
-#include <rails/railsswitchers.h>
+#include <rails/switchers.h>
 #include <rails/helpers.h>
 #include <rails/tests/rails.h>
 #include <util/path.h>

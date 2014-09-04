@@ -25,8 +25,8 @@
 
 
 #include <util/path.h>
-#include <rails/railsexport.h>
 #include <rubylanguagesupport.h>
+#include <rails/export.h>
 
 
 namespace Rails

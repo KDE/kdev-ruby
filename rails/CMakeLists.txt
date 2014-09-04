@@ -4,13 +4,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(rubynavigation_SRCS
-    railsswitchers.cpp
-    railsdataprovider.cpp
+set(rubyrails_SRCS
+    switchers.cpp
+    dataprovider.cpp
     helpers.cpp
 )
 
-add_library(kdevrubyrails SHARED ${rubynavigation_SRCS})
+add_library(kdevrubyrails SHARED ${rubyrails_SRCS})
 
 target_link_libraries(kdevrubyrails LINK_PRIVATE
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}

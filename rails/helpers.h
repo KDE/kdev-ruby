@@ -25,12 +25,18 @@
 
 
 #include <util/path.h>
-#include <rails/railsexport.h>
+#include <rails/export.h>
 
 
 namespace Rails
 {
 
+/**
+ * @class Helpers
+ *
+ * This class contains common utilities for all the code across the
+ * Rails namespace.
+ */
 class KDEVRUBYRAILS_EXPORT Helpers
 {
 public:

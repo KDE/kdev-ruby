@@ -30,8 +30,8 @@
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 
-#include <rails/railsswitchers.h>
-#include <rails/railsdataprovider.h>
+#include <rails/switchers.h>
+#include <rails/dataprovider.h>
 #include <rails/helpers.h>
 
 
