@@ -23,6 +23,7 @@
 #include <language/duchain/types/functiontype.h>
 
 // Ruby
+#include <parser/parser.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
@@ -42,7 +43,7 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_classMethod = false;
 }
 
-void UseBuilder::visitName(RubyAst *node)
+void UseBuilder::visitName(Ast *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
@@ -53,7 +54,7 @@ void UseBuilder::visitName(RubyAst *node)
     UseBuilderBase::newUse(node, range, decl);
 }
 
-void UseBuilder::visitClassName(RubyAst *node)
+void UseBuilder::visitClassName(Ast *node)
 {
     Node *aux = node->tree;
     Node *last = node->tree->last;
@@ -72,7 +73,7 @@ void UseBuilder::visitClassName(RubyAst *node)
     node->tree = aux;
 }
 
-void UseBuilder::visitMixin(RubyAst *node, bool include)
+void UseBuilder::visitMixin(Ast *node, bool include)
 {
     Q_UNUSED(include);
 
@@ -93,7 +94,7 @@ void UseBuilder::visitMixin(RubyAst *node, bool include)
     node->tree = aux;
 }
 
-void UseBuilder::visitMethodCall(RubyAst *node)
+void UseBuilder::visitMethodCall(Ast *node)
 {
     Node *n = node->tree;
 
@@ -122,7 +123,7 @@ void UseBuilder::visitMethodCall(RubyAst *node)
     node->tree = n;
 }
 
-void UseBuilder::visitMethodCallMembers(RubyAst *node)
+void UseBuilder::visitMethodCallMembers(Ast *node)
 {
     RangeInRevision range;
     DUContext *ctx = (m_lastCtx) ? m_lastCtx : currentContext();
@@ -191,7 +192,7 @@ void UseBuilder::visitMethodCallMembers(RubyAst *node)
     m_lastCtx = ctx;
 }
 
-void UseBuilder::visitRequire(RubyAst *node, bool relative)
+void UseBuilder::visitRequire(Ast *node, bool relative)
 {
     Q_UNUSED(node);
     Q_UNUSED(relative);

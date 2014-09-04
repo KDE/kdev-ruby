@@ -51,7 +51,7 @@ ContextBuilder::~ContextBuilder()
     /* There's nothing to do here! */
 }
 
-ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, RubyAst *node,
+ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, Ast *node,
                                              ReferencedTopDUContext updateContext)
 {
     if (!updateContext) {
@@ -86,14 +86,14 @@ EditorIntegrator * ContextBuilder::editor() const
     return m_editor;
 }
 
-void ContextBuilder::setContextOnNode(RubyAst *node, KDevelop::DUContext *ctx)
+void ContextBuilder::setContextOnNode(Ast *node, KDevelop::DUContext *ctx)
 {
     if (node->tree)
         node->tree->context = ctx;
     node->context = ctx;
 }
 
-KDevelop::DUContext * ContextBuilder::contextFromNode(RubyAst *node)
+KDevelop::DUContext * ContextBuilder::contextFromNode(Ast *node)
 {
     if (node->tree) {
         DUContext *ctx = (DUContext *) node->tree->context;
@@ -120,12 +120,12 @@ KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &ra
     return top;
 }
 
-const KDevelop::CursorInRevision ContextBuilder::startPos(const RubyAst *node) const
+const KDevelop::CursorInRevision ContextBuilder::startPos(const Ast *node) const
 {
     return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
 }
 
-KDevelop::RangeInRevision ContextBuilder::editorFindRange(RubyAst *fromRange, RubyAst *toRange)
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(Ast *fromRange, Ast *toRange)
 {
     return m_editor->findRange(fromRange->tree, toRange->tree);
 }
@@ -149,7 +149,7 @@ KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
     return KDevelop::QualifiedIdentifier(name->value);
 }
 
-void ContextBuilder::startVisiting(RubyAst *node)
+void ContextBuilder::startVisiting(Ast *node)
 {
     IndexedString builtins = internalBuiltinsFile();
 
@@ -179,22 +179,22 @@ void ContextBuilder::startVisiting(RubyAst *node)
             }
         }
     }
-    RubyAstVisitor::visitCode(node);
+    AstVisitor::visitCode(node);
 }
 
-void ContextBuilder::visitModuleStatement(RubyAst *node)
+void ContextBuilder::visitModuleStatement(Ast *node)
 {
     if (!node->foundProblems)
-        RubyAstVisitor::visitModuleStatement(node);
+        AstVisitor::visitModuleStatement(node);
 }
 
-void ContextBuilder::visitClassStatement(RubyAst *node)
+void ContextBuilder::visitClassStatement(Ast *node)
 {
     if (!node->foundProblems)
-        RubyAstVisitor::visitClassStatement(node);
+        AstVisitor::visitClassStatement(node);
 }
 
-void ContextBuilder::visitMethodStatement(RubyAst *node)
+void ContextBuilder::visitMethodStatement(Ast *node)
 {
     Node *aux = node->tree;
     NameAst name(node);
@@ -221,7 +221,7 @@ void ContextBuilder::visitMethodStatement(RubyAst *node)
     node->tree = aux;
 }
 
-void ContextBuilder::visitBlock(RubyAst *node)
+void ContextBuilder::visitBlock(Ast *node)
 {
     if (!node->tree)
         return;
@@ -231,13 +231,13 @@ void ContextBuilder::visitBlock(RubyAst *node)
         DUChainWriteLocker wlock;
         block->setInSymbolTable(false);
     }
-    RubyAstVisitor::visitBlock(node);
+    AstVisitor::visitBlock(node);
     closeContext();
 }
 
-void ContextBuilder::visitRequire(RubyAst *node, bool relative)
+void ContextBuilder::visitRequire(Ast *node, bool relative)
 {
-    RubyAstVisitor::visitRequire(node);
+    AstVisitor::visitRequire(node);
     Node *aux = node->tree->r;
 
     /* If this is not a string, don't even care about it. */
@@ -304,12 +304,12 @@ void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &
     }
 }
 
-const RangeInRevision ContextBuilder::rangeForMethodArguments(RubyAst *node)
+const RangeInRevision ContextBuilder::rangeForMethodArguments(Ast *node)
 {
     if (!node->tree)
         return RangeInRevision();
 
-    RubyAst last(get_last_expr(node->tree), node->context);
+    Ast last(get_last_expr(node->tree), node->context);
     return editorFindRange(node, &last);
 }
 

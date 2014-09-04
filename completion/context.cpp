@@ -26,7 +26,7 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <parser/rubyparser.h>
+#include <parser/parser.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
@@ -250,14 +250,14 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
 {
     AbstractType::Ptr res;
     QString expr = m_text.left(m_text.lastIndexOf(token));
-    RubyParser *parser = new RubyParser;
+    Parser *parser = new Parser;
     EditorIntegrator e;
     ExpressionVisitor ev(m_duContext.data(), &e);
 
     DUChainReadLocker lock;
     parser->setCurrentDocument(IndexedString());
     parser->setContents(expr.toUtf8());
-    RubyAst *ast = parser->parse();
+    Ast *ast = parser->parse();
     if (!ast || !ast->tree)
         return AbstractType::Ptr(nullptr);
     lock.unlock();

@@ -23,6 +23,7 @@
 #include <QtCore/QDirIterator>
 
 // Ruby
+#include <parser/node.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
 

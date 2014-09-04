@@ -177,7 +177,7 @@ struct parser_t {
     char *blob;
 };
 
-#include "parser.h"
+#include "parser_gen.h"
 #define yyparse ruby_yyparse
 #define YYERROR_VERBOSE 1
 
@@ -608,7 +608,7 @@ fname: base
         $$->name = parser->aux;
         $$->pos.start_line = $$->pos.end_line = parser->line;
         $$->pos.end_col = parser->column;
-        $$->pos.start_col = $$->pos.end_col - strlen(parser->aux); 
+        $$->pos.start_col = $$->pos.end_col - strlen(parser->aux);
     }
     | reswords
     {

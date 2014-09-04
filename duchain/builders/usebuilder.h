@@ -22,17 +22,15 @@
 #define USEBUILDER_H
 
 
-// KDE
 #include <language/duchain/builders/abstractusebuilder.h>
-
-// Ruby
 #include <duchain/builders/contextbuilder.h>
 #include <duchain/duchainexport.h>
+#include <parser/ast.h>
 
 
 namespace Ruby
 {
-typedef KDevelop::AbstractUseBuilder<RubyAst, NameAst, ContextBuilder> UseBuilderBase;
+typedef KDevelop::AbstractUseBuilder<Ast, NameAst, ContextBuilder> UseBuilderBase;
 
 /**
  * @class UseBuilder
@@ -49,17 +47,17 @@ public:
     explicit UseBuilder(EditorIntegrator *editor);
 
 protected:
-    /// Methods re-implemented from RubyAstVisitor.
+    /// Methods re-implemented from AstVisitor.
 
-    virtual void visitName(RubyAst *node) override;
-    virtual void visitClassName(RubyAst *node) override;
-    virtual void visitMixin(RubyAst *node, bool include) override;
-    virtual void visitMethodCall(RubyAst *node) override;
-    virtual void visitRequire(RubyAst *node, bool relative = false) override;
+    virtual void visitName(Ast *node) override;
+    virtual void visitClassName(Ast *node) override;
+    virtual void visitMixin(Ast *node, bool include) override;
+    virtual void visitMethodCall(Ast *node) override;
+    virtual void visitRequire(Ast *node, bool relative = false) override;
 
 private:
     /// @internal Visit the method call members from the given @p node.
-    void visitMethodCallMembers(RubyAst *node);
+    void visitMethodCallMembers(Ast *node);
 
 private:
     /// Used at the method call visitor to keep track of the last context.

@@ -23,7 +23,7 @@
 #define RUBY_EXPRESSIONVISITOR_H
 
 
-#include <parser/rubyastvisitor.h>
+#include <parser/astvisitor.h>
 #include <duchain/helpers.h>
 #include <duchain/duchainexport.h>
 #include <duchain/types/classtype.h>
@@ -46,7 +46,7 @@ class EditorIntegrator;
  * @note The DUChain should *never* be locked when calling a visit method of
  * this class. This class already takes care of locking issues.
  */
-class KDEVRUBYDUCHAIN_EXPORT ExpressionVisitor : public RubyAstVisitor
+class KDEVRUBYDUCHAIN_EXPORT ExpressionVisitor : public AstVisitor
 {
 public:
     /**
@@ -90,38 +90,38 @@ public:
     /// Set the declaration kind to @param kind.
     void setDeclarationKind(const DeclarationKind kind);
 
-    /// Re-implemented from RubyAstVisitor.
-    virtual void visitParameter(RubyAst *node) override;
+    /// Re-implemented from AstVisitor.
+    virtual void visitParameter(Ast *node) override;
 
 protected:
-    /// Visitor methods re-implemented from RubyAstVisitor.
+    /// Visitor methods re-implemented from AstVisitor.
 
-    virtual void visitString(RubyAst *node) override;
-    virtual void visitRegexp(RubyAst *node) override;
-    virtual void visitNumeric(RubyAst *node) override;
-    virtual void visitTrue(RubyAst *node) override;
-    virtual void visitFalse(RubyAst *node) override;
-    virtual void visitNil(RubyAst *node) override;
-    virtual void visitLine(RubyAst *node) override;
-    virtual void visitFile(RubyAst *node) override;
-    virtual void visitEncoding(RubyAst *node) override;
-    virtual void visitSelf(RubyAst *node) override;
-    virtual void visitRange(RubyAst *node) override;
-    virtual void visitSymbol(RubyAst *node) override;
-    virtual void visitName(RubyAst *node) override;
-    virtual void visitArray(RubyAst *node) override;
-    virtual void visitHash(RubyAst *node) override;
-    virtual void visitArrayValue(RubyAst *node) override;
-    virtual void visitMethodCall(RubyAst *node) override;
-    virtual void visitSuper(RubyAst *node) override;
-    virtual void visitLambda(RubyAst *node) override;
-    virtual void visitWhileStatement(RubyAst *node) override;
-    virtual void visitForStatement(RubyAst *node) override;
-    virtual void visitBinary(RubyAst *node) override;
-    virtual void visitBoolean(RubyAst *node) override;
-    virtual void visitIfStatement(RubyAst *node) override;
-    virtual void visitCaseStatement(RubyAst *node) override;
-    virtual void visitMethodStatement(RubyAst *node) override;
+    virtual void visitString(Ast *node) override;
+    virtual void visitRegexp(Ast *node) override;
+    virtual void visitNumeric(Ast *node) override;
+    virtual void visitTrue(Ast *node) override;
+    virtual void visitFalse(Ast *node) override;
+    virtual void visitNil(Ast *node) override;
+    virtual void visitLine(Ast *node) override;
+    virtual void visitFile(Ast *node) override;
+    virtual void visitEncoding(Ast *node) override;
+    virtual void visitSelf(Ast *node) override;
+    virtual void visitRange(Ast *node) override;
+    virtual void visitSymbol(Ast *node) override;
+    virtual void visitName(Ast *node) override;
+    virtual void visitArray(Ast *node) override;
+    virtual void visitHash(Ast *node) override;
+    virtual void visitArrayValue(Ast *node) override;
+    virtual void visitMethodCall(Ast *node) override;
+    virtual void visitSuper(Ast *node) override;
+    virtual void visitLambda(Ast *node) override;
+    virtual void visitWhileStatement(Ast *node) override;
+    virtual void visitForStatement(Ast *node) override;
+    virtual void visitBinary(Ast *node) override;
+    virtual void visitBoolean(Ast *node) override;
+    virtual void visitIfStatement(Ast *node) override;
+    virtual void visitCaseStatement(Ast *node) override;
+    virtual void visitMethodStatement(Ast *node) override;
 
 private:
     /// Set the last type seen to @p type.
@@ -142,14 +142,14 @@ private:
      * @return the ClassType retrieved from the given parameters or nullptr.
      */
     ClassType::Ptr getContainer(AbstractType::Ptr ptr,
-                                const RubyAst *node,
+                                const Ast *node,
                                 bool hasKey = false);
 
     /// Visit the last statement from @p node. Used for the implicit return.
-    void visitLastStatement(RubyAst *node);
+    void visitLastStatement(Ast *node);
 
     /// Visit the method call members from @p node.
-    void visitMethodCallMembers(RubyAst *node);
+    void visitMethodCallMembers(Ast *node);
 
 private:
     /// The DUContext that the visitor will use to find declarations.

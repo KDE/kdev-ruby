@@ -53,12 +53,12 @@ const IndexedString & internalBuiltinsFile()
     return doc;
 }
 
-const QString getName(RubyAst *ast)
+const QString getName(Ast *ast)
 {
     return QString(rb_name_node(ast->tree)->name);
 }
 
-const QByteArray getComment(RubyAst *ast)
+const QByteArray getComment(Ast *ast)
 {
     char *m_comment = ast->tree->comment;
     return (m_comment) ? QByteArray(m_comment) : QByteArray("");
@@ -260,11 +260,11 @@ int nodeListSize(Node *node)
     return i;
 }
 
-const QualifiedIdentifier getIdentifier(const RubyAst *ast)
+const QualifiedIdentifier getIdentifier(const Ast *ast)
 {
     NameAst nameAst(ast);
     return KDevelop::QualifiedIdentifier(nameAst.value);
 }
 
 
-} // End of namespace Ruby
+}

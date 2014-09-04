@@ -21,20 +21,20 @@
  */
 
 
-#ifndef RUBYEDITORINTEGRATOR_H
-#define RUBYEDITORINTEGRATOR_H
+#ifndef RUBY_EDITORINTEGRATOR_H
+#define RUBY_EDITORINTEGRATOR_H
 
 
-// KDevelop
 #include <language/editor/rangeinrevision.h>
-
-// Ruby
+#include <serialization/indexedstring.h>
+#include <parser/node.h>
 #include <duchain/duchainexport.h>
-#include <parser/rubyparser.h>
 
 
 namespace Ruby
 {
+
+class Parser;
 
 /**
  * @class EditorIntegrator
@@ -79,7 +79,7 @@ public:
      *
      * @param session the given RubyParser.
      */
-    void setParseSession(RubyParser *session);
+    void setParseSession(Parser *session);
 
     /**
      * Get the url of the document we are editing.
@@ -93,7 +93,7 @@ public:
      *
      * @return Get the parse session for this EditorIntegrator.
      */
-    RubyParser * parseSession() const;
+    Parser * parseSession() const;
 
     /**
      * @return a QString that represents the value of the token
@@ -105,10 +105,10 @@ private:
     /**
      * The parse session for this EditorIntegrator.
      */
-    RubyParser *m_session;
+    Parser *m_session;
 };
 
 } // End of namespace Ruby
 
 
-#endif // RUBYEDITORINTEGRATOR_H
+#endif // RUBY_EDITORINTEGRATOR_H

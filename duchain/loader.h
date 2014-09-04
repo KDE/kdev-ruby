@@ -22,13 +22,9 @@
 #define RUBY_LOADER_H
 
 
-// KDevelop
 #include <language/duchain/declaration.h>
 #include <language/util/includeitem.h>
-
-// Ruby
 #include <duchain/duchainexport.h>
-#include <parser/rubyast.h>
 
 
 namespace Ruby

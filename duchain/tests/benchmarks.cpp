@@ -28,7 +28,7 @@
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/declarationbuilder.h>
 #include <duchain/tests/benchmarks.h>
-#include <parser/rubyparser.h>
+#include <parser/parser.h>
 
 
 QTEST_MAIN(Ruby::Benchmarks)
@@ -57,7 +57,7 @@ void Benchmarks::parser()
     const QByteArray &contents = getBuiltinsFile();
 
     QBENCHMARK {
-        RubyParser parser;
+        Parser parser;
         parser.setContents(contents);
         parser.parse();
     }
@@ -66,10 +66,10 @@ void Benchmarks::parser()
 void Benchmarks::declarationBuilder()
 {
     const QByteArray &contents = getBuiltinsFile();
-    RubyParser *parser = new RubyParser();
+    Parser *parser = new Parser();
     parser->setContents(contents);
     parser->setCurrentDocument(internalBuiltinsFile());
-    RubyAst * ast = parser->parse();
+    Ast * ast = parser->parse();
     EditorIntegrator editor;
     editor.setParseSession(parser);
 

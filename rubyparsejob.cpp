@@ -34,7 +34,7 @@
 // Ruby
 #include <rubyparsejob.h>
 #include <rubylanguagesupport.h>
-#include <parser/rubyparser.h>
+#include <parser/parser.h>
 #include <duchain/builders/declarationbuilder.h>
 #include <duchain/builders/usebuilder.h>
 #include <duchain/editorintegrator.h>
@@ -48,7 +48,7 @@ namespace Ruby
 
 ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
-    , m_parser (new RubyParser)
+    , m_parser (new Parser)
     , m_duContext (nullptr)
 {
     /* There's nothing to do here. */
@@ -97,7 +97,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     m_parser->setContents(contents().contents);
     m_parser->setCurrentDocument(document());
     m_parser->setRubyVersion(ruby()->version());
-    RubyAst * ast = m_parser->parse();
+    Ast * ast = m_parser->parse();
 
     /* Setting up the TopDUContext features */
     KDevelop::ReferencedTopDUContext toUpdate;

@@ -32,8 +32,8 @@
 #include <duchain/tests/duchaintestbase.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/builders/declarationbuilder.h>
-#include <parser/rubyparser.h>
-#include <parser/rubyast.h>
+#include <parser/parser.h>
+#include <parser/ast.h>
 
 
 using namespace KDevelop;

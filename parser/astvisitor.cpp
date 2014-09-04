@@ -18,7 +18,7 @@
  */
 
 
-#include <parser/rubyastvisitor.h>
+#include <parser/astvisitor.h>
 
 
 /*
@@ -32,17 +32,17 @@
 namespace Ruby
 {
 
-RubyAstVisitor::RubyAstVisitor()
+AstVisitor::AstVisitor()
 {
     /* There's nothing to do here */
 }
 
-RubyAstVisitor::~RubyAstVisitor()
+AstVisitor::~AstVisitor()
 {
     /* There's nothing to do here */
 }
 
-void RubyAstVisitor::visitCode(RubyAst *node)
+void AstVisitor::visitCode(Ast *node)
 {
     kDebug() << "Visiting Code...";
     Node *aux = node->tree;
@@ -54,22 +54,22 @@ void RubyAstVisitor::visitCode(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitName(RubyAst *node)
+void AstVisitor::visitName(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitNumeric(RubyAst *node)
+void AstVisitor::visitNumeric(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitRegexp(RubyAst *node)
+void AstVisitor::visitRegexp(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitString(RubyAst *node)
+void AstVisitor::visitString(Ast *node)
 {
     /*
      * l -> list of variables contained inside the string (by using #{var}).
@@ -81,12 +81,12 @@ void RubyAstVisitor::visitString(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitSymbol(RubyAst *node)
+void AstVisitor::visitSymbol(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitBody(RubyAst *node)
+void AstVisitor::visitBody(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -96,8 +96,9 @@ void RubyAstVisitor::visitBody(RubyAst *node)
      */
 
     Node *n = node->tree;
-    if (!n)
+    if (!n) {
         return;
+    }
 
     node->tree = n->l;
     visitStatements(node);
@@ -110,7 +111,7 @@ void RubyAstVisitor::visitBody(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitBinary(RubyAst *node)
+void AstVisitor::visitBinary(Ast *node)
 {
     /*
      * l -> left operator.
@@ -125,7 +126,7 @@ void RubyAstVisitor::visitBinary(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitBoolean(RubyAst *node)
+void AstVisitor::visitBoolean(Ast *node)
 {
     /* Same as for the visitBinary method  */
 
@@ -137,7 +138,7 @@ void RubyAstVisitor::visitBoolean(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitRange(RubyAst *node)
+void AstVisitor::visitRange(Ast *node)
 {
     /* Same as for the visitBinary method  */
 
@@ -149,7 +150,7 @@ void RubyAstVisitor::visitRange(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitUnary(RubyAst *node)
+void AstVisitor::visitUnary(Ast *node)
 {
     /*
      * l -> the operator.
@@ -161,7 +162,7 @@ void RubyAstVisitor::visitUnary(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitArray(RubyAst *node)
+void AstVisitor::visitArray(Ast *node)
 {
     /*
      * l -> list of statements (the items of the array).
@@ -173,7 +174,7 @@ void RubyAstVisitor::visitArray(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitArrayValue(RubyAst *node)
+void AstVisitor::visitArrayValue(Ast *node)
 {
     /*
      * l -> the node containing the Array object.
@@ -188,7 +189,7 @@ void RubyAstVisitor::visitArrayValue(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitHash(RubyAst *node)
+void AstVisitor::visitHash(Ast *node)
 {
     /*
      * l -> list of hash items.
@@ -196,12 +197,13 @@ void RubyAstVisitor::visitHash(RubyAst *node)
 
     Node *n = node->tree;
     node->tree = n->l;
-    for (; node->tree != nullptr; node->tree = node->tree->next)
+    for (; node->tree != nullptr; node->tree = node->tree->next) {
         visitBinary(node);
+    }
     node->tree = n;
 }
 
-void RubyAstVisitor::visitReturnStatement(RubyAst *node)
+void AstVisitor::visitReturnStatement(Ast *node)
 {
     /*
      * l -> the return expression.
@@ -213,7 +215,7 @@ void RubyAstVisitor::visitReturnStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitUndefStatement(RubyAst *node)
+void AstVisitor::visitUndefStatement(Ast *node)
 {
     /*
      * r -> list of undef items.
@@ -225,7 +227,7 @@ void RubyAstVisitor::visitUndefStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitAliasStatement(RubyAst *node)
+void AstVisitor::visitAliasStatement(Ast *node)
 {
     /* Same as for the visitBinary method. */
 
@@ -237,7 +239,7 @@ void RubyAstVisitor::visitAliasStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitYieldStatement(RubyAst *node)
+void AstVisitor::visitYieldStatement(Ast *node)
 {
     /*
      * l -> the yield expression.
@@ -248,7 +250,7 @@ void RubyAstVisitor::visitYieldStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
+void AstVisitor::visitAssignmentStatement(Ast *node)
 {
     /*
      * l -> the left side of the assignment.
@@ -263,7 +265,7 @@ void RubyAstVisitor::visitAssignmentStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitIfStatement(RubyAst *node)
+void AstVisitor::visitIfStatement(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -281,7 +283,7 @@ void RubyAstVisitor::visitIfStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitCaseStatement(RubyAst *node)
+void AstVisitor::visitCaseStatement(Ast *node)
 {
     /*
      * l -> the case body: list of when statements and an optional else
@@ -297,7 +299,7 @@ void RubyAstVisitor::visitCaseStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitBeginStatement(RubyAst *node)
+void AstVisitor::visitBeginStatement(Ast *node)
 {
     /*
      * l -> the body of the begin statement. Note that this body is not just
@@ -310,7 +312,7 @@ void RubyAstVisitor::visitBeginStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitUpBeginEndStatement(RubyAst *node)
+void AstVisitor::visitUpBeginEndStatement(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -322,7 +324,7 @@ void RubyAstVisitor::visitUpBeginEndStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitWhileStatement(RubyAst *node)
+void AstVisitor::visitWhileStatement(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -337,7 +339,7 @@ void RubyAstVisitor::visitWhileStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitForStatement(RubyAst *node)
+void AstVisitor::visitForStatement(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -355,7 +357,7 @@ void RubyAstVisitor::visitForStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitMethodStatement(RubyAst *node)
+void AstVisitor::visitMethodStatement(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -363,8 +365,9 @@ void RubyAstVisitor::visitMethodStatement(RubyAst *node)
      */
 
     Node *n = node->tree;
-    if (!n)
+    if (!n) {
         return;
+    }
 
     node->tree = n->r;
     visitMethodArguments(node);
@@ -373,7 +376,7 @@ void RubyAstVisitor::visitMethodStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitMethodArguments(RubyAst *node)
+void AstVisitor::visitMethodArguments(Ast *node)
 {
     /* Just iterate over the "next" pointer. */
 
@@ -385,12 +388,12 @@ void RubyAstVisitor::visitMethodArguments(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitParameter(RubyAst *node)
+void AstVisitor::visitParameter(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitClassStatement(RubyAst *node)
+void AstVisitor::visitClassStatement(Ast *node)
 {
     /*
      * l -> the body of the class statement. Note that this body is not just
@@ -409,7 +412,7 @@ void RubyAstVisitor::visitClassStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitSingletonClass(RubyAst *node)
+void AstVisitor::visitSingletonClass(Ast *node)
 {
     /*
      * l -> the body of the class statement. Note that this body is not just
@@ -425,7 +428,7 @@ void RubyAstVisitor::visitSingletonClass(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitModuleStatement(RubyAst *node)
+void AstVisitor::visitModuleStatement(Ast *node)
 {
     /*
      * l -> the body of the class statement. Note that this body is not just
@@ -441,7 +444,7 @@ void RubyAstVisitor::visitModuleStatement(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitMethodCall(RubyAst *node)
+void AstVisitor::visitMethodCall(Ast *node)
 {
     /*
      * l -> the caller (note that it's a list, i.e. A::B::foo).
@@ -460,7 +463,7 @@ void RubyAstVisitor::visitMethodCall(RubyAst *node)
     Q_UNUSED(node);
 }
 
-void RubyAstVisitor::visitSuper(RubyAst *node)
+void AstVisitor::visitSuper(Ast *node)
 {
     /*
      * r -> the arguments passed to the super call.
@@ -475,7 +478,7 @@ void RubyAstVisitor::visitSuper(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitLambda(RubyAst *node)
+void AstVisitor::visitLambda(Ast *node)
 {
     /*
      * cond -> the block of this lambda expression.
@@ -487,7 +490,7 @@ void RubyAstVisitor::visitLambda(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitBlock(RubyAst *node)
+void AstVisitor::visitBlock(Ast *node)
 {
     /*
      * l -> list of inner statements.
@@ -495,8 +498,9 @@ void RubyAstVisitor::visitBlock(RubyAst *node)
      */
 
     Node *aux = node->tree;
-    if (!aux)
+    if (!aux) {
         return;
+    }
     node->tree = aux->r;
     visitBlockVariables(node);
     node->tree = aux->l;
@@ -504,7 +508,7 @@ void RubyAstVisitor::visitBlock(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitBlockVariables(RubyAst *node)
+void AstVisitor::visitBlockVariables(Ast *node)
 {
     /*
      * Just iterate over the next pointer.
@@ -518,19 +522,19 @@ void RubyAstVisitor::visitBlockVariables(RubyAst *node)
     node->tree = aux;
 }
 
-void RubyAstVisitor::visitRequire(RubyAst *node, bool relative)
+void AstVisitor::visitRequire(Ast *node, bool relative)
 {
     Q_UNUSED(node)
     Q_UNUSED(relative)
 }
 
-void RubyAstVisitor::visitMixin(RubyAst *node, bool include)
+void AstVisitor::visitMixin(Ast *node, bool include)
 {
     Q_UNUSED(node);
     Q_UNUSED(include);
 }
 
-void RubyAstVisitor::visitDefined(RubyAst *node)
+void AstVisitor::visitDefined(Ast *node)
 {
     /*
      * l -> the expression from the "defined" statement.
@@ -542,52 +546,52 @@ void RubyAstVisitor::visitDefined(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitTrue(RubyAst *node)
+void AstVisitor::visitTrue(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitFalse(RubyAst *node)
+void AstVisitor::visitFalse(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitNil(RubyAst *node)
+void AstVisitor::visitNil(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitFile(RubyAst *node)
+void AstVisitor::visitFile(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitLine(RubyAst *node)
+void AstVisitor::visitLine(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitEncoding(RubyAst *node)
+void AstVisitor::visitEncoding(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitSelf(RubyAst *node)
+void AstVisitor::visitSelf(Ast *node)
 {
     Q_UNUSED(node)
 }
 
-void RubyAstVisitor::visitAccessSpecifier(const short int policy)
+void AstVisitor::visitAccessSpecifier(const short int policy)
 {
     Q_UNUSED(policy)
 }
 
-void RubyAstVisitor::visitClassName(RubyAst *node)
+void AstVisitor::visitClassName(Ast *node)
 {
     Q_UNUSED(node);
 }
 
-void RubyAstVisitor::visitRescue(RubyAst *node)
+void AstVisitor::visitRescue(Ast *node)
 {
     /*
      * l -> rescue arg.
@@ -602,7 +606,7 @@ void RubyAstVisitor::visitRescue(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitRescueArg(RubyAst *node)
+void AstVisitor::visitRescueArg(Ast *node)
 {
     /*
      * l -> Left part of the rescue argument, could be a list.
@@ -616,7 +620,7 @@ void RubyAstVisitor::visitRescueArg(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitEnsure(RubyAst *node)
+void AstVisitor::visitEnsure(Ast *node)
 {
     /*
      * l -> The inner statements.
@@ -628,7 +632,7 @@ void RubyAstVisitor::visitEnsure(RubyAst *node)
     node->tree = n;
 }
 
-void RubyAstVisitor::visitNode(RubyAst *node)
+void AstVisitor::visitNode(Ast *node)
 {
     Node *n = node->tree;
     QByteArray name;
@@ -711,7 +715,7 @@ void RubyAstVisitor::visitNode(RubyAst *node)
     }
 }
 
-void RubyAstVisitor::visitStatements(RubyAst *list)
+void AstVisitor::visitStatements(Ast *list)
 {
     Node *aux = list->tree;
     for (Node *n = aux; n; n = n->next) {
@@ -721,26 +725,29 @@ void RubyAstVisitor::visitStatements(RubyAst *list)
     list->tree = aux;
 }
 
-void RubyAstVisitor::visitIfTail(RubyAst *tail)
+void AstVisitor::visitIfTail(Ast *tail)
 {
     Node *n = tail->tree;
-    if (n == nullptr)
+    if (!n) {
         return;
+    }
 
     /* Check if this is an elsif or an else statement */
-    if (n->cond == nullptr) {
+    if (!n->cond) {
         tail->tree = n->l;
         visitStatements(tail);
-    } else
+    } else {
         visitIfStatement(tail);
+    }
     tail->tree = n;
 }
 
-void RubyAstVisitor::visitWhenStatements(RubyAst *list)
+void AstVisitor::visitWhenStatements(Ast *list)
 {
     Node *n = list->tree;
-    if (!n)
+    if (!n) {
         return;
+    }
 
     /* Check whether this is a when or an else statement */
     if (n->kind == token_when) {
@@ -757,7 +764,7 @@ void RubyAstVisitor::visitWhenStatements(RubyAst *list)
     list->tree = n;
 }
 
-void RubyAstVisitor::checkMethodCall(RubyAst *mc)
+void AstVisitor::checkMethodCall(Ast *mc)
 {
     /*
      * The method call body resides in the left child. Check if this
@@ -765,22 +772,24 @@ void RubyAstVisitor::checkMethodCall(RubyAst *mc)
      * If the left child is nullptr, this is not a method call but a lambda
      * expression.
      */
-    if (mc->tree->l != nullptr) {
+    if (mc->tree->l) {
         const QByteArray &name = QByteArray(mc->tree->l->name);
-        if (name == "require")
+        if (name == "require") {
             visitRequire(mc);
-        else if (name == "include")
+        } else if (name == "include") {
             visitMixin(mc, true);
-        else if (name == "extend")
+        } else if (name == "extend") {
             visitMixin(mc, false);
-        else if (name == "require_relative")
+        } else if (name == "require_relative") {
             visitRequire(mc, true);
-        else if (name == "lambda")
+        } else if (name == "lambda") {
             visitLambda(mc);
-        else
+        } else {
             visitMethodCall(mc);
-    } else
+        }
+    } else {
         visitLambda(mc);
+    }
 }
 
 } // End of namespace Ruby

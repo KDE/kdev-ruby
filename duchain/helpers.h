@@ -28,7 +28,7 @@
 
 // Ruby
 #include <duchain/duchainexport.h>
-#include <parser/rubyast.h>
+#include <parser/ast.h>
 
 
 namespace Ruby
@@ -60,23 +60,23 @@ using namespace KDevelop;
     KDEVRUBYDUCHAIN_EXPORT const IndexedString & internalBuiltinsFile();
 
     /**
-     * Given a RubyAst, return its name.
+     * Given a Ast, return its name.
      *
-     * @param ast The given RubyAst.
-     * @return A QString containing the name of the given RubyAst.
+     * @param ast The given Ast.
+     * @return A QString containing the name of the given Ast.
      */
-    KDEVRUBYDUCHAIN_EXPORT const QString getName(RubyAst *ast);
+    KDEVRUBYDUCHAIN_EXPORT const QString getName(Ast *ast);
 
      /**
-      * Given a RubyAst, return the documentation comment.
+      * Given a Ast, return the documentation comment.
       *
-      * @param ast The given RubyAst.
+      * @param ast The given Ast.
       * @return a QByteArray containing the documentation comment for a
       * class/module/method definition if it's available. It will return
       * an empty QByteArray otherwise, or if the AST does not represent
       * the situations described above.
       */
-    KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(RubyAst *ast);
+    KDEVRUBYDUCHAIN_EXPORT const QByteArray getComment(Ast *ast);
 
     /**
      * Find a specified declaration.
@@ -148,9 +148,9 @@ using namespace KDevelop;
     KDEVRUBYDUCHAIN_EXPORT int nodeListSize(Node *node);
 
     /// @returns the QualifiedIdentifier of the given @p ast.
-    KDEVRUBYDUCHAIN_EXPORT const KDevelop::QualifiedIdentifier getIdentifier(const RubyAst *ast);
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::QualifiedIdentifier getIdentifier(const Ast *ast);
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBYDUCHAINHELPERS_H_ */

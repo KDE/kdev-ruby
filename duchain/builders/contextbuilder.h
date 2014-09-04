@@ -25,20 +25,19 @@
 #define CONTEXTBUILDER_H
 
 
-// KDevelop
 #include <language/duchain/builders/abstractcontextbuilder.h>
 #include <language/duchain/problem.h>
-
-// Ruby
+#include <parser/astvisitor.h>
 #include <duchain/duchainexport.h>
-#include <parser/rubyastvisitor.h>
 
+
+using namespace KDevelop;
 
 namespace Ruby
 {
 
 class EditorIntegrator;
-typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
+typedef KDevelop::AbstractContextBuilder<Ast, NameAst> ContextBuilderBase;
 
 /**
  * @class ContextBuilder
@@ -46,7 +45,7 @@ typedef KDevelop::AbstractContextBuilder<RubyAst, NameAst> ContextBuilderBase;
  * The ContextBuilder is a convenient class to handle contexts on the AST.
  * The other builders have this class as a base class.
  */
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public RubyAstVisitor
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public AstVisitor
 {
 public:
     /// Constructor
@@ -56,7 +55,7 @@ public:
     virtual ~ContextBuilder();
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, RubyAst *node,
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, Ast *node,
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext()) override;
 
     /// @returns a list of unresolved imports.
@@ -86,8 +85,8 @@ protected:
      * KDevelop::AbstractContextBuilder that deal with contexts and nodes.
      */
 
-    virtual void setContextOnNode(RubyAst *node, DUContext *ctx) override;
-    virtual KDevelop::DUContext * contextFromNode(RubyAst *node) override;
+    virtual void setContextOnNode(Ast *node, DUContext *ctx) override;
+    virtual KDevelop::DUContext * contextFromNode(Ast *node) override;
     virtual KDevelop::DUContext * newContext(const RangeInRevision &range) override;
     virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
                                                    ParsingEnvironmentFile *file = nullptr) override;
@@ -95,10 +94,10 @@ protected:
     /// And now methods that deal with nodes, documents and ranges.
 
     /// @returns KDevelop::CursorInRevision at the start of @param node.
-    const KDevelop::CursorInRevision startPos(const RubyAst *node) const;
+    const KDevelop::CursorInRevision startPos(const Ast *node) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::RangeInRevision editorFindRange(RubyAst *fromRange, RubyAst *toRange) override;
+    virtual KDevelop::RangeInRevision editorFindRange(Ast *fromRange, Ast *toRange) override;
 
     /// Given a @param node, it @returns a KDevelop::DocumentRange.
     const KDevelop::DocumentRange getDocumentRange(const Node *node) const;
@@ -109,14 +108,14 @@ protected:
     /// Re-implemented from KDevelop::AbstractContextBuilder.
     virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name) override;
 
-    /// Methods re-implemented from RubyAstVisitor or mere helpers.
+    /// Methods re-implemented from AstVisitor or mere helpers.
 
-    virtual void startVisiting(RubyAst *node) override;
-    virtual void visitModuleStatement(RubyAst *node) override;
-    virtual void visitClassStatement(RubyAst *node) override;
-    virtual void visitMethodStatement(RubyAst *node) override;
-    virtual void visitBlock(RubyAst *node) override;
-    virtual void visitRequire(RubyAst *node, bool relative = false) override;
+    virtual void startVisiting(Ast *node) override;
+    virtual void visitModuleStatement(Ast *node) override;
+    virtual void visitClassStatement(Ast *node) override;
+    virtual void visitMethodStatement(Ast *node) override;
+    virtual void visitBlock(Ast *node) override;
+    virtual void visitRequire(Ast *node, bool relative = false) override;
 
     /**
      * Issue a require. The required file will be scheduled for parsing
@@ -154,7 +153,7 @@ private:
      * @returns the range that contains the method arguments
      * contained in @param node.
      */
-    const RangeInRevision rangeForMethodArguments(RubyAst *node);
+    const RangeInRevision rangeForMethodArguments(Ast *node);
 
 private:
     int m_priority;

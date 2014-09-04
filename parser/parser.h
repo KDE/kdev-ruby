@@ -18,14 +18,13 @@
  */
 
 
-#ifndef RUBYPARSER_H
-#define RUBYPARSER_H
+#ifndef RUBY_PARSER_H
+#define RUBY_PARSER_H
 
 
-// KDevelop + Ruby
 #include <language/duchain/problem.h>
-#include <parser/parserexport.h>
-#include <parser/rubyast.h>
+#include <parser/export.h>
+#include <parser/ast.h>
 
 
 namespace Ruby
@@ -34,23 +33,23 @@ namespace Ruby
 typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 
 /**
- * @class RubyParser
+ * @class Parser
  *
  * This class represents an interface to the "pure" parser and it may
  * be used across the plugin.
  */
-class KDEVRUBYPARSER_EXPORT RubyParser
+class KDEVRUBYPARSER_EXPORT Parser
 {
 public:
     /**
      * Constructor.
      */
-    RubyParser();
+    Parser();
 
     /**
      * Destructor.
      */
-    ~RubyParser();
+    ~Parser();
 
     /**
      * Set the contents of the document.
@@ -81,19 +80,19 @@ public:
      *
      * @return the generated Ast.
      */
-    RubyAst * parse();
+    Ast * parse();
 
     /**
-     * This method frees the RubyAst if necessary.
+     * This method frees the Ast if necessary.
      *
-     * @param ast the RubyAst to free.
+     * @param ast the Ast to free.
      */
-    void freeAst(const RubyAst *ast);
+    void freeAst(const Ast *ast);
 
     /**
      * Implemented to make the AbstractUseBuilder happy.
      */
-    void mapAstUse(RubyAst *node, const SimpleUse &use);
+    void mapAstUse(Ast *node, const SimpleUse &use);
 
     /**
      * @return a QString that represents the value of the node
@@ -121,5 +120,5 @@ private:
 
 }
 
-#endif // RUBYPARSER_H
+#endif // RUBY_PARSER_H
 

@@ -31,7 +31,7 @@
 namespace Ruby
 {
 
-typedef KDevelop::AbstractTypeBuilder<RubyAst, NameAst, ContextBuilder> TypeBuilderBase;
+typedef KDevelop::AbstractTypeBuilder<Ast, NameAst, ContextBuilder> TypeBuilderBase;
 
 /**
  * @class TypeBuilder

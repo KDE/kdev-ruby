@@ -30,7 +30,7 @@ namespace Ruby
 {
 
 class LanguageSupport;
-class RubyParser;
+class Parser;
 
 /**
  * @class ParseJob
@@ -75,7 +75,7 @@ private:
     /**
      * Ruby parser.
      */
-    RubyParser *m_parser;
+    Parser *m_parser;
 
     /**
      * A reference to the current TopDUContext.

@@ -22,6 +22,7 @@
 
 
 #include <duchain/editorintegrator.h>
+#include <parser/parser.h>
 
 
 namespace Ruby
@@ -63,12 +64,12 @@ const KDevelop::IndexedString EditorIntegrator::url() const
     return m_session->currentDocument();
 }
 
-void EditorIntegrator::setParseSession(RubyParser *session)
+void EditorIntegrator::setParseSession(Parser *session)
 {
     m_session = session;
 }
 
-RubyParser * EditorIntegrator::parseSession() const
+Parser * EditorIntegrator::parseSession() const
 {
     return m_session;
 }

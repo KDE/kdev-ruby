@@ -18,44 +18,44 @@
  */
 
 
-#include <parser/rubyparser.h>
+#include <parser/parser.h>
 
 
 namespace Ruby
 {
 
-RubyParser::RubyParser()
+Parser::Parser()
 {
     m_contents = nullptr;
     m_version = ruby21;
 }
 
-RubyParser::~RubyParser()
+Parser::~Parser()
 {
     /* There's nothing to do here! */
 }
 
-void RubyParser::setContents(const QByteArray &contents)
+void Parser::setContents(const QByteArray &contents)
 {
     m_contents = contents;
 }
 
-void RubyParser::setCurrentDocument(const KDevelop::IndexedString &fileName)
+void Parser::setCurrentDocument(const KDevelop::IndexedString &fileName)
 {
     m_currentDocument = fileName;
 }
 
-void RubyParser::setRubyVersion(enum ruby_version version)
+void Parser::setRubyVersion(enum ruby_version version)
 {
     m_version = version;
 }
 
-const KDevelop::IndexedString & RubyParser::currentDocument() const
+const KDevelop::IndexedString & Parser::currentDocument() const
 {
     return m_currentDocument;
 }
 
-RubyAst * RubyParser::parse()
+Ast * Parser::parse()
 {
     struct options_t opts;
     struct error_t *aux;
@@ -65,7 +65,7 @@ RubyAst * RubyParser::parse()
 
     /* Let's call the parser ;) */
     struct ast_t *res = rb_compile_file(&opts);
-    RubyAst *ra = new RubyAst(res->tree);
+    Ast *ra = new Ast(res->tree);
     if (res->unrecoverable) {
         for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
@@ -83,26 +83,26 @@ RubyAst * RubyParser::parse()
     return ra;
 }
 
-void RubyParser::freeAst(const RubyAst *ast)
+void Parser::freeAst(const Ast *ast)
 {
     if (ast) {
         free_ast(ast->tree);
     }
 }
 
-void RubyParser::mapAstUse(RubyAst *node, const SimpleUse &use)
+void Parser::mapAstUse(Ast *node, const SimpleUse &use)
 {
     Q_UNUSED(node);
     Q_UNUSED(use);
 }
 
-const QString RubyParser::symbol(const Node *node) const
+const QString Parser::symbol(const Node *node) const
 {
     int len = node->pos.end_col - node->pos.start_col;
     return m_contents.mid(node->pos.offset - len, len);
 }
 
-void RubyParser::appendProblem(const struct error_t *error)
+void Parser::appendProblem(const struct error_t *error)
 {
     int col = (error->column > 0) ? error->column - 1 : 0;
     KDevelop::ProblemPointer problem(new KDevelop::Problem);

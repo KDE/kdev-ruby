@@ -79,7 +79,7 @@ void ExpressionVisitor::setDeclarationKind(const DeclarationKind kind)
     m_declarationKind = kind;
 }
 
-void ExpressionVisitor::visitParameter(RubyAst *node)
+void ExpressionVisitor::visitParameter(Ast *node)
 {
     AbstractType::Ptr obj;
 
@@ -99,7 +99,7 @@ void ExpressionVisitor::visitParameter(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitName(RubyAst *node)
+void ExpressionVisitor::visitName(Ast *node)
 {
     if (!node->tree)
         return;
@@ -116,43 +116,43 @@ void ExpressionVisitor::visitName(RubyAst *node)
     }
 }
 
-void ExpressionVisitor::visitTrue(RubyAst *)
+void ExpressionVisitor::visitTrue(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("TrueClass", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitFalse(RubyAst *)
+void ExpressionVisitor::visitFalse(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("FalseClass", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitNil(RubyAst *)
+void ExpressionVisitor::visitNil(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitFile(RubyAst *)
+void ExpressionVisitor::visitFile(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitLine(RubyAst *)
+void ExpressionVisitor::visitLine(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitEncoding(RubyAst *)
+void ExpressionVisitor::visitEncoding(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Encoding", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitSelf(RubyAst *)
+void ExpressionVisitor::visitSelf(Ast *)
 {
     DUChainReadLocker lock;
     AbstractType::Ptr obj;
@@ -177,19 +177,19 @@ void ExpressionVisitor::visitSelf(RubyAst *)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitRange(RubyAst *)
+void ExpressionVisitor::visitRange(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Range", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitString(RubyAst *)
+void ExpressionVisitor::visitString(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitNumeric(RubyAst *node)
+void ExpressionVisitor::visitNumeric(Ast *node)
 {
     const char *type;
 
@@ -203,35 +203,35 @@ void ExpressionVisitor::visitNumeric(RubyAst *node)
     encounter(obj);
 }
 
-void ExpressionVisitor::visitRegexp(RubyAst *)
+void ExpressionVisitor::visitRegexp(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Regexp", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitSymbol(RubyAst *)
+void ExpressionVisitor::visitSymbol(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitArray(RubyAst *node)
+void ExpressionVisitor::visitArray(Ast *node)
 {
     AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node);
     encounter<ClassType>(ptr);
 }
 
-void ExpressionVisitor::visitHash(RubyAst *node)
+void ExpressionVisitor::visitHash(Ast *node)
 {
     AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node, true);
     encounter<ClassType>(ptr);
 }
 
-void ExpressionVisitor::visitArrayValue(RubyAst *node)
+void ExpressionVisitor::visitArrayValue(Ast *node)
 {
-    RubyAst *child = new RubyAst(node->tree->l, node->context);
+    Ast *child = new Ast(node->tree->l, node->context);
     QualifiedIdentifier id = getIdentifier(child);
     RangeInRevision range = m_editor->findRange(child->tree);
     DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx));
@@ -244,7 +244,7 @@ void ExpressionVisitor::visitArrayValue(RubyAst *node)
     delete child;
 }
 
-void ExpressionVisitor::visitMethodCall(RubyAst *node)
+void ExpressionVisitor::visitMethodCall(Ast *node)
 {
     Node *n = node->tree;
 
@@ -261,7 +261,7 @@ void ExpressionVisitor::visitMethodCall(RubyAst *node)
     node->tree = n;
 }
 
-void ExpressionVisitor::visitSuper(RubyAst *)
+void ExpressionVisitor::visitSuper(Ast *)
 {
     DUChainReadLocker lock;
     ModuleDeclaration *mDecl = nullptr;
@@ -296,31 +296,31 @@ void ExpressionVisitor::visitSuper(RubyAst *)
     }
 }
 
-void ExpressionVisitor::visitLambda(RubyAst *)
+void ExpressionVisitor::visitLambda(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Proc", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitWhileStatement(RubyAst *)
+void ExpressionVisitor::visitWhileStatement(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
     encounter(obj);
 }
 
-void ExpressionVisitor::visitForStatement(RubyAst *node)
+void ExpressionVisitor::visitForStatement(Ast *node)
 {
     ExpressionVisitor ev(this);
     Node *n = node->tree;
     node->tree = n->l;
-    RubyAstVisitor::visitNode(node);
+    AstVisitor::visitNode(node);
     node->tree = n->cond;
     ev.visitNode(node);
     node->tree = n;
     encounter(ev.lastType());
 }
 
-void ExpressionVisitor::visitBinary(RubyAst *node)
+void ExpressionVisitor::visitBinary(Ast *node)
 {
     Node *n = node->tree;
     node->tree = node->tree->l;
@@ -333,14 +333,14 @@ void ExpressionVisitor::visitBinary(RubyAst *node)
     encounter(mergeTypes(left, ev.lastType()));
 }
 
-void ExpressionVisitor::visitBoolean(RubyAst *)
+void ExpressionVisitor::visitBoolean(Ast *)
 {
     AbstractType::Ptr truthy = getBuiltinsType("TrueClass", m_ctx);
     AbstractType::Ptr falsy = getBuiltinsType("FalseClass", m_ctx);
     encounter(mergeTypes(truthy, falsy));
 }
 
-void ExpressionVisitor::visitIfStatement(RubyAst *node)
+void ExpressionVisitor::visitIfStatement(Ast *node)
 {
     Node *aux = node->tree;
     node->tree = aux->l;
@@ -354,7 +354,7 @@ void ExpressionVisitor::visitIfStatement(RubyAst *node)
     node->tree = aux;
 }
 
-void ExpressionVisitor::visitCaseStatement(RubyAst *node)
+void ExpressionVisitor::visitCaseStatement(Ast *node)
 {
     Node *aux = node->tree;
     AbstractType::Ptr res;
@@ -368,7 +368,7 @@ void ExpressionVisitor::visitCaseStatement(RubyAst *node)
     node->tree = aux;
 }
 
-void ExpressionVisitor::visitMethodStatement(RubyAst *)
+void ExpressionVisitor::visitMethodStatement(Ast *)
 {
     AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
     encounter(obj);
@@ -379,13 +379,13 @@ template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
     encounter(AbstractType::Ptr::staticCast(type));
 }
 
-ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const RubyAst *node, bool hasKey)
+ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ast *node, bool hasKey)
 {
     ClassType::Ptr ct = ptr.cast<ClassType>();
 
     if (ct) {
         ExpressionVisitor ev(this);
-        RubyAst *ast = new RubyAst(node->tree->l, node->context);
+        Ast *ast = new Ast(node->tree->l, node->context);
         for (Node *n = ast->tree; n != nullptr; n = n->next) {
             if (hasKey) {
                 Node *aux = ast->tree;
@@ -402,7 +402,7 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ruby
     return ct;
 }
 
-void ExpressionVisitor::visitLastStatement(RubyAst *node)
+void ExpressionVisitor::visitLastStatement(Ast *node)
 {
     if (!node->tree)
         return;
@@ -414,7 +414,7 @@ void ExpressionVisitor::visitLastStatement(RubyAst *node)
     node->tree = n;
 }
 
-void ExpressionVisitor::visitMethodCallMembers(RubyAst *node)
+void ExpressionVisitor::visitMethodCallMembers(Ast *node)
 {
     DUChainReadLocker rlock;
     RangeInRevision range;

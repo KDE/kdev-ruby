@@ -1,11 +1,12 @@
 
-bison_target(RUBY_PARSER parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
+bison_target(RUBY_PARSER parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser_gen.c)
 
 set(rubyparser_SRCS
     node.c
     ${BISON_RUBY_PARSER_OUTPUTS}
-    rubyparser.cpp
-    rubyastvisitor.cpp
+    parser.cpp
+    astvisitor.cpp
+    ast.cpp
 )
 
 include_directories(

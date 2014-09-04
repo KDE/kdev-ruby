@@ -1,5 +1,5 @@
 /* This file is part of KDevelop
- * 
+ *
  * Copyright (C) 2011-2014 Miquel Sabaté Solà <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,12 +18,12 @@
  */
 
 
-#ifndef RUBYAST_H
-#define RUBYAST_H
+#ifndef RUBY_AST_H
+#define RUBY_AST_H
 
 
-// KDevelop + Ruby
 #include <language/duchain/ducontext.h>
+#include <parser/export.h>
 #include <parser/node.h>
 
 
@@ -36,7 +36,7 @@ namespace Ruby
  * This class represents a Ruby AST (Abstract Syntax Tree). It contains
  * the code (tree) and the associated KDevelop::DUContext.
  */
-class RubyAst
+class KDEVRUBYPARSER_EXPORT Ast
 {
 public:
     /**
@@ -45,11 +45,7 @@ public:
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
-    RubyAst(Node *n, KDevelop::DUContext *ctx = nullptr)
-        : tree(n), context(ctx), foundProblems(false)
-    {
-        /* There's nothing to do here! */
-    };
+    Ast(Node *n, KDevelop::DUContext *ctx = nullptr);
 
 public:
     /// The tree of this AST.
@@ -62,14 +58,13 @@ public:
     bool foundProblems;
 };
 
-
 /**
  * @class NameAst
  *
  * Extends the RubyAst class to easily obtain the identifier for
  * a RubyAst.
  */
-class NameAst : public RubyAst
+class KDEVRUBYPARSER_EXPORT NameAst : public Ast
 {
 public:
     /**
@@ -77,25 +72,14 @@ public:
      *
      * @param ast the RubyAst this class extends.
      */
-    NameAst(const RubyAst *ast) : RubyAst(ast->tree, ast->context)
-    {
-        if (tree == nullptr)
-            value = "nil";
-        else if (tree->kind == token_class || tree->kind == token_module)
-            value = QString(rb_name_node(tree)->name);
-        else if (tree->kind == token_function)
-            value = QString(rb_name_node(tree)->name);
-        else
-            value = QString(tree->name);
-    };
+    NameAst(const Ast *ast);
 
 public:
     /// The QString that represents this class.
     QString value;
 };
 
-} // End of namespace Ruby
+}
 
-
-#endif // RUBYAST_H
+#endif // RUBY_AST_H
 

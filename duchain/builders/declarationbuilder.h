@@ -36,12 +36,12 @@ namespace Ruby
 class ModuleDeclaration;
 class MethodDeclaration;
 
-typedef KDevelop::AbstractDeclarationBuilder<RubyAst, NameAst, TypeBuilder> DeclarationBuilderBase;
+typedef KDevelop::AbstractDeclarationBuilder<Ast, NameAst, TypeBuilder> DeclarationBuilderBase;
 
 /**
  * @class DeclarationBuilder
  *
- * The DeclarationBuilder iterates a RubyAst to build declarations.
+ * The DeclarationBuilder iterates a Ast to build declarations.
  */
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
@@ -64,30 +64,30 @@ protected:
     virtual void closeContext() override;
 
     /// Re-implemented from the ContextBuilder.
-    virtual void startVisiting(RubyAst *node) override;
+    virtual void startVisiting(Ast *node) override;
 
-    /// Methods re-implemented from RubyAstVisitor.
+    /// Methods re-implemented from AstVisitor.
 
-    virtual void visitClassStatement(RubyAst *node) override;
-    virtual void visitSingletonClass(RubyAst *node) override;
-    virtual void visitModuleStatement(RubyAst *node) override;
-    virtual void visitMethodStatement(RubyAst *node) override;
-    virtual void visitParameter(RubyAst *node) override;
-    virtual void visitBlock(RubyAst *node) override;
-    virtual void visitBlockVariables(RubyAst *node) override;
-    virtual void visitReturnStatement(RubyAst *node) override;
-    virtual void visitAssignmentStatement(RubyAst *node) override;
-    virtual void visitAliasStatement(RubyAst *node) override;
-    virtual void visitMethodCall(RubyAst *node) override;
-    virtual void visitMixin(RubyAst *node, bool include) override;
-    virtual void visitForStatement(RubyAst *node) override;
+    virtual void visitClassStatement(Ast *node) override;
+    virtual void visitSingletonClass(Ast *node) override;
+    virtual void visitModuleStatement(Ast *node) override;
+    virtual void visitMethodStatement(Ast *node) override;
+    virtual void visitParameter(Ast *node) override;
+    virtual void visitBlock(Ast *node) override;
+    virtual void visitBlockVariables(Ast *node) override;
+    virtual void visitReturnStatement(Ast *node) override;
+    virtual void visitAssignmentStatement(Ast *node) override;
+    virtual void visitAliasStatement(Ast *node) override;
+    virtual void visitMethodCall(Ast *node) override;
+    virtual void visitMixin(Ast *node, bool include) override;
+    virtual void visitForStatement(Ast *node) override;
     virtual void visitAccessSpecifier(const short int policy) override;
-    virtual void visitYieldStatement(RubyAst *node) override;
-    virtual void visitRescueArg(RubyAst *node) override;
+    virtual void visitYieldStatement(Ast *node) override;
+    virtual void visitRescueArg(Ast *node) override;
 
 private:
     /// @returns the range of the name of the given @p node.
-    const KDevelop::RangeInRevision getNameRange(const RubyAst *node) const;
+    const KDevelop::RangeInRevision getNameRange(const Ast *node) const;
 
     /**
      * Open a context for a class/module declaration. It will also open the
@@ -96,7 +96,7 @@ private:
      * @param decl The declaration itself.
      * @param node The node where the declaration resides.
      */
-    void openContextForClassDefinition(ModuleDeclaration *decl, RubyAst *node);
+    void openContextForClassDefinition(ModuleDeclaration *decl, Ast *node);
 
     /**
      * Open or re-open if already exists a declaration in the current context.
@@ -136,7 +136,7 @@ private:
      */
     void declareVariable(const KDevelop::QualifiedIdentifier &id,
                          const KDevelop::AbstractType::Ptr &type,
-                         RubyAst *node,
+                         Ast *node,
                          DUContext::SearchFlag flags = DUContext::NoSearchFlags);
 
     /**
@@ -174,7 +174,7 @@ private:
      * @returns the ModuleDeclaration that is being mixed-in, or nullptr if this
      * module doesn't actually exist.
      */
-    ModuleDeclaration * getModuleDeclaration(RubyAst *module) const;
+    ModuleDeclaration * getModuleDeclaration(Ast *module) const;
 
     /**
      * @returns the declared methods inside the given declaration @p decl,
@@ -210,7 +210,7 @@ private:
      * returned.
      * @param node The node of the class/module declaration.
      */
-    DUContext * getContainedNameContext(RubyAst *node);
+    DUContext * getContainedNameContext(Ast *node);
 
     /**
      * This is a helper method that iterates over the call args of a method
@@ -218,7 +218,7 @@ private:
      * @param mc A list of call args.
      * @param lastMethod The last encountered method call.
      */
-    void visitMethodCallArgs(const RubyAst *mc, const DeclarationPointer &lastMethod);
+    void visitMethodCallArgs(const Ast *mc, const DeclarationPointer &lastMethod);
 
     /// @returns true if we're inside a class/module, false otherwise.
     inline bool insideClassModule() const
