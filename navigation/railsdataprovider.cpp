@@ -34,49 +34,50 @@
 #include <navigation/railsdataprovider.h>
 
 
-namespace Ruby {
+namespace Rails
+{
 
-RailsQuickOpenData::RailsQuickOpenData(const RailsQuickOpenItem& item, const QString &explanation)
+QuickOpenData::QuickOpenData(const QuickOpenItem& item, const QString &explanation)
     : QuickOpenDataBase(), m_item(item), m_explanation(explanation)
 {
 }
 
-QString RailsQuickOpenData::text() const
+QString QuickOpenData::text() const
 {
     QUrl u = m_item.url.path();
-    QUrl base = RailsSwitchers::findRailsRoot(m_item.url);
+    QUrl base = Switchers::findRailsRoot(m_item.url);
     return base.path() + "/" + u.path();
 }
 
-QString RailsQuickOpenData::htmlDescription() const
+QString QuickOpenData::htmlDescription() const
 {
     return "<small><small>" + m_explanation + ' ' + m_item.originUrl.fileName() + "</small></small>";
 }
 
 /* TODO: to adymo from mssola: what is this parameter ? */
-bool RailsQuickOpenData::execute(QString & filterText)
+bool QuickOpenData::execute(QString & filterText)
 {
     Q_UNUSED(filterText);
     KDevelop::ICore::self()->documentController()->openDocument( m_item.url );
     return true;
 }
 
-bool RailsQuickOpenData::isExpandable() const
+bool QuickOpenData::isExpandable() const
 {
     return false;
 }
 
-QWidget* RailsQuickOpenData::expandingWidget() const
+QWidget* QuickOpenData::expandingWidget() const
 {
     return KDevelop::QuickOpenDataBase::expandingWidget();
 }
 
-QIcon RailsQuickOpenData::icon() const
+QIcon QuickOpenData::icon() const
 {
     return KDevelop::QuickOpenDataBase::icon();
 }
 
-QList<QVariant> RailsQuickOpenData::highlighting() const
+QList<QVariant> QuickOpenData::highlighting() const
 {
     QTextCharFormat boldFormat;
     boldFormat.setFontWeight(QFont::Bold);
@@ -100,48 +101,48 @@ QList<QVariant> RailsQuickOpenData::highlighting() const
 
 
 
-RailsDataProvider::RailsDataProvider(Ruby::RailsDataProvider::Kind kind): m_kind(kind)
+DataProvider::DataProvider(Rails::DataProvider::Kind kind): m_kind(kind)
 {
     reset();
 }
 
-KDevelop::QuickOpenDataPointer RailsDataProvider::data(uint row) const
+KDevelop::QuickOpenDataPointer DataProvider::data(uint row) const
 {
-    RailsQuickOpenItem item( filteredItems()[row] );
+    QuickOpenItem item( filteredItems()[row] );
     QString dataExplanation = m_kind == Views ? i18n("View for:") : i18n("Test for:");
-    return KDevelop::QuickOpenDataPointer( new RailsQuickOpenData( item, dataExplanation ) );
+    return KDevelop::QuickOpenDataPointer( new QuickOpenData( item, dataExplanation ) );
 }
 
-void RailsDataProvider::enableData(const QStringList& items, const QStringList& scopes)
+void DataProvider::enableData(const QStringList& items, const QStringList& scopes)
 {
     KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
 }
 
-uint RailsDataProvider::itemCount() const
+uint DataProvider::itemCount() const
 {
     return filteredItems().count();
 }
 
-uint RailsDataProvider::unfilteredItemCount() const
+uint DataProvider::unfilteredItemCount() const
 {
     return items().count();
 }
 
-void RailsDataProvider::reset()
+void DataProvider::reset()
 {
     clearFilter();
 
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
 
-    QList<RailsQuickOpenItem> items;
+    QList<QuickOpenItem> items;
     QList<QUrl> urlsToSwitch;
     if (m_kind == Views) {
-        urlsToSwitch = RailsSwitchers::viewsToSwitch();
+        urlsToSwitch = Switchers::viewsToSwitch();
     } else if (m_kind == Tests) {
-        urlsToSwitch = RailsSwitchers::testsToSwitch();
+        urlsToSwitch = Switchers::testsToSwitch();
     }
     foreach (const QUrl &url, urlsToSwitch) {
-        RailsQuickOpenItem item;
+        QuickOpenItem item;
         item.url = url;
         if (activeDocument) {
             item.originUrl = activeDocument->url();
@@ -151,17 +152,17 @@ void RailsDataProvider::reset()
     setItems(items);
 }
 
-QStringList RailsDataProvider::scopes()
+QStringList DataProvider::scopes()
 {
     return QStringList() << "Project";
 }
 
-void RailsDataProvider::setFilterText(const QString& text)
+void DataProvider::setFilterText(const QString& text)
 {
     setFilter( text.split('/') );
 }
 
-QString RailsDataProvider::itemText(const RailsQuickOpenItem& data) const
+QString DataProvider::itemText(const QuickOpenItem& data) const
 {
     return data.url.fileName();
 }

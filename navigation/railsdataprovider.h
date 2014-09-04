@@ -33,11 +33,11 @@
  * TODO: clean it up.
  */
 
-namespace Ruby {
+namespace Rails {
 
-class RailsSwitchers;
+class Switchers;
 
-struct KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenItem {
+struct KDEVRUBYNAVIGATION_EXPORT QuickOpenItem {
     // The url of the view or test
     QUrl url;
 
@@ -45,10 +45,10 @@ struct KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenItem {
     QUrl originUrl;
 };
 
-class KDEVRUBYNAVIGATION_EXPORT RailsQuickOpenData : public KDevelop::QuickOpenDataBase
+class KDEVRUBYNAVIGATION_EXPORT QuickOpenData : public KDevelop::QuickOpenDataBase
 {
 public:
-    explicit RailsQuickOpenData(const RailsQuickOpenItem &item, const QString &explanation);
+    explicit QuickOpenData(const QuickOpenItem &item, const QString &explanation);
 
     virtual QString text() const;
     virtual QString htmlDescription() const;
@@ -63,17 +63,17 @@ public:
     QList<QVariant> highlighting() const;
 
 private:
-    RailsQuickOpenItem m_item;
+    QuickOpenItem m_item;
     QString m_explanation;
 };
 
-class KDEVRUBYNAVIGATION_EXPORT RailsDataProvider: public KDevelop::QuickOpenDataProviderBase,
-        public KDevelop::PathFilter<RailsQuickOpenItem, RailsDataProvider>
+class KDEVRUBYNAVIGATION_EXPORT DataProvider: public KDevelop::QuickOpenDataProviderBase,
+        public KDevelop::PathFilter<QuickOpenItem, DataProvider>
 {
 public:
     enum Kind { Views, Tests };
 
-    RailsDataProvider(Kind kind);
+    DataProvider(Kind kind);
     virtual void setFilterText( const QString& text );
     virtual void reset();
     virtual uint itemCount() const;
@@ -81,9 +81,9 @@ public:
     virtual KDevelop::QuickOpenDataPointer data( uint row ) const;
     virtual void enableData( const QStringList& items, const QStringList& scopes );
 
-    virtual QString itemText( const RailsQuickOpenItem& data ) const;
+    virtual QString itemText( const QuickOpenItem& data ) const;
 
-    inline KDevelop::Path itemPath( const RailsQuickOpenItem& data ) const
+    inline KDevelop::Path itemPath( const QuickOpenItem& data ) const
     {
         // TODO: port to Path API
         return KDevelop::Path(data.url);

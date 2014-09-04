@@ -80,7 +80,7 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(QLatin1String("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
     , m_builtinsLoaded(false)
-    , m_railsSwitchers(new Ruby::RailsSwitchers(this))
+    , m_railsSwitchers(new Rails::Switchers(this))
     , m_viewsQuickOpenDataProvider(nullptr)
     , m_testsQuickOpenDataProvider(nullptr)
     , m_rubyFileLaunchConfiguration(nullptr)
@@ -255,7 +255,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
-    QUrl railsRoot = RailsSwitchers::findRailsRoot(activeDocument->url().toString());
+    QUrl railsRoot = Rails::Switchers::findRailsRoot(activeDocument->url().toString());
     if (!railsRoot.isEmpty()) {
         cfg.writeEntry("Working Directory", railsRoot.url());
     } else {
@@ -339,11 +339,11 @@ void LanguageSupport::setupQuickOpen()
 {
     KDevelop::IQuickOpen * quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        m_viewsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Views);
-        quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
+        m_viewsQuickOpenDataProvider = new Rails::DataProvider(Rails::DataProvider::Views);
+        quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
 
-        m_testsQuickOpenDataProvider = new RailsDataProvider(Ruby::RailsDataProvider::Tests);
-        quickOpen->registerProvider(RailsDataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
+        m_testsQuickOpenDataProvider = new Rails::DataProvider(Rails::DataProvider::Tests);
+        quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
     }
 }
 

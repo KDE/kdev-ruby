@@ -36,14 +36,15 @@
  * TODO: add tests + style.
  */
 
-namespace Ruby {
+namespace Rails
+{
 
-RailsSwitchers::RailsSwitchers(LanguageSupport *language) : QObject(language)
+Switchers::Switchers(Ruby::LanguageSupport *language) : QObject(language)
 {
     /* There's nothing to do here. */
 }
 
-QUrl RailsSwitchers::findRailsRoot(const QUrl &url)
+QUrl Switchers::findRailsRoot(const QUrl &url)
 {
     QUrl currentUrl = url;
     QUrl upUrl = KIO::upUrl(currentUrl);
@@ -64,7 +65,7 @@ QUrl RailsSwitchers::findRailsRoot(const QUrl &url)
     return QUrl();
 }
 
-void RailsSwitchers::switchToController()
+void Switchers::switchToController()
 {
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) {
@@ -118,7 +119,7 @@ void RailsSwitchers::switchToController()
     }
 }
 
-void RailsSwitchers::switchToModel()
+void Switchers::switchToModel()
 {
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
     if (!activeDocument) {
@@ -159,7 +160,7 @@ void RailsSwitchers::switchToModel()
     KDevelop::ICore::self()->documentController()->openDocument(modelUrl);
 }
 
-void RailsSwitchers::switchToView()
+void Switchers::switchToView()
 {
     if (viewsToSwitch().isEmpty()) {
         return;
@@ -172,7 +173,7 @@ void RailsSwitchers::switchToView()
     }
 }
 
-QList<QUrl> RailsSwitchers::viewsToSwitch()
+QList<QUrl> Switchers::viewsToSwitch()
 {
     QList<QUrl> urls;
 
@@ -237,7 +238,7 @@ QList<QUrl> RailsSwitchers::viewsToSwitch()
     return urls;
 }
 
-QList<QUrl> RailsSwitchers::testsToSwitch()
+QList<QUrl> Switchers::testsToSwitch()
 {
     QList<QUrl> urls;
 
@@ -311,7 +312,7 @@ QList<QUrl> RailsSwitchers::testsToSwitch()
     return urls;
 }
 
-void RailsSwitchers::switchToTest()
+void Switchers::switchToTest()
 {
     if (testsToSwitch().isEmpty()) {
         return;

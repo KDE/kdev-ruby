@@ -32,15 +32,15 @@
  * TODO: add tests + style.
  */
 
-namespace Ruby
+namespace Rails
 {
 
-class KDEVRUBYNAVIGATION_EXPORT RailsSwitchers : public QObject
+class KDEVRUBYNAVIGATION_EXPORT Switchers : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit RailsSwitchers(LanguageSupport *language);
+    explicit Switchers(Ruby::LanguageSupport *language);
 
     static QList<QUrl> viewsToSwitch();
     static QList<QUrl> testsToSwitch();

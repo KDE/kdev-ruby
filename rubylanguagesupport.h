@@ -43,11 +43,14 @@ namespace KDevelop {
     class ICodeHighlighting;
 }
 
+namespace Rails {
+    class Switchers;
+    class DataProvider;
+}
+
 namespace Ruby
 {
 
-class RailsSwitchers;
-class RailsDataProvider;
 class Highlighting;
 class Refactoring;
 
@@ -177,9 +180,9 @@ private:
     QReadWriteLock m_builtinsLock;
     enum ruby_version m_version;
 
-    RailsSwitchers *m_railsSwitchers;
-    RailsDataProvider *m_viewsQuickOpenDataProvider;
-    RailsDataProvider *m_testsQuickOpenDataProvider;
+    Rails::Switchers *m_railsSwitchers;
+    Rails::DataProvider *m_viewsQuickOpenDataProvider;
+    Rails::DataProvider *m_testsQuickOpenDataProvider;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 };
