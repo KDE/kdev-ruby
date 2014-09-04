@@ -44,25 +44,25 @@ Switchers::Switchers(Ruby::LanguageSupport *language) : QObject(language)
     /* There's nothing to do here. */
 }
 
-QUrl Switchers::findRailsRoot(const QUrl &url)
+KDevelop::Path Switchers::findRailsRoot(const QUrl &url)
 {
-    QUrl currentUrl = url;
-    QUrl upUrl = KIO::upUrl(currentUrl);
+    KDevelop::Path current(url.toString());
+    KDevelop::Path upUrl(current.parent());
 
-    while (upUrl != currentUrl) {
-        QUrl aux = KIO::upUrl(upUrl);
-        if ((upUrl.fileName() == "controllers" && aux.fileName() == "app")
-             || (upUrl.fileName() == "models" && aux.fileName() == "app")
-             || (upUrl.fileName() == "views" && aux.fileName() == "app") ) {
-            return KIO::upUrl(aux);
-        } else if (upUrl.fileName() == "test") {
+    while (upUrl != current) {
+        KDevelop::Path aux = upUrl.parent();
+        if (aux.lastPathSegment() == "app") {
+            const QString &dir = upUrl.lastPathSegment();
+            if (dir == "controllers" || dir == "models" || dir == "views") {
+                return aux.parent();
+            }
+        } else if (upUrl.lastPathSegment() == "test") {
             return aux;
         }
-
-        currentUrl = upUrl;
+        current = upUrl;
         upUrl = aux;
     }
-    return QUrl();
+    return KDevelop::Path();
 }
 
 void Switchers::switchToController()
@@ -80,7 +80,7 @@ void Switchers::switchToController()
     QString ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
-    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    QUrl railsRoot = findRailsRoot(activeDocument->url()).toUrl();
     if (railsRoot.isEmpty()) {
         return;
     }
@@ -135,7 +135,7 @@ void Switchers::switchToModel()
     QString name = file.baseName();
     QString switchTo = "";
 
-    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    QUrl railsRoot = findRailsRoot(activeDocument->url()).toUrl();
     if (railsRoot.isEmpty()) {
         return;
     }
@@ -209,7 +209,7 @@ QList<QUrl> Switchers::viewsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    QUrl railsRoot = findRailsRoot(activeDocument->url());
+    QUrl railsRoot = findRailsRoot(activeDocument->url()).toUrl();
     if (railsRoot.isEmpty()) {
         return urls;
     }
@@ -270,7 +270,7 @@ QList<QUrl> Switchers::testsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    QUrl testsUrl = findRailsRoot(activeDocument->url());
+    QUrl testsUrl = findRailsRoot(activeDocument->url()).toUrl();
     testsUrl.setPath(testsUrl.path() + "/test");
 
     QUrl functionalTestsUrlS = QUrl::fromLocalFile(testsUrl.path() + "/functional/" +

@@ -53,6 +53,7 @@ add_library(kdevrubylanguagesupport MODULE
 
 target_link_libraries(kdevrubylanguagesupport
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    ${KDEVPLATFORM_UTIL_LIBRARIES}
     kdevrubyparser
     kdevrubyduchain
     kdevrubynavigation

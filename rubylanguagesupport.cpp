@@ -255,9 +255,9 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
-    QUrl railsRoot = Rails::Switchers::findRailsRoot(activeDocument->url().toString());
-    if (!railsRoot.isEmpty()) {
-        cfg.writeEntry("Working Directory", railsRoot.url());
+    KDevelop::Path root = Rails::Switchers::findRailsRoot(activeDocument->url());
+    if (root.isValid()) {
+        cfg.writeEntry("Working Directory", root.toLocalFile());
     } else {
         cfg.writeEntry("Working Directory", activeDocument->url().directory());
     }

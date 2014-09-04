@@ -14,8 +14,11 @@ add_library(kdevrubynavigation SHARED ${rubynavigation_SRCS})
 target_link_libraries(kdevrubynavigation LINK_PRIVATE
     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
     ${KDEVPLATFORM_PROJECT_LIBRARIES}
+    ${KDEVPLATFORM_UTIL_LIBRARIES}
     kdevrubyparser
 )
 
 install(TARGETS kdevrubynavigation DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+add_subdirectory(tests)
 

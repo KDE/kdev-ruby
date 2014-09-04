@@ -24,6 +24,7 @@
 #define RAILS_SWITCHERS_H
 
 
+#include <util/path.h>
 #include <navigation/navigationexport.h>
 #include <rubylanguagesupport.h>
 
@@ -44,7 +45,11 @@ public:
 
     static QList<QUrl> viewsToSwitch();
     static QList<QUrl> testsToSwitch();
-    static QUrl findRailsRoot(const QUrl &url);
+
+    /*
+     * TODO: QUrl or QString ? or both ?
+     */
+    static KDevelop::Path findRailsRoot(const QUrl &url);
 
 public slots:
     void switchToController();
