@@ -83,6 +83,6 @@ private:
     KDevelop::ReferencedTopDUContext m_duContext;
 };
 
-} // End of namespace ruby
+}
 
 #endif /* RUBY_PARSEJOB_H */

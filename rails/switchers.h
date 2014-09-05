@@ -25,7 +25,7 @@
 
 
 #include <util/path.h>
-#include <rubylanguagesupport.h>
+#include <languagesupport.h>
 #include <rails/export.h>
 
 

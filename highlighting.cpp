@@ -22,7 +22,7 @@
 #include <language/duchain/declaration.h>
 
 //Ruby
-#include <rubyhighlighting.h>
+#include <highlighting.h>
 #include <duchain/declarations/variabledeclaration.h>
 
 
@@ -68,5 +68,5 @@ KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const
 
 //END RubyHighlighting
 
-} // End of namespace Ruby
+}
 

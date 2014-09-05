@@ -90,6 +90,6 @@ private:
     virtual KDevelop::CodeHighlightingInstance* createInstance() const override;
 };
 
-} // End of namespace Ruby
+}
 
 #endif // RUBYHIGHLIGHTING_H

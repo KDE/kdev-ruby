@@ -51,9 +51,9 @@
 #include <language/interfaces/editorcontext.h>
 
 //Ruby plugin
-#include <rubylanguagesupport.h>
-#include <rubyparsejob.h>
-#include <rubyhighlighting.h>
+#include <languagesupport.h>
+#include <parsejob.h>
+#include <highlighting.h>
 #include <rails/switchers.h>
 #include <rails/dataprovider.h>
 #include <rails/helpers.h>
@@ -350,4 +350,4 @@ void LanguageSupport::setupQuickOpen()
 
 } // End of namespace Ruby
 
-#include "rubylanguagesupport.moc"
+#include "languagesupport.moc"

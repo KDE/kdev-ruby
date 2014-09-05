@@ -32,8 +32,8 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
-#include <rubyparsejob.h>
-#include <rubylanguagesupport.h>
+#include <parsejob.h>
+#include <languagesupport.h>
 #include <parser/parser.h>
 #include <duchain/builders/declarationbuilder.h>
 #include <duchain/builders/usebuilder.h>
@@ -207,5 +207,5 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     }
 }
 
-} // End of namespace Ruby
+}
 
