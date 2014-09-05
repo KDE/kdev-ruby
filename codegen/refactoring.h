@@ -23,7 +23,6 @@
 #define REFACTORING_H
 
 
-#include <interfaces/context.h>
 #include <language/codegen/basicrefactoring.h>
 
 
@@ -36,7 +35,6 @@ public:
     explicit Refactoring(QObject *parent = nullptr);
 };
 
-} // End of namespace Ruby
-
+}
 
 #endif /* REFACTORING_H */

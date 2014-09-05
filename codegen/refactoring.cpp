@@ -19,17 +19,15 @@
  */
 
 
-#include <QtCore/QObject>
 #include <codegen/refactoring.h>
 
 
 namespace Ruby
 {
 
-Refactoring::Refactoring(QObject *parent)
-    : BasicRefactoring(parent)
+Refactoring::Refactoring(QObject *parent) : BasicRefactoring(parent)
 {
     /* There's nothing to do here. */
 }
 
-} // End of namespace Ruby
+}

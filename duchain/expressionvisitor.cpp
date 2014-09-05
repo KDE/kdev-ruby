@@ -35,11 +35,11 @@
 #include <duchain/declarations/moduledeclaration.h>
 
 
-using namespace KDevelop;
 namespace Ruby
 {
 
-ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
+ExpressionVisitor::ExpressionVisitor(KDevelop::DUContext *ctx,
+                                     EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(nullptr), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(nullptr);
@@ -56,7 +56,7 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     m_declarationKind = DeclarationKind::Unknown;
 }
 
-void ExpressionVisitor::setContext(DUContext *ctx)
+void ExpressionVisitor::setContext(KDevelop::DUContext *ctx)
 {
     m_ctx = ctx;
     m_lastType = AbstractType::Ptr(nullptr);
@@ -68,10 +68,11 @@ void ExpressionVisitor::setContext(DUContext *ctx)
 
 void ExpressionVisitor::setIsClassMethod(bool isClassMethod)
 {
-    if (isClassMethod)
+    if (isClassMethod) {
         m_declarationKind = DeclarationKind::ClassMethod;
-    else
+    } else {
         m_declarationKind = DeclarationKind::InstanceMethod;
+    }
 }
 
 void ExpressionVisitor::setDeclarationKind(const DeclarationKind kind)
@@ -94,15 +95,17 @@ void ExpressionVisitor::visitParameter(Ast *node)
         da.visitNode(node);
         node->tree = n;
         obj = da.lastType();
-    } else
+    } else {
         obj = getBuiltinsType("Object", m_ctx);
+    }
     encounter(obj);
 }
 
 void ExpressionVisitor::visitName(Ast *node)
 {
-    if (!node->tree)
+    if (!node->tree) {
         return;
+    }
 
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
@@ -167,13 +170,15 @@ void ExpressionVisitor::visitSelf(Ast *)
         }
 
         ctx = ctx->parentContext();
-        if (!ctx)
+        if (!ctx) {
             break;
+        }
         decl = ctx->owner();
     }
 
-    if (!ctx || !decl)
+    if (!ctx || !decl) {
         obj = getBuiltinsType("Object", m_ctx);
+    }
     encounter(obj);
 }
 
@@ -238,8 +243,9 @@ void ExpressionVisitor::visitArrayValue(Ast *node)
 
     if (decl) {
         ClassType::Ptr vc = decl->abstractType().cast<ClassType>();
-        if (vc)
+        if (vc) {
             encounter(vc->contentType().abstractType());
+        }
     }
     delete child;
 }
@@ -250,8 +256,9 @@ void ExpressionVisitor::visitMethodCall(Ast *node)
 
     // Handle recursive method calls here.
     node->tree = n->l;
-    if (node->tree->kind == token_method_call)
+    if (node->tree->kind == token_method_call) {
         visitMethodCall(node);
+    }
 
     // Let's evaluate now the members of the current method call.
     DeclarationKind oldKind = m_declarationKind;
@@ -268,25 +275,30 @@ void ExpressionVisitor::visitSuper(Ast *)
     DUContext *ctx = m_ctx->parentContext();
     Declaration *md = m_ctx->owner();
 
-    if (!dynamic_cast<MethodDeclaration *>(md))
+    if (!dynamic_cast<MethodDeclaration *>(md)) {
         return;
+    }
 
     while (ctx) {
         Declaration *d = ctx->owner();
         mDecl = dynamic_cast<ModuleDeclaration *>(d);
-        if (mDecl && !mDecl->isModule())
+        if (mDecl && !mDecl->isModule()) {
             break;
+        }
         ctx = ctx->parentContext();
     }
-    if (!mDecl || mDecl->isModule())
+    if (!mDecl || mDecl->isModule()) {
         return;
+    }
 
     StructureType::Ptr type = mDecl->baseClass().abstractType().cast<StructureType>();
-    if (!type)
+    if (!type) {
         return;
+    }
     ctx = type->internalContext(m_ctx->topContext());
-    if (!ctx)
+    if (!ctx) {
         return;
+    }
 
     foreach (Declaration *d, ctx->findLocalDeclarations(md->identifier())) {
         if (d->type<FunctionType>()) {
@@ -392,8 +404,9 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ast 
                 ast->tree = ast->tree->r;
                 ev.visitNode(ast);
                 ast->tree = aux;
-            } else
+            } else {
                 ev.visitNode(ast);
+            }
             ct->addContentType(ev.lastType());
             ast->tree = n->next;
         }
@@ -404,12 +417,14 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ast 
 
 void ExpressionVisitor::visitLastStatement(Ast *node)
 {
-    if (!node->tree)
+    if (!node->tree) {
         return;
+    }
 
     Node *n = node->tree;
-    if (n->last)
+    if (n->last) {
         node->tree = n->last;
+    }
     ExpressionVisitor::visitNode(node);
     node->tree = n;
 }
@@ -425,8 +440,9 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
      * Go to the next element since we're coming from a recursion and we've
      * already checked its children nodes.
      */
-    if (node->tree->kind == token_method_call)
+    if (node->tree->kind == token_method_call) {
         node->tree = node->tree->next;
+    }
 
     // And this is the loop that does the dirty job.
     for (Node *aux = node->tree; aux; aux = aux->next) {
@@ -447,17 +463,18 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
         if (!sType) {
             // It's not a StructureType, therefore it's a variable or a method.
             FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
-            if (!fType)
+            if (!fType) {
                 ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : nullptr;
-            else {
+            } else {
                 StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
                 if (rType) {
                     encounter(fType->returnType());
                     ctx = rType->internalContext(ctx->topContext());
                 } else {
                     UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(fType->returnType());
-                    if (ut)
+                    if (ut) {
                         encounter<UnsureType>(ut);
+                    }
                     ctx = nullptr;
                 }
             }
@@ -470,10 +487,11 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
         }
 
         // No context found, we can't go any further.
-        if (!ctx)
+        if (!ctx) {
             return;
+        }
     }
     m_lastCtx = ctx;
 }
 
-} // End of namespace Ruby
+}

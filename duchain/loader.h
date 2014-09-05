@@ -32,7 +32,6 @@ namespace Ruby
 
 class MethodDeclaration;
 class EditorIntegrator;
-using namespace KDevelop;
 
 /**
  * @class Loader
@@ -68,7 +67,9 @@ public:
      * @returns a list of IncludeItem's containing all the files/directories
      * that fit the given parameters.
      */
-    static QList<IncludeItem> getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative = QUrl());
+    static QList<KDevelop::IncludeItem> getFilesInSearchPath(const QString &url,
+                                                             const QString &hint,
+                                                             const QUrl &relative = QUrl());
 
 protected:
     /**

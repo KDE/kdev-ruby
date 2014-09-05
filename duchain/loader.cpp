@@ -109,10 +109,10 @@ QUrl Loader::getGem(const QString &name)
     return QUrl();
 }
 
-QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative)
+QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative)
 {
     int number = 0;
-    QList<IncludeItem> res;
+    QList<KDevelop::IncludeItem> res;
     QList<QUrl> paths;
 
     if (relative.isEmpty()) {
@@ -137,7 +137,7 @@ QList<IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QStrin
         QDirIterator it(p);
         while (it.hasNext()) {
             it.next();
-            IncludeItem item;
+            KDevelop::IncludeItem item;
             item.name = it.fileInfo().fileName();
             if (item.name.startsWith(".") || item.name.endsWith("~")
                 || item.name.endsWith(".so")) {

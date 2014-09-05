@@ -174,7 +174,7 @@ private:
     DeclarationKind m_declarationKind;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_EXPRESSIONVISITOR_H */
