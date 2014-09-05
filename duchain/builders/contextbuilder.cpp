@@ -250,27 +250,25 @@ void ContextBuilder::visitRequire(Ast *node, bool relative)
         appendProblem(aux, msg, ProblemData::Warning);
         return;
     }
-
-    // TODO: require(KDevelop::Path)
-    const IndexedString indexedPath(path.path());
-    require(indexedPath);
+    require(path);
 }
 
-void ContextBuilder::require(const IndexedString &path)
+void ContextBuilder::require(const KDevelop::Path &path)
 {
     DUChainWriteLocker lock;
-    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(path);
+    const IndexedString idx(path.path());
+    ReferencedTopDUContext ctx = DUChain::self()->chainForDocument(idx);
 
     if (!ctx) {
         /*
          * Schedule the required file for parsing, and schedule the current one
          * for reparsing after that is done.
          */
-        m_unresolvedImports.append(path);
+        m_unresolvedImports.append(idx);
         BackgroundParser *backgroundParser = KDevelop::ICore::self()->languageController()->backgroundParser();
-        if (backgroundParser->isQueued(path))
-            backgroundParser->removeDocument(path);
-        backgroundParser->addDocument(path, TopDUContext::ForceUpdate,
+        if (backgroundParser->isQueued(idx))
+            backgroundParser->removeDocument(idx);
+        backgroundParser->addDocument(idx, TopDUContext::ForceUpdate,
             m_priority - 1, nullptr, ParseJob::FullSequentialProcessing);
         return;
     } else

@@ -27,6 +27,7 @@
 
 #include <language/duchain/builders/abstractcontextbuilder.h>
 #include <language/duchain/problem.h>
+#include <util/path.h>
 #include <parser/astvisitor.h>
 #include <duchain/duchainexport.h>
 
@@ -123,7 +124,7 @@ protected:
      *
      * @param path The path where the required file is located.
      */
-    void require(const IndexedString &path);
+    void require(const KDevelop::Path &path);
 
     /**
      * Append a new problem that appeared at the given @p node with @p msg
