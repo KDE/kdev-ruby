@@ -18,11 +18,8 @@
  */
 
 
-// Qt
 #include <QtCore/QProcess>
 #include <QtCore/QDirIterator>
-
-// Ruby
 #include <parser/node.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
@@ -31,11 +28,14 @@
 namespace Ruby
 {
 
-QPair<QList<QUrl>, QList<QUrl> > Loader::m_urlCache;
+QList<KDevelop::Path> Loader::m_rubyPath;
+QList<KDevelop::Path> Loader::m_gemPath;
 
-QUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool local)
+KDevelop::Path Loader::getRequiredFile(Node *node,
+                                       const EditorIntegrator *editor,
+                                       bool local)
 {
-    QList<QUrl> searchPaths;
+    QList<KDevelop::Path> searchPaths;
     QString name("");
 
     /* Get the name of the file and update the cache of search paths. */
@@ -46,32 +46,30 @@ QUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     if (!name.endsWith(".rb")) {
         name += ".rb";
     }
-    searchPaths << editor->url().toUrl().directory();
+    searchPaths << KDevelop::Path(editor->url().toUrl().directory());
     if (!local) {
         fillUrlCache();
-        searchPaths << m_urlCache.first;
+        searchPaths << m_rubyPath;
     }
 
     /* Check first in the standard search path */
     int i = 0;
-    foreach (const QUrl &path, searchPaths) {
-        QString url = path.path() + "/" + name;
-        QFile script(url);
-        QFileInfo info(url);
+    foreach (const KDevelop::Path &path, searchPaths) {
+        KDevelop::Path url(path, name);
+        QFile script(url.path());
+        QFileInfo info(url.path());
         if (script.exists() && !info.isDir()) {
             /* Sort the cache to break this loop sooner next time. */
             if (i > 1) {
-                m_urlCache.first.prepend(m_urlCache.first.at(i - 1));
-                m_urlCache.first.removeAt(i);
+                m_rubyPath.prepend(m_rubyPath.at(i - 1));
+                m_rubyPath.removeAt(i);
             }
-            QUrl res = QUrl::fromLocalFile(url);
-            res.setPath(QDir::cleanPath(res.path()));
-            return res;
+            return url;
         }
         i++;
     }
     if (local) {
-        return QUrl();
+        return KDevelop::Path();
     }
 
     /*
@@ -81,60 +79,35 @@ QUrl Loader::getRequiredFile(Node *node, const EditorIntegrator *editor, bool lo
     return getGem(name);
 }
 
-QUrl Loader::getGem(const QString &name)
-{
-    const QString &real = name + ".rb";
-    QStringList filter;
-
-    if (name.isEmpty()) {
-      return QUrl();
-    }
-
-    filter = QStringList() << QString(name[0]) + "*";
-    foreach (const QUrl &path, m_urlCache.second) {
-        QString basePath = path.path() + "/";
-        QDir dir(basePath);
-        QStringList list = dir.entryList(filter, QDir::Dirs);
-        foreach (const QString &inside, list) {
-            QString url = basePath + inside + "/lib/" + real;
-            QFile script(url);
-            QFileInfo info(url);
-            if (script.exists() && !info.isDir()) {
-                QUrl res = QUrl::fromLocalFile(url);
-                res.setPath(QDir::cleanPath(res.path()));
-                return res;
-            }
-        }
-    }
-    return QUrl();
-}
-
-QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url, const QString &hint, const QUrl &relative)
+QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
+                                                          const QString &hint,
+                                                          const QUrl &relative)
 {
     int number = 0;
+    QList<KDevelop::Path> paths;
     QList<KDevelop::IncludeItem> res;
-    QList<QUrl> paths;
 
     if (relative.isEmpty()) {
         fillUrlCache();
-        paths = m_urlCache.first;
+        paths = m_rubyPath;
 
         /* Gem paths need some extra work :P */
-        foreach (const QUrl &path, m_urlCache.second) {
-            QString basePath = path.path() + "/";
-            QDir dir(basePath);
+        foreach (const KDevelop::Path &path, m_gemPath) {
+            QDir dir(path.path() + "/");
             QStringList list = dir.entryList(QStringList() << hint + "*");
             foreach (const QString &inside, list) {
-                paths << basePath + inside + "/lib/";
+                paths << KDevelop::Path(path, inside + "/lib");
             }
         }
     } else {
-        paths << relative;
+        paths << KDevelop::Path(relative);
     }
 
-    foreach (const QUrl &path, paths) {
-        QString p = path.path() + "/" + url;
-        QDirIterator it(p);
+    foreach (const KDevelop::Path &path, paths) {
+        KDevelop::Path aux(path, url);
+        const QString &str = aux.path();
+        QDirIterator it(str);
+
         while (it.hasNext()) {
             it.next();
             KDevelop::IncludeItem item;
@@ -145,13 +118,46 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url, co
             }
             item.pathNumber = number;
             item.isDirectory = it.fileInfo().isDir();
-            item.basePath = p;
+            item.basePath = str;
             res << item;
         }
         number++;
     }
     return res;
 }
+
+KDevelop::Path Loader::getGem(const QString &name)
+{
+    const QString &real = name + ".rb";
+    QStringList filter;
+
+    if (name.isEmpty()) {
+      return KDevelop::Path();
+    }
+
+    filter = QStringList() << QString(name[0]) + "*";
+    foreach (const KDevelop::Path &path, m_gemPath) {
+        QDir dir(path.path());
+        QStringList list = dir.entryList(filter, QDir::Dirs);
+        int i = 0;
+        foreach (const QString &inside, list) {
+            KDevelop::Path url(path, inside + "/lib/" + real);
+            QFile script(url.path());
+            QFileInfo info(url.path());
+            if (script.exists() && !info.isDir()) {
+                /* Sort the cache to break this loop sooner next time. */
+                if (i > 1) {
+                    m_gemPath.prepend(m_gemPath.at(i - 1));
+                    m_gemPath.removeAt(i);
+                }
+                return url;
+            }
+            i++;
+        }
+    }
+    return KDevelop::Path();
+}
+
 
 void Loader::fillUrlCache()
 {
@@ -163,8 +169,8 @@ void Loader::fillUrlCache()
     if (urlsCached()) {
         return;
     }
-    m_urlCache.first = QList<QUrl>();
-    m_urlCache.second = QList<QUrl>();
+    m_rubyPath = QList<KDevelop::Path>();
+    m_gemPath = QList<KDevelop::Path>();
 
     code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
     ruby.start("/usr/bin/env", code);
@@ -174,11 +180,13 @@ void Loader::fillUrlCache()
 
     /* For both rpaths and epaths, the last item is empty */
     for (it = 0; it < rpaths.size() - 1; it++) {
-        m_urlCache.first << QUrl::fromLocalFile(rpaths.at(it));
+        m_rubyPath << KDevelop::Path(rpaths.at(it));
     }
     for (it = 0; it < epaths.size() - 1; it++) {
-        m_urlCache.second << QUrl::fromLocalFile(epaths.at(it) + "/gems");
+        KDevelop::Path aux(epaths.at(it));
+        aux.addPath("gems");
+        m_rubyPath << aux;
     }
 }
 
-} // End of namespace Ruby
+}

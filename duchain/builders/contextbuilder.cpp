@@ -244,14 +244,15 @@ void ContextBuilder::visitRequire(Ast *node, bool relative)
     if (aux->kind != token_string)
         return;
 
-    QUrl path = Loader::getRequiredFile(aux, m_editor, relative);
-    if (path.isEmpty()) {
+    KDevelop::Path path = Loader::getRequiredFile(aux, m_editor, relative);
+    if (!path.isValid()) {
         QString msg = i18n("LoadError: cannot load such file: %1", path.path());
         appendProblem(aux, msg, ProblemData::Warning);
         return;
     }
 
-    const IndexedString indexedPath(path);
+    // TODO: require(KDevelop::Path)
+    const IndexedString indexedPath(path.path());
     require(indexedPath);
 }
 

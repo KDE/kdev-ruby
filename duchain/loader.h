@@ -22,6 +22,7 @@
 #define RUBY_LOADER_H
 
 
+#include <util/path.h>
 #include <language/duchain/declaration.h>
 #include <language/util/includeitem.h>
 #include <duchain/duchainexport.h>
@@ -30,7 +31,6 @@
 namespace Ruby
 {
 
-class MethodDeclaration;
 class EditorIntegrator;
 
 /**
@@ -51,9 +51,11 @@ public:
      * @param editor The EditorIntegrator from the current builder.
      * @param local Set to true if the required file is relative to the current
      * document (used for the require_relative statement).
-     * @returns a QUrl containing the path to the required file.
+     * @returns a KDevelop::Path containing the path to the required file.
      */
-    static QUrl getRequiredFile(Node *node, const EditorIntegrator *editor, bool local);
+    static KDevelop::Path getRequiredFile(Node *node,
+                                          const EditorIntegrator *editor,
+                                          bool local);
 
     /**
      * Get all the files/directories inside the given directory except for
@@ -79,7 +81,7 @@ protected:
      * @returns the path for the given gem name.
      * @note that it assumes that it does not end with ".rb".
      */
-    static QUrl getGem(const QString &name);
+    static KDevelop::Path getGem(const QString &name);
 
     /**
      * Fill the m_urlCache attribute with the urls available from Ruby
@@ -91,16 +93,17 @@ private:
     /// @returns true if the url cache has been filled with search paths.
     static inline bool urlsCached()
     {
-        return !m_urlCache.first.isEmpty() || !m_urlCache.second.isEmpty();
+        return !m_rubyPath.isEmpty() || !m_gemPath.isEmpty();
     }
 
 protected:
     /**
-     * The cache of search paths. The first element is the list of search paths
-     * for the Ruby standard library. The second element is the list of search
-     * paths for the gems.
+     * The cache of search paths. The m_rubyPath attribute is the list of
+     * search paths for the Ruby standard library. The m_gemPath attribute
+     * is the list of search paths for the gems.
      */
-    static QPair<QList<QUrl>, QList<QUrl> > m_urlCache;
+    static QList<KDevelop::Path> m_rubyPath;
+    static QList<KDevelop::Path> m_gemPath;
 };
 
 } // End of namespace Ruby
