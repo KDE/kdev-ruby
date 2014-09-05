@@ -36,7 +36,6 @@ namespace Ruby
 
 class MethodDeclaration;
 class EditorIntegrator;
-using namespace KDevelop;
 
     /**
      * The kind for the declaration to be fetched in the getDeclaration
@@ -57,7 +56,7 @@ using namespace KDevelop;
      * @return A KDevelop::IndexedString that contains the url of the Ruby
      * builtins file.
      */
-    KDEVRUBYDUCHAIN_EXPORT const IndexedString & internalBuiltinsFile();
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString & internalBuiltinsFile();
 
     /**
      * Given a Ast, return its name.
@@ -88,10 +87,10 @@ using namespace KDevelop;
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclaration(const QualifiedIdentifier &id,
-                                                             const RangeInRevision &range,
-                                                             const DUContextPointer &context,
-                                                             DeclarationKind kind = DeclarationKind::Unknown);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DeclarationPointer getDeclaration(const KDevelop::QualifiedIdentifier &id,
+                                                                       const KDevelop::RangeInRevision &range,
+                                                                       const KDevelop::DUContextPointer &context,
+                                                                       DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
      * Find a declaration from the Persistent Symbol Table.
@@ -104,9 +103,9 @@ using namespace KDevelop;
      * @note The given context has to be valid.
      * @note This method already acquires a write lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
-                                                                    const DUContextPointer &context,
-                                                                    DeclarationKind kind = DeclarationKind::Unknown);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DeclarationPointer getDeclarationFromPST(const KDevelop::QualifiedIdentifier &id,
+                                                                              const KDevelop::DUContextPointer &context,
+                                                                              DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
      * Get the required builtin type.
@@ -118,7 +117,8 @@ using namespace KDevelop;
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::TypePtr<KDevelop::AbstractType> getBuiltinsType(const QString &desc,
+                                                                                     const KDevelop::DUContext *ctx);
 
     /**
      * Get the context of the Class class.
@@ -128,18 +128,19 @@ using namespace KDevelop;
      * @note The given context has to be valid.
      * @note This method already acquires a read lock for the DUChain.
      */
-    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(const DUContext *ctx);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::DUContext * getClassContext(const KDevelop::DUContext *ctx);
 
     /**
      * @returns true if the given @p type is useful, and false otherwise.
      */
-    KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(const AbstractType::Ptr &type);
+    KDEVRUBYDUCHAIN_EXPORT bool isUsefulType(const KDevelop::AbstractType::Ptr &type);
 
     /**
      * @returns a new type which is a merge of the two given types @p type
      * and @p newType.
      */
-    KDEVRUBYDUCHAIN_EXPORT AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType);
+    KDEVRUBYDUCHAIN_EXPORT KDevelop::AbstractType::Ptr mergeTypes(KDevelop::AbstractType::Ptr type,
+                                                                  KDevelop::AbstractType::Ptr newType);
 
     /**
      * @returns the number of nodes that are next to the given @p node.o

@@ -84,13 +84,14 @@ void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
 
     setInSymbolTable(false);
     if (n < d_func()->yieldTypesSize()) {
-        IndexedType old = d_func_dynamic()->yieldTypesList()[n].type;
+        KDevelop::IndexedType old = d_func_dynamic()->yieldTypesList()[n].type;
         YieldType res;
-        AbstractType::Ptr merged = mergeTypes(old.abstractType(), yield.type.abstractType());
+        KDevelop::AbstractType::Ptr merged = mergeTypes(old.abstractType(), yield.type.abstractType());
         res.type = merged.data()->indexed();
         d_func_dynamic()->yieldTypesList()[n] = res;
-    } else
+    } else {
         d_func_dynamic()->yieldTypesList().append(yield);
+    }
     setInSymbolTable(wasInSymbolTable);
 }
 
@@ -104,7 +105,7 @@ uint MethodDeclaration::yieldTypesSize()
     return d_func()->yieldTypesSize();
 }
 
-KDevelop::Declaration* MethodDeclaration::clonePrivate() const
+KDevelop::Declaration * MethodDeclaration::clonePrivate() const
 {
     return new MethodDeclaration(*this);
 }

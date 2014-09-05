@@ -66,7 +66,7 @@ public:
 class KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
 {
 public:
-    typedef TypePtr<ClassType> Ptr;
+    typedef KDevelop::TypePtr<ClassType> Ptr;
 
     /// Constructor.
     ClassType();

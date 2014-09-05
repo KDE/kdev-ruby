@@ -38,8 +38,9 @@
 namespace Ruby
 {
 
-ExpressionVisitor::ExpressionVisitor(KDevelop::DUContext *ctx,
-                                     EditorIntegrator *editor)
+using namespace KDevelop;
+
+ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
     : m_ctx(ctx), m_editor(editor), m_lastDeclaration(nullptr), m_alias(false)
 {
     m_lastType = AbstractType::Ptr(nullptr);
@@ -56,7 +57,7 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
     m_declarationKind = DeclarationKind::Unknown;
 }
 
-void ExpressionVisitor::setContext(KDevelop::DUContext *ctx)
+void ExpressionVisitor::setContext(DUContext *ctx)
 {
     m_ctx = ctx;
     m_lastType = AbstractType::Ptr(nullptr);

@@ -76,7 +76,7 @@ public:
     }
 
     /// @returns the last declaration seen.
-    inline const DeclarationPointer & lastDeclaration() const
+    inline const KDevelop::DeclarationPointer & lastDeclaration() const
     {
         return m_lastDeclaration;
     }
@@ -125,7 +125,7 @@ protected:
 
 private:
     /// Set the last type seen to @p type.
-    template<typename T> void encounter(TypePtr<T> type);
+    template<typename T> void encounter(KDevelop::TypePtr<T> type);
 
     /// Set the last AbstractType seen to @p type.
     inline void encounter(KDevelop::AbstractType::Ptr type)
@@ -141,7 +141,7 @@ private:
      * key values (i.e. Hash).
      * @return the ClassType retrieved from the given parameters or nullptr.
      */
-    ClassType::Ptr getContainer(AbstractType::Ptr ptr,
+    ClassType::Ptr getContainer(KDevelop::AbstractType::Ptr ptr,
                                 const Ast *node,
                                 bool hasKey = false);
 
@@ -162,10 +162,10 @@ private:
     KDevelop::DUContext *m_lastCtx;
 
     /// The last AbstractType that has been found.
-    AbstractType::Ptr m_lastType;
+    KDevelop::AbstractType::Ptr m_lastType;
 
     /// The last DeclarationPointer that has been found.
-    DeclarationPointer m_lastDeclaration;
+    KDevelop::DeclarationPointer m_lastDeclaration;
 
     /// Tells us whether the last found declaration was an alias or not.
     bool m_alias;

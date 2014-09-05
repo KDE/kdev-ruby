@@ -141,12 +141,12 @@ KDevelop::ICodeHighlighting * LanguageSupport::codeHighlighting() const
     return m_highlighting;
 }
 
-KDevelop::ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context* context)
+KDevelop::ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context *context)
 {
-    ContextMenuExtension cm;
-    EditorContext *ed = dynamic_cast<KDevelop::EditorContext *>(context);
+    KDevelop::ContextMenuExtension cm;
+    KDevelop::EditorContext *ed = dynamic_cast<KDevelop::EditorContext *>(context);
 
-    if (ed && ICore::self()->languageController()->languagesForUrl(ed->url()).contains(language())) {
+    if (ed && KDevelop::ICore::self()->languageController()->languagesForUrl(ed->url()).contains(language())) {
         // It's safe to add our own ContextMenuExtension.
         m_refactoring->fillContextMenu(cm, context);
     }
@@ -179,7 +179,7 @@ void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::Referen
 void LanguageSupport::updateBuiltins()
 {
     kDebug() << "making sure that the builtins file is up to date";
-    DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
+    KDevelop::DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
 void LanguageSupport::runCurrentFile()
@@ -189,7 +189,7 @@ void LanguageSupport::runCurrentFile()
         return;
 
     // Get out if this is not a Ruby file.
-    if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
+    if (!KDevelop::ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
         return;
 
     if (!m_rubyFileLaunchConfiguration)
@@ -212,7 +212,7 @@ void LanguageSupport::runCurrentTestFunction()
         return;
 
     // Get out if this is not a Ruby file.
-    if (!ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
+    if (!KDevelop::ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
         return;
 
     if (!m_rubyCurrentFunctionLaunchConfiguration)
