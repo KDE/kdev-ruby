@@ -25,8 +25,6 @@ configure_file(
   @ONLY
 )
 
-enable_testing()
-
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
