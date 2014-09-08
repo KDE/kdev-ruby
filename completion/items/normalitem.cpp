@@ -37,16 +37,21 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-NormalItem::NormalItem(DeclarationPointer decl, QExplicitlySharedDataPointer<CodeCompletionContext> context, int inheritanceDepth)
+NormalItem::NormalItem(DeclarationPointer decl,
+                       CodeCompletionContext::Ptr context,
+                       int inheritanceDepth)
     : NormalDeclarationCompletionItem(decl, context, inheritanceDepth)
 {
     /* There's nothing to do here */
 }
 
-QVariant NormalItem::data(const QModelIndex &index, int role, const CodeCompletionModel *model) const
+QVariant NormalItem::data(const QModelIndex &index, int role,
+                          const CodeCompletionModel *model) const
 {
-    if (!m_declaration)
+    if (!m_declaration) {
         return QVariant();
+    }
+
     DUChainReadLocker rlock;
 
     Declaration* dec = const_cast<Declaration*>(m_declaration.data());

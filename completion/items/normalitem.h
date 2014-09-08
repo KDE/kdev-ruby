@@ -38,7 +38,7 @@ class KDEVRUBYCOMPLETION_EXPORT NormalItem : public KDevelop::NormalDeclarationC
 public:
     /// Constructor.
     explicit NormalItem(KDevelop::DeclarationPointer decl = KDevelop::DeclarationPointer(),
-                        QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext> context = QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext>(),
+                        KDevelop::CodeCompletionContext::Ptr context = KDevelop::CodeCompletionContext::Ptr(),
                         int inheritanceDepth = 0);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
@@ -48,10 +48,10 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const;
+    virtual QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const override;
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual bool createsExpandingWidget() const;
+    virtual bool createsExpandingWidget() const override;
 };
 
 } // End of namespace Ruby

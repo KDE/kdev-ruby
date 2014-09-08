@@ -62,10 +62,10 @@ public:
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
     virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort,
-                                                                       bool fullCompletion = true);
+                                                                       bool fullCompletion = true) override;
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
-    virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements();
+    virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;
 
 public:
     enum CompletionContextType {
