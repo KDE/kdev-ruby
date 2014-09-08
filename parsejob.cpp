@@ -73,7 +73,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
     /* Make sure that the builtins file is already loaded */
     if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
-        kDebug() << "waiting for builtins file to finish parsing";
+        qDebug() << "waiting for builtins file to finish parsing";
         QReadLocker(ruby()->builtinsLock());
     }
 
@@ -183,9 +183,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         m_parser->freeAst(ast);
 
         highlightDUChain();
-        kDebug() << "**** Parsing Succeeded ****";
+        qDebug() << "**** Parsing Succeeded ****";
     } else {
-        kWarning() << "**** Parsing Failed ****";
+        qWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
         m_duContext = DUChain::self()->chainForDocument(document());
         if (m_duContext) {
@@ -199,7 +199,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         foreach (ProblemPointer p, m_parser->m_problems) {
-            kDebug() << "Added problem to context";
+            qDebug() << "Added problem to context";
             m_duContext->addProblem(p);
         }
         setDuChain(m_duContext);

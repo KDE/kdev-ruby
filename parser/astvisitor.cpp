@@ -44,7 +44,7 @@ AstVisitor::~AstVisitor()
 
 void AstVisitor::visitCode(Ast *node)
 {
-    kDebug() << "Visiting Code...";
+    qDebug() << "Visiting Code...";
     Node *aux = node->tree;
 
     for (Node *n = aux; n; n = n->next) {

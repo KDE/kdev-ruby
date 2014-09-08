@@ -746,7 +746,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             if (!valid)
                 return nullptr;
 
-            kDebug() << "Reopening the following declaration: " << d->toString();
+            qDebug() << "Reopening the following declaration: " << d->toString();
             openDeclarationInternal(d);
             d->setRange(range);
             setEncountered(d);
@@ -754,7 +754,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             res = d;
             break;
         } else
-            kDebug() << "Do not reopen since it's not in the same top context";
+            qDebug() << "Do not reopen since it's not in the same top context";
     }
 
     if (!res) {
@@ -793,7 +793,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
         if (method) {
-            kDebug() << "Reopening the following method: " << d->toString();
+            qDebug() << "Reopening the following method: " << d->toString();
             openDeclarationInternal(method);
             method->setRange(range);
             setEncountered(method);

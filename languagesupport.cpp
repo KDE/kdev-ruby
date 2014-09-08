@@ -171,14 +171,14 @@ enum ruby_version LanguageSupport::version() const
 void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
 {
     Q_UNUSED(topContext)
-    kDebug() << "builtins file is up to date " << url.str();
+    qDebug() << "builtins file is up to date " << url.str();
     m_builtinsLoaded = true;
     m_builtinsLock.unlock();
 }
 
 void LanguageSupport::updateBuiltins()
 {
-    kDebug() << "making sure that the builtins file is up to date";
+    qDebug() << "making sure that the builtins file is up to date";
     KDevelop::DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
@@ -222,7 +222,7 @@ void LanguageSupport::runCurrentTestFunction()
 
     // Find function under the cursor (if any)
     QString currentFunction = findFunctionUnderCursor(doc);
-    kDebug() << "current function" << currentFunction;
+    qDebug() << "current function" << currentFunction;
     if (currentFunction.isEmpty())
         return;
 
@@ -250,7 +250,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     if (!context)
         return "";
 
-    kDebug() << "CONTEXT ID" << context->localScopeIdentifier();
+    qDebug() << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
 }
 

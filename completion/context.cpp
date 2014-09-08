@@ -316,10 +316,11 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
     AbstractType::Ptr type = getExpressionType(".");
-    if (type)
+    if (type) {
         list << getCompletionItemsFromType(type);
-    else
-        kDebug() << "Oops: cannot access at the member";
+    } else {
+        qDebug() << "Oops: cannot access at the member";
+    }
     return list;
 }
 
@@ -327,10 +328,11 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
 {
     QList<CompletionTreeItemPointer> list;
     AbstractType::Ptr type = getExpressionType("::");
-    if (type)
+    if (type) {
         list << getCompletionItemsFromType(type, true);
-    else
-        kDebug() << "Oops: cannot access at the member";
+    } else {
+        qDebug() << "Oops: cannot access at the member";
+    }
 
     return list;
 }

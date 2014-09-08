@@ -56,14 +56,14 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, Ast *node
         updateContext = DUChain::self()->chainForDocument(url);
     }
     if (updateContext) {
-        kDebug() << "Re-compiling" << url.str();
+        qDebug() << "Re-compiling" << url.str();
         DUChainWriteLocker lock;
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
         updateContext->updateImportsCache();
     } else
-        kDebug() << "Compiling";
+        qDebug() << "Compiling";
 
     ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
     {
@@ -168,7 +168,7 @@ void ContextBuilder::startVisiting(Ast *node)
             DUChainWriteLocker wlock;
             TopDUContext* import = DUChain::self()->chainForDocument(builtins);
             if (!import) {
-                kDebug() << "importing the builtins file failed";
+                qDebug() << "importing the builtins file failed";
                 Q_ASSERT(false);
             } else {
                 top->addImportedParentContext(import);
