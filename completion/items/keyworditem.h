@@ -51,7 +51,7 @@ public:
      * @param line Set to true if you want that the whole line gets replaced.
      * False by default.
      */
-    explicit KeywordItem(QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext> ctx,
+    explicit KeywordItem(KDevelop::CodeCompletionContext::Ptr ctx,
                          const QString &keyword,
                          const QString &customReplacement = QString(""),
                          bool line = false);

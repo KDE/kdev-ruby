@@ -35,7 +35,8 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-KeywordItem::KeywordItem(QExplicitlySharedDataPointer<KDevelop::CodeCompletionContext> ctx, const QString &keyword,
+KeywordItem::KeywordItem(CodeCompletionContext::Ptr ctx,
+                         const QString &keyword,
                          const QString &customReplacement, bool line)
     : NormalDeclarationCompletionItem(DeclarationPointer(), ctx)
     , m_keyword(keyword), m_replacement(customReplacement), m_wholeLine(line)
@@ -119,12 +120,12 @@ QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::C
     case KDevelop::CodeCompletionModel::IsExpandable:
         return QVariant(false);
     case Qt::DisplayRole:
-        if (index.column() == KTextEditor::CodeCompletionModel::Name)
+        if (index.column() == KTextEditor::CodeCompletionModel::Name) {
             return QVariant(m_keyword);
-        else if (m_wholeLine && index.column() == KTextEditor::CodeCompletionModel::Prefix)
+        } else if (m_wholeLine && index.column() == KTextEditor::CodeCompletionModel::Prefix) {
             return QVariant(m_replacement);
-        else
-            return QVariant("");
+        }
+        return QVariant();
     case KTextEditor::CodeCompletionModel::ItemSelected:
         return QVariant("");
     case KTextEditor::CodeCompletionModel::InheritanceDepth:
