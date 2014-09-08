@@ -66,9 +66,9 @@ QVariant NormalItem::data(const QModelIndex &index, int role,
             ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
             if (moDec) {
                 if (moDec->isModule()) {
-                    return i18n(QStringLiteral("module"));
+                    return i18n("module");
                 }
-                return i18n(QStringLiteral("class"));
+                return i18n("class");
             }
             return QVariant();
         }
