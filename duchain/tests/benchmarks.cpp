@@ -33,6 +33,7 @@
 
 QTEST_MAIN(Ruby::Benchmarks)
 
+using namespace KDevelop;
 namespace Ruby
 {
 

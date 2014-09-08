@@ -107,9 +107,9 @@ private:
      * @returns an opened declaration. It returns nullptr if something
      * went wrong.
      */
-    template<typename T> T * reopenDeclaration(const QualifiedIdentifier &id,
-                                               const RangeInRevision &range,
-                                               DUContext *context,
+    template<typename T> T * reopenDeclaration(const KDevelop::QualifiedIdentifier &id,
+                                               const KDevelop::RangeInRevision &range,
+                                               KDevelop::DUContext *context,
                                                DeclarationKind kind = DeclarationKind::Unknown);
 
     /**
@@ -123,8 +123,8 @@ private:
      * @returns an opened method declaration. It returns nullptr if something
      * went wrong.
      */
-    MethodDeclaration * reopenDeclaration(const QualifiedIdentifier &id,
-                                          const RangeInRevision &range,
+    MethodDeclaration * reopenDeclaration(const KDevelop::QualifiedIdentifier &id,
+                                          const KDevelop::RangeInRevision &range,
                                           bool classMethod);
 
     /**
@@ -137,7 +137,7 @@ private:
     void declareVariable(const KDevelop::QualifiedIdentifier &id,
                          const KDevelop::AbstractType::Ptr &type,
                          Ast *node,
-                         DUContext::SearchFlag flags = DUContext::NoSearchFlags);
+                         KDevelop::DUContext::SearchFlag flags = KDevelop::DUContext::NoSearchFlags);
 
     /**
      * Alias a method declaration.
@@ -154,8 +154,9 @@ private:
     /// @returns the current access policy.
     inline KDevelop::Declaration::AccessPolicy currentAccessPolicy() const
     {
-        if (m_accessPolicy.isEmpty())
+        if (m_accessPolicy.isEmpty()) {
             return KDevelop::Declaration::Public;
+        }
         return m_accessPolicy.top();
     }
 
@@ -180,7 +181,7 @@ private:
      * @returns the declared methods inside the given declaration @p decl,
      * which is a class or a module.
      */
-    QList<MethodDeclaration *> getDeclaredMethods(const Declaration *decl);
+    QList<MethodDeclaration *> getDeclaredMethods(const KDevelop::Declaration *decl);
 
     /// other stuff.
 
@@ -193,9 +194,9 @@ private:
      * @param kind The kind that the declaration has to have.
      * @returns true if it's a valid re-declaration, and false otherwise.
      */
-    bool validReDeclaration(Declaration *decl,
-                            const QualifiedIdentifier &id,
-                            const RangeInRevision &range,
+    bool validReDeclaration(KDevelop::Declaration *decl,
+                            const KDevelop::QualifiedIdentifier &id,
+                            const KDevelop::RangeInRevision &range,
                             DeclarationKind kind);
 
     /**
@@ -210,7 +211,7 @@ private:
      * returned.
      * @param node The node of the class/module declaration.
      */
-    DUContext * getContainedNameContext(Ast *node);
+    KDevelop::DUContext * getContainedNameContext(Ast *node);
 
     /**
      * This is a helper method that iterates over the call args of a method
@@ -218,7 +219,8 @@ private:
      * @param mc A list of call args.
      * @param lastMethod The last encountered method call.
      */
-    void visitMethodCallArgs(const Ast *mc, const DeclarationPointer &lastMethod);
+    void visitMethodCallArgs(const Ast *mc,
+                             const KDevelop::DeclarationPointer &lastMethod);
 
     /// @returns true if we're inside a class/module, false otherwise.
     inline bool insideClassModule() const
@@ -227,7 +229,7 @@ private:
     }
 
     /// @returns the last class/module.
-    inline Declaration * lastClassModule() const
+    inline KDevelop::Declaration * lastClassModule() const
     {
         return m_classDeclarations.top().data();
     }
@@ -235,10 +237,10 @@ private:
 private:
     EditorIntegrator *m_editor;
     QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
-    QStack<DeclarationPointer> m_classDeclarations;
+    QStack<KDevelop::DeclarationPointer> m_classDeclarations;
     bool m_injected;
     bool m_instance;
-    Declaration *m_lastMethodCall;
+    KDevelop::Declaration *m_lastMethodCall;
 };
 
 } // End of namespace Ruby

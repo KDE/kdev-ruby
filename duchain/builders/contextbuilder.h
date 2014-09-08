@@ -32,8 +32,6 @@
 #include <duchain/duchainexport.h>
 
 
-using namespace KDevelop;
-
 namespace Ruby
 {
 
@@ -60,7 +58,7 @@ public:
         KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext()) override;
 
     /// @returns a list of unresolved imports.
-    inline const QVector<IndexedString> unresolvedImports() const
+    inline const QVector<KDevelop::IndexedString> unresolvedImports() const
     {
         return m_unresolvedImports;
     }
@@ -86,11 +84,11 @@ protected:
      * KDevelop::AbstractContextBuilder that deal with contexts and nodes.
      */
 
-    virtual void setContextOnNode(Ast *node, DUContext *ctx) override;
+    virtual void setContextOnNode(Ast *node, KDevelop::DUContext *ctx) override;
     virtual KDevelop::DUContext * contextFromNode(Ast *node) override;
-    virtual KDevelop::DUContext * newContext(const RangeInRevision &range) override;
-    virtual KDevelop::TopDUContext * newTopContext(const RangeInRevision &range,
-                                                   ParsingEnvironmentFile *file = nullptr) override;
+    virtual KDevelop::DUContext * newContext(const KDevelop::RangeInRevision &range) override;
+    virtual KDevelop::TopDUContext * newTopContext(const KDevelop::RangeInRevision &range,
+                                                   KDevelop::ParsingEnvironmentFile *file = nullptr) override;
 
     /// And now methods that deal with nodes, documents and ranges.
 
@@ -133,7 +131,7 @@ protected:
      * @note that you should call i18n() first.
      */
     void appendProblem(const Node *node, const QString &msg,
-                       ProblemData::Severity sev = ProblemData::Error);
+                       KDevelop::ProblemData::Severity sev = KDevelop::ProblemData::Error);
 
     /**
      * Append a new problem that appeared at the given @p range with @p msg
@@ -141,20 +139,21 @@ protected:
      * is ProblemData::Error by default.
      * @note that you should call i18n() first.
      */
-    void appendProblem(const RangeInRevision &range, const QString &msg,
-                       ProblemData::Severity sev = ProblemData::Error);
+    void appendProblem(const KDevelop::RangeInRevision &range,
+                       const QString &msg,
+                       KDevelop::ProblemData::Severity sev = KDevelop::ProblemData::Error);
 
 protected:
     bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.
     EditorIntegrator *m_editor;
-    QVector<IndexedString> m_unresolvedImports;
+    QVector<KDevelop::IndexedString> m_unresolvedImports;
 
 private:
     /**
      * @returns the range that contains the method arguments
      * contained in @param node.
      */
-    const RangeInRevision rangeForMethodArguments(Ast *node);
+    const KDevelop::RangeInRevision rangeForMethodArguments(Ast *node);
 
 private:
     int m_priority;

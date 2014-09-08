@@ -61,7 +61,7 @@ private:
 
 private:
     /// Used at the method call visitor to keep track of the last context.
-    DUContext *m_lastCtx;
+    KDevelop::DUContext *m_lastCtx;
 
     /**
      * The method call visitor uses this to track the depth of

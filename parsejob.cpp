@@ -41,6 +41,7 @@
 #include <duchain/helpers.h>
 
 
+using namespace KDevelop;
 namespace Ruby
 {
 

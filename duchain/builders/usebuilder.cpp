@@ -29,6 +29,7 @@
 #include <duchain/declarations/moduledeclaration.h>
 
 
+using namespace KDevelop;
 namespace Ruby
 {
 
