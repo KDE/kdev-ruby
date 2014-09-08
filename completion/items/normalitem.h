@@ -18,8 +18,8 @@
  */
 
 
-#ifndef RUBYNORMALITEM_H
-#define RUBYNORMALITEM_H
+#ifndef RUBY_NORMALITEM_H
+#define RUBY_NORMALITEM_H
 
 
 #include <completion/completionexport.h>
@@ -54,7 +54,7 @@ protected:
     virtual bool createsExpandingWidget() const override;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // RUBYNORMALITEM_H

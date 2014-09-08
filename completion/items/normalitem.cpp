@@ -64,13 +64,18 @@ QVariant NormalItem::data(const QModelIndex &index, int role,
             return QVariant();
         case CodeCompletionModel::Prefix: {
             ModuleDeclaration *moDec = dynamic_cast<ModuleDeclaration *>(dec);
-            if (moDec)
-                return (moDec->isModule()) ? "module" : "class";
-            return "";
+            if (moDec) {
+                if (moDec->isModule()) {
+                    return i18n(QStringLiteral("module"));
+                }
+                return i18n(QStringLiteral("class"));
+            }
+            return QVariant();
         }
         case CodeCompletionModel::Arguments:
-            if (FunctionType::Ptr fType = dec->type<FunctionType>())
+            if (FunctionType::Ptr fType = dec->type<FunctionType>()) {
                 return getArgumentList(m_declaration.data(), nullptr);
+            }
             break;
         }
         break;
@@ -90,4 +95,4 @@ bool NormalItem::createsExpandingWidget() const
     return true;
 }
 
-} // End of namespace Ruby
+}
