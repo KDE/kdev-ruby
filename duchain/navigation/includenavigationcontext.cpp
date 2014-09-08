@@ -18,9 +18,6 @@
  */
 
 
-// KDE
-#include <KLocale>
-
 // Ruby
 #include <duchain/navigation/includenavigationcontext.h>
 #include <duchain/declarations/moduledeclaration.h>

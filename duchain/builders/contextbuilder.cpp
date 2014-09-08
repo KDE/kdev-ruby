@@ -21,9 +21,6 @@
  */
 
 
-// KDE
-#include <KLocale>
-
 // KDevelop
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>

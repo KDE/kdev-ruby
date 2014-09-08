@@ -21,8 +21,8 @@
  */
 
 
-#ifndef DECLARATIONBUILDER_H
-#define DECLARATIONBUILDER_H
+#ifndef DECLARATION_BUILDER_H
+#define DECLARATION_BUILDER_H
 
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
@@ -243,4 +243,4 @@ private:
 
 } // End of namespace Ruby
 
-#endif // DECLARATIONBUILDER_H
+#endif // DECLARATION_BUILDER_H

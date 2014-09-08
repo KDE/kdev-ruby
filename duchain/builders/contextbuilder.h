@@ -21,8 +21,8 @@
  */
 
 
-#ifndef CONTEXTBUILDER_H
-#define CONTEXTBUILDER_H
+#ifndef CONTEXT_BUILDER_H
+#define CONTEXT_BUILDER_H
 
 
 #include <language/duchain/builders/abstractcontextbuilder.h>
@@ -164,4 +164,4 @@ private:
 } // End of namespace Ruby
 
 
-#endif // CONTEXTBUILDER_H
+#endif // CONTEXT_BUILDER_H

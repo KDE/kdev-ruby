@@ -18,8 +18,8 @@
  */
 
 
-#ifndef USEBUILDER_H
-#define USEBUILDER_H
+#ifndef USE_BUILDER_H
+#define USE_BUILDER_H
 
 
 #include <language/duchain/builders/abstractusebuilder.h>
@@ -79,4 +79,4 @@ private:
 } // End of namespace Ruby
 
 
-#endif // USEBUILDER_H
+#endif // USE_BUILDER_H

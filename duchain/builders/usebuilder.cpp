@@ -18,11 +18,8 @@
  */
 
 
-// KDE + KDevelop
-#include <KLocale>
 #include <language/duchain/types/functiontype.h>
 
-// Ruby
 #include <parser/parser.h>
 #include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>

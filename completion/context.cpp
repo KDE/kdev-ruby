@@ -20,7 +20,6 @@
 
 
 // KDE + KDevelop
-#include <KLocale>
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchain.h>
 #include <language/duchain/types/unsuretype.h>

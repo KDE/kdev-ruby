@@ -23,7 +23,6 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <KLocale>
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>

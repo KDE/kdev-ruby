@@ -21,9 +21,6 @@
  */
 
 
-// KDE
-#include <KLocale>
-
 // KDevelop
 #include <language/duchain/types/functiontype.h>
 #include <language/duchain/types/integraltype.h>
