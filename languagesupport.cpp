@@ -78,7 +78,7 @@ namespace Ruby
 {
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
-    : KDevelop::IPlugin(QLatin1String("kdevrubysupport"), parent)
+    : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
     , m_builtinsLoaded(false)
     , m_railsSwitchers(new Rails::Switchers(this))
