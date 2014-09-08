@@ -400,7 +400,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
 }
 
 void CodeCompletionContext::eventuallyAddGroup(const QString &name, int priority,
-                                               QList<QExplicitlySharedDataPointer<CompletionTreeItem> > items)
+                                               QList<CompletionTreeItemPointer> items)
 {
     KDevelop::CompletionCustomGroupNode *node = new KDevelop::CompletionCustomGroupNode(name, priority);
     node->appendChildren(items);
