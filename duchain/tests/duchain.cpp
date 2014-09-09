@@ -31,6 +31,7 @@
 #include <language/duchain/problem.h>
 
 // Ruby
+#include <debug.h>
 #include <duchain/tests/duchain.h>
 #include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
@@ -38,6 +39,8 @@
 #include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 
+
+Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
 QTEST_MAIN(Ruby::TestDUChain)
 
@@ -60,7 +63,7 @@ void TestDUChain::testUnsureTypes(TypePtr<UnsureType> type, const QStringList &l
 {
     for (uint i = 0; i < type->typesSize(); i++) {
         QualifiedIdentifier qi = type->types()[i].type<StructureType>()->qualifiedIdentifier();
-        qDebug() << qi.toString() << " " << list[i];
+        rDebug() << qi.toString() << " " << list[i];
         QCOMPARE(qi, QualifiedIdentifier(list[i]));
     }
 }
@@ -1421,7 +1424,7 @@ void TestDUChain::instanceClassMethodsReturn()
     DUChainReleaser releaser(top);
     DUChainWriteLocker lock;
 
-    qDebug() << top->localDeclarations().size();
+    rDebug() << top->localDeclarations().size();
 
     Declaration *d = top->localDeclarations().at(2);
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("b"));
@@ -1429,7 +1432,7 @@ void TestDUChain::instanceClassMethodsReturn()
 
     d = top->localDeclarations().last();
     QCOMPARE(d->qualifiedIdentifier(), QualifiedIdentifier("c"));
-    qDebug() << d->type<StructureType>()->qualifiedIdentifier().toString();
+    rDebug() << d->type<StructureType>()->qualifiedIdentifier().toString();
     QCOMPARE(d->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 

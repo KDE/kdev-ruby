@@ -32,6 +32,7 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
+#include <debug.h>
 #include <parsejob.h>
 #include <languagesupport.h>
 #include <parser/parser.h>
@@ -73,7 +74,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
     /* Make sure that the builtins file is already loaded */
     if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
-        qDebug() << "waiting for builtins file to finish parsing";
+        rDebug() << "waiting for builtins file to finish parsing";
         QReadLocker(ruby()->builtinsLock());
     }
 
@@ -183,9 +184,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         m_parser->freeAst(ast);
 
         highlightDUChain();
-        qDebug() << "**** Parsing Succeeded ****";
+        rDebug() << "**** Parsing Succeeded ****";
     } else {
-        qWarning() << "**** Parsing Failed ****";
+        rWarning() << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
         m_duContext = DUChain::self()->chainForDocument(document());
         if (m_duContext) {
@@ -199,7 +200,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         foreach (ProblemPointer p, m_parser->m_problems) {
-            qDebug() << "Added problem to context";
+            rDebug() << "Added problem to context";
             m_duContext->addProblem(p);
         }
         setDuChain(m_duContext);

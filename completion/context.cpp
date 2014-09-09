@@ -25,6 +25,7 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
+#include <debug.h>
 #include <parser/parser.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
@@ -37,11 +38,12 @@
 #include <completion/items/requirefileitem.h>
 
 
+Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
+
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
 #define ADD_ONE_LINER(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc, true))
 #define ADD_NORMAL(decl, depth) list << CompletionTreeItemPointer(new NormalItem(DeclarationPointer(decl), KDevelop::CodeCompletionContext::Ptr(this), depth));
-
 
 using namespace KDevelop;
 
@@ -319,7 +321,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
     if (type) {
         list << getCompletionItemsFromType(type);
     } else {
-        qDebug() << "Oops: cannot access at the member";
+        rDebug() << "Oops: cannot access at the member";
     }
     return list;
 }
@@ -331,7 +333,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
     if (type) {
         list << getCompletionItemsFromType(type, true);
     } else {
-        qDebug() << "Oops: cannot access at the member";
+        rDebug() << "Oops: cannot access at the member";
     }
 
     return list;

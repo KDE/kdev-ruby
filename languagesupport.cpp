@@ -60,6 +60,7 @@
 #include <duchain/helpers.h>
 #include <completion/model.h>
 #include <codegen/refactoring.h>
+#include <debug.h>
 #include <version.h>
 //END Includes
 
@@ -73,6 +74,7 @@ K_EXPORT_PLUGIN(KDevRubySupportFactory(KAboutData("kdevrubysupport", "kdevruby",
     .addAuthor(ki18n("Miquel Sabaté Solà"), ki18n("Maintainer, Parser"), "mikisabate@gmail.com")
 ))
 
+Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
 namespace Ruby
 {
@@ -87,6 +89,9 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     , m_rubyFileLaunchConfiguration(nullptr)
     , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
+    // TODO: this should be removed once KDE knows how to handle categories.
+    QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
+
     m_builtinsLock.lockForWrite();
 
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
@@ -109,10 +114,11 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     if (version.size() > 1) {
         if (version[0] == "1") {
             m_version = (version[1] == "8") ? ruby18 : ruby19;
-        } else if (version[1] == "0")
+        } else if (version[1] == "0") {
             m_version = ruby20;
-        else
+        } else {
             m_version = ruby21;
+        }
     }
 }
 
@@ -171,14 +177,14 @@ enum ruby_version LanguageSupport::version() const
 void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
 {
     Q_UNUSED(topContext)
-    qDebug() << "builtins file is up to date " << url.str();
+    rDebug() << "builtins file is up to date " << url.str();
     m_builtinsLoaded = true;
     m_builtinsLock.unlock();
 }
 
 void LanguageSupport::updateBuiltins()
 {
-    qDebug() << "making sure that the builtins file is up to date";
+    rDebug() << "making sure that the builtins file is up to date";
     KDevelop::DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
@@ -222,7 +228,7 @@ void LanguageSupport::runCurrentTestFunction()
 
     // Find function under the cursor (if any)
     QString currentFunction = findFunctionUnderCursor(doc);
-    qDebug() << "current function" << currentFunction;
+    rDebug() << "current function" << currentFunction;
     if (currentFunction.isEmpty())
         return;
 
@@ -250,7 +256,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     if (!context)
         return "";
 
-    qDebug() << "CONTEXT ID" << context->localScopeIdentifier();
+    rDebug() << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
 }
 
