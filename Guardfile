@@ -45,7 +45,7 @@ module ::Guard
       UI.info "Watching everything inside: #{@opts[:build_url]}"
     end
 
-    # Public: It will be called when some watched file has changed. 
+    # Public: It will be called when some watched file has changed.
     #
     # paths - An Array of strings that identify which tests
     # should be run again.
@@ -169,6 +169,6 @@ end
 
 # And now let's turn the Guard::RSpec watcher on for the parser.
 rspec_paths = File.join(build_url, 'parser/tools')
-guard 'rspec', :cli => '-c -f doc', :spec_paths => rspec_paths do
+guard 'rspec', cmd: 'rspec -c -f doc', spec_paths: rspec_paths do
   watch(/parser\/(.*)$/) { "#{rspec_paths}/parser_spec.rb" }
 end
