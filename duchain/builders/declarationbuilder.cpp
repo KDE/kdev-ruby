@@ -29,7 +29,7 @@
 #include <language/duchain/duchainutils.h>
 
 // Ruby
-#include <debug.h>
+#include <duchain/debug.h>
 #include <duchain/helpers.h>
 #include <duchain/expressionvisitor.h>
 #include <duchain/editorintegrator.h>

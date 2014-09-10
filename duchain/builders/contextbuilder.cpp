@@ -27,7 +27,7 @@
 #include <language/backgroundparser/backgroundparser.h>
 
 // Ruby
-#include <debug.h>
+#include <duchain/debug.h>
 #include <duchain/helpers.h>
 #include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
@@ -35,7 +35,7 @@
 #include <duchain/builders/contextbuilder.h>
 
 
-Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
+Q_LOGGING_CATEGORY(DUCHAIN, "kdev.ruby.duchain")
 
 using namespace KDevelop;
 namespace Ruby

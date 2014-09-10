@@ -25,7 +25,7 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <debug.h>
+#include <completion/debug.h>
 #include <parser/parser.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
@@ -38,7 +38,7 @@
 #include <completion/items/requirefileitem.h>
 
 
-Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
+Q_LOGGING_CATEGORY(COMPLETION, "kdev.ruby.completion")
 
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))

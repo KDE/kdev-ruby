@@ -31,7 +31,7 @@
 #include <language/duchain/problem.h>
 
 // Ruby
-#include <debug.h>
+#include <duchain/tests/debug.h>
 #include <duchain/tests/duchain.h>
 #include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
@@ -40,7 +40,7 @@
 #include <duchain/declarations/variabledeclaration.h>
 
 
-Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
+Q_LOGGING_CATEGORY(DUCHAIN_TESTS, "kdev.ruby.duchain.tests")
 
 QTEST_MAIN(Ruby::TestDUChain)
 
