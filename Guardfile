@@ -174,6 +174,6 @@ end
 
 # And now let's turn the Guard::RSpec watcher on for the parser.
 rspec_paths = File.join(build_url, 'parser/tools')
-guard 'rspec', cmd: 'rspec -c -f doc', spec_paths: rspec_paths do
-  watch(/parser\/(.*)$/) { "#{rspec_paths}/parser_spec.rb" }
+guard 'rspec', cmd: 'bundle exec rspec -c -f doc', spec_paths: ["#{rspec_paths}/parser_spec.rb"] do
+  watch(%r{^parser/(.*)$}) { "#{rspec_paths}/parser_spec.rb" }
 end
