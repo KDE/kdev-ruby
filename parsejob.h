@@ -49,6 +49,7 @@ public:
      * Constructor.
      *
      * @param url the url of the file to parse.
+     * @param languageSupport the ILanguageSupport of this plugin.
      */
     explicit ParseJob(const KDevelop::IndexedString &url,
                       KDevelop::ILanguageSupport *languageSupport);
@@ -60,7 +61,8 @@ public:
 
 protected:
     /**
-     * Runs this ParseJob.
+     * Runs this ParseJob. Both of the parameters being passed come from
+     * ThreadWeaver and they are both ignored in the implementation.
      */
     virtual void run(ThreadWeaver::JobPointer pointer,
                      ThreadWeaver::Thread *thread) override;
