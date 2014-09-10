@@ -47,10 +47,7 @@ typedef KDevelop::AbstractContextBuilder<Ast, NameAst> ContextBuilderBase;
 class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public AstVisitor
 {
 public:
-    /// Constructor
     ContextBuilder();
-
-    /// Destructor
     virtual ~ContextBuilder();
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.

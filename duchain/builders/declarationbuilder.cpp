@@ -43,11 +43,6 @@ using namespace KDevelop;
 namespace Ruby
 {
 
-DeclarationBuilder::DeclarationBuilder() : DeclarationBuilderBase()
-{
-    /* There's nothing to do here. */
-}
-
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
     : DeclarationBuilderBase(), m_editor(editor)
 {

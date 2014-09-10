@@ -46,9 +46,6 @@ typedef KDevelop::AbstractDeclarationBuilder<Ast, NameAst, TypeBuilder> Declarat
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
-    /// Constructor.
-    DeclarationBuilder();
-
     /**
      * Constructor.
      * @param editor The EditorIntegrator to be used.
