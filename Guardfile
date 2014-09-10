@@ -151,8 +151,13 @@ end
 #
 
 # The base build url.
-build_url = File.join File.expand_path(File.dirname(__FILE__)), ARGV.last
+relative = (ARGV.size > 0) ? ARGV.last : 'build'
+build_url = File.join File.expand_path(File.dirname(__FILE__)), relative
 build_url += '/' unless build_url.end_with? '/'
+unless File.exists?(build_url)
+  puts 'Error: wrong build directory.'
+  exit 1
+end
 
 # For each component (Completion, DUChain) specify the relative url
 # and how to execute each test.
