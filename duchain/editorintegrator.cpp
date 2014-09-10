@@ -25,6 +25,7 @@
 #include <parser/parser.h>
 
 
+using namespace KDevelop;
 namespace Ruby
 {
 
@@ -33,34 +34,34 @@ EditorIntegrator::EditorIntegrator()
     /* There's nothing to do here! */
 }
 
-const KDevelop::CursorInRevision EditorIntegrator::findPosition(const Node *node, Edge edge) const
+const CursorInRevision EditorIntegrator::findPosition(const Node *node, Edge edge) const
 {
     Q_ASSERT(node);
 
     if (edge == BackEdge) {
-        return KDevelop::CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
+        return CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
     } else {
-        return KDevelop::CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
+        return CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
     }
 }
 
-const KDevelop::RangeInRevision EditorIntegrator::findRange(const Node *from, const Node *to) const
+const RangeInRevision EditorIntegrator::findRange(const Node *from, const Node *to) const
 {
-    KDevelop::CursorInRevision c_from = findPosition(from, FrontEdge);
-    KDevelop::CursorInRevision c_to = findPosition(to, BackEdge);
+    CursorInRevision c_from = findPosition(from, FrontEdge);
+    CursorInRevision c_to = findPosition(to, BackEdge);
 
-    return KDevelop::RangeInRevision(c_from, c_to);
+    return RangeInRevision(c_from, c_to);
 }
 
-const KDevelop::RangeInRevision EditorIntegrator::findRange(const Node *node) const
+const RangeInRevision EditorIntegrator::findRange(const Node *node) const
 {
-    KDevelop::CursorInRevision c_from = findPosition(node, FrontEdge);
-    KDevelop::CursorInRevision c_to = findPosition(node, BackEdge);
+    CursorInRevision c_from = findPosition(node, FrontEdge);
+    CursorInRevision c_to = findPosition(node, BackEdge);
 
-    return KDevelop::RangeInRevision(c_from, c_to);
+    return RangeInRevision(c_from, c_to);
 }
 
-const KDevelop::IndexedString EditorIntegrator::url() const
+const IndexedString EditorIntegrator::url() const
 {
     return m_session->currentDocument();
 }
