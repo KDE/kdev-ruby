@@ -40,10 +40,11 @@ KDevelop::Path Loader::getRequiredFile(Node *node,
 
     /* Get the name of the file and update the cache of search paths. */
     name = editor->tokenToString(node);
-    if (name.startsWith("'") || name.startsWith("\"")) {
+    if (name.startsWith(QStringLiteral("'"))
+            || name.startsWith(QStringLiteral("\""))) {
         name.replace(name[0], ""); // remove surrounding '
     }
-    if (!name.endsWith(".rb")) {
+    if (!name.endsWith(QStringLiteral(".rb"))) {
         name += ".rb";
     }
     searchPaths << KDevelop::Path(editor->url().toUrl().directory());
@@ -96,7 +97,7 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
             QDir dir(path.path() + "/");
             QStringList list = dir.entryList(QStringList() << hint + "*");
             foreach (const QString &inside, list) {
-                paths << KDevelop::Path(path, inside + "/lib");
+                paths << KDevelop::Path(path, inside + "lib");
             }
         }
     } else {
@@ -112,8 +113,9 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
             it.next();
             KDevelop::IncludeItem item;
             item.name = it.fileInfo().fileName();
-            if (item.name.startsWith(".") || item.name.endsWith("~")
-                || item.name.endsWith(".so")) {
+            if (item.name.startsWith(QStringLiteral("."))
+                    || item.name.endsWith(QStringLiteral("~"))
+                    || item.name.endsWith(QStringLiteral(".so"))) {
                 continue;
             }
             item.pathNumber = number;
@@ -128,7 +130,7 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
 
 KDevelop::Path Loader::getGem(const QString &name)
 {
-    const QString &real = name + ".rb";
+    const QString &real = name + QStringLiteral(".rb");
     QStringList filter;
 
     if (name.isEmpty()) {
@@ -173,7 +175,7 @@ void Loader::fillUrlCache()
     m_gemPath = QList<KDevelop::Path>();
 
     code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
-    ruby.start("/usr/bin/env", code);
+    ruby.start(QStringLiteral("/usr/bin/env"), code);
     ruby.waitForFinished();
     rpaths = ruby.readAllStandardOutput().split('\n');
     epaths = ruby.readAllStandardError().split('\n');
@@ -184,7 +186,7 @@ void Loader::fillUrlCache()
     }
     for (it = 0; it < epaths.size() - 1; it++) {
         KDevelop::Path aux(epaths.at(it));
-        aux.addPath("gems");
+        aux.addPath(QStringLiteral("gems"));
         m_rubyPath << aux;
     }
 }

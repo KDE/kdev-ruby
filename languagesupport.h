@@ -183,6 +183,6 @@ private:
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 };
 
-} // End of namespace Ruby
+}
 
 #endif // KDEVRUBYLANGUAGESUPPORT_H

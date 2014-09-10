@@ -42,7 +42,7 @@ DataProvider::DataProvider(Rails::DataProvider::Kind kind) : m_kind(kind)
 
 QStringList DataProvider::scopes()
 {
-    return QStringList() << "Project";
+    return QStringList() << QStringLiteral("Project");
 }
 
 void DataProvider::setFilterText(const QString &text)

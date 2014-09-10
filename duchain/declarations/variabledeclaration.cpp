@@ -48,14 +48,16 @@ VariableDeclaration::VariableDeclaration(const KDevelop::RangeInRevision &range,
     : KDevelop::Declaration(*new VariableDeclarationData, range)
 {
     d_func_dynamic()->setClassId(this);
-    if (context)
+    if (context) {
         setContext(context);
+    }
 }
 
 void VariableDeclaration::setVariableKind(const Node *node)
 {
-    if (node)
+    if (node) {
         d_func_dynamic()->m_kind = node->flags;
+    }
 }
 
 void VariableDeclaration::setVariableKind(int kind)

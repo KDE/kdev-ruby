@@ -129,7 +129,7 @@ LanguageSupport::~LanguageSupport()
 
 QString LanguageSupport::name() const
 {
-    return "Ruby";
+    return QStringLiteral("Ruby");
 }
 
 KDevelop::ParseJob * LanguageSupport::createParseJob(const KDevelop::IndexedString &url)
@@ -208,7 +208,8 @@ void LanguageSupport::runCurrentFile()
     cfg.writeEntry("Arguments", QStringList() << doc->url().toLocalFile());
     cfg.sync();
 
-    core()->runController()->execute("execute", m_rubyFileLaunchConfiguration);
+    core()->runController()->execute(QStringLiteral("execute"),
+                                     m_rubyFileLaunchConfiguration);
 }
 
 void LanguageSupport::runCurrentTestFunction()
@@ -239,7 +240,8 @@ void LanguageSupport::runCurrentTestFunction()
     cfg.writeEntry("Arguments", args.join(" "));
     cfg.sync();
 
-    core()->runController()->execute("execute", m_rubyCurrentFunctionLaunchConfiguration);
+    core()->runController()->execute(QStringLiteral("execute"),
+                                     m_rubyCurrentFunctionLaunchConfiguration);
 }
 
 QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
@@ -248,8 +250,9 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
     KDevelop::DUChainReadLocker lock;
 
     KDevelop::TopDUContext *topContext = KDevelop::DUChainUtils::standardContextForUrl(doc->url());
-    if (!topContext)
+    if (!topContext) {
         return "";
+    }
 
     KDevelop::CursorInRevision cursor = KDevelop::CursorInRevision(doc->cursorPosition().line(), doc->cursorPosition().column());
     KDevelop::DUContext* context = topContext->findContextAt(cursor);
@@ -280,20 +283,24 @@ KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguratio
 
     IExecutePlugin* executePlugin = core()->pluginController()->pluginForExtension("org.kdevelop.IExecutePlugin")->extension<IExecutePlugin>();
     KDevelop::LaunchConfigurationType* type = core()->runController()->launchConfigurationTypeForId(executePlugin->nativeAppConfigTypeId());
-    if (!type)
+    if (!type) {
         return nullptr;
+    }
 
     KDevelop::ILaunchMode* mode = core()->runController()->launchModeForId("execute");
-    if (!mode)
+    if (!mode) {
         return nullptr;
+    }
 
     KDevelop::ILauncher *launcher = 0;
     foreach (KDevelop::ILauncher *l, type->launchers()) {
-        if (l->supportedModes().contains("execute"))
+        if (l->supportedModes().contains(QStringLiteral("execute"))) {
             launcher = l;
+        }
     }
-    if (!launcher)
+    if (!launcher) {
         return nullptr;
+    }
 
     config = core()->runController()->createLaunchConfiguration(type, qMakePair(mode->id(), launcher->id()), nullptr, name);
 
@@ -354,6 +361,6 @@ void LanguageSupport::setupQuickOpen()
     }
 }
 
-} // End of namespace Ruby
+}
 
 #include "languagesupport.moc"

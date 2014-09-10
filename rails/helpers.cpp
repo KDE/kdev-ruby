@@ -36,10 +36,12 @@ KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
         KDevelop::Path aux = upUrl.parent();
         if (aux.lastPathSegment() == "app") {
             const QString &dir = upUrl.lastPathSegment();
-            if (dir == "controllers" || dir == "models" || dir == "views") {
+            if (dir == QStringLiteral("controllers")
+                    || dir == QStringLiteral("models")
+                    || dir == QStringLiteral("views")) {
                 return aux.parent();
             }
-        } else if (upUrl.lastPathSegment() == "test") {
+        } else if (upUrl.lastPathSegment() == QStringLiteral("test")) {
             return aux;
         }
         current = upUrl;

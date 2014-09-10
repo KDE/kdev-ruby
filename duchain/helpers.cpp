@@ -49,7 +49,7 @@ const IndexedString & internalBuiltinsFile()
 {
     static IndexedString doc(QStandardPaths::locate(
                                 QStandardPaths::GenericDataLocation,
-                                "kdevrubysupport/documentation/builtins.rb"));
+                                QStringLiteral("kdevrubysupport/documentation/builtins.rb")));
     return doc;
 }
 
@@ -83,8 +83,9 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 DUContext *ctx = md->eigenClass();
                 if (ctx) {
                     decls = ctx->findLocalDeclarations(id.last(), range.end);
-                    if (!decls.isEmpty())
+                    if (!decls.isEmpty()) {
                         return DeclarationPointer(decls.last());
+                    }
                 }
             }
             kind = DeclarationKind::Unknown;
@@ -101,10 +102,11 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         if (decls.isEmpty()) {
             decls = context->findDeclarations(id.last(), range.end);
             if (decls.isEmpty() && kind != Local) {
-                if (context.data() == context->topContext())
+                if (context.data() == context->topContext()) {
                     decls = context->topContext()->findDeclarations(id, range.end);
-                else
+                } else {
                     decls = context->topContext()->findDeclarations(id);
+                }
 
                 // If it's empty, then we're going for some PST time!
                 if (decls.isEmpty() && kind != ClassMethod) {
@@ -115,8 +117,9 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         }
     }
 
-    if (decls.isEmpty())
+    if (decls.isEmpty()) {
         return DeclarationPointer();
+    }
     return DeclarationPointer(decls.last());
 }
 
@@ -136,13 +139,15 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
     for (uint i = 0; i < nr; ++i) {
         // Check that the file matches the environment.
         ParsingEnvironmentFilePointer env = DUChain::self()->environmentFileForDocument(decls[i].indexedTopContext());
-        if(!env || env->language() != lang)
+        if(!env || env->language() != lang) {
             continue;
+        }
 
         // It doesn't have a declaration, skipping.
         Declaration *d = decls[i].declaration();
-        if (!d)
+        if (!d) {
             continue;
+        }
 
         /*
          * Only global variables should be available for other files, but
@@ -193,26 +198,30 @@ DUContext * getClassContext(const DUContext *ctx)
     Q_ASSERT(ctx);
 
     DUChainReadLocker lock;
-    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType("Class", ctx));
-    if (klass)
+    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType(QStringLiteral("Class"), ctx));
+    if (klass) {
         return klass->declaration(ctx->topContext())->internalContext();
+    }
     return nullptr;
 }
 
 bool isUsefulType(const AbstractType::Ptr &type)
 {
-    if (!type)
+    if (!type) {
         return false;
+    }
     if (type->whichType() != AbstractType::TypeIntegral) {
         ClassType::Ptr ct = ClassType::Ptr::dynamicCast(type);
-        if (ct)
+        if (ct) {
             return ct->isUseful();
+        }
         return true;
     }
     QList<uint> skipTypes;
     skipTypes << IntegralType::TypeMixed << IntegralType::TypeNone << IntegralType::TypeNull;
-    if (!skipTypes.contains(type.cast<IntegralType>()->dataType()))
+    if (!skipTypes.contains(type.cast<IntegralType>()->dataType())) {
         return true;
+    }
     return false;
 }
 
@@ -225,31 +234,37 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 
     if (unsure && newUnsure) {
         int len = newUnsure->typesSize();
-        for (int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++) {
             unsure->addType(newUnsure->types()[i]);
+        }
         res = unsure;
     } else if (unsure) {
-        if (isUsefulType(newType))
+        if (isUsefulType(newType)) {
             unsure->addType(newType->indexed());
+        }
         res = unsure;
     } else if (newUnsure) {
         UnsureType::Ptr cloned = UnsureType::Ptr(static_cast<UnsureType *>(newUnsure->clone()));
-        if (isUsefulType(type))
+        if (isUsefulType(type)) {
             cloned->addType(type->indexed());
+        }
         res = cloned;
     } else {
         unsure = UnsureType::Ptr(new UnsureType());
-        if (isUsefulType(type))
+        if (isUsefulType(type)) {
             unsure->addType(type->indexed());
-        if (isUsefulType(newType))
+        } if (isUsefulType(newType)) {
             unsure->addType(newType->indexed());
+        }
         res = unsure;
     }
 
-    if (res->typesSize() == 0)
+    if (res->typesSize() == 0) {
         return type;
-    if (res->typesSize() == 1)
+    }
+    if (res->typesSize() == 1) {
         return res->types()[0].abstractType();
+    }
     return AbstractType::Ptr::staticCast(res);
 }
 
@@ -265,6 +280,5 @@ const QualifiedIdentifier getIdentifier(const Ast *ast)
     NameAst nameAst(ast);
     return KDevelop::QualifiedIdentifier(nameAst.value);
 }
-
 
 }

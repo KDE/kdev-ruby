@@ -65,8 +65,9 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, Ast *node
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
         updateContext->updateImportsCache();
-    } else
+    } else {
         rDebug() << "Compiling";
+    }
 
     ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
     {
@@ -212,8 +213,9 @@ void ContextBuilder::visitMethodStatement(Ast *node)
     DUContext *body = openContext(node, DUContext::Other, &name);
     if (compilingContexts()) {
         DUChainWriteLocker wlock;
-        if (params)
+        if (params) {
             body->addImportedParentContext(params);
+        }
         body->setInSymbolTable(false);
     }
     visitBody(node);

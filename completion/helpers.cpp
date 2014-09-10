@@ -34,8 +34,9 @@ namespace Ruby
 const QString indentString(KTextEditor::Document *document)
 {
     KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface *>(document);
-    if (iface->configValue("replace-tabs").toBool())
+    if (iface->configValue("replace-tabs").toBool()) {
         return QString(iface->configValue("indent-width").toUInt(), ' ');
+    }
     return "\t";
 }
 
@@ -47,7 +48,7 @@ QString getIndendation(const QString &line)
 QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
 {
     Q_UNUSED(highlighting); // TODO
-    QString ret = "(";
+    QString ret("(");
     QVector<Declaration *> params;
 
     if (DUContext *ctx = DUChainUtils::getArgumentContext(decl))
@@ -57,10 +58,11 @@ QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
 
     bool first = true;
     foreach (Declaration *d, params) {
-        if (first)
+        if (first) {
             first = false;
-        else
+        } else {
             ret += ", ";
+        }
         ret += d->identifier().toString();
     }
     ret += ")";

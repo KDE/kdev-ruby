@@ -52,8 +52,9 @@ ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range, KDe
     : KDevelop::Declaration(*new ModuleDeclarationData, range)
 {
     d_func_dynamic()->setClassId(this);
-    if (context)
+    if (context) {
         setContext(context);
+    }
 }
 
 void ModuleDeclaration::clearModuleMixins()
@@ -105,8 +106,9 @@ void ModuleDeclaration::addMixer(ModuleMixin module)
 {
     bool wasInSymbolTable = inSymbolTable();
     setInSymbolTable(false);
-    if (!mixinExists(module, true))
+    if (!mixinExists(module, true)) {
         d_func_dynamic()->mixersList().append(module);
+    }
     setInSymbolTable(wasInSymbolTable);
 }
 
@@ -165,9 +167,11 @@ bool ModuleDeclaration::mixinExists(ModuleMixin module, bool who)
         size = d_func()->moduleMixinsSize();
     }
 
-    for (uint i = 0; i < size; i++)
-        if (list[i].module == module.module)
+    for (uint i = 0; i < size; i++) {
+        if (list[i].module == module.module) {
             return true;
+        }
+    }
     return false;
 }
 

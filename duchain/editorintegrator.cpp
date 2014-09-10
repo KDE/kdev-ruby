@@ -37,10 +37,11 @@ const KDevelop::CursorInRevision EditorIntegrator::findPosition(const Node *node
 {
     Q_ASSERT(node);
 
-    if (edge == BackEdge)
+    if (edge == BackEdge) {
         return KDevelop::CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
-    else
+    } else {
         return KDevelop::CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
+    }
 }
 
 const KDevelop::RangeInRevision EditorIntegrator::findRange(const Node *from, const Node *to) const

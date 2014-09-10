@@ -86,9 +86,9 @@ void ExpressionVisitor::visitParameter(Ast *node)
     AbstractType::Ptr obj;
 
     if (is_block_arg(node->tree)) {
-        obj = getBuiltinsType("Proc", m_ctx);
+        obj = getBuiltinsType(QStringLiteral("Proc"), m_ctx);
     } else if (is_rest_arg(node->tree)) {
-        obj = getBuiltinsType("Array", m_ctx);
+        obj = getBuiltinsType(QStringLiteral("Array"), m_ctx);
     } else if (node->tree->r != nullptr) {
         ExpressionVisitor da(this);
         Node *n = node->tree;
@@ -97,7 +97,7 @@ void ExpressionVisitor::visitParameter(Ast *node)
         node->tree = n;
         obj = da.lastType();
     } else {
-        obj = getBuiltinsType("Object", m_ctx);
+        obj = getBuiltinsType(QStringLiteral("Object"), m_ctx);
     }
     encounter(obj);
 }
@@ -122,37 +122,37 @@ void ExpressionVisitor::visitName(Ast *node)
 
 void ExpressionVisitor::visitTrue(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("TrueClass", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("TrueClass"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitFalse(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("FalseClass", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("FalseClass"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitNil(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("NilClass"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitFile(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("String"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitLine(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Fixnum", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Fixnum"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitEncoding(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Encoding", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Encoding"), m_ctx);
     encounter(obj);
 }
 
@@ -178,32 +178,32 @@ void ExpressionVisitor::visitSelf(Ast *)
     }
 
     if (!ctx || !decl) {
-        obj = getBuiltinsType("Object", m_ctx);
+        obj = getBuiltinsType(QStringLiteral("Object"), m_ctx);
     }
     encounter(obj);
 }
 
 void ExpressionVisitor::visitRange(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Range", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Range"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitString(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("String", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("String"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitNumeric(Ast *node)
 {
-    const char *type;
+    QString type;
 
     switch (node->tree->flags) {
-    case float_l: type = "Float"; break;
-    case rational_l: type = "Rational"; break;
-    case imaginary_l: type = "Complex"; break;
-    default: type = "Fixnum"; break;
+    case float_l: type = QStringLiteral("Float"); break;
+    case rational_l: type = QStringLiteral("Rational"); break;
+    case imaginary_l: type = QStringLiteral("Complex"); break;
+    default: type = QStringLiteral("Fixnum"); break;
     }
     AbstractType::Ptr obj = getBuiltinsType(type, m_ctx);
     encounter(obj);
@@ -211,26 +211,26 @@ void ExpressionVisitor::visitNumeric(Ast *node)
 
 void ExpressionVisitor::visitRegexp(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Regexp", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Regexp"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitSymbol(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Symbol"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitArray(Ast *node)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Array", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Array"), m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node);
     encounter<ClassType>(ptr);
 }
 
 void ExpressionVisitor::visitHash(Ast *node)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Hash", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Hash"), m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node, true);
     encounter<ClassType>(ptr);
 }
@@ -311,13 +311,13 @@ void ExpressionVisitor::visitSuper(Ast *)
 
 void ExpressionVisitor::visitLambda(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Proc", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Proc"), m_ctx);
     encounter(obj);
 }
 
 void ExpressionVisitor::visitWhileStatement(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("NilClass", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("NilClass"), m_ctx);
     encounter(obj);
 }
 
@@ -348,8 +348,8 @@ void ExpressionVisitor::visitBinary(Ast *node)
 
 void ExpressionVisitor::visitBoolean(Ast *)
 {
-    AbstractType::Ptr truthy = getBuiltinsType("TrueClass", m_ctx);
-    AbstractType::Ptr falsy = getBuiltinsType("FalseClass", m_ctx);
+    AbstractType::Ptr truthy = getBuiltinsType(QStringLiteral("TrueClass"), m_ctx);
+    AbstractType::Ptr falsy = getBuiltinsType(QStringLiteral("FalseClass"), m_ctx);
     encounter(mergeTypes(truthy, falsy));
 }
 
@@ -383,7 +383,7 @@ void ExpressionVisitor::visitCaseStatement(Ast *node)
 
 void ExpressionVisitor::visitMethodStatement(Ast *)
 {
-    AbstractType::Ptr obj = getBuiltinsType("Symbol", m_ctx);
+    AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Symbol"), m_ctx);
     encounter(obj);
 }
 

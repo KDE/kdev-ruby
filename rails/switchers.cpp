@@ -80,7 +80,7 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
         return urls;
     }
 
-    KDevelop::Path viewsUrl(root, QString("app/views"));
+    KDevelop::Path viewsUrl(root, QStringLiteral("app/views"));
     KDevelop::Path viewsUrlS(viewsUrl, switchTo);
     KDevelop::Path viewsUrlP(viewsUrl, switchTo + "s");
 
@@ -188,7 +188,7 @@ void Switchers::switchToController()
         return;
     }
 
-    if ((ext == "rb") && !name.endsWith("_controller")) {
+    if ((ext == "rb") && !name.endsWith(QStringLiteral("_controller"))) {
         if (name.endsWith("_test")) {
             switchTo = name.remove(QRegExp("_test$"));
             switchTo = name.remove(QRegExp("_controller$"));
@@ -241,7 +241,9 @@ void Switchers::switchToModel()
 
     if (Helpers::isViewExtension(ext)) {
         switchTo = file.dir().dirName();
-    } else if (ext == "rb" && (name.endsWith("_controller") || name.endsWith("_test"))) {
+    } else if (ext == QStringLiteral("rb")
+                && (name.endsWith(QStringLiteral("_controller"))
+                    || name.endsWith(QStringLiteral("_test")))) {
         switchTo = name.remove(QRegExp("_controller$"));
         switchTo = switchTo.remove(QRegExp("_controller_test$"));
         switchTo = switchTo.remove(QRegExp("_test$"));
@@ -250,7 +252,7 @@ void Switchers::switchToModel()
         return;
     }
 
-    KDevelop::Path url(root, "app/models");
+    KDevelop::Path url(root, QStringLiteral("app/models"));
     if (switchTo.endsWith("s")) {
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }

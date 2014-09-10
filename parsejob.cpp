@@ -69,8 +69,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     Q_UNUSED(pointer);
     Q_UNUSED(thread);
 
-    if (!ruby() || abortRequested())
+    if (!ruby() || abortRequested()) {
         return abortJob();
+    }
 
     /* Make sure that the builtins file is already loaded */
     if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
@@ -86,8 +87,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
     QReadLocker parseLock(ruby()->language()->parseLock());
     KDevelop::ProblemPointer p = readContents();
-    if (p || abortRequested())
+    if (p || abortRequested()) {
         return abortJob();
+    }
 
     /*
      * NOTE: Although the parser can retrieve the contents on its own,
@@ -107,8 +109,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     }
 
     KDevelop::TopDUContext::Features newFeatures = minimumFeatures();
-    if (toUpdate)
+    if (toUpdate) {
         newFeatures = (KDevelop::TopDUContext::Features)(newFeatures | toUpdate->features());
+    }
 
     /* Remove update-flags like 'Recursive' or 'ForceUpdate' */
     newFeatures = static_cast<KDevelop::TopDUContext::Features>(newFeatures & KDevelop::TopDUContext::AllDeclarationsContextsUsesAndAST);
@@ -119,11 +122,12 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
      */
     if (ast) {
         // Empty document, do nothing
-        if (!ast->tree)
+        if (!ast->tree) {
             return;
-
-        if (abortRequested())
+        }
+        if (abortRequested()) {
             return abortJob();
+        }
 
         EditorIntegrator editor;
         editor.setParseSession(m_parser);
@@ -133,13 +137,15 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
 
         // Add warnings
         DUChainWriteLocker wlock;
-        foreach (ProblemPointer p, m_parser->m_problems)
+        foreach (ProblemPointer p, m_parser->m_problems) {
             m_duContext->addProblem(p);
+        }
         wlock.unlock();
         setDuChain(m_duContext);
 
-        if (abortRequested())
+        if (abortRequested()) {
             return abortJob();
+        }
 
         if (newFeatures & TopDUContext::AllDeclarationsContextsAndUses
                 && document() != internalBuiltinsFile())
@@ -149,8 +155,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             useBuilder.buildUses(ast);
         }
 
-        if (abortRequested())
+        if (abortRequested()) {
             return abortJob();
+            }
 
         const QVector<IndexedString> unresolvedImports = builder.unresolvedImports();
         if (!unresolvedImports.isEmpty()) {
@@ -158,8 +165,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             bool dependencyInQueue = false;
             foreach (const IndexedString &url, unresolvedImports) {
                 dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
-                if (dependencyInQueue)
+                if (dependencyInQueue) {
                     break;
+                }
             }
             // we check whether this document already has been re-scheduled once and abort if that is the case
             // this prevents infinite loops in case something goes wrong (optimally, shouldn't reach here if
@@ -172,8 +180,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             }
         }
 
-        if (abortRequested())
+        if (abortRequested()) {
             return abortJob();
+        }
 
         wlock.lock();
         m_duContext->setFeatures(newFeatures);

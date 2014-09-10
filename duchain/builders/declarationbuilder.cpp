@@ -328,13 +328,15 @@ void DeclarationBuilder::visitMethodStatement(Ast *node)
     }
     node->tree = aux;
 
-    if (!type->returnType())
-        type->setReturnType(getBuiltinsType("NilClass", currentContext()));
+    if (!type->returnType()) {
+        type->setReturnType(getBuiltinsType(QStringLiteral("NilClass"), currentContext()));
+    }
     decl->setType(type);
     decl->setInSymbolTable(true);
 
-    if (injectedContext)
+    if (injectedContext) {
         closeInjectedContext();
+    }
 }
 
 void DeclarationBuilder::visitParameter(Ast *node)
@@ -374,8 +376,9 @@ void DeclarationBuilder::visitBlockVariables(Ast *node)
     DUChainReadLocker rlock;
     MethodDeclaration *last = dynamic_cast<MethodDeclaration *>(m_lastMethodCall);
     Node *n = node->tree;
-    if (!n)
+    if (!n) {
         return;
+    }
 
     uint max = 0, i = 0;
     const YieldType *yieldList = nullptr;
@@ -387,10 +390,11 @@ void DeclarationBuilder::visitBlockVariables(Ast *node)
     AbstractType::Ptr type;
     for (Node *aux = n; aux != nullptr; aux = aux->next, i++) {
         node->tree = aux;
-        if (yieldList && i < max)
+        if (yieldList && i < max) {
             type = yieldList[i].type.abstractType();
-        else
-            type = getBuiltinsType("Object", currentContext());
+        } else {
+            type = getBuiltinsType(QStringLiteral("Object"), currentContext());
+        }
         rlock.unlock();
         declareVariable(getIdentifier(node), type, node, DUContext::DontSearchInParent);
         rlock.lock();
@@ -408,8 +412,9 @@ void DeclarationBuilder::visitReturnStatement(Ast *node)
             return;
         }
         TypePtr<FunctionType> t = currentType<FunctionType>();
-        if (!t) // the case of: a = -> { return 1 }
+        if (!t) { // the case of: a = -> { return 1 }
             return;
+        }
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
         AbstractType::Ptr rType = t->returnType();
@@ -480,10 +485,11 @@ void DeclarationBuilder::visitAssignmentStatement(Ast *node)
         if (has_star(n)) {
             int rest = nodeListSize(n) - 1;
             int pack = rsize - i - rest;
-            ClassType::Ptr newType = getBuiltinsType("Array", currentContext()).cast<ClassType>();
+            ClassType::Ptr newType = getBuiltinsType(QStringLiteral("Array"), currentContext()).cast<ClassType>();
             DUChainWriteLocker wlock;
-            for (int j = pack; j > 0; j--, i++)
+            for (int j = pack; j > 0; j--, i++) {
                 newType->addContentType(values.at(i));
+            }
             wlock.unlock();
             i--;
             if (!is_just_a_star(n)) {
@@ -500,14 +506,15 @@ void DeclarationBuilder::visitAssignmentStatement(Ast *node)
                 closeDeclaration();
             } else {
                 type = values.at(i);
-                if (!type) // HACK: provisional fix, should be removed in the future
-                    type = getBuiltinsType("Object", currentContext());
+                if (!type) { // HACK: provisional fix, should be removed in the future
+                    type = getBuiltinsType(QStringLiteral("Object"), currentContext());
+                }
                 QualifiedIdentifier id = getIdentifier(aux);
                 declareVariable(id, type, aux);
             }
         } else {
             lock.lock();
-            type = getBuiltinsType("NilClass", currentContext());
+            type = getBuiltinsType(QStringLiteral("NilClass"), currentContext());
             lock.unlock();
             QualifiedIdentifier id = getIdentifier(aux);
             declareVariable(id, type, aux);
@@ -629,12 +636,14 @@ void DeclarationBuilder::visitForStatement(Ast *node)
     DUChainReadLocker rlock;
     if (type) {
         ClassType::Ptr ctype = type.cast<ClassType>();
-        if (ctype && ctype->contentType())
+        if (ctype && ctype->contentType()) {
             type = ctype->contentType().abstractType();
-        else
-            type = getBuiltinsType("Object", currentContext());
-    } else
-        type = getBuiltinsType("Object", currentContext());
+        } else {
+            type = getBuiltinsType(QStringLiteral("Object"), currentContext());
+        }
+    } else {
+        type = getBuiltinsType(QStringLiteral("Object"), currentContext());
+    }
 
     node->tree = aux->r;
     for (Node *n = node->tree; n != nullptr; n = n->next) {
@@ -690,16 +699,18 @@ void DeclarationBuilder::visitRescueArg(Ast *node)
     node->tree = n->l;
 
     /* If there's no rescue variable, don't even care. */
-    if (!n->r)
+    if (!n->r) {
         return;
+    }
 
     /* Get the type of the exception list. */
     for (node->tree = n->l; node->tree; node->tree = node->tree->next) {
         ExpressionVisitor ev(currentContext(), m_editor);
         ev.visitNode(node);
         mDecl = dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data());
-        if (mDecl)
+        if (mDecl) {
             type = mergeTypes(type, mDecl->indexedType().abstractType());
+        }
     }
 
     node->tree = n->r;
@@ -844,10 +855,11 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
         var->setKind(Declaration::Instance);
         AbstractType::Ptr atype = mergeTypes(var->abstractType(), type);
         UnsureType::Ptr utype = atype.cast<UnsureType>();
-        if (!utype || utype->typesSize() > 0)
+        if (!utype || utype->typesSize() > 0) {
             var->setType(atype);
-        else
-            var->setType(getBuiltinsType("Object", currentContext()));
+        } else {
+            var->setType(getBuiltinsType(QStringLiteral("Object"), currentContext()));
+        }
         wlock.unlock();
         DeclarationBuilderBase::closeDeclaration();
         wlock.lock();
@@ -940,7 +952,7 @@ bool DeclarationBuilder::validReDeclaration(Declaration *decl, const QualifiedId
     // a module and viceversa.
     const bool mod = md->isModule();
     if ((mod && kind == Class) || (!mod && kind == Module)) {
-        const QString str = (kind == Class) ? "class" : "module";
+        const QString str = (kind == Class) ? QStringLiteral("class") : QStringLiteral("module");
         const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), str);
 
         appendProblem(range, msg);

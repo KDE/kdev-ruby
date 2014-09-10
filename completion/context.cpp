@@ -59,8 +59,9 @@ const int MEMBER_STRINGS_MAX = 7; // include
 void compressText(QString &text)
 {
     for (int i = text.length() - 1; i >= 0; --i) {
-        if (!text[i].isSpace())
+        if (!text[i].isSpace()) {
             break;
+        }
         text.remove(i, 1);
     }
 }
@@ -77,8 +78,9 @@ QString getEndingFromSet(const QString &str)
 
     for (int i = qMin(str.length(), MEMBER_STRINGS_MAX); i > 0; --i) {
         end = str.right(i);
-        if (MEMBER_STRINGS.contains(end))
+        if (MEMBER_STRINGS.contains(end)) {
             return end;
+        }
     }
     return QString();
 }
@@ -91,9 +93,9 @@ QString getEndingFromSet(const QString &str)
  */
 bool insideClass(const QString &text)
 {
-    int idx = text.lastIndexOf("<");
-    int classIdx = text.lastIndexOf("class", idx);
-    int semicolon = text.lastIndexOf(";", idx);
+    int idx = text.lastIndexOf(QStringLiteral("<"));
+    int classIdx = text.lastIndexOf(QStringLiteral("class"), idx);
+    int semicolon = text.lastIndexOf(QStringLiteral(";"), idx);
     return  (classIdx != -1 && (classIdx > semicolon));
 }
 
@@ -109,10 +111,11 @@ QString lastNLines(const QString &str, int n)
     int nthLine = curNewLine;
 
     for (int i = 0; i < n; ++i) {
-        if (curNewLine == -1)
+        if (curNewLine == -1) {
             break;
-        else
+        } else {
             nthLine = curNewLine;
+        }
         curNewLine = str.lastIndexOf('\n', curNewLine - 1);
     }
 
@@ -128,16 +131,20 @@ QString lastNLines(const QString &str, int n)
  */
 CodeCompletionContext::CompletionContextType findAccessKind(const QString &original)
 {
-    QString text = getEndingFromSet(original);
+    const QString text = getEndingFromSet(original);
 
-    if (text == ".")
+    if (text == QStringLiteral(".")) {
         return CodeCompletionContext::MemberAccess;
-    if (text == "::")
+    }
+    if (text == QStringLiteral("::")) {
         return CodeCompletionContext::ModuleMemberAccess;
-    if (text == "<" && insideClass(original))
+    }
+    if (text == QStringLiteral("<") && insideClass(original)) {
         return CodeCompletionContext::BaseClassAccess;
-    if (text == "include" || text == "extend")
+    }
+    if (text == QStringLiteral("include") || text == QStringLiteral("extend")) {
         return CodeCompletionContext::ModuleMixinAccess;
+    }
     return CodeCompletionContext::NoMemberAccess;
 }
 
@@ -154,8 +161,9 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
 
     m_following = followingText;
     m_closing = 0;
-    if (doRequireCompletion())
+    if (doRequireCompletion()) {
         return;
+    }
 
     compressText(m_text);
     m_kind = findAccessKind(m_text);
@@ -207,14 +215,17 @@ QList<CompletionTreeElementPointer> CodeCompletionContext::ungroupedElements()
 
 bool CodeCompletionContext::isValidPosition()
 {
-    if (m_text.isEmpty())
+    if (m_text.isEmpty()) {
         return true;
+    }
 
     for (QString::iterator it = m_text.end(); it != m_text.begin(); --it) {
-        if (*it == '\n')
+        if (*it == '\n') {
             break;
-        if (*it == '#')
+        }
+        if (*it == '#') {
             return false;
+        }
     }
     return true;
 }
@@ -225,17 +236,18 @@ bool CodeCompletionContext::doRequireCompletion()
     QUrl relative;
     int idx = 8;
 
-    if (!line.startsWith("require ")) {
-        if (!line.startsWith("require_relative "))
+    if (!line.startsWith(QStringLiteral("require "))) {
+        if (!line.startsWith(QStringLiteral("require_relative "))) {
             return false;
+        }
         idx += 9;
         relative = m_duContext->url().toUrl().directory();
     }
     line = line.mid(idx).trimmed();
     m_closing = '\'';
-    if ((idx = line.indexOf("'")) < 0) {
+    if ((idx = line.indexOf(QStringLiteral("'"))) < 0) {
         m_closing = '"';
-        if ((idx = line.indexOf("\"")) < 0) {
+        if ((idx = line.indexOf(QStringLiteral("\")")) < 0)) {
             m_closing = 0;
             return false;
         }
@@ -259,8 +271,9 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     parser->setCurrentDocument(IndexedString());
     parser->setContents(expr.toUtf8());
     Ast *ast = parser->parse();
-    if (!ast || !ast->tree)
+    if (!ast || !ast->tree) {
         return AbstractType::Ptr(nullptr);
+    }
     lock.unlock();
     ev.visitCode(ast);
     res = ev.lastType();
@@ -277,10 +290,12 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromTy
     if (type->whichType() == AbstractType::TypeUnsure) {
         UnsureType::Ptr unsure = type.cast<UnsureType>();
         int count = unsure->typesSize();
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             res.append(getCompletionItemsForOneType(unsure->types()[i].abstractType(), scoped));
-    } else
+        }
+    } else {
         res = getCompletionItemsForOneType(type, scoped);
+    }
     return res;
 }
 
@@ -292,8 +307,9 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
 
     {
         DUChainReadLocker lock;
-        if (!sType || !sType->internalContext(m_duContext->topContext()))
+        if (!sType || !sType->internalContext(m_duContext->topContext())) {
             return QList<CompletionTreeItemPointer>();
+        }
         DUContext *current = sType->internalContext(m_duContext->topContext());
         decls = current->allDeclarations(CursorInRevision::invalid(), m_duContext->topContext(), false);
     }
@@ -301,10 +317,12 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
     foreach (DeclarationPair d, decls) {
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d.first);
         if (md && md->accessPolicy() == Declaration::Public) {
-            if (!scoped || (scoped && md->isClassMethod()))
+            if (!scoped || (scoped && md->isClassMethod())) {
                 ADD_NORMAL(d.first, d.second);
-        } else if (scoped && dynamic_cast<ModuleDeclaration *>(d.first))
+            }
+        } else if (scoped && dynamic_cast<ModuleDeclaration *>(d.first)) {
             ADD_NORMAL(d.first, d.second);
+        }
     }
     return list;
 }
@@ -317,7 +335,7 @@ bool CodeCompletionContext::shouldAddParentItems(bool fullCompletion)
 QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
-    AbstractType::Ptr type = getExpressionType(".");
+    AbstractType::Ptr type = getExpressionType(QStringLiteral("."));
     if (type) {
         list << getCompletionItemsFromType(type);
     } else {
@@ -329,7 +347,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
-    AbstractType::Ptr type = getExpressionType("::");
+    AbstractType::Ptr type = getExpressionType(QStringLiteral("::"));
     if (type) {
         list << getCompletionItemsFromType(type, true);
     } else {
@@ -351,8 +369,9 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 
     foreach (DeclarationPair d, decls) {
         ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(d.first);
-        if (mDecl && !mDecl->isModule())
+        if (mDecl && !mDecl->isModule()) {
             ADD_NORMAL(d.first, d.second);
+        }
     }
     return list;
 }
@@ -367,9 +386,11 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
 
-    foreach (DeclarationPair d, decls)
-        if (dynamic_cast<ModuleDeclaration *>(d.first))
+    foreach (DeclarationPair d, decls) {
+        if (dynamic_cast<ModuleDeclaration *>(d.first)) {
             ADD_NORMAL(d.first, d.second);
+        }
+    }
     return list;
 }
 
@@ -377,8 +398,9 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
 {
     QList<CompletionTreeItemPointer> list;
 
-    foreach (const KDevelop::IncludeItem &item, m_includeItems)
+    foreach (const KDevelop::IncludeItem &item, m_includeItems) {
         list << CompletionTreeItemPointer(new RequireFileItem(item, m_closing));
+    }
     return list;
 }
 
@@ -388,9 +410,10 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
     QList<DeclarationPair> decls;
 
     // Add one-liners (i.e. shebang)
-    if (m_position.line == 0 && (m_text.startsWith("#") || m_text.isEmpty())) {
-        ADD_ONE_LINER("#!/usr/bin/env ruby", i18n("insert Shebang line"));
-        ADD_ONE_LINER("# encoding: UTF-8", i18n("insert encoding line"));
+    if (m_position.line == 0 && (m_text.startsWith(QStringLiteral("#"))
+                || m_text.isEmpty())) {
+        ADD_ONE_LINER(QStringLiteral("#!/usr/bin/env ruby"), i18n("insert Shebang line"));
+        ADD_ONE_LINER(QStringLiteral("# encoding: UTF-8"), i18n("insert encoding line"));
     }
 
     // Find everything that is accessible at this point
@@ -398,8 +421,9 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
         DUChainReadLocker lock;
         decls = m_duContext->allDeclarations(m_position, m_duContext->topContext());
     }
-    foreach (DeclarationPair d, decls)
+    foreach (DeclarationPair d, decls) {
         ADD_NORMAL(d.first, d.second);
+    }
     return list;
 }
 

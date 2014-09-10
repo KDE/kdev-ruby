@@ -71,7 +71,7 @@ const IndexedType & ClassType::contentType() const
 bool ClassType::isUseful() const
 {
     // TODO: this is utter crap.
-    return KDevelop::StructureType::toString() != "Object";
+    return KDevelop::StructureType::toString() != QStringLiteral("Object");
 }
 
 AbstractType * ClassType::clone() const
@@ -109,5 +109,5 @@ QString ClassType::containerToString() const
     return KDevelop::StructureType::toString();
 }
 
-} // End of namespace Ruby
+}
 
