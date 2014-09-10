@@ -20,8 +20,9 @@ set(rubycompletion_SRCS
 add_library(kdevrubycompletion SHARED ${rubycompletion_SRCS})
 
 target_link_libraries(kdevrubycompletion LINK_PRIVATE
-    ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    KDev::Interfaces
+    KDev::Language
+
     kdevrubyduchain
     kdevrubyparser
 )

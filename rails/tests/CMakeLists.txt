@@ -10,11 +10,11 @@ macro(ruby_unit_test testname)
 
         LINK_LIBRARIES
 
-        ${QT_QTTEST_LIBRARY}
-        ${KDEVPLATFORM_INTERFACES_LIBRARIES}
-        ${KDEVPLATFORM_TESTS_LIBRARIES}
-        ${KDEVPLATFORM_UTIL_LIBRARIES}
-        ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+        Qt5::Test
+
+        KDev::Interfaces
+        KDev::Tests
+
         kdevrubyparser
         kdevrubyrails
     )

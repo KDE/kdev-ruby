@@ -14,9 +14,9 @@ set(rubyrails_SRCS
 add_library(kdevrubyrails SHARED ${rubyrails_SRCS})
 
 target_link_libraries(kdevrubyrails LINK_PRIVATE
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_PROJECT_LIBRARIES}
-    ${KDEVPLATFORM_UTIL_LIBRARIES}
+    KDev::Language
+    KDev::Project
+
     kdevrubyparser
 )
 

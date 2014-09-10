@@ -17,7 +17,7 @@ include_directories(
 add_library(kdevrubyparser SHARED ${rubyparser_SRCS})
 
 target_link_libraries(kdevrubyparser LINK_PRIVATE
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+    KDev::Language
 )
 
 # Compile & install the tests if needed.

@@ -50,16 +50,17 @@ add_library(kdevrubylanguagesupport MODULE
 )
 
 target_link_libraries(kdevrubylanguagesupport
-    ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
-    ${KDEVPLATFORM_UTIL_LIBRARIES}
+    KF5::I18n
+    KF5::TextEditor
+    KF5::KDELibs4Support
+
+    KDev::Language
+    KDev::Util
+
     kdevrubyparser
     kdevrubyduchain
     kdevrubycompletion
     kdevrubyrails
-
-    KF5::I18n
-    KF5::TextEditor
-    KF5::KDELibs4Support
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
