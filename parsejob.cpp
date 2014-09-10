@@ -126,6 +126,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             return;
         }
         if (abortRequested()) {
+            m_parser->freeAst(ast);
             return abortJob();
         }
 
@@ -144,6 +145,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         setDuChain(m_duContext);
 
         if (abortRequested()) {
+            m_parser->freeAst(ast);
             return abortJob();
         }
 
@@ -156,12 +158,14 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         if (abortRequested()) {
+            m_parser->freeAst(ast);
             return abortJob();
-            }
+        }
 
         const QVector<IndexedString> unresolvedImports = builder.unresolvedImports();
         if (!unresolvedImports.isEmpty()) {
-            // check whether one of the imports is queued for parsing, this is to avoid deadlocks
+            // Check whether one of the imports is queued for parsing, this
+            // is to avoid deadlocks
             bool dependencyInQueue = false;
             foreach (const IndexedString &url, unresolvedImports) {
                 dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
@@ -169,9 +173,12 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
                     break;
                 }
             }
-            // we check whether this document already has been re-scheduled once and abort if that is the case
-            // this prevents infinite loops in case something goes wrong (optimally, shouldn't reach here if
-            // the document was already rescheduled, but there's many cases where this might still happen)
+
+            // We check whether this document already has been re-scheduled
+            // once and abort if that is the case. This prevents infinite
+            // loops in case something goes wrong (optimally, shouldn't reach
+            // here if the document was already rescheduled, but there's many
+            // cases where this might still happen)
             if (!(minimumFeatures() & Rescheduled) && dependencyInQueue) {
                 DUChainWriteLocker lock;
                 KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document(),
@@ -181,6 +188,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         if (abortRequested()) {
+            m_parser->freeAst(ast);
             return abortJob();
         }
 
