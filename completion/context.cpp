@@ -233,7 +233,7 @@ bool CodeCompletionContext::isValidPosition()
 bool CodeCompletionContext::doRequireCompletion()
 {
     QString line = lastNLines(m_text, 1).trimmed();
-    QUrl relative;
+    KDevelop::Path relative;
     int idx = 8;
 
     if (!line.startsWith(QStringLiteral("require "))) {
@@ -241,7 +241,8 @@ bool CodeCompletionContext::doRequireCompletion()
             return false;
         }
         idx += 9;
-        relative = QUrl(m_duContext->url().toUrl().directory());
+        const QString &dir = m_duContext->url().toUrl().directory();
+        relative = KDevelop::Path(dir);
     }
     line = line.mid(idx).trimmed();
     m_closing = '\'';

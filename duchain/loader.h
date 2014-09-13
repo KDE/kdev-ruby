@@ -71,7 +71,7 @@ public:
      */
     static QList<KDevelop::IncludeItem> getFilesInSearchPath(const QString &url,
                                                              const QString &hint,
-                                                             const QUrl &relative = QUrl());
+                                                             const KDevelop::Path &relative = KDevelop::Path());
 
 protected:
     /**

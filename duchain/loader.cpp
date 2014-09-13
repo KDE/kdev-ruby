@@ -82,13 +82,15 @@ KDevelop::Path Loader::getRequiredFile(Node *node,
 
 QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
                                                           const QString &hint,
-                                                          const QUrl &relative)
+                                                          const KDevelop::Path &relative)
 {
     int number = 0;
     QList<KDevelop::Path> paths;
     QList<KDevelop::IncludeItem> res;
 
-    if (relative.isEmpty()) {
+    if (relative.isValid()) {
+        paths << relative;
+    } else {
         fillUrlCache();
         paths = m_rubyPath;
 
@@ -100,8 +102,6 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
                 paths << KDevelop::Path(path, inside + "lib");
             }
         }
-    } else {
-        paths << KDevelop::Path(relative);
     }
 
     foreach (const KDevelop::Path &path, paths) {
