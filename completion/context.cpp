@@ -241,7 +241,7 @@ bool CodeCompletionContext::doRequireCompletion()
             return false;
         }
         idx += 9;
-        relative = m_duContext->url().toUrl().directory();
+        relative = QUrl(m_duContext->url().toUrl().directory());
     }
     line = line.mid(idx).trimmed();
     m_closing = '\'';
