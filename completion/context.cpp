@@ -241,8 +241,7 @@ bool CodeCompletionContext::doRequireCompletion()
             return false;
         }
         idx += 9;
-        const QString &dir = m_duContext->url().toUrl().directory();
-        relative = KDevelop::Path(dir);
+        relative = KDevelop::Path(m_duContext->url().toUrl()).parent();
     }
     line = line.mid(idx).trimmed();
     m_closing = '\'';

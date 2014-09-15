@@ -47,7 +47,7 @@ KDevelop::Path Loader::getRequiredFile(Node *node,
     if (!name.endsWith(QStringLiteral(".rb"))) {
         name += ".rb";
     }
-    searchPaths << KDevelop::Path(editor->url().toUrl().directory());
+    searchPaths << KDevelop::Path(editor->url().toUrl()).parent();
     if (!local) {
         fillUrlCache();
         searchPaths << m_rubyPath;
@@ -106,8 +106,7 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
 
     foreach (const KDevelop::Path &path, paths) {
         KDevelop::Path aux(path, url);
-        const QString &str = aux.path();
-        QDirIterator it(str);
+        QDirIterator it(aux.path());
 
         while (it.hasNext()) {
             it.next();
@@ -120,7 +119,7 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
             }
             item.pathNumber = number;
             item.isDirectory = it.fileInfo().isDir();
-            item.basePath = str;
+            item.basePath = aux.toUrl();
             res << item;
         }
         number++;

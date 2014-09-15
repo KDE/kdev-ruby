@@ -269,15 +269,16 @@ void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDeve
     if (root.isValid()) {
         cfg.writeEntry("Working Directory", root.toLocalFile());
     } else {
-        cfg.writeEntry("Working Directory", activeDocument->url().directory());
+        cfg.writeEntry("Working Directory", root.parent().path());
     }
 }
 
 KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)
 {
     foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
-        if (config->name() == name)
+        if (config->name() == name) {
             return config;
+        }
     }
     KDevelop::ILaunchConfiguration *config = nullptr;
 
@@ -292,7 +293,7 @@ KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguratio
         return nullptr;
     }
 
-    KDevelop::ILauncher *launcher = 0;
+    KDevelop::ILauncher *launcher = nullptr;
     foreach (KDevelop::ILauncher *l, type->launchers()) {
         if (l->supportedModes().contains(QStringLiteral("execute"))) {
             launcher = l;
