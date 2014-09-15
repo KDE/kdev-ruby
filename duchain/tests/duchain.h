@@ -162,6 +162,7 @@ private slots:
     void showErrorOnTooManyArguments();
     void hashArgument();
     void setUnsureArgument();
+    void conflictOnSpecialMethods();
 
     // Include & Extend
     void include1();

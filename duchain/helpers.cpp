@@ -154,8 +154,9 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
          * global variables are always fetched by the getDeclaration method.
          * Therefore, at this point, we discard variable declarations.
          */
-        if (dynamic_cast<VariableDeclaration *>(d))
+        if (dynamic_cast<VariableDeclaration *>(d)) {
             continue;
+        }
 
         // If it's a method declaration, check that we've got the proper one.
         if (kind != Unknown) {
@@ -271,7 +272,7 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 int nodeListSize(Node *node)
 {
     int i = 0;
-    for (Node *n = node; n != nullptr; n = n->next, i++);
+    for (Node *n = node; n; n = n->next, i++);
     return i;
 }
 
@@ -279,6 +280,14 @@ const QualifiedIdentifier getIdentifier(const Ast *ast)
 {
     NameAst nameAst(ast);
     return KDevelop::QualifiedIdentifier(nameAst.value);
+}
+
+bool declaredIn(const QByteArray &name, DUContextPointer context)
+{
+    DUChainReadLocker lock;
+    KDevelop::QualifiedIdentifier id = QualifiedIdentifier(QString(name));
+    QList<Declaration *> decls = context->findLocalDeclarations(id.last());
+    return !decls.empty();
 }
 
 }

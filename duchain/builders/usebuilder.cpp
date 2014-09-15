@@ -41,14 +41,20 @@ UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
     m_classMethod = false;
 }
 
+bool UseBuilder::declaredInContext(const QByteArray &name) const
+{
+    return declaredIn(name, DUContextPointer(currentContext()));
+}
+
 void UseBuilder::visitName(Ast *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
     DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
-    if (!decl || decl->range() == range)
+    if (!decl || decl->range() == range) {
         return;
+    }
     UseBuilderBase::newUse(node, range, decl);
 }
 
@@ -65,8 +71,9 @@ void UseBuilder::visitClassName(Ast *node)
         if (d.data()) {
             UseBuilderBase::newUse(node, editorFindRange(node, node), d);
             ev.setContext(d->internalContext());
-        } else
+        } else {
             break;
+        }
     }
     node->tree = aux;
 }
@@ -86,8 +93,9 @@ void UseBuilder::visitMixin(Ast *node, bool include)
         if (d) {
             UseBuilderBase::newUse(node, m_editor->findRange(n), d);
             ev.setContext(d->internalContext());
-        } else
+        } else {
             break;
+        }
     }
     node->tree = aux;
 }
@@ -132,8 +140,9 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
      * Go to the next element since we're coming from a recursion and we've
      * already checked its children nodes.
      */
-    if (node->tree->kind == token_method_call)
+    if (node->tree->kind == token_method_call) {
         node->tree = node->tree->next;
+    }
 
     // And this is the loop that does the dirty job.
     for (Node *aux = node->tree; aux && ctx; aux = aux->next) {
@@ -159,14 +168,16 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
 
         /* Handle the difference between instance & class methods */
-        if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data()))
+        if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data())) {
             m_classMethod = true;
-        else
+        } else {
             m_classMethod = false;
+        }
 
         // Mark a new use if possible
-        if (last && node->tree->kind != token_self)
+        if (last && node->tree->kind != token_self) {
             UseBuilderBase::newUse(node, range, DeclarationPointer(last));
+        }
 
         /*
          * If this is a StructureType, it means that we're in a case like;
@@ -175,9 +186,9 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
         if (!sType) {
             // It's not a StructureType, therefore it's a variable or a method.
             FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
-            if (!fType)
+            if (!fType) {
                 ctx = (last) ? last->internalContext() : nullptr;
-            else {
+            } else {
                 DUChainReadLocker lock;
                 StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
                 ctx = (rType) ? rType->internalContext(topContext()) : nullptr;
@@ -196,5 +207,4 @@ void UseBuilder::visitRequire(Ast *node, bool relative)
     Q_UNUSED(relative);
 }
 
-
-} // End of namespace Ruby
+}

@@ -1700,6 +1700,45 @@ void TestDUChain::setUnsureArgument()
     QCOMPARE(args.last()->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
+void TestDUChain::conflictOnSpecialMethods()
+{
+    QByteArray code("module Modul; end; class Klass; extend Modul; ");
+    code += "def include; end; private = 1; end";
+    TopDUContext *top = parse(code, "conflictOnSpecialMethods");
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    QVector<Declaration *> decls = top->localDeclarations();
+    ModuleDeclaration *modul = dynamic_cast<ModuleDeclaration *>(decls.first());
+    ModuleDeclaration *klass = dynamic_cast<ModuleDeclaration *>(decls.last());
+    QVERIFY(modul);
+    QVERIFY(klass);
+
+    /*
+     * First check that special methods that have been re-declared are being
+     * properly handled.
+     */
+
+    decls = klass->internalContext()->localDeclarations();
+    QCOMPARE(decls.size(), 2);
+
+    MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(decls.first());
+    VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decls.last());
+    QVERIFY(md);
+    QVERIFY(vd);
+    QCOMPARE(md->qualifiedIdentifier(), QualifiedIdentifier("Klass::include"));
+    QCOMPARE(vd->qualifiedIdentifier(), QualifiedIdentifier("Klass::private"));
+
+    /*
+     * Finally, check that since the "extend" method hasn't been touched, it
+     * should've extended the Klass class as expected.
+     */
+
+    QCOMPARE(klass->moduleMixinsSize(), 1u);
+    QVERIFY(!klass->moduleMixins()[0].included);
+    QCOMPARE(klass->moduleMixins()[0].module.type<StructureType>()->qualifiedIdentifier(), modul->qualifiedIdentifier());
+}
+
 //END: Methods
 
 //BEGIN: Include & Extend

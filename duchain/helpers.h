@@ -151,7 +151,12 @@ class EditorIntegrator;
     /// @returns the QualifiedIdentifier of the given @p ast.
     KDEVRUBYDUCHAIN_EXPORT const KDevelop::QualifiedIdentifier getIdentifier(const Ast *ast);
 
+    /**
+     * @returns true if the given name belongs to a variable that has been
+     * declared in the given DUContext.
+     */
+    KDEVRUBYDUCHAIN_EXPORT bool declaredIn(const QByteArray &name,
+                                           KDevelop::DUContextPointer context);
 }
-
 
 #endif /* RUBYDUCHAINHELPERS_H_ */

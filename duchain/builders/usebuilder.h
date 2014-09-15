@@ -49,6 +49,8 @@ public:
 protected:
     /// Methods re-implemented from AstVisitor.
 
+    virtual bool declaredInContext(const QByteArray &name) const override;
+
     virtual void visitName(Ast *node) override;
     virtual void visitClassName(Ast *node) override;
     virtual void visitMixin(Ast *node, bool include) override;

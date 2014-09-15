@@ -102,6 +102,11 @@ void ExpressionVisitor::visitParameter(Ast *node)
     encounter(obj);
 }
 
+bool ExpressionVisitor::declaredInContext(const QByteArray &name) const
+{
+    return declaredIn(name, DUContextPointer(m_ctx));
+}
+
 void ExpressionVisitor::visitName(Ast *node)
 {
     if (!node->tree) {

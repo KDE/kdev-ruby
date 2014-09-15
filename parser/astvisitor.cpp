@@ -35,11 +35,6 @@ Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser")
 namespace Ruby
 {
 
-AstVisitor::AstVisitor()
-{
-    /* There's nothing to do here */
-}
-
 AstVisitor::~AstVisitor()
 {
     /* There's nothing to do here */
@@ -637,12 +632,13 @@ void AstVisitor::visitEnsure(Ast *node)
 
 void AstVisitor::visitNode(Ast *node)
 {
-    Node *n = node->tree;
     QByteArray name;
+    Node *n = node->tree;
 
     /* This is not a valid node */
-    if (!n || n->kind == token_invalid)
+    if (!n || n->kind == token_invalid) {
         return;
+    }
     switch (n->kind) {
         case token_return: visitReturnStatement(node); break;
         case token_yield: visitYieldStatement(node); break;
@@ -668,11 +664,23 @@ void AstVisitor::visitNode(Ast *node)
         case token_object:
             name = QByteArray(node->tree->name);
             if (name == "public") {
-                visitAccessSpecifier(public_a);
+                if (declaredInContext(name)) {
+                    visitName(node);
+                } else {
+                    visitAccessSpecifier(public_a);
+                }
             } else if (name == "protected") {
-                visitAccessSpecifier(protected_a);
+                if (declaredInContext(name)) {
+                    visitName(node);
+                } else {
+                    visitAccessSpecifier(protected_a);
+                }
             } else if (name == "private") {
-                visitAccessSpecifier(private_a);
+                if (declaredInContext(name)) {
+                    visitName(node);
+                } else {
+                    visitAccessSpecifier(private_a);
+                }
             } else {
                 visitName(node);
             }
@@ -779,15 +787,15 @@ void AstVisitor::checkMethodCall(Ast *mc)
     if (mc->tree->l) {
         const QByteArray &name = QByteArray(mc->tree->l->name);
         if (name == "require") {
-            visitRequire(mc);
+            (declaredInContext(name)) ? visitMethodCall(mc) : visitRequire(mc);
         } else if (name == "include") {
-            visitMixin(mc, true);
+            (declaredInContext(name)) ? visitMethodCall(mc) : visitMixin(mc, true);
         } else if (name == "extend") {
-            visitMixin(mc, false);
+            (declaredInContext(name)) ? visitMethodCall(mc) : visitMixin(mc, false);
         } else if (name == "require_relative") {
-            visitRequire(mc, true);
+            (declaredInContext(name)) ? visitMethodCall(mc) : visitRequire(mc, true);
         } else if (name == "lambda") {
-            visitLambda(mc);
+            (declaredInContext(name)) ? visitMethodCall(mc) : visitLambda(mc);
         } else {
             visitMethodCall(mc);
         }

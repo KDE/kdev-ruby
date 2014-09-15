@@ -96,6 +96,8 @@ public:
 protected:
     /// Visitor methods re-implemented from AstVisitor.
 
+    virtual bool declaredInContext(const QByteArray &name) const override;
+
     virtual void visitString(Ast *node) override;
     virtual void visitRegexp(Ast *node) override;
     virtual void visitNumeric(Ast *node) override;
@@ -175,6 +177,5 @@ private:
 };
 
 }
-
 
 #endif /* RUBY_EXPRESSIONVISITOR_H */

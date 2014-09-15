@@ -65,6 +65,8 @@ protected:
 
     /// Methods re-implemented from AstVisitor.
 
+    virtual bool declaredInContext(const QByteArray &name) const override;
+
     virtual void visitClassStatement(Ast *node) override;
     virtual void visitSingletonClass(Ast *node) override;
     virtual void visitModuleStatement(Ast *node) override;

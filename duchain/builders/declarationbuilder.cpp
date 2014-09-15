@@ -83,6 +83,11 @@ void DeclarationBuilder::startVisiting(Ast *node)
     DeclarationBuilderBase::startVisiting(node);
 }
 
+bool DeclarationBuilder::declaredInContext(const QByteArray &name) const
+{
+    return declaredIn(name, DUContextPointer(currentContext()));
+}
+
 void DeclarationBuilder::visitClassStatement(Ast *node)
 {
     ModuleDeclaration *baseClass = nullptr;

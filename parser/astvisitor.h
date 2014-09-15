@@ -37,9 +37,6 @@ namespace Ruby
 class KDEVRUBYPARSER_EXPORT AstVisitor
 {
 public:
-    /// Constructor.
-    AstVisitor();
-
     /// Destructor.
     virtual ~AstVisitor();
 
@@ -58,6 +55,15 @@ public:
      * @param node The given node.
      */
     void visitNode(Ast *node);
+
+protected:
+    /**
+     * @returns true if the given name identifies an variable/method/... that
+     * has already been declared in the current context. This method will be
+     * called when it's needed to resolve the ambiguity of special methods like:
+     * require, include, ...
+     */
+    virtual bool declaredInContext(const QByteArray &name) const = 0;
 
 protected:
     /// And the following is a list of virtual methods that can be overriden.
