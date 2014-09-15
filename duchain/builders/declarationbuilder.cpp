@@ -651,17 +651,17 @@ void DeclarationBuilder::visitForStatement(Ast *node)
     node->tree = aux;
 }
 
-void DeclarationBuilder::visitAccessSpecifier(const short int policy)
+void DeclarationBuilder::visitAccessSpecifier(const access_t policy)
 {
     switch (policy) {
-    case 0:
-        setAccessPolicy(KDevelop::Declaration::Public);
+    case public_a:
+        setAccessPolicy(Declaration::Public);
         break;
-    case 1:
-        setAccessPolicy(KDevelop::Declaration::Protected);
+    case protected_a:
+        setAccessPolicy(Declaration::Protected);
         break;
-    case 2:
-        setAccessPolicy(KDevelop::Declaration::Private);
+    case private_a:
+        setAccessPolicy(Declaration::Private);
     }
 }
 

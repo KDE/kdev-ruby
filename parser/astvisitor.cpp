@@ -584,7 +584,7 @@ void AstVisitor::visitSelf(Ast *node)
     Q_UNUSED(node)
 }
 
-void AstVisitor::visitAccessSpecifier(const short int policy)
+void AstVisitor::visitAccessSpecifier(const access_t policy)
 {
     Q_UNUSED(policy)
 }
@@ -667,14 +667,15 @@ void AstVisitor::visitNode(Ast *node)
         case token_op_assign: visitAssignmentStatement(node); break;
         case token_object:
             name = QByteArray(node->tree->name);
-            if (name == "public")
-                visitAccessSpecifier(0);
-            else if (name == "protected")
-                visitAccessSpecifier(1);
-            else if (name == "private")
-                visitAccessSpecifier(2);
-            else
+            if (name == "public") {
+                visitAccessSpecifier(public_a);
+            } else if (name == "protected") {
+                visitAccessSpecifier(protected_a);
+            } else if (name == "private") {
+                visitAccessSpecifier(private_a);
+            } else {
                 visitName(node);
+            }
             break;
         case token_hash: visitHash(node); break;
         case token_array: visitArray(node); break;

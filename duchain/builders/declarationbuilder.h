@@ -78,7 +78,7 @@ protected:
     virtual void visitMethodCall(Ast *node) override;
     virtual void visitMixin(Ast *node, bool include) override;
     virtual void visitForStatement(Ast *node) override;
-    virtual void visitAccessSpecifier(const short int policy) override;
+    virtual void visitAccessSpecifier(const access_t policy) override;
     virtual void visitYieldStatement(Ast *node) override;
     virtual void visitRescueArg(Ast *node) override;
 

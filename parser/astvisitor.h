@@ -107,7 +107,7 @@ protected:
     virtual void visitFile(Ast *node);
     virtual void visitEncoding(Ast *node);
     virtual void visitSelf(Ast *node);
-    virtual void visitAccessSpecifier(const short int policy);
+    virtual void visitAccessSpecifier(const access_t policy);
     virtual void visitClassName(Ast *node);
     virtual void visitRescue(Ast *node);
     virtual void visitRescueArg(Ast *node);

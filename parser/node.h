@@ -227,6 +227,15 @@ enum ruby_version {
     ruby21 = 3, /* 2.1.x branch */
 };
 
+/*
+ * The different access specifiers available in Ruby.
+ */
+enum access_t {
+    public_a    = 0,
+    protected_a = 1,
+    private_a   = 2,
+};
+
 /**
  * This struct contains all the options that may be passed
  * to the parser.
