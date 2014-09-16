@@ -20,6 +20,8 @@
 
 #include <parser/parser.h>
 
+using namespace KDevelop;
+
 namespace Ruby
 {
 
@@ -29,9 +31,11 @@ Parser::Parser()
     m_version = ruby21;
 }
 
-Parser::~Parser()
+Parser::Parser(const IndexedString &fileName, const QByteArray &contents)
 {
-    /* There's nothing to do here! */
+    m_currentDocument = fileName;
+    m_contents = contents;
+    m_version = ruby21;
 }
 
 void Parser::setContents(const QByteArray &contents)
@@ -39,7 +43,7 @@ void Parser::setContents(const QByteArray &contents)
     m_contents = contents;
 }
 
-void Parser::setCurrentDocument(const KDevelop::IndexedString &fileName)
+void Parser::setCurrentDocument(const IndexedString &fileName)
 {
     m_currentDocument = fileName;
 }
@@ -104,18 +108,18 @@ const QString Parser::symbol(const Node *node) const
 void Parser::appendProblem(const struct error_t *error)
 {
     int col = (error->column > 0) ? error->column - 1 : 0;
-    KDevelop::ProblemPointer problem(new KDevelop::Problem);
+    ProblemPointer problem(new KDevelop::Problem);
 
     KTextEditor::Cursor cursor(error->line - 1, col);
     KTextEditor::Range range(cursor, cursor);
-    KDevelop::DocumentRange location(m_currentDocument, range);
+    DocumentRange location(m_currentDocument, range);
     problem->setFinalLocation(location);
     problem->setDescription(QString(error->msg));
-    problem->setSource(KDevelop::ProblemData::Parser);
+    problem->setSource(ProblemData::Parser);
     if (error->warning) {
-        problem->setSeverity(KDevelop::ProblemData::Error);
+        problem->setSeverity(ProblemData::Error);
     } else {
-        problem->setSeverity(KDevelop::ProblemData::Warning);
+        problem->setSeverity(ProblemData::Warning);
     }
     m_problems << problem;
 }

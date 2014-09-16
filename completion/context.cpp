@@ -264,13 +264,11 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
 {
     AbstractType::Ptr res;
     QString expr = m_text.left(m_text.lastIndexOf(token));
-    Parser parser;
     EditorIntegrator e;
     ExpressionVisitor ev(m_duContext.data(), &e);
 
     DUChainReadLocker lock;
-    parser.setCurrentDocument(IndexedString());
-    parser.setContents(expr.toUtf8());
+    Parser parser(IndexedString(), expr.toUtf8());
     Ast *ast = parser.parse();
     if (!ast || !ast->tree) {
         return AbstractType::Ptr(nullptr);

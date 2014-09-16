@@ -42,14 +42,11 @@ class KDEVRUBYPARSER_EXPORT Parser
 {
 public:
     /**
-     * Constructor.
+     * Constructors.
      */
     Parser();
-
-    /**
-     * Destructor.
-     */
-    ~Parser();
+    explicit Parser(const KDevelop::IndexedString &fileName,
+                    const QByteArray &contents);
 
     /**
      * Set the contents of the document.
