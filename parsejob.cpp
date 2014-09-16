@@ -99,7 +99,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     m_parser->setContents(contents().contents);
     m_parser->setCurrentDocument(document());
     m_parser->setRubyVersion(ruby()->version());
-    Ast * ast = m_parser->parse();
+    Ast *ast = m_parser->parse();
 
     /* Setting up the TopDUContext features */
     KDevelop::ReferencedTopDUContext toUpdate;

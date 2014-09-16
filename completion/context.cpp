@@ -177,8 +177,9 @@ CodeCompletionContext::~CodeCompletionContext()
 QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItems(bool &abort, bool fullCompletion)
 {
     QList<CompletionTreeItemPointer> items;
-    if (!m_valid)
+    if (!m_valid) {
         return items;
+    }
 
     switch(m_kind) {
         case MemberAccess:
@@ -202,9 +203,9 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
             addRubySpecialBuiltins();
     }
 
-    if (shouldAddParentItems(fullCompletion))
+    if (shouldAddParentItems(fullCompletion)) {
         items.append(parentContext()->completionItems(abort, fullCompletion));
-
+    }
     return items;
 }
 
@@ -263,14 +264,14 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
 {
     AbstractType::Ptr res;
     QString expr = m_text.left(m_text.lastIndexOf(token));
-    Parser *parser = new Parser;
+    Parser parser;
     EditorIntegrator e;
     ExpressionVisitor ev(m_duContext.data(), &e);
 
     DUChainReadLocker lock;
-    parser->setCurrentDocument(IndexedString());
-    parser->setContents(expr.toUtf8());
-    Ast *ast = parser->parse();
+    parser.setCurrentDocument(IndexedString());
+    parser.setContents(expr.toUtf8());
+    Ast *ast = parser.parse();
     if (!ast || !ast->tree) {
         return AbstractType::Ptr(nullptr);
     }
@@ -278,8 +279,7 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     ev.visitCode(ast);
     res = ev.lastType();
     lock.lock();
-    parser->freeAst(ast);
-    delete parser;
+    parser.freeAst(ast);
 
     return res;
 }
@@ -318,6 +318,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
         MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(d.first);
         if (md && md->accessPolicy() == Declaration::Public) {
             if (!scoped || (scoped && md->isClassMethod())) {
+
                 ADD_NORMAL(d.first, d.second);
             }
         } else if (scoped && dynamic_cast<ModuleDeclaration *>(d.first)) {
