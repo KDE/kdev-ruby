@@ -28,6 +28,8 @@ namespace Ruby {
 extern "C" {
 #endif
 
+#include <parser/export.h>
+
 /**
  * This enumeration contains all the available tokens
  * used by this parser. This values are important for the
@@ -254,21 +256,21 @@ struct options_t {
  * @param opts The options passed to the parser.
  * @return an AST that represents the code.
  */
-struct ast_t * rb_compile_file(struct options_t *opts);
+KDEVRUBYPARSER_EXPORT struct ast_t * rb_compile_file(struct options_t *opts);
 
 /**
  * Free an ast_t.
  *
  * @param ra the ast_t you want to free.
  */
-void rb_free(struct ast_t *ra);
+KDEVRUBYPARSER_EXPORT void rb_free(struct ast_t *ra);
 
 /**
  * Get the name node.
  *
  * @param n The root node.
  */
-struct node * rb_name_node(struct node *n);
+KDEVRUBYPARSER_EXPORT struct node * rb_name_node(struct node *n);
 
 /**
  * Free the node of an ast_t. Note that this function is already called
@@ -315,7 +317,7 @@ struct node * concat_list(struct node *head, struct node *tail);
 
 #ifdef BUILD_TESTS
 void print_node(struct node *n);
-void print_errors(struct error_t *errors);
+KDEVRUBYPARSER_EXPORT void print_errors(struct error_t *errors);
 #endif
 
 

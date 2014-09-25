@@ -3091,6 +3091,8 @@ struct ast_t * rb_compile_file(struct options_t *opts)
  * Compile a file like the rb_compile_file function but printing
  * things directly to the stdout. This function is used for the tests.
  */
+KDEVRUBYPARSER_EXPORT int rb_debug_file(struct options_t *opts);
+
 int rb_debug_file(struct options_t *opts)
 {
     struct parser_t p;
