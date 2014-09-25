@@ -35,7 +35,7 @@ struct KDEVRUBYDUCHAIN_EXPORT YieldType {
     KDevelop::IndexedType type;
 };
 
-KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
+KDEVRUBYDUCHAIN_EXPORT DECLARE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
 /**
  * @class MethodDeclarationData

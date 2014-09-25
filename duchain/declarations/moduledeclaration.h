@@ -37,8 +37,8 @@ struct KDEVRUBYDUCHAIN_EXPORT ModuleMixin {
     bool included;
 };
 
-KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
-KDEVPLATFORMLANGUAGE_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
+KDEVRUBYDUCHAIN_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
+KDEVRUBYDUCHAIN_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 
 /**
  * @class ModuleDeclarationData
