@@ -157,9 +157,9 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
         ev.visitNode(node);
         if (!ev.lastType()) {
             DUChainReadLocker lock;
-            ModuleDeclaration *cdecl = dynamic_cast<ModuleDeclaration *>(ctx->owner());
+            ModuleDeclaration *cdeclaration = dynamic_cast<ModuleDeclaration *>(ctx->owner());
             lock.unlock();
-            if (cdecl && !cdecl->isModule()) {
+            if (cdeclaration && !cdeclaration->isModule()) {
                 ev.setContext(getClassContext(currentContext()));
                 ev.visitNode(node);
             }
