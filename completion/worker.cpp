@@ -23,6 +23,8 @@
 #include <completion/context.h>
 #include <completion/model.h>
 
+#include <language/util/includeitem.h>
+
 
 namespace Ruby
 {
