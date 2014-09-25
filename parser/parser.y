@@ -30,6 +30,13 @@
 extern char *strdup(const char *s);
 #endif
 
+/* for alloca */
+#ifdef _WIN32
+#include <malloc.h>
+#else
+#include <alloca.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1938,7 +1945,7 @@ static int parse_heredoc_identifier(struct parser_t *parser)
 static int parse_heredoc(struct parser_t *parser)
 {
     int length = strlen(lex_strterm->word);
-    char aux[length];
+    char *aux = (char*)alloca(length);
     char c = nextc();
     int i = 0;
     int ax = 0;
