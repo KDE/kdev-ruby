@@ -24,6 +24,7 @@ target_link_libraries(kdevrubyparser LINK_PRIVATE
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DBUILD_TESTS)
     add_executable(ruby-parser main.c)
+    set_target_properties(ruby-parser PROPERTIES WIN32_EXECUTABLE 0)
     install(DIRECTORY tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(ruby-parser kdevrubyparser)
 endif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
