@@ -26,7 +26,9 @@
 
 %{
 /* make clang happy */
+#ifndef _MSC_VER
 extern char *strdup(const char *s);
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
