@@ -19,6 +19,9 @@ set(rubycompletion_SRCS
 
 add_library(kdevrubycompletion SHARED ${rubycompletion_SRCS})
 
+generate_export_header(kdevrubycompletion EXPORT_MACRO_NAME KDEVRUBYCOMPLETION_EXPORT
+                                          EXPORT_FILE_NAME completionexport.h)
+
 target_link_libraries(kdevrubycompletion LINK_PRIVATE
     KDev::Interfaces
     KDev::Language

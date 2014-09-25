@@ -13,6 +13,9 @@ set(rubyrails_SRCS
 
 add_library(kdevrubyrails SHARED ${rubyrails_SRCS})
 
+generate_export_header(kdevrubyrails EXPORT_MACRO_NAME KDEVRUBYRAILS_EXPORT
+                                     EXPORT_FILE_NAME export.h)
+
 target_link_libraries(kdevrubyrails LINK_PRIVATE
     KDev::Language
     KDev::Project

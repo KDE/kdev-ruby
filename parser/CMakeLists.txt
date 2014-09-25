@@ -16,6 +16,9 @@ include_directories(
 
 add_library(kdevrubyparser SHARED ${rubyparser_SRCS})
 
+generate_export_header(kdevrubyparser EXPORT_MACRO_NAME KDEVRUBYPARSER_EXPORT
+                                      EXPORT_FILE_NAME export.h)
+
 target_link_libraries(kdevrubyparser LINK_PRIVATE
     KDev::Language
 )

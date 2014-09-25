@@ -22,6 +22,9 @@ set(rubyduchain_SRCS
 
 add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
 
+generate_export_header(kdevrubyduchain EXPORT_MACRO_NAME KDEVRUBYDUCHAIN_EXPORT
+                                       EXPORT_FILE_NAME duchainexport.h)
+
 target_link_libraries(kdevrubyduchain LINK_PRIVATE
     KDev::Language
     KDev::Util
