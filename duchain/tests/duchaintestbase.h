@@ -28,9 +28,6 @@
 #include <language/duchain/duchain.h>
 #include <language/duchain/duchainlock.h>
 
-// Ruby
-#include <duchain/duchainexport.h>
-
 /*
  * This macro is used to annotate that the only purpose of a test is to
  * check that the code does not crash.
@@ -60,7 +57,7 @@ struct DUChainReleaser {
  * @class DUChainTestBase
  * The base class for all DUChain Test classes.
  */
-class KDEVRUBYDUCHAIN_EXPORT DUChainTestBase : public QObject
+class DUChainTestBase : public QObject
 {
     Q_OBJECT
 
