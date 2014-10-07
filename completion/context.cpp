@@ -54,6 +54,18 @@ const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend").split(' ')
 const int MEMBER_STRINGS_MAX = 7; // include
 
 /**
+ * The diferent types of contexts in code completion.
+ */
+enum class ContextType {
+    NoMemberAccess,         /// A global completion should be done.
+    MemberAccess,           /// obj.
+    ModuleMemberAccess,     /// MyModule::
+    BaseClassAccess,        /// After "class Klass <".
+    ModuleMixinAccess,      /// After "include" or "extend".
+    FileChoose              /// Autocompletion for files.
+};
+
+/**
  * It compresses the given @p text by removing spaces.
  */
 void compressText(QString &text)
@@ -129,30 +141,30 @@ QString lastNLines(const QString &str, int n)
  * @param original The original text from the completion context.
  * @returns the proper CodeCompletionContext::CompletionContextType.
  */
-CodeCompletionContext::CompletionContextType findAccessKind(const QString &original)
+ContextType findAccessKind(const QString &original)
 {
     const QString text = getEndingFromSet(original);
 
     if (text == QStringLiteral(".")) {
-        return CodeCompletionContext::MemberAccess;
+        return ContextType::MemberAccess;
     }
     if (text == QStringLiteral("::")) {
-        return CodeCompletionContext::ModuleMemberAccess;
+        return ContextType::ModuleMemberAccess;
     }
     if (text == QStringLiteral("<") && insideClass(original)) {
-        return CodeCompletionContext::BaseClassAccess;
+        return ContextType::BaseClassAccess;
     }
     if (text == QStringLiteral("include") || text == QStringLiteral("extend")) {
-        return CodeCompletionContext::ModuleMixinAccess;
+        return ContextType::ModuleMixinAccess;
     }
-    return CodeCompletionContext::NoMemberAccess;
+    return ContextType::NoMemberAccess;
 }
 
 CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QString &text,
                                              const QString &followingText,
                                              const CursorInRevision &pos, int depth)
     : KDevelop::CodeCompletionContext(ctxt, text, pos, depth)
-    , m_valid(true), m_kind(NoMemberAccess)
+    , m_valid(true), m_kind(ContextType::NoMemberAccess)
 {
     if (!m_duContext || !isValidPosition()) {
         m_valid = false;
@@ -182,19 +194,19 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
     }
 
     switch(m_kind) {
-        case MemberAccess:
+        case ContextType::MemberAccess:
             items += memberAccessItems();
             break;
-        case ModuleMemberAccess:
+        case ContextType::ModuleMemberAccess:
             items += moduleMemberAccessItems();
             break;
-        case BaseClassAccess:
+        case ContextType::BaseClassAccess:
             items += baseClassItems();
             break;
-        case ModuleMixinAccess:
+        case ContextType::ModuleMixinAccess:
             items += moduleMixinItems();
             break;
-        case FileChoose:
+        case ContextType::FileChoose:
             items += fileChooseItems();
             break;
         default:
@@ -256,7 +268,7 @@ bool CodeCompletionContext::doRequireCompletion()
     line = line.mid(idx + 1);
 
     m_includeItems = Loader::getFilesInSearchPath(line, m_following, relative);
-    m_kind = FileChoose;
+    m_kind = ContextType::FileChoose;
     return true;
 }
 

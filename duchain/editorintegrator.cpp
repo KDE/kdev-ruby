@@ -34,29 +34,31 @@ EditorIntegrator::EditorIntegrator()
     /* There's nothing to do here! */
 }
 
-const CursorInRevision EditorIntegrator::findPosition(const Node *node, Edge edge) const
+const CursorInRevision EditorIntegrator::findPosition(const Node *node,
+                                                      Edge edge) const
 {
     Q_ASSERT(node);
 
-    if (edge == BackEdge) {
+    if (edge == Edge::BackEdge) {
         return CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
     } else {
         return CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
     }
 }
 
-const RangeInRevision EditorIntegrator::findRange(const Node *from, const Node *to) const
+const RangeInRevision EditorIntegrator::findRange(const Node *from,
+                                                  const Node *to) const
 {
-    CursorInRevision c_from = findPosition(from, FrontEdge);
-    CursorInRevision c_to = findPosition(to, BackEdge);
+    CursorInRevision c_from = findPosition(from, Edge::FrontEdge);
+    CursorInRevision c_to = findPosition(to, Edge::BackEdge);
 
     return RangeInRevision(c_from, c_to);
 }
 
 const RangeInRevision EditorIntegrator::findRange(const Node *node) const
 {
-    CursorInRevision c_from = findPosition(node, FrontEdge);
-    CursorInRevision c_to = findPosition(node, BackEdge);
+    CursorInRevision c_from = findPosition(node, Edge::FrontEdge);
+    CursorInRevision c_to = findPosition(node, Edge::BackEdge);
 
     return RangeInRevision(c_from, c_to);
 }

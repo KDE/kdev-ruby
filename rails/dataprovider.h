@@ -33,6 +33,11 @@ namespace Rails
 {
 
 /**
+ * The kind of providers available.
+ */
+enum class Kind { Views, Tests };
+
+/**
  * @class DataProvider.
  *
  * This class takes the Rails::QuickOpenData class to provide all the
@@ -43,8 +48,6 @@ class KDEVRUBYRAILS_EXPORT DataProvider :
     public KDevelop::PathFilter<QuickOpenItem, DataProvider>
 {
 public:
-    enum Kind { Views, Tests };
-
     explicit DataProvider(const Kind kind);
 
     /// @returns the item as a KDevelop::Path.

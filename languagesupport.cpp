@@ -354,10 +354,10 @@ void LanguageSupport::setupQuickOpen()
 {
     KDevelop::IQuickOpen * quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
     if (quickOpen) {
-        m_viewsQuickOpenDataProvider = new Rails::DataProvider(Rails::DataProvider::Views);
+        m_viewsQuickOpenDataProvider = new Rails::DataProvider(Rails::Kind::Views);
         quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
 
-        m_testsQuickOpenDataProvider = new Rails::DataProvider(Rails::DataProvider::Tests);
+        m_testsQuickOpenDataProvider = new Rails::DataProvider(Rails::Kind::Tests);
         quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
     }
 }

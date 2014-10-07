@@ -35,7 +35,7 @@
 namespace Rails
 {
 
-DataProvider::DataProvider(Rails::DataProvider::Kind kind) : m_kind(kind)
+DataProvider::DataProvider(Kind kind) : m_kind(kind)
 {
     reset();
 }
@@ -57,9 +57,9 @@ void DataProvider::reset()
     KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
 
     QVector<KDevelop::Path> urlsToSwitch;
-    if (m_kind == Views) {
+    if (m_kind == Kind::Views) {
         urlsToSwitch = Switchers::viewsToSwitch();
-    } else if (m_kind == Tests) {
+    } else if (m_kind == Kind::Tests) {
         urlsToSwitch = Switchers::testsToSwitch();
     }
 
@@ -88,12 +88,19 @@ uint DataProvider::unfilteredItemCount() const
 
 KDevelop::QuickOpenDataPointer DataProvider::data(uint row) const
 {
+    QString s;
     QuickOpenItem item(filteredItems()[row]);
-    const QString &s = (m_kind == Views) ? i18n("View for:") : i18n("Test for:");
+
+    if (m_kind == Kind::Views) {
+        s = i18n("View for:");
+    } else {
+        s = i18n("Test for:");
+    }
     return KDevelop::QuickOpenDataPointer(new QuickOpenData(item, s));
 }
 
-void DataProvider::enableData(const QStringList &items, const QStringList &scopes)
+void DataProvider::enableData(const QStringList &items,
+                              const QStringList &scopes)
 {
     KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
 }

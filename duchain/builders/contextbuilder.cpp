@@ -123,7 +123,7 @@ KDevelop::TopDUContext * ContextBuilder::newTopContext(const RangeInRevision &ra
 
 const KDevelop::CursorInRevision ContextBuilder::startPos(const Ast *node) const
 {
-    return m_editor->findPosition(node->tree, EditorIntegrator::FrontEdge);
+    return m_editor->findPosition(node->tree, Edge::FrontEdge);
 }
 
 KDevelop::RangeInRevision ContextBuilder::editorFindRange(Ast *fromRange, Ast *toRange)

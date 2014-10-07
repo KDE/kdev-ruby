@@ -76,7 +76,8 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         DUChainReadLocker lock;
 
         // If this is a class method, look at the eigen class and get out.
-        if (kind == ClassMethod || kind == Unknown) {
+        if (kind == DeclarationKind::ClassMethod
+                || kind == DeclarationKind::Unknown) {
             Declaration *d = context->owner();
             ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
             if (md) {
@@ -101,7 +102,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         decls = context->findLocalDeclarations(id.last(), range.end);
         if (decls.isEmpty()) {
             decls = context->findDeclarations(id.last(), range.end);
-            if (decls.isEmpty() && kind != Local) {
+            if (decls.isEmpty() && kind != DeclarationKind::Local) {
                 if (context.data() == context->topContext()) {
                     decls = context->topContext()->findDeclarations(id, range.end);
                 } else {
@@ -109,7 +110,7 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
                 }
 
                 // If it's empty, then we're going for some PST time!
-                if (decls.isEmpty() && kind != ClassMethod) {
+                if (decls.isEmpty() && kind != DeclarationKind::ClassMethod) {
                     lock.unlock();
                     return getDeclarationFromPST(id, context, kind);
                 }
@@ -159,12 +160,12 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
         }
 
         // If it's a method declaration, check that we've got the proper one.
-        if (kind != Unknown) {
+        if (kind != DeclarationKind::Unknown) {
             MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(d);
             if (mDecl) {
                 // TODO: remove this.
-                if ((mDecl->isClassMethod() && kind != ClassMethod) ||
-                    (!mDecl->isClassMethod() && kind != InstanceMethod)) {
+                if ((mDecl->isClassMethod() && kind != DeclarationKind::ClassMethod) ||
+                    (!mDecl->isClassMethod() && kind != DeclarationKind::InstanceMethod)) {
                     continue;
                 }
             }

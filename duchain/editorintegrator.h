@@ -37,6 +37,11 @@ namespace Ruby
 class Parser;
 
 /**
+ * The different positions around a Node.
+ */
+enum class Edge { FrontEdge, BackEdge };
+
+/**
  * @class EditorIntegrator
  *
  * The EditorIntegrator for the Ruby plugin.
@@ -47,8 +52,6 @@ public:
     /// Constructor.
     EditorIntegrator();
 
-    enum Edge { FrontEdge, BackEdge };
-
     /**
      * Find the position of the given node at the given edge.
      *
@@ -56,7 +59,7 @@ public:
      * @param edge the edge this method has to look at.
      */
     const KDevelop::CursorInRevision findPosition(const Node *node,
-                                                  Edge edge = BackEdge) const;
+                                                  Edge edge = Edge::BackEdge) const;
 
     /**
      * Find the range between the given nodes.

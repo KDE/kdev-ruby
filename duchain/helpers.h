@@ -41,7 +41,7 @@ class EditorIntegrator;
      * The kind for the declaration to be fetched in the getDeclaration
      * and the getDeclarationFromPST methods.
      */
-    enum DeclarationKind {
+    enum class DeclarationKind {
         Unknown         = 0, /// We don't care about the declaration kind.
         ClassMethod     = 1, /// It has to be a class method.
         InstanceMethod  = 2, /// It has to be an instance method.

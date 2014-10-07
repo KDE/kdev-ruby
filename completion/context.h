@@ -35,6 +35,7 @@ namespace KDevelop {
 namespace Ruby
 {
 
+enum class ContextType;
 typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 
 /**
@@ -68,14 +69,6 @@ public:
     virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;
 
 public:
-    enum CompletionContextType {
-        NoMemberAccess,         /// A global completion should be done.
-        MemberAccess,           /// obj.
-        ModuleMemberAccess,     /// MyModule::
-        BaseClassAccess,        /// After "class Klass <" only classes should be shown.
-        ModuleMixinAccess,      /// After "include" or "extend", only available modules should be shown.
-        FileChoose              /// Autocompletion for files.
-    };
 
 private:
     /**
@@ -143,7 +136,7 @@ private:
     bool m_valid;
     char m_closing;
     QString m_following;
-    CompletionContextType m_kind;
+    ContextType m_kind;
     QList<KDevelop::IncludeItem> m_includeItems;
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
 };

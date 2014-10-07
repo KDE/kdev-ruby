@@ -488,7 +488,7 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
             // m_declarationKind = InstanceMethod;
         } else {
             encounter(ev.lastType());
-            m_declarationKind = ClassMethod;
+            m_declarationKind = DeclarationKind::ClassMethod;
             ctx = sType->internalContext(ctx->topContext());
         }
 

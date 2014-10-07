@@ -97,7 +97,7 @@ void DeclarationBuilder::visitClassStatement(Ast *node)
     DUContext *ctx = getContainedNameContext(node);
 
     /* First of all, open the declaration. */
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, Class);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, DeclarationKind::Class);
     if (!decl) {
         node->foundProblems = true;
         return;
@@ -105,8 +105,9 @@ void DeclarationBuilder::visitClassStatement(Ast *node)
 
     // Initialize the declaration.
     DUChainWriteLocker lock;
-    if (!comment.isEmpty())
+    if (!comment.isEmpty()) {
         decl->setComment(comment);
+    }
     decl->setIsModule(false);
     decl->clearBaseClass();
     decl->clearModuleMixins();
@@ -209,7 +210,7 @@ void DeclarationBuilder::visitModuleStatement(Ast *node)
     DUContext *ctx = getContainedNameContext(node);
 
     /* First of all, open the declaration. */
-    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, Module);
+    ModuleDeclaration *decl = reopenDeclaration<ModuleDeclaration>(id, range, ctx, DeclarationKind::Module);
     if (!decl) {
         node->foundProblems = true;
         return;
@@ -942,17 +943,25 @@ bool DeclarationBuilder::validReDeclaration(Declaration *decl, const QualifiedId
                                             const RangeInRevision &range, DeclarationKind kind)
 {
     // Check that we'll deal just with a class or a module.
-    if (kind != Class && kind != Module)
+    if (kind != DeclarationKind::Class && kind != DeclarationKind::Module) {
         return true;
+    }
     ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(decl);
-    if (!md)
+    if (!md) {
         return true;
+    }
 
     // Now let's check that we're not trying to redeclare a class as
     // a module and viceversa.
     const bool mod = md->isModule();
-    if ((mod && kind == Class) || (!mod && kind == Module)) {
-        const QString str = (kind == Class) ? QStringLiteral("class") : QStringLiteral("module");
+    if ((mod && kind == DeclarationKind::Class)
+            || (!mod && kind == DeclarationKind::Module)) {
+        QString str;
+        if (kind == DeclarationKind::Class) {
+            str = QStringLiteral("class");
+        } else {
+            str = QStringLiteral("module");
+        }
         const QString msg = i18n("TypeError: %1 is not a %2", id.toString(), str);
 
         appendProblem(range, msg);
