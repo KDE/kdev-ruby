@@ -49,7 +49,7 @@ typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionContext : public KDevelop::CodeCompletionContext
 {
 public:
-    typedef KSharedPtr<CodeCompletionContext> Ptr;
+    typedef QExplicitlySharedDataPointer<CodeCompletionContext> Ptr;
 
     /// Constructor.
     explicit CodeCompletionContext(KDevelop::DUContextPointer ctxt,
