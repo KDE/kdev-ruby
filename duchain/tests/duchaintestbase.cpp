@@ -25,7 +25,6 @@
 #include <tests/testcore.h>
 #include <language/duchain/duchain.h>
 #include <language/codegen/coderepresentation.h>
-#include <kcomponentdata.h>
 
 // Ruby
 #include <duchain/helpers.h>

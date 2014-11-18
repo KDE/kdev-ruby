@@ -21,7 +21,6 @@
 
 // Qt + KDE
 #include <QtTest/QtTest>
-#include <KDebug>
 
 // Ruby
 #include <duchain/helpers.h>
