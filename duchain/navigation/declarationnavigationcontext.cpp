@@ -71,9 +71,11 @@ QString DeclarationNavigationContext::html(bool shorten)
             htmlFunction();
         } else if (m_declaration->kind() == Declaration::Instance) {
             eventuallyMakeTypeLinks(m_declaration->abstractType());
-            modifyHtml() += ' ' + nameHighlight(Qt::escape(declarationName(m_declaration))) + "<br>";
-        } else if (m_declaration->kind() == Declaration::Type && m_declaration->abstractType().cast<StructureType>())
+            const QString &esc = declarationName(m_declaration).toHtmlEscaped();
+            modifyHtml() += ' ' + nameHighlight(esc) + "<br>";
+        } else if (m_declaration->kind() == Declaration::Type && m_declaration->abstractType().cast<StructureType>()) {
             htmlClass();
+        }
     } else if (m_declaration->abstractType()) {
         eventuallyMakeTypeLinks(m_declaration->abstractType());
         modifyHtml() += " ";
@@ -81,7 +83,8 @@ QString DeclarationNavigationContext::html(bool shorten)
 
     QString access = stringFromAccess(m_declaration);
     if (!access.isEmpty()) {
-        modifyHtml() += labelHighlight(i18n("Access: %1 ", propertyHighlight(Qt::escape(access))));
+        access = propertyHighlight(access.toHtmlEscaped());
+        modifyHtml() += labelHighlight(i18n("Access: %1 ", access));
         modifyHtml() += "<br />";
     }
 
@@ -98,7 +101,7 @@ QString DeclarationNavigationContext::html(bool shorten)
             if(!comment.isEmpty()) {
                 comment.replace("<br />", "\n");
                 comment.replace("<br/>", "\n");
-                comment = Qt::escape(comment);
+                comment = comment.toHtmlEscaped();
                 comment.replace('\n', "<br />");
                 modifyHtml() += commentHighlight(comment);
                 modifyHtml() += "<br />";
@@ -122,7 +125,8 @@ void DeclarationNavigationContext::htmlFunction()
         return;
     }
 
-    modifyHtml() += nameHighlight(Qt::escape(prettyIdentifier(m_declaration).toString()));
+    const QString &name = prettyIdentifier(m_declaration).toString();
+    modifyHtml() += nameHighlight(name.toHtmlEscaped());
     if (type->arguments().size() > 0) {
         bool first = true;
         int nDef = 0;
@@ -142,10 +146,12 @@ void DeclarationNavigationContext::htmlFunction()
                     modifyHtml() += " &";
                 else
                     modifyHtml() += " ";
-                modifyHtml() += nameHighlight(Qt::escape(vd->identifier().toString()));
+                const QString &aux = vd->identifier().toString();
+                modifyHtml() += nameHighlight(aux.toHtmlEscaped());
 
                 if (vd->isOpt()) {
-                    modifyHtml() += " " + Qt::escape(mDecl->defaultParameters()[nDef].str());
+                    const QString &str = mDecl->defaultParameters()[nDef].str();
+                    modifyHtml() += " " + str.toHtmlEscaped();
                     nDef++;
                 }
             }

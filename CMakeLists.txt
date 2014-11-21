@@ -10,12 +10,13 @@ cmake_minimum_required(VERSION 2.8.12)
 find_package (ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
+include(GenerateExportHeader)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings)
 
 find_package(Qt5 REQUIRED Core Widgets Test)
-find_package(KF5 REQUIRED COMPONENTS KDELibs4Support ThreadWeaver TextEditor I18n)
+find_package(KF5 REQUIRED COMPONENTS ThreadWeaver TextEditor I18n ItemModels)
 find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
 find_package(BISON REQUIRED)
 
@@ -55,7 +56,6 @@ add_library(kdevrubylanguagesupport MODULE
 target_link_libraries(kdevrubylanguagesupport
     KF5::I18n
     KF5::TextEditor
-    KF5::KDELibs4Support
 
     KDev::Language
     KDev::Util

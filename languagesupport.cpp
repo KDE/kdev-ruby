@@ -23,7 +23,7 @@
 // Qt + KDE
 #include <QtCore/QTimer>
 #include <QtCore/QProcess>
-#include <KAction>
+#include <QtWidgets/QAction>
 #include <KActionCollection>
 
 //KDevelop
