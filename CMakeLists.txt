@@ -20,12 +20,6 @@ find_package(KF5 REQUIRED COMPONENTS ThreadWeaver TextEditor I18n ItemModels)
 find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
 find_package(BISON REQUIRED)
 
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/version.h"
-  @ONLY
-)
-
 include_directories(
     ${KDEVPLATFORM_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
