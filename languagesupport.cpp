@@ -61,7 +61,6 @@
 #include <completion/model.h>
 #include <codegen/refactoring.h>
 #include <debug.h>
-#include <version.h>
 //END Includes
 
 
@@ -85,12 +84,13 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     , m_rubyFileLaunchConfiguration(nullptr)
     , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
+    KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
+
     // TODO: this should be removed once KDE knows how to handle categories.
     QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
 
     m_builtinsLock.lockForWrite();
 
-    KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
     setXMLFile("kdevrubysupport.rc");
     m_highlighting = new Ruby::Highlighting(this);
     m_refactoring = new Ruby::Refactoring(this);
