@@ -23,10 +23,8 @@
 #ifndef RAILS_HELPERS_H
 #define RAILS_HELPERS_H
 
-
-#include <util/path.h>
 #include <rails/export.h>
-
+#include <util/path.h>
 
 namespace ruby {
 namespace rails {
@@ -52,22 +50,10 @@ public:
      * application.
      */
     static KDevelop::Path findRailsRoot(const QUrl &url);
-
-    /**
-     * @returns true if the given @p extension belongs to a view,
-     * false otherwise.
-     */
-    static inline bool isViewExtension(const QString &extension)
-    {
-        return (extension == "rjs" || extension == "rxml" ||
-                extension == "rhtml" || extension == "js.rjs" ||
-                extension == "xml.builder" || extension == "html.erb" ||
-                extension == "erb" || extension == "haml");
-    }
 };
 
 }
 }
 
-#endif /* RAILS_HELPERS_H */
+#endif // RAILS_HELPERS_H
 

@@ -20,8 +20,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#ifndef RAILSDATAPROVIDER_H
-#define RAILSDATAPROVIDER_H
+#ifndef RAILS_DATA_PROVIDER_H
+#define RAILS_DATA_PROVIDER_H
 
 #include <language/interfaces/quickopendataprovider.h>
 #include <rails/export.h>
@@ -41,9 +41,9 @@ enum class Kind { Views, Tests };
  * This class takes the rails::QuickOpenData class to provide all the
  * data that we need to feed the QuickOpen.
  */
-class KDEVRUBYRAILS_EXPORT DataProvider :
-    public KDevelop::QuickOpenDataProviderBase,
-    public KDevelop::PathFilter<QuickOpenItem, DataProvider>
+class KDEVRUBYRAILS_EXPORT DataProvider
+    : public KDevelop::QuickOpenDataProviderBase
+    , public KDevelop::PathFilter<QuickOpenItem, DataProvider>
 {
 public:
     explicit DataProvider(const Kind kind);
@@ -75,5 +75,5 @@ private:
 }
 }
 
-#endif
+#endif // RAILS_DATA_PROVIDER_H
 

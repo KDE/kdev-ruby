@@ -20,16 +20,20 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include <QDir>
-#include <QFileInfo>
+#include <rails/dataprovider.h>
+
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+
+#include <klocalizedstring.h>
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 
-#include <rails/switchers.h>
-#include <rails/dataprovider.h>
 #include <rails/helpers.h>
+#include <rails/switchers.h>
 
+using namespace KDevelop;
 using namespace ruby::rails;
 
 DataProvider::DataProvider(Kind kind) : m_kind(kind)
@@ -39,7 +43,7 @@ DataProvider::DataProvider(Kind kind) : m_kind(kind)
 
 QStringList DataProvider::scopes()
 {
-    return QStringList() << QStringLiteral("Project");
+    return QStringList{ QStringLiteral("Project") };
 }
 
 void DataProvider::setFilterText(const QString &text)
@@ -51,9 +55,9 @@ void DataProvider::reset()
 {
     clearFilter();
 
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
+    auto doc = ICore::self()->documentController()->activeDocument();
 
-    QVector<KDevelop::Path> urlsToSwitch;
+    QVector<Path> urlsToSwitch;
     if (m_kind == Kind::Views) {
         urlsToSwitch = Switchers::viewsToSwitch();
     } else if (m_kind == Kind::Tests) {
@@ -61,11 +65,11 @@ void DataProvider::reset()
     }
 
     QList<QuickOpenItem> items;
-    foreach (const KDevelop::Path &url, urlsToSwitch) {
+    foreach (const Path &url, urlsToSwitch) {
         QuickOpenItem item;
-        item.url = url.toUrl();;
-        if (activeDocument) {
-            item.originUrl = KDevelop::Path(activeDocument->url()).toUrl();
+        item.url = url.toUrl();
+        if (doc) {
+            item.originUrl = Path(doc->url()).toUrl();
         }
         items << item;
     }
@@ -93,12 +97,12 @@ KDevelop::QuickOpenDataPointer DataProvider::data(uint row) const
     } else {
         s = i18n("Test for:");
     }
-    return KDevelop::QuickOpenDataPointer(new QuickOpenData(item, s));
+    return QuickOpenDataPointer(new QuickOpenData(item, s));
 }
 
 void DataProvider::enableData(const QStringList &items,
                               const QStringList &scopes)
 {
-    KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
+    QuickOpenDataProviderBase::enableData(items, scopes);
 }
 

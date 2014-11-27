@@ -20,35 +20,52 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
 #include <interfaces/icore.h>
-#include <interfaces/iplugincontroller.h>
 #include <interfaces/idocumentcontroller.h>
+#include <interfaces/iplugincontroller.h>
 #include <language/interfaces/iquickopen.h>
 
+#include <languagesupport.h>
 #include <rails/switchers.h>
 #include <rails/helpers.h>
 
+using namespace KDevelop;
 using namespace ruby::rails;
+
+namespace {
+
+bool isViewExtension(const QString &extension)
+{
+    return (extension == QStringLiteral("rjs") ||
+            extension == QStringLiteral("rxml") ||
+            extension == QStringLiteral("rhtml") ||
+            extension == QStringLiteral("js.rjs") ||
+            extension == QStringLiteral("xml.builder") ||
+            extension == QStringLiteral("html.erb") ||
+            extension == QStringLiteral("erb") ||
+            extension == QStringLiteral("haml"));
+}
+
+}
 
 Switchers::Switchers(ruby::LanguageSupport *language)
     : QObject(language)
 {
 }
 
-QVector<KDevelop::Path> Switchers::viewsToSwitch()
+QVector<Path> Switchers::viewsToSwitch()
 {
-    QVector<KDevelop::Path> urls;
+    QVector<Path> urls;
 
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) {
+    auto doc = ICore::self()->documentController()->activeDocument();
+    if (!doc) {
         return urls;
     }
 
-    const QUrl &url = activeDocument->url();
+    const QUrl &url = doc->url();
     QFileInfo file(url.toLocalFile());
     if (!file.exists()) {
         return urls;
@@ -58,7 +75,7 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (Helpers::isViewExtension(ext)) {
+    if (isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     } else if (ext == "rb") {
         switchTo = name.remove(QRegExp("_controller$"));
@@ -73,14 +90,14 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    KDevelop::Path root = Helpers::findRailsRoot(url);
+    Path root = Helpers::findRailsRoot(url);
     if (!root.isValid()) {
         return urls;
     }
 
-    KDevelop::Path viewsUrl(root, QStringLiteral("app/views"));
-    KDevelop::Path viewsUrlS(viewsUrl, switchTo);
-    KDevelop::Path viewsUrlP(viewsUrl, switchTo + "s");
+    Path viewsUrl(root, QStringLiteral("app/views"));
+    Path viewsUrlS(viewsUrl, switchTo);
+    Path viewsUrlP(viewsUrl, switchTo + "s");
 
     if (QFile::exists(viewsUrlS.toLocalFile())) {
         viewsUrl = viewsUrlS;
@@ -92,7 +109,7 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
 
     QDir viewsDir(viewsUrl.toLocalFile());
     const QStringList &views = viewsDir.entryList();
-    const KDevelop::Path base(viewsDir.absolutePath());
+    const Path base(viewsDir.absolutePath());
 
     foreach (const QString &name, views) {
         if (!(name.endsWith("~") || name == "." || name == "..")) {
@@ -102,16 +119,16 @@ QVector<KDevelop::Path> Switchers::viewsToSwitch()
     return urls;
 }
 
-QVector<KDevelop::Path> Switchers::testsToSwitch()
+QVector<Path> Switchers::testsToSwitch()
 {
     QVector<KDevelop::Path> urls;
 
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) {
+    auto doc = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!doc) {
         return urls;
     }
 
-    QFileInfo file(activeDocument->url().toLocalFile());
+    QFileInfo file(doc->url().toLocalFile());
     if (!file.exists()) {
         return urls;
     }
@@ -120,10 +137,11 @@ QVector<KDevelop::Path> Switchers::testsToSwitch()
     QString name = file.baseName();
     QString switchTo = "";
 
-    if (Helpers::isViewExtension(ext)) {
+    if (isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     } else if (ext == "rb") {
-        switchTo = name.remove(QRegExp("_controller$")).remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
+        switchTo = name.remove(QRegExp("_controller$")).
+            remove(QRegExp("_controller_test$")).remove(QRegExp("_test$"));
     }
     if (switchTo.isEmpty()) {
         return urls;
@@ -132,33 +150,35 @@ QVector<KDevelop::Path> Switchers::testsToSwitch()
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
 
-    KDevelop::Path testsUrl(Helpers::findRailsRoot(activeDocument->url()), "test");
-    KDevelop::Path functionalTestsUrlS(testsUrl, "functional/" + switchTo + "_controller_test.rb");
+    Path testsUrl(Helpers::findRailsRoot(doc->url()), "test");
+    Path functionalTestsUrlS(testsUrl, "functional/" + switchTo +
+        "_controller_test.rb");
     if (QFile::exists(functionalTestsUrlS.toLocalFile())) {
         urls << functionalTestsUrlS;
     }
 
-    KDevelop::Path functionalTestsUrlP(testsUrl, "functional/" + switchTo + "s_controller_test.rb");
+    Path functionalTestsUrlP(testsUrl, "functional/" + switchTo +
+        "s_controller_test.rb");
     if (QFile::exists(functionalTestsUrlP.toLocalFile())) {
         urls << functionalTestsUrlP;
     }
 
-    KDevelop::Path integrationTestsUrlS(testsUrl, "integration/" + switchTo + "_test.rb");
+    Path integrationTestsUrlS(testsUrl, "integration/" + switchTo + "_test.rb");
     if (QFile::exists(integrationTestsUrlS.toLocalFile())) {
         urls << integrationTestsUrlS;
     }
 
-    KDevelop::Path integrationTestsUrlP(testsUrl, "integration/" + switchTo + "s_test.rb");
+    Path integrationTestsUrlP(testsUrl, "integration/" + switchTo + "s_test.rb");
     if (QFile::exists(integrationTestsUrlP.toLocalFile())) {
         urls << integrationTestsUrlP;
     }
 
-    KDevelop::Path unitTestsUrlS(testsUrl, "unit/" + switchTo + "_test.rb");
+    Path unitTestsUrlS(testsUrl, "unit/" + switchTo + "_test.rb");
     if (QFile::exists(unitTestsUrlS.toLocalFile())) {
         urls << unitTestsUrlS;
     }
 
-    KDevelop::Path unitTestsUrlP(testsUrl, "unit/" + switchTo + "s_test.rb");
+    Path unitTestsUrlP(testsUrl, "unit/" + switchTo + "s_test.rb");
     if (QFile::exists(unitTestsUrlP.toLocalFile())) {
         urls << unitTestsUrlP;
     }
@@ -168,80 +188,83 @@ QVector<KDevelop::Path> Switchers::testsToSwitch()
 
 void Switchers::switchToController()
 {
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) {
+    auto doc = KDevelop::ICore::self()->documentController()->activeDocument();
+    if (!doc) {
         return;
     }
 
-    QFileInfo file(activeDocument->url().toLocalFile());
+    QFileInfo file(doc->url().toLocalFile());
     if (!file.exists()) {
         return;
     }
 
-    QString ext = file.completeSuffix();
+    const QString &ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
-    KDevelop::Path root = Helpers::findRailsRoot(activeDocument->url());
+    Path root = Helpers::findRailsRoot(doc->url());
     if (!root.isValid()) {
         return;
     }
 
-    if ((ext == "rb") && !name.endsWith(QStringLiteral("_controller"))) {
+    if (ext == QStringLiteral("rb") &&
+        !name.endsWith(QStringLiteral("_controller"))) {
+
         if (name.endsWith("_test")) {
             switchTo = name.remove(QRegExp("_test$"));
             switchTo = name.remove(QRegExp("_controller$"));
         } else {
             switchTo = name;
         }
-    } else if (Helpers::isViewExtension(ext)) {
+    } else if (isViewExtension(ext)) {
         switchTo = file.dir().dirName();
     }
 
     if (!switchTo.isEmpty()) {
-        KDevelop::Path url(root, "app/controllers");
+        Path url(root, "app/controllers");
 
         if (switchTo.endsWith("s")) {
             switchTo = switchTo.mid(0, switchTo.length() - 1);
         }
-        KDevelop::Path singular(url, switchTo + "_controller.rb");
-        KDevelop::Path plural(url, switchTo + "s_controller.rb");
+        Path singular(url, switchTo + "_controller.rb");
+        Path plural(url, switchTo + "s_controller.rb");
 
-        QUrl doc;
+        QUrl docUrl;
         if (QFile::exists(singular.toLocalFile())) {
-            doc = singular.toUrl();
+            docUrl = singular.toUrl();
         } else {
-            doc = plural.toUrl();
+            docUrl = plural.toUrl();
         }
-        KDevelop::ICore::self()->documentController()->openDocument(doc);
+        ICore::self()->documentController()->openDocument(docUrl);
     }
 }
 
 void Switchers::switchToModel()
 {
-    KDevelop::IDocument *activeDocument = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!activeDocument) {
+    auto doc = ICore::self()->documentController()->activeDocument();
+    if (!doc) {
         return;
     }
 
-    QFileInfo file(activeDocument->url().toLocalFile());
+    QFileInfo file(doc->url().toLocalFile());
     if (!file.exists()) {
         return;
     }
 
-    QString ext = file.completeSuffix();
+    const QString &ext = file.completeSuffix();
     QString name = file.baseName();
     QString switchTo = "";
 
-    KDevelop::Path root = Helpers::findRailsRoot(activeDocument->url());
+    Path root = Helpers::findRailsRoot(doc->url());
     if (!root.isValid()) {
         return;
     }
 
-    if (Helpers::isViewExtension(ext)) {
+    if (isViewExtension(ext)) {
         switchTo = file.dir().dirName();
-    } else if (ext == QStringLiteral("rb")
-                && (name.endsWith(QStringLiteral("_controller"))
-                    || name.endsWith(QStringLiteral("_test")))) {
+    } else if (ext == QStringLiteral("rb") &&
+                (name.endsWith(QStringLiteral("_controller")) ||
+                 name.endsWith(QStringLiteral("_test")))) {
+
         switchTo = name.remove(QRegExp("_controller$"));
         switchTo = switchTo.remove(QRegExp("_controller_test$"));
         switchTo = switchTo.remove(QRegExp("_test$"));
@@ -250,12 +273,12 @@ void Switchers::switchToModel()
         return;
     }
 
-    KDevelop::Path url(root, QStringLiteral("app/models"));
+    Path url(root, QStringLiteral("app/models"));
     if (switchTo.endsWith("s")) {
         switchTo = switchTo.mid(0, switchTo.length() - 1);
     }
     url.addPath(switchTo + ".rb");
-    KDevelop::ICore::self()->documentController()->openDocument(url.toUrl());
+    ICore::self()->documentController()->openDocument(url.toUrl());
 }
 
 void Switchers::switchToView()
@@ -264,11 +287,11 @@ void Switchers::switchToView()
         return;
     }
 
-    KDevelop::IQuickOpen *quickOpen = KDevelop::ICore::self()->pluginController()
-        ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
-    if (quickOpen) {
-        quickOpen->showQuickOpen(QStringList() << i18n("Rails Views"));
-    }
+    auto quickOpen = ICore::self()->pluginController()->
+        extensionForPlugin<IQuickOpen>("org.kdevelop.IQuickOpen");
+
+    Q_ASSERT(quickOpen);
+    quickOpen->showQuickOpen(QStringList{ i18n("Rails Views") });
 }
 
 void Switchers::switchToTest()
@@ -277,10 +300,10 @@ void Switchers::switchToTest()
         return;
     }
 
-    KDevelop::IQuickOpen *quickOpen = KDevelop::ICore::self()->pluginController()
-        ->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
-    if (quickOpen) {
-        quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
-    }
+    auto quickOpen = ICore::self()->pluginController()->
+        extensionForPlugin<IQuickOpen>("org.kdevelop.IQuickOpen");
+
+    Q_ASSERT(quickOpen);
+    quickOpen->showQuickOpen(QStringList{ i18n("Rails Tests") });
 }
 

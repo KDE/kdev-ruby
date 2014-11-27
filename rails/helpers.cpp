@@ -22,20 +22,21 @@
 
 #include <rails/helpers.h>
 
+using namespace KDevelop;
 using namespace ruby::rails;
 
-KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
+Path Helpers::findRailsRoot(const QUrl &url)
 {
-    KDevelop::Path current(url.toString());
-    KDevelop::Path upUrl(current.parent());
+    Path current(url.toString());
+    Path upUrl(current.parent());
 
     while (upUrl != current) {
-        KDevelop::Path aux = upUrl.parent();
-        if (aux.lastPathSegment() == "app") {
+        Path aux = upUrl.parent();
+        if (aux.lastPathSegment() == QStringLiteral("app")) {
             const QString &dir = upUrl.lastPathSegment();
-            if (dir == QStringLiteral("controllers")
-                    || dir == QStringLiteral("models")
-                    || dir == QStringLiteral("views")) {
+            if (dir == QStringLiteral("controllers") ||
+                dir == QStringLiteral("models") ||
+                dir == QStringLiteral("views")) {
                 return aux.parent();
             }
         } else if (upUrl.lastPathSegment() == QStringLiteral("test")) {
@@ -44,5 +45,6 @@ KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
         current = upUrl;
         upUrl = aux;
     }
-    return KDevelop::Path();
+    return Path();
 }
+

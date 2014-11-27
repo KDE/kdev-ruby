@@ -19,22 +19,23 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+#include <rails/quickopendata.h>
 
-#include <QIcon>
-#include <QTextCharFormat>
+#include <QtGui/QIcon>
+#include <QtGui/QTextCharFormat>
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 
-#include <rails/quickopendata.h>
 #include <rails/helpers.h>
 
 using namespace ruby::rails;
 
-QuickOpenData::QuickOpenData(const QuickOpenItem &item, const QString &explanation)
-    : QuickOpenDataBase(), m_item(item), m_explanation(explanation)
+QuickOpenData::QuickOpenData(const QuickOpenItem &item,
+                             const QString &explanation)
+    : QuickOpenDataBase()
+    , m_item(item), m_explanation(explanation)
 {
-    /* There's nothing to do here. */
 }
 
 QString QuickOpenData::text() const
@@ -76,18 +77,17 @@ QList<QVariant> QuickOpenData::highlighting() const
 {
     QTextCharFormat boldFormat;
     boldFormat.setFontWeight(QFont::Bold);
-    QTextCharFormat normalFormat;
 
     const QString &txt = text();
     int fileNameLength = m_item.url.fileName().length();
 
-    QList<QVariant> ret;
-    ret << 0;
-    ret << txt.length() - fileNameLength;
-    ret << QVariant(normalFormat);
-    ret << txt.length() - fileNameLength;
-    ret << fileNameLength;
-    ret << QVariant(boldFormat);
-    return ret;
+    return QList<QVariant>{
+        0,
+        txt.length() - fileNameLength,
+        QVariant(QTextCharFormat()),
+        txt.length() - fileNameLength,
+        fileNameLength,
+        QVariant(boldFormat)
+    };
 }
 

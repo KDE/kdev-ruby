@@ -25,6 +25,7 @@
 #include <interfaces/iplugincontroller.h>
 #include <language/interfaces/iquickopen.h>
 
+#include <languagesupport.h>
 #include <rails/dataprovider.h>
 #include <rails/switchers.h>
 

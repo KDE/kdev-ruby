@@ -23,11 +23,13 @@
 #ifndef RAILS_SWITCHERS_H
 #define RAILS_SWITCHERS_H
 
-#include <util/path.h>
-#include <languagesupport.h>
 #include <rails/export.h>
+#include <util/path.h>
 
 namespace ruby {
+
+class LanguageSupport;
+
 namespace rails {
 
 /**
@@ -59,5 +61,5 @@ public slots:
 }
 }
 
-#endif /* RAILS_SWITCHERS_H */
+#endif // RAILS_SWITCHERS_H
 

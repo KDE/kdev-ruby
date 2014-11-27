@@ -19,13 +19,12 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#ifndef QUICKOPEN_DATA_H
-#define QUICKOPEN_DATA_H
+#ifndef RAILS_QUICKOPEN_DATA_H
+#define RAILS_QUICKOPEN_DATA_H
 
-
-#include <language/interfaces/quickopenfilter.h>
 #include <language/interfaces/quickopendataprovider.h>
-#include <util/path.h>
+#include <language/interfaces/quickopenfilter.h>
+
 #include <rails/export.h>
 
 namespace ruby {
@@ -52,8 +51,7 @@ struct KDEVRUBYRAILS_EXPORT QuickOpenItem {
 class KDEVRUBYRAILS_EXPORT QuickOpenData : public KDevelop::QuickOpenDataBase
 {
 public:
-    explicit QuickOpenData(const QuickOpenItem &item,
-                           const QString &explanation);
+    QuickOpenData(const QuickOpenItem &item, const QString &explanation);
 
 protected:
     virtual QString text() const override;
@@ -76,5 +74,5 @@ private:
 }
 }
 
-#endif /* QUICKOPEN_DATA_H */
+#endif // RAILS_QUICKOPEN_DATA_H
 

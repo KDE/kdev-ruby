@@ -127,11 +127,6 @@ private:
      */
     QString findFunctionUnderCursor(KDevelop::IDocument *doc);
 
-    /**
-     * @internal Setup IQuickOpen so it registers Rails data providers.
-     */
-    void setupQuickOpen();
-
 private Q_SLOTS:
      /// The slot that allows this plugin to run the current Ruby file.
     void runCurrentFile();
