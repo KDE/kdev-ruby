@@ -44,6 +44,51 @@
 using namespace ruby;
 using namespace KDevelop;
 
+namespace {
+
+/**
+ * @internal Set up the launch configuration before the run occurs.
+ * @param cfg the KConfigGroup for this launch.
+ * @param document the currently active document.
+ */
+void setupBeforeRun(KConfigGroup &cfg, IDocument *document)
+{
+    Path root = rails::Helpers::findRailsRoot(document->url());
+
+    if (root.isValid()) {
+        cfg.writeEntry("Working Directory", root.toLocalFile());
+    } else {
+        cfg.writeEntry("Working Directory", root.parent().path());
+    }
+}
+
+/**
+ * @internal Find the method under the cursor in the given \p doc. It's
+ * used by the runCurrentTestFunction() slot.
+ */
+QString findFunctionUnderCursor(KDevelop::IDocument *doc)
+{
+    DUChainReadLocker lock;
+
+    const auto top = DUChainUtils::standardContextForUrl(doc->url());
+    if (!top) {
+        return "";
+    }
+
+    const auto &cursor = doc->cursorPosition();
+    auto context = top->findContextAt(CursorInRevision(
+        cursor.line(), cursor.column()
+    ));
+    if (!context) {
+        return "";
+    }
+
+    rDebug() << "CONTEXT ID" << context->localScopeIdentifier();
+    return context->localScopeIdentifier().toString();
+}
+
+}
+
 Launcher::Launcher(LanguageSupport *support)
     : QObject(support)
     , m_file(nullptr)
@@ -107,38 +152,6 @@ ILaunchConfiguration * Launcher::launchConfiguration(const QString &name)
     cfg.sync();
 
     return config;
-}
-
-void Launcher::setupBeforeRun(KConfigGroup &cfg, IDocument *document)
-{
-    Path root = rails::Helpers::findRailsRoot(document->url());
-
-    if (root.isValid()) {
-        cfg.writeEntry("Working Directory", root.toLocalFile());
-    } else {
-        cfg.writeEntry("Working Directory", root.parent().path());
-    }
-}
-
-QString Launcher::findFunctionUnderCursor(KDevelop::IDocument *doc)
-{
-    DUChainReadLocker lock;
-
-    const auto top = DUChainUtils::standardContextForUrl(doc->url());
-    if (!top) {
-        return "";
-    }
-
-    const auto &cursor = doc->cursorPosition();
-    auto context = top->findContextAt(CursorInRevision(
-        cursor.line(), cursor.column()
-    ));
-    if (!context) {
-        return "";
-    }
-
-    rDebug() << "CONTEXT ID" << context->localScopeIdentifier();
-    return context->localScopeIdentifier().toString();
 }
 
 void Launcher::runCurrentFile()

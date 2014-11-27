@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef RUBY_RAILS_H_
-#define RUBY_RAILS_H_
+#ifndef RUBY_RAILS_H
+#define RUBY_RAILS_H
 
 #include <KActionCollection>
 #include <rails/export.h>
@@ -66,5 +66,5 @@ private:
 }
 }
 
-#endif // RUBY_RAILS_H_
+#endif // RUBY_RAILS_H
 

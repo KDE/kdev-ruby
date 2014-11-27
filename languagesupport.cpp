@@ -19,61 +19,39 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <languagesupport.h>
 
-//BEGIN Includes
-// Qt + KDE
-#include <QtCore/QTimer>
 #include <QtCore/QProcess>
-#include <QtWidgets/QAction>
 
-//KDevelop
-#include <interfaces/icore.h>
-#include <interfaces/iproject.h>
-#include <interfaces/idocument.h>
-#include <interfaces/iplugincontroller.h>
-#include <interfaces/iprojectcontroller.h>
-#include <interfaces/idocumentcontroller.h>
-#include <interfaces/ilanguagecontroller.h>
-#include <interfaces/iruncontroller.h>
-#include <interfaces/ilauncher.h>
-#include <interfaces/ilaunchmode.h>
-#include <interfaces/ilaunchconfiguration.h>
-#include <interfaces/launchconfigurationtype.h>
-#include <execute/iexecuteplugin.h>
-#include <project/projectmodel.h>
-#include <language/interfaces/iquickopen.h>
-#include <language/duchain/duchain.h>
-#include <language/duchain/duchainlock.h>
-#include <language/duchain/duchainutils.h>
-#include <language/backgroundparser/backgroundparser.h>
-#include <language/codecompletion/codecompletion.h>
 #include <interfaces/contextmenuextension.h>
+#include <interfaces/icore.h>
+#include <interfaces/ilanguagecontroller.h>
+#include <interfaces/iplugincontroller.h>
+#include <language/codecompletion/codecompletion.h>
 #include <language/interfaces/editorcontext.h>
 
-//Ruby plugin
-#include <languagesupport.h>
-#include <parsejob.h>
-#include <highlighting.h>
-#include <rails/helpers.h>
-#include <rails/support.h>
-#include <duchain/helpers.h>
 #include <completion/model.h>
 #include <codegen/refactoring.h>
 #include <debug.h>
+#include <duchain/helpers.h>
+#include <highlighting.h>
 #include <launcher.h>
-//END Includes
+#include <parsejob.h>
+#include <rails/helpers.h>
+#include <rails/support.h>
 
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<ruby::LanguageSupport>();)
 
 Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
 using namespace ruby;
+using namespace KDevelop;
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
-    : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
-    , KDevelop::ILanguageSupport()
+    : IPlugin(QStringLiteral("kdevrubysupport"), parent)
+    , ILanguageSupport()
 {
-    KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
+    KDEV_USE_EXTENSION_INTERFACE(ILanguageSupport)
 
     // TODO: this should be removed once KDE knows how to handle categories.
     QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
@@ -82,16 +60,16 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     m_launcher = new Launcher(this);
 
     setXMLFile("kdevrubysupport.rc");
-    m_highlighting = new ruby::Highlighting(this);
-    m_refactoring = new ruby::Refactoring(this);
+    m_highlighting = new Highlighting(this);
+    m_refactoring = new Refactoring(this);
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
-    new KDevelop::CodeCompletion(this, rModel, "Ruby");
+    new CodeCompletion(this, rModel, "Ruby");
 
     /* Retrieving Ruby version */
     QProcess ruby;
-    ruby.start("/usr/bin/env", QStringList() << "ruby" << "--version");
+    ruby.start("/usr/bin/env", QStringList{ "ruby", "--version" });
     ruby.waitForFinished();
-    QString output = ruby.readAllStandardOutput().split(' ')[1];
+    const QString &output = ruby.readAllStandardOutput().split(' ')[1];
     QStringList version = output.split('.');
     if (version.size() > 1) {
         if (version[0] == "1") {
@@ -113,27 +91,28 @@ QString LanguageSupport::name() const
     return QStringLiteral("Ruby");
 }
 
-KDevelop::ParseJob * LanguageSupport::createParseJob(const KDevelop::IndexedString &url)
+KDevelop::ParseJob * LanguageSupport::createParseJob(const IndexedString &url)
 {
-    return new ParseJob(url, this);
+    return new ruby::ParseJob(url, this);
 }
 
-KDevelop::ILanguage * LanguageSupport::language()
+ILanguage * LanguageSupport::language()
 {
     return core()->languageController()->language(name());
 }
 
-KDevelop::ICodeHighlighting * LanguageSupport::codeHighlighting() const
+ICodeHighlighting * LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
 }
 
-KDevelop::ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::Context *context)
+ContextMenuExtension LanguageSupport::contextMenuExtension(Context *context)
 {
-    KDevelop::ContextMenuExtension cm;
-    KDevelop::EditorContext *ed = dynamic_cast<KDevelop::EditorContext *>(context);
+    ContextMenuExtension cm;
+    EditorContext *ed = dynamic_cast<EditorContext *>(context);
 
-    if (ed && KDevelop::ICore::self()->languageController()->languagesForUrl(ed->url()).contains(language())) {
+    if (ed && ICore::self()->languageController()->languagesForUrl(ed->url()).
+            contains(language())) {
         // It's safe to add our own ContextMenuExtension.
         m_refactoring->fillContextMenu(cm, context);
     }
@@ -145,7 +124,7 @@ enum ruby_version LanguageSupport::version() const
     return m_version;
 }
 
-void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*/,
+void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow *,
                                                  QString &_xmlFile,
                                                  KActionCollection &actions)
 {

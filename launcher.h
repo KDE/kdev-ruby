@@ -58,19 +58,6 @@ private:
      */
     KDevelop::ILaunchConfiguration * launchConfiguration(const QString &name);
 
-    /**
-     * @internal Set up the launch configuration before the run occurs.
-     * @param cfg the KConfigGroup for this launch.
-     * @param document the currently active document.
-     */
-    void setupBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *document);
-
-    /**
-     * @internal Find the method under the cursor in the given \p doc. It's
-     * used by the runCurrentTestFunction() slot.
-     */
-    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
-
 private slots:
     /// The slot that allows this plugin to run the current Ruby file.
     void runCurrentFile();
