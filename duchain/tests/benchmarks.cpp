@@ -66,12 +66,10 @@ void Benchmarks::parser()
 void Benchmarks::declarationBuilder()
 {
     const QByteArray &contents = getBuiltinsFile();
-    Parser *parser = new Parser();
-    parser->setContents(contents);
-    parser->setCurrentDocument(builtinsFile());
-    Ast * ast = parser->parse();
+    Parser parser(builtinsFile(), contents);
+    Ast * ast = parser.parse();
     EditorIntegrator editor;
-    editor.setParseSession(parser);
+    editor.setParseSession(&parser);
 
     QBENCHMARK {
         DeclarationBuilder builder(&editor);

@@ -63,9 +63,9 @@ const RangeInRevision EditorIntegrator::findRange(const Node *node) const
     return RangeInRevision(c_from, c_to);
 }
 
-const IndexedString EditorIntegrator::url() const
+const IndexedString & EditorIntegrator::url() const
 {
-    return m_session->currentDocument();
+    return m_session->currentDocument;
 }
 
 void EditorIntegrator::setParseSession(Parser *session)

@@ -19,37 +19,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <parsejob.h>
+
 #include <mutex>
 
-// Qt + KDE
-#include <QReadLocker>
+#include <QtCore/QReadLocker>
 
-// KDevelop
+#include <interfaces/icore.h>
 #include <interfaces/ilanguage.h>
 #include <interfaces/ilanguagecontroller.h>
-#include <interfaces/icore.h>
 #include <language/backgroundparser/backgroundparser.h>
 #include <language/backgroundparser/urlparselock.h>
 #include <language/duchain/duchainutils.h>
 
-// Ruby
 #include <debug.h>
-#include <parsejob.h>
-#include <languagesupport.h>
-#include <parser/parser.h>
 #include <duchain/builders/declarationbuilder.h>
 #include <duchain/builders/usebuilder.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/helpers.h>
-
+#include <languagesupport.h>
+#include <parser/parser.h>
 
 using namespace KDevelop;
-namespace ruby
-{
+namespace ruby {
 
-ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languageSupport)
+ParseJob::ParseJob(const IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
-    , m_parser (new Parser)
     , m_duContext (nullptr)
 {
     /* There's nothing to do here. */
@@ -57,7 +52,6 @@ ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languag
 
 ParseJob::~ParseJob()
 {
-    delete m_parser;
 }
 
 LanguageSupport * ParseJob::ruby() const
@@ -65,11 +59,8 @@ LanguageSupport * ParseJob::ruby() const
     return dynamic_cast<LanguageSupport *>(languageSupport());
 }
 
-void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *thread)
+void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
 {
-    Q_UNUSED(pointer);
-    Q_UNUSED(thread);
-
     // Make sure that the builtins file is already loaded.
     if (document() != builtinsFile()) {
         const auto &langSupport = languageSupport();
@@ -96,61 +87,55 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         return abortJob();
     }
 
-    /*
-     * NOTE: Although the parser can retrieve the contents on its own,
-     * it's better to use contents().contents because this way the contents
-     * are converted in utf8 format always.
-     */
-    m_parser->setContents(contents().contents);
-    m_parser->setCurrentDocument(document());
-    m_parser->setRubyVersion(ruby()->version());
-    Ast *ast = m_parser->parse();
+    // NOTE: Although the parser can retrieve the contents on its own,
+    // it's better to use contents().contents because this way the contents
+    // are converted in utf8 format always.
+    Parser parser(document(), contents().contents);
+    parser.setRubyVersion(ruby()->version());
+    Ast *ast = parser.parse();
 
     /* Setting up the TopDUContext features */
-    KDevelop::ReferencedTopDUContext toUpdate;
+    ReferencedTopDUContext toUpdate;
     {
         DUChainReadLocker lock;
-        toUpdate = KDevelop::DUChainUtils::standardContextForUrl(document().toUrl());
+        toUpdate = DUChainUtils::standardContextForUrl(document().toUrl());
     }
 
-    KDevelop::TopDUContext::Features newFeatures = minimumFeatures();
+    TopDUContext::Features newFeatures = minimumFeatures();
     if (toUpdate) {
-        newFeatures = (KDevelop::TopDUContext::Features)(newFeatures | toUpdate->features());
+        newFeatures = (TopDUContext::Features)(newFeatures | toUpdate->features());
     }
 
     /* Remove update-flags like 'Recursive' or 'ForceUpdate' */
-    newFeatures = static_cast<KDevelop::TopDUContext::Features>(newFeatures & KDevelop::TopDUContext::AllDeclarationsContextsUsesAndAST);
+    newFeatures = static_cast<TopDUContext::Features>(
+        newFeatures & TopDUContext::AllDeclarationsContextsUsesAndAST);
 
-    /*
-     * And finally we do all the work if parsing was successful. Otherwise,
-     * we have to add a new problem
-     */
+    // And finally we do all the work if parsing was successful. Otherwise,
+    // we have to add a new problem
     if (ast) {
         // Empty document, do nothing
         if (!ast->tree) {
             return;
         }
         if (abortRequested()) {
-            m_parser->freeAst(ast);
             return abortJob();
         }
 
         EditorIntegrator editor;
-        editor.setParseSession(m_parser);
+        editor.setParseSession(&parser);
         DeclarationBuilder builder(&editor);
         builder.setPriority(parsePriority());
         m_duContext = builder.build(editor.url(), ast, toUpdate);
 
         // Add warnings
         DUChainWriteLocker wlock;
-        foreach (ProblemPointer p, m_parser->m_problems) {
+        for (const ProblemPointer p : parser.problems) {
             m_duContext->addProblem(p);
         }
         wlock.unlock();
         setDuChain(m_duContext);
 
         if (abortRequested()) {
-            m_parser->freeAst(ast);
             return abortJob();
         }
 
@@ -163,17 +148,17 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
         }
 
         if (abortRequested()) {
-            m_parser->freeAst(ast);
             return abortJob();
         }
 
-        const QVector<IndexedString> unresolvedImports = builder.unresolvedImports();
+        const auto &unresolvedImports = builder.unresolvedImports();
         if (!unresolvedImports.isEmpty()) {
             // Check whether one of the imports is queued for parsing, this
             // is to avoid deadlocks
             bool dependencyInQueue = false;
-            foreach (const IndexedString &url, unresolvedImports) {
-                dependencyInQueue = KDevelop::ICore::self()->languageController()->backgroundParser()->isQueued(url);
+            for (const IndexedString &url : unresolvedImports) {
+                dependencyInQueue = KDevelop::ICore::self()->
+                    languageController()->backgroundParser()->isQueued(url);
                 if (dependencyInQueue) {
                     break;
                 }
@@ -185,25 +170,28 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             // here if the document was already rescheduled, but there's many
             // cases where this might still happen)
             if (!(minimumFeatures() & Rescheduled) && dependencyInQueue) {
-                DUChainWriteLocker lock;
-                KDevelop::ICore::self()->languageController()->backgroundParser()->addDocument(document(),
-                                     static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled), parsePriority(),
-                                     nullptr, ParseJob::FullSequentialProcessing);
+                wlock.lock();
+                ICore::self()->languageController()->backgroundParser()->addDocument(
+                    document(),
+                    static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled),
+                    parsePriority(),
+                    nullptr,
+                    ParseJob::FullSequentialProcessing
+                );
+                wlock.unlock();
             }
         }
 
         if (abortRequested()) {
-            m_parser->freeAst(ast);
             return abortJob();
         }
 
         wlock.lock();
         m_duContext->setFeatures(newFeatures);
-        KDevelop::ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
+        ParsingEnvironmentFilePointer file = m_duContext->parsingEnvironmentFile();
         file->setModificationRevision(contents().modification);
-        KDevelop::DUChain::self()->updateContextEnvironment(m_duContext, file.data());
+        DUChain::self()->updateContextEnvironment(m_duContext, file.data());
         wlock.unlock();
-        m_parser->freeAst(ast);
 
         highlightDUChain();
         rDebug() << "**** Parsing Succeeded ****";
@@ -221,7 +209,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             DUChain::self()->addDocumentChain(m_duContext);
         }
 
-        foreach (ProblemPointer p, m_parser->m_problems) {
+        for (const ProblemPointer p : parser.problems) {
             rDebug() << "Added problem to context";
             m_duContext->addProblem(p);
         }

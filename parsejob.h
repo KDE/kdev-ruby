@@ -18,13 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBY_PARSEJOB_H
-#define RUBY_PARSEJOB_H
-
+#ifndef RUBY_PARSE_JOB_H
+#define RUBY_PARSE_JOB_H
 
 #include <language/backgroundparser/parsejob.h>
-
 
 namespace ruby {
 
@@ -50,12 +47,8 @@ public:
      * @param url the url of the file to parse.
      * @param languageSupport the ILanguageSupport of this plugin.
      */
-    explicit ParseJob(const KDevelop::IndexedString &url,
-                      KDevelop::ILanguageSupport *languageSupport);
-
-    /**
-     * Destructor.
-     */
+    ParseJob(const KDevelop::IndexedString &url,
+             KDevelop::ILanguageSupport *languageSupport);
     virtual ~ParseJob();
 
 protected:
@@ -73,17 +66,10 @@ private:
     LanguageSupport * ruby() const;
 
 private:
-    /**
-     * Ruby parser.
-     */
-    Parser *m_parser;
-
-    /**
-     * A reference to the current TopDUContext.
-     */
     KDevelop::ReferencedTopDUContext m_duContext;
 };
 
 }
 
-#endif /* RUBY_PARSEJOB_H */
+#endif // RUBY_PARSE_JOB_H
+

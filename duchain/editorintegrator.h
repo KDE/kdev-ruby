@@ -88,7 +88,7 @@ public:
      *
      * @return the url of the document we are editing.
      */
-    const KDevelop::IndexedString url() const;
+    const KDevelop::IndexedString & url() const;
 
     /**
      * Implemented to make the AbstractUseBuilder happy.

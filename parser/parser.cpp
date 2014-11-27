@@ -17,7 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #include <parser/parser.h>
 
 using namespace KDevelop;
@@ -29,13 +28,23 @@ Parser::Parser()
 {
     m_contents = nullptr;
     m_version = ruby21;
+    ast = nullptr;
 }
 
 Parser::Parser(const IndexedString &fileName, const QByteArray &contents)
 {
-    m_currentDocument = fileName;
+    currentDocument = fileName;
     m_contents = contents;
     m_version = ruby21;
+    ast = nullptr;
+}
+
+Parser::~Parser()
+{
+    if (ast) {
+        free_ast(ast->tree);
+        delete ast;
+    }
 }
 
 void Parser::setContents(const QByteArray &contents)
@@ -43,32 +52,22 @@ void Parser::setContents(const QByteArray &contents)
     m_contents = contents;
 }
 
-void Parser::setCurrentDocument(const IndexedString &fileName)
-{
-    m_currentDocument = fileName;
-}
-
 void Parser::setRubyVersion(enum ruby_version version)
 {
     m_version = version;
-}
-
-const KDevelop::IndexedString & Parser::currentDocument() const
-{
-    return m_currentDocument;
 }
 
 Ast * Parser::parse()
 {
     struct options_t opts;
     struct error_t *aux;
-    opts.path = m_currentDocument.str().toUtf8();
+    opts.path = currentDocument.str().toUtf8();
     opts.contents = m_contents.data();
     opts.version = m_version;
 
-    /* Let's call the parser ;) */
+    // Let's call the parser ;)
     struct ast_t *res = rb_compile_file(&opts);
-    Ast *ra = new Ast(res->tree);
+    ast = new Ast(res->tree);
     if (res->unrecoverable) {
         for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
@@ -76,21 +75,14 @@ Ast * Parser::parse()
         rb_free(res);
         return nullptr;
     } else {
-        m_problems.clear();
+        problems.clear();
         for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
         }
         free_errors(res);
         free(res);
     }
-    return ra;
-}
-
-void Parser::freeAst(const Ast *ast)
-{
-    if (ast) {
-        free_ast(ast->tree);
-    }
+    return ast;
 }
 
 void Parser::mapAstUse(Ast *node, const SimpleUse &use)
@@ -112,7 +104,7 @@ void Parser::appendProblem(const struct error_t *error)
 
     KTextEditor::Cursor cursor(error->line - 1, col);
     KTextEditor::Range range(cursor, cursor);
-    DocumentRange location(m_currentDocument, range);
+    DocumentRange location(currentDocument, range);
     problem->setFinalLocation(location);
     problem->setDescription(QString(error->msg));
     problem->setSource(ProblemData::Parser);
@@ -121,7 +113,7 @@ void Parser::appendProblem(const struct error_t *error)
     } else {
         problem->setSeverity(ProblemData::Warning);
     }
-    m_problems << problem;
+    problems << problem;
 }
 
 }

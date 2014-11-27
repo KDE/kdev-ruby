@@ -17,19 +17,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #ifndef RUBY_PARSER_H
 #define RUBY_PARSER_H
 
-
 #include <language/duchain/problem.h>
-#include <parser/export.h>
-#include <parser/ast.h>
 
+#include <parser/ast.h>
+#include <parser/export.h>
 
 namespace ruby {
 /// Convenient typedef that packs a DUContextPointer and a RangeInRevision.
-typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
+using SimpleUse = QPair<KDevelop::DUContextPointer,
+                        KDevelop::RangeInRevision>;
 
 /**
  * @class Parser
@@ -40,12 +39,9 @@ typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 class KDEVRUBYPARSER_EXPORT Parser
 {
 public:
-    /**
-     * Constructors.
-     */
     Parser();
-    explicit Parser(const KDevelop::IndexedString &fileName,
-                    const QByteArray &contents);
+    Parser(const KDevelop::IndexedString &fileName, const QByteArray &contents);
+    virtual ~Parser();
 
     /**
      * Set the contents of the document.
@@ -53,18 +49,6 @@ public:
      * @param contents the contents of the file to parse.
      */
     void setContents(const QByteArray &contents);
-
-    /**
-     * Set the current document.
-     *
-     * @param fileName the name of the current document.
-     */
-    void setCurrentDocument(const KDevelop::IndexedString &fileName);
-
-    /**
-     * @return the name of the current document.
-     */
-    const KDevelop::IndexedString & currentDocument() const;
 
     /**
      * Set the version of the Ruby interpreter.
@@ -77,13 +61,6 @@ public:
      * @return the generated Ast.
      */
     Ast * parse();
-
-    /**
-     * This method frees the Ast if necessary.
-     *
-     * @param ast the Ast to free.
-     */
-    void freeAst(const Ast *ast);
 
     /**
      * Implemented to make the AbstractUseBuilder happy.
@@ -106,10 +83,11 @@ private:
     void appendProblem(const struct error_t *error);
 
 public:
-    QVector<KDevelop::ProblemPointer> m_problems;
+    QVector<KDevelop::ProblemPointer> problems;
+    KDevelop::IndexedString currentDocument;
+    Ast *ast;
 
 private:
-    KDevelop::IndexedString m_currentDocument;
     QByteArray m_contents;
     enum ruby_version m_version;
 };

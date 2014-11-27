@@ -289,7 +289,6 @@ AbstractType::Ptr CodeCompletionContext::getExpressionType(const QString &token)
     ev.visitCode(ast);
     res = ev.lastType();
     lock.lock();
-    parser.freeAst(ast);
 
     return res;
 }
