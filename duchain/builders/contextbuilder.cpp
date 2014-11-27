@@ -145,14 +145,15 @@ const DocumentRange ContextBuilder::getDocumentRange(const RangeInRevision &rang
 
 KDevelop::QualifiedIdentifier ContextBuilder::identifierForNode(NameAst *name)
 {
-    if (!name)
-        return KDevelop::QualifiedIdentifier();
-    return KDevelop::QualifiedIdentifier(name->value);
+    if (!name) {
+        return QualifiedIdentifier();
+    }
+    return QualifiedIdentifier(name->value);
 }
 
 void ContextBuilder::startVisiting(Ast *node)
 {
-    IndexedString builtins = internalBuiltinsFile();
+    const auto &builtins = builtinsFile();
 
     if (compilingContexts()) {
         TopDUContext *top = dynamic_cast<TopDUContext *>(currentContext());

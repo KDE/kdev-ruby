@@ -189,7 +189,7 @@ void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPoin
                                             NavigationAction::Type actionType)
 {
     if (actionType == NavigationAction::JumpToSource
-            && declaration->url() == internalBuiltinsFile()) {
+            && declaration->url() == builtinsFile()) {
         modifyHtml() += i18n("Ruby Kernel");
         return;
     }

@@ -71,13 +71,13 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     Q_UNUSED(thread);
 
     // Make sure that the builtins file is already loaded.
-    if (document() != internalBuiltinsFile()) {
+    if (document() != builtinsFile()) {
         const auto &langSupport = languageSupport();
         static std::once_flag once;
 
         std::call_once(once, [langSupport] {
-            rDebug() << "Initializing internal function file" << internalBuiltinsFile();
-            ParseJob internalJob(internalBuiltinsFile(), langSupport);
+            rDebug() << "Initializing internal function file" << builtinsFile();
+            ParseJob internalJob(builtinsFile(), langSupport);
             internalJob.setMinimumFeatures(TopDUContext::AllDeclarationsAndContexts);
             internalJob.run({}, nullptr);
             Q_ASSERT(internalJob.success());
@@ -91,7 +91,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     }
 
     QReadLocker parseLock(ruby()->language()->parseLock());
-    KDevelop::ProblemPointer p = readContents();
+    ProblemPointer p = readContents();
     if (p || abortRequested()) {
         return abortJob();
     }
@@ -154,9 +154,9 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             return abortJob();
         }
 
-        if (newFeatures & TopDUContext::AllDeclarationsContextsAndUses
-                && document() != internalBuiltinsFile())
-        {
+        if (newFeatures & TopDUContext::AllDeclarationsContextsAndUses &&
+            document() != builtinsFile()) {
+
             UseBuilder useBuilder(&editor);
             useBuilder.setPriority(parsePriority());
             useBuilder.buildUses(ast);

@@ -43,7 +43,7 @@ Benchmarks::Benchmarks()
 
 const QByteArray Benchmarks::getBuiltinsFile()
 {
-    const QString fileName = internalBuiltinsFile().str();
+    const QString &fileName = builtinsFile().str();
     QFile file(fileName);
     bool opened = file.open(QIODevice::ReadOnly);
     Q_ASSERT(opened);
@@ -68,14 +68,14 @@ void Benchmarks::declarationBuilder()
     const QByteArray &contents = getBuiltinsFile();
     Parser *parser = new Parser();
     parser->setContents(contents);
-    parser->setCurrentDocument(internalBuiltinsFile());
+    parser->setCurrentDocument(builtinsFile());
     Ast * ast = parser->parse();
     EditorIntegrator editor;
     editor.setParseSession(parser);
 
     QBENCHMARK {
         DeclarationBuilder builder(&editor);
-        ReferencedTopDUContext top = builder.build(internalBuiltinsFile(), ast);
+        ReferencedTopDUContext top = builder.build(builtinsFile(), ast);
     }
 }
 

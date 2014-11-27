@@ -61,7 +61,7 @@ class EditorIntegrator;
      * @return A KDevelop::IndexedString that contains the url of the Ruby
      * builtins file.
      */
-    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString & internalBuiltinsFile();
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString & builtinsFile();
 
     /**
      * Given a Ast, return its name.
