@@ -26,10 +26,9 @@
 #include <util/path.h>
 
 
-QTEST_MAIN(Rails::Test)
+QTEST_MAIN(ruby::rails::Test)
 
-namespace Rails
-{
+using namespace ruby::rails;
 
 Test::Test()
 {
@@ -69,6 +68,4 @@ void Test::TestFindRailsRoot()
     path = Helpers::findRailsRoot(QUrl("/rails/app/controllers"));
     Q_ASSERT(!path.isValid());
 }
-
-} // End of namespace Rails
 

@@ -26,10 +26,9 @@
 #include <duchain/navigation/navigationwidget.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
-typedef KDevelop::AbstractIncludeFileCompletionItem<Ruby::NavigationWidget> BaseIncludeFileItem;
+typedef KDevelop::AbstractIncludeFileCompletionItem<ruby::NavigationWidget> BaseIncludeFileItem;
 
 /**
  * @class RequireFileItem
@@ -51,7 +50,7 @@ private:
     char m_closing;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_REQUIREFILEITEM_H */

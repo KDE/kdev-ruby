@@ -29,9 +29,7 @@
 #include <rails/quickopendata.h>
 #include <rails/helpers.h>
 
-
-namespace Rails
-{
+using namespace ruby::rails;
 
 QuickOpenData::QuickOpenData(const QuickOpenItem &item, const QString &explanation)
     : QuickOpenDataBase(), m_item(item), m_explanation(explanation)
@@ -91,7 +89,5 @@ QList<QVariant> QuickOpenData::highlighting() const
     ret << fileNameLength;
     ret << QVariant(boldFormat);
     return ret;
-}
-
 }
 

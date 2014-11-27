@@ -26,8 +26,8 @@
 #include <language/duchain/navigation/abstractdeclarationnavigationcontext.h>
 
 
-namespace Ruby
-{
+namespace ruby {
+
 class ModuleDeclaration;
 
 /**

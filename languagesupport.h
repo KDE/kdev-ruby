@@ -36,14 +36,15 @@ namespace KDevelop {
     class ICodeHighlighting;
 }
 
-namespace Rails {
-    class Support;
-}
-
-namespace Ruby {
+namespace ruby {
 
 class Highlighting;
 class Refactoring;
+
+namespace rails {
+    class Support;
+}
+
 
 /**
  * @class LanguageSupport
@@ -139,11 +140,11 @@ private Q_SLOTS:
     void runCurrentTestFunction();
 
 private:
-    Ruby::Highlighting *m_highlighting;
-    Ruby::Refactoring *m_refactoring;
+    ruby::Highlighting *m_highlighting;
+    ruby::Refactoring *m_refactoring;
     enum ruby_version m_version;
 
-    Rails::Support *m_rails;
+    rails::Support *m_rails;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 };

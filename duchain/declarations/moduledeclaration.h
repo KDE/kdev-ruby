@@ -28,8 +28,7 @@
 #include <language/duchain/declarationdata.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /// Struct used in the appended list in the MethodDeclarationData.
 struct KDEVRUBYDUCHAIN_EXPORT ModuleMixin {
@@ -194,9 +193,9 @@ private:
     DUCHAIN_DECLARE_DATA(ModuleDeclaration)
 };
 
-} // End of namespace Ruby
+}
 
-Q_DECLARE_TYPEINFO(Ruby::ModuleMixin, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(ruby::ModuleMixin, Q_MOVABLE_TYPE);
 
 
 #endif /* MODULE_DECLARATION_H */

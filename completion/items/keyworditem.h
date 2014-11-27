@@ -26,8 +26,7 @@
 #include <completion/completionexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class KeywordItem
@@ -71,7 +70,7 @@ private:
     bool m_wholeLine;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // RUBY_KEYWORDITEM_H

@@ -26,8 +26,7 @@
 #include <language/codecompletion/normaldeclarationcompletionitem.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class NormalItem

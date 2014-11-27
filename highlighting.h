@@ -22,7 +22,7 @@
 
 #include <language/highlighting/codehighlighting.h>
 
-namespace Ruby {
+namespace ruby {
 
 /**
  * @class HighlightingInstance

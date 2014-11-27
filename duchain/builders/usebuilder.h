@@ -28,8 +28,7 @@
 #include <parser/ast.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 typedef KDevelop::AbstractUseBuilder<Ast, NameAst, ContextBuilder> UseBuilderBase;
 
 /**
@@ -78,7 +77,7 @@ private:
     bool m_classMethod;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // USE_BUILDER_H

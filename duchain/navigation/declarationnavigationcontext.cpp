@@ -32,7 +32,7 @@
 #include <duchain/navigation/declarationnavigationcontext.h>
 
 
-namespace Ruby
+namespace ruby
 {
 using namespace KDevelop;
 
@@ -240,5 +240,5 @@ void DeclarationNavigationContext::addMixers(ModuleDeclaration *decl)
     }
 }
 
-} // End of namespace Ruby
+}
 

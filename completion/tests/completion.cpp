@@ -24,10 +24,10 @@
 #include <language/codecompletion/codecompletiontesthelper.h>
 
 
-QTEST_MAIN(Ruby::TestCompletion)
+QTEST_MAIN(ruby::TestCompletion)
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 //BEGIN: Helper structures
@@ -184,5 +184,5 @@ void TestCompletion::fileChoose()
     }
 }
 
-} // End of namespace Ruby
+}
 

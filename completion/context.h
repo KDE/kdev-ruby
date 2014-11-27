@@ -32,8 +32,7 @@ namespace KDevelop {
     class IncludeItem;
 }
 
-namespace Ruby
-{
+namespace ruby {
 
 enum class ContextType;
 typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
@@ -141,7 +140,7 @@ private:
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_COMPLETION_CONTEXT_H */

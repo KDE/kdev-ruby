@@ -27,8 +27,7 @@
 #include <parser/node.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class RubyAst

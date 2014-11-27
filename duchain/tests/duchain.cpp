@@ -42,10 +42,10 @@
 
 Q_LOGGING_CATEGORY(DUCHAIN_TESTS, "kdev.ruby.duchain.tests")
 
-QTEST_MAIN(Ruby::TestDUChain)
+QTEST_MAIN(ruby::TestDUChain)
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 TestDUChain::TestDUChain()
@@ -1837,5 +1837,5 @@ void TestDUChain::problemOnInvalidMixin()
 
 //END: Include & Extend
 
-} // End of namespace Ruby
+}
 

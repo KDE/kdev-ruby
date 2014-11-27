@@ -23,7 +23,7 @@
 #include <duchain/helpers.h>
 
 
-namespace Ruby
+namespace ruby
 {
 REGISTER_DUCHAIN_ITEM(MethodDeclaration);
 DEFINE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
@@ -110,4 +110,4 @@ KDevelop::Declaration * MethodDeclaration::clonePrivate() const
     return new MethodDeclaration(*this);
 }
 
-} // End of namespace Ruby
+}

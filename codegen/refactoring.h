@@ -26,8 +26,7 @@
 #include <language/codegen/basicrefactoring.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class Refactoring : public KDevelop::BasicRefactoring
 {

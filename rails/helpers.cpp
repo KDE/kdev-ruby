@@ -20,12 +20,9 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-
 #include <rails/helpers.h>
 
-
-namespace Rails
-{
+using namespace ruby::rails;
 
 KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
 {
@@ -49,6 +46,3 @@ KDevelop::Path Helpers::findRailsRoot(const QUrl &url)
     }
     return KDevelop::Path();
 }
-
-}
-

@@ -28,7 +28,7 @@
 
 using namespace KTextEditor;
 
-namespace Ruby
+namespace ruby
 {
 
 RequireFileItem::RequireFileItem(const KDevelop::IncludeItem &include, const char closing)
@@ -62,4 +62,4 @@ void RequireFileItem::execute(View *view, const Range &word)
     document->replaceText(word, text);
 }
 
-} // End of namespace Ruby
+}

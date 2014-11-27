@@ -26,7 +26,7 @@
 #include <language/util/includeitem.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 CodeCompletionWorker::CodeCompletionWorker(CodeCompletionModel *parent)
@@ -38,7 +38,7 @@ CodeCompletionWorker::CodeCompletionWorker(CodeCompletionModel *parent)
 KDevelop::CodeCompletionContext* CodeCompletionWorker::createCompletionContext(KDevelop::DUContextPointer context, const QString &contextText,
                                                                                const QString &followingText, const KDevelop::CursorInRevision &position) const
 {
-    return new Ruby::CodeCompletionContext(context, contextText, followingText, position);
+    return new ruby::CodeCompletionContext(context, contextText, followingText, position);
 }
 
-} // End of namespace Ruby
+}

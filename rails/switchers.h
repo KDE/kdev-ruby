@@ -23,14 +23,12 @@
 #ifndef RAILS_SWITCHERS_H
 #define RAILS_SWITCHERS_H
 
-
 #include <util/path.h>
 #include <languagesupport.h>
 #include <rails/export.h>
 
-
-namespace Rails
-{
+namespace ruby {
+namespace rails {
 
 /**
  * @class Switchers
@@ -43,7 +41,7 @@ class KDEVRUBYRAILS_EXPORT Switchers : public QObject
     Q_OBJECT
 
 public:
-    explicit Switchers(Ruby::LanguageSupport *language);
+    explicit Switchers(ruby::LanguageSupport *language);
 
     /// @returns all the views that we can switch to.
     static QVector<KDevelop::Path> viewsToSwitch();
@@ -58,6 +56,7 @@ public slots:
     void switchToTest();
 };
 
+}
 }
 
 #endif /* RAILS_SWITCHERS_H */

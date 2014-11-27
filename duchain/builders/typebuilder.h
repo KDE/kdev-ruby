@@ -28,8 +28,7 @@
 #include <duchain/builders/contextbuilder.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 typedef KDevelop::AbstractTypeBuilder<Ast, NameAst, ContextBuilder> TypeBuilderBase;
 

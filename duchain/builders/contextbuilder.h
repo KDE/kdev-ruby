@@ -32,8 +32,7 @@
 #include <duchain/duchainexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class EditorIntegrator;
 typedef KDevelop::AbstractContextBuilder<Ast, NameAst> ContextBuilderBase;
@@ -157,7 +156,7 @@ private:
     KDevelop::TopDUContextPointer m_builtinsContext;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // CONTEXT_BUILDER_H

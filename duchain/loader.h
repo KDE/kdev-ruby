@@ -28,8 +28,7 @@
 #include <duchain/duchainexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class EditorIntegrator;
 
@@ -106,7 +105,7 @@ protected:
     static QList<KDevelop::Path> m_gemPath;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_LOADER_H */

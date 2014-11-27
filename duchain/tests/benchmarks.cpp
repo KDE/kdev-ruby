@@ -30,10 +30,10 @@
 #include <parser/parser.h>
 
 
-QTEST_MAIN(Ruby::Benchmarks)
+QTEST_MAIN(ruby::Benchmarks)
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 Benchmarks::Benchmarks()
@@ -79,5 +79,5 @@ void Benchmarks::declarationBuilder()
     }
 }
 
-} // End of namespace Ruby
+}
 

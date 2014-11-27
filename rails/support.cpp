@@ -28,9 +28,9 @@
 #include <rails/dataprovider.h>
 #include <rails/switchers.h>
 
-using namespace Rails;
+using namespace ruby::rails;
 
-Support::Support(Ruby::LanguageSupport *support)
+Support::Support(ruby::LanguageSupport *support)
     : QObject(nullptr)
     , m_support(support)
     , m_views(nullptr)

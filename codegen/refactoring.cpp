@@ -22,7 +22,7 @@
 #include <codegen/refactoring.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 Refactoring::Refactoring(QObject *parent) : BasicRefactoring(parent)

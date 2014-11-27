@@ -27,8 +27,7 @@
 #include <language/duchain/functiondeclaration.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /// Struct used in the appended list.
 struct KDEVRUBYDUCHAIN_EXPORT YieldType {
@@ -156,7 +155,7 @@ private:
     DUCHAIN_DECLARE_DATA(MethodDeclaration)
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* R_METHOD_DECLARATION_H */

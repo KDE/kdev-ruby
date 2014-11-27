@@ -36,7 +36,7 @@
 
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 DUChainTestBase::DUChainTestBase()

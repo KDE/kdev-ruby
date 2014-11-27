@@ -29,8 +29,7 @@
 #include <duchain/types/classtype.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class EditorIntegrator;
 

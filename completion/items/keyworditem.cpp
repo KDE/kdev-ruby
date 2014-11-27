@@ -32,7 +32,7 @@
 using namespace KTextEditor;
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 KeywordItem::KeywordItem(CodeCompletionContext::Ptr ctx,
@@ -137,5 +137,5 @@ QVariant KeywordItem::data(const QModelIndex &index, int role, const KDevelop::C
     return NormalDeclarationCompletionItem::data(index, role, model);
 }
 
-} // End of namespace Ruby
+}
 

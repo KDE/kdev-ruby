@@ -31,8 +31,7 @@
 #include <duchain/duchainexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class Parser;
 
@@ -111,7 +110,7 @@ private:
     Parser *m_session;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // RUBY_EDITORINTEGRATOR_H

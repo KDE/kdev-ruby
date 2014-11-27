@@ -38,7 +38,7 @@
 Q_LOGGING_CATEGORY(DUCHAIN, "kdev.ruby.duchain")
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 ContextBuilder::ContextBuilder()
@@ -315,4 +315,4 @@ const RangeInRevision ContextBuilder::rangeForMethodArguments(Ast *node)
     return editorFindRange(node, &last);
 }
 
-} // End of namespace Ruby
+}

@@ -26,8 +26,7 @@
 #include <duchain/tests/duchaintestbase.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 /**
  * @class Benchmarks
  * Benchmark some parts of this plugin.
@@ -52,7 +51,7 @@ private slots:
     void declarationBuilder();
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_BENCHMARKS_H */

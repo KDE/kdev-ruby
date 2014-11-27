@@ -27,8 +27,7 @@
 #include <completion/completionexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class CodeCompletionModel
@@ -50,7 +49,7 @@ protected:
     virtual KDevelop::CodeCompletionWorker *createCompletionWorker() override;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_COMPLETION_MODEL_H */

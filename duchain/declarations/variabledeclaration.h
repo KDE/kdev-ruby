@@ -28,8 +28,7 @@
 #include <duchain/duchainexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class VariableDeclarationData
@@ -127,7 +126,7 @@ private:
     DUCHAIN_DECLARE_DATA(VariableDeclaration)
 };
 
-} // End of namespace: Ruby
+}
 
 
 #endif // RUBY_VARIABLEDECLARATION_H

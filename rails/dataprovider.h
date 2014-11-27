@@ -23,14 +23,12 @@
 #ifndef RAILSDATAPROVIDER_H
 #define RAILSDATAPROVIDER_H
 
-
 #include <language/interfaces/quickopendataprovider.h>
 #include <rails/export.h>
 #include <rails/quickopendata.h>
 
-
-namespace Rails
-{
+namespace ruby {
+namespace rails {
 
 /**
  * The kind of providers available.
@@ -40,7 +38,7 @@ enum class Kind { Views, Tests };
 /**
  * @class DataProvider.
  *
- * This class takes the Rails::QuickOpenData class to provide all the
+ * This class takes the rails::QuickOpenData class to provide all the
  * data that we need to feed the QuickOpen.
  */
 class KDEVRUBYRAILS_EXPORT DataProvider :
@@ -74,6 +72,7 @@ private:
     Kind m_kind;
 };
 
+}
 }
 
 #endif

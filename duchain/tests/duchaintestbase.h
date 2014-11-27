@@ -35,8 +35,7 @@
 #define DOES_NOT_CRASH QVERIFY(true)
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * Manage pointer to TopDUContexts and release them properly, even if a test
@@ -91,7 +90,7 @@ public slots:
     void cleanupTestCase();
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_DUCHAINTESTBASE_H */

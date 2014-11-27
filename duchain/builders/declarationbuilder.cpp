@@ -40,7 +40,7 @@
 
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
@@ -1104,4 +1104,4 @@ void DeclarationBuilder::visitMethodCallArgs(const Ast *mc, const DeclarationPoi
     delete node;
 }
 
-} // End of namespace Ruby
+}

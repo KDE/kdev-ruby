@@ -25,7 +25,7 @@
 #include <duchain/declarations/variabledeclaration.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 IncludeNavigationContext::IncludeNavigationContext(const KDevelop::IncludeItem &item,
@@ -61,5 +61,5 @@ QString IncludeNavigationContext::declarationKind(KDevelop::DeclarationPointer d
     return KDevelop::AbstractNavigationContext::declarationKind(decl);
 }
 
-} // End of namespace Ruby
+}
 

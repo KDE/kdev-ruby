@@ -26,8 +26,7 @@
 #include <duchain/tests/duchaintestbase.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class TestUseBuilder

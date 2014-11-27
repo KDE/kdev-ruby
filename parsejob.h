@@ -26,8 +26,7 @@
 #include <language/backgroundparser/parsejob.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class LanguageSupport;
 class Parser;

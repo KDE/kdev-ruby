@@ -26,7 +26,7 @@
 
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 EditorIntegrator::EditorIntegrator()
@@ -83,4 +83,4 @@ const QString EditorIntegrator::tokenToString(const Node *node) const
     return m_session->symbol(node);
 }
 
-} // End of namespace Ruby
+}

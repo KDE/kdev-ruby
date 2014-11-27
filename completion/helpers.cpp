@@ -28,7 +28,7 @@
 
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 const QString indentString(KTextEditor::Document *document)
@@ -69,4 +69,4 @@ QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
     return ret;
 }
 
-} // End of namespace Ruby
+}

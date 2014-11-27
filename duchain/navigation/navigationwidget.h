@@ -28,8 +28,7 @@
 
 namespace KDevelop { class IncludeItem; }
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class NavigationWidget
@@ -86,7 +85,7 @@ public:
     static QString shortDescription(const KDevelop::IncludeItem &item);
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // NAVIGATIONWIDGET_H

@@ -23,11 +23,11 @@
 #include <KActionCollection>
 #include <rails/export.h>
 
-namespace Ruby {
-    class LanguageSupport;
-}
+namespace ruby {
 
-namespace Rails {
+class LanguageSupport;
+
+namespace rails {
 
 class Switchers;
 class DataProvider;
@@ -43,7 +43,7 @@ class KDEVRUBYRAILS_EXPORT Support : public QObject
     Q_OBJECT
 
 public:
-    explicit Support(Ruby::LanguageSupport *language);
+    explicit Support(ruby::LanguageSupport *language);
     virtual ~Support();
 
     /**
@@ -57,12 +57,13 @@ private:
     void setupQuickOpen();
 
 private:
-    Ruby::LanguageSupport *m_support;
+    ruby::LanguageSupport *m_support;
     Switchers *m_switchers;
     DataProvider *m_views;
     DataProvider *m_tests;
 };
 
+}
 }
 
 #endif // RUBY_RAILS_H_

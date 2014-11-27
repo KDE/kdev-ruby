@@ -31,8 +31,7 @@ namespace KDevelop {
     class UnsureType;
 }
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class TestDUChain
@@ -171,7 +170,7 @@ private slots:
     void problemOnInvalidMixin();
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_TESTDUCHAIN_H */

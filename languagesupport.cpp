@@ -65,16 +65,16 @@
 #define RUBY_FILE_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby File")
 #define RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby Test Function")
 
-K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<Ruby::LanguageSupport>();)
+K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<ruby::LanguageSupport>();)
 
 Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
-namespace Ruby {
+using namespace ruby;
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
-    , m_rails(new Rails::Support(this))
+    , m_rails(new rails::Support(this))
     , m_rubyFileLaunchConfiguration(nullptr)
     , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
@@ -84,8 +84,8 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
 
     setXMLFile("kdevrubysupport.rc");
-    m_highlighting = new Ruby::Highlighting(this);
-    m_refactoring = new Ruby::Refactoring(this);
+    m_highlighting = new ruby::Highlighting(this);
+    m_refactoring = new ruby::Refactoring(this);
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
@@ -224,7 +224,7 @@ QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
 
 void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
 {
-    KDevelop::Path root = Rails::Helpers::findRailsRoot(activeDocument->url());
+    KDevelop::Path root = rails::Helpers::findRailsRoot(activeDocument->url());
     if (root.isValid()) {
         cfg.writeEntry("Working Directory", root.toLocalFile());
     } else {
@@ -291,7 +291,4 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
 }
 
-}
-
 #include "languagesupport.moc"
-

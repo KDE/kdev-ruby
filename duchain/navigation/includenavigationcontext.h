@@ -26,8 +26,7 @@
 #include <language/duchain/navigation/abstractincludenavigationcontext.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class IncludeNavigationContext
@@ -65,7 +64,7 @@ protected:
     virtual QString declarationKind(KDevelop::DeclarationPointer decl) override;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* INCLUDENAVIGATIONCONTEXT_H */

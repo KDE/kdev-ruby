@@ -22,7 +22,7 @@
 #include <duchain/builders/typebuilder.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 TypeBuilder::TypeBuilder() : TypeBuilderBase()
@@ -30,4 +30,4 @@ TypeBuilder::TypeBuilder() : TypeBuilderBase()
     /* There's nothing to do here! */
 }
 
-} // End of namespace Ruby.
+}

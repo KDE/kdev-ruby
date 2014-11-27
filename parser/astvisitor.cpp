@@ -32,7 +32,7 @@ Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser")
  */
 
 
-namespace Ruby
+namespace ruby
 {
 
 AstVisitor::~AstVisitor()

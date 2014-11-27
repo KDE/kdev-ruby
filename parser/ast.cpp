@@ -21,7 +21,7 @@
 #include <parser/ast.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 Ast::Ast(Node *n, KDevelop::DUContext *ctx)

@@ -24,7 +24,7 @@
 
 #ifdef __cplusplus
 
-namespace Ruby {
+namespace ruby {
 extern "C" {
 #endif
 

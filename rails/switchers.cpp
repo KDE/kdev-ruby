@@ -32,13 +32,11 @@
 #include <rails/switchers.h>
 #include <rails/helpers.h>
 
+using namespace ruby::rails;
 
-namespace Rails
+Switchers::Switchers(ruby::LanguageSupport *language)
+    : QObject(language)
 {
-
-Switchers::Switchers(Ruby::LanguageSupport *language) : QObject(language)
-{
-    /* There's nothing to do here. */
 }
 
 QVector<KDevelop::Path> Switchers::viewsToSwitch()
@@ -284,7 +282,5 @@ void Switchers::switchToTest()
     if (quickOpen) {
         quickOpen->showQuickOpen(QStringList() << i18n("Rails Tests"));
     }
-}
-
 }
 

@@ -28,9 +28,8 @@
 #include <util/path.h>
 #include <rails/export.h>
 
-
-namespace Rails
-{
+namespace ruby {
+namespace rails {
 
 /*
  * TODO: maybe KDevPlatform will pick KDevelop::Path when moving away
@@ -74,6 +73,7 @@ private:
     QString m_explanation;
 };
 
+}
 }
 
 #endif /* QUICKOPEN_DATA_H */

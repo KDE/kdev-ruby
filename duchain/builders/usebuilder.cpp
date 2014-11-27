@@ -30,7 +30,7 @@
 
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()

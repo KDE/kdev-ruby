@@ -23,7 +23,7 @@
 #include <duchain/navigation/includenavigationcontext.h>
 
 
-namespace Ruby
+namespace ruby
 {
 using namespace KDevelop;
 
@@ -66,4 +66,4 @@ QString NavigationWidget::shortDescription(const KDevelop::IncludeItem &item)
 }
 
 
-} // End of namespace Ruby
+}

@@ -27,8 +27,7 @@
 #include <parser/ast.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 /// Convenient typedef that packs a DUContextPointer and a RangeInRevision.
 typedef QPair<KDevelop::DUContextPointer, KDevelop::RangeInRevision> SimpleUse;
 

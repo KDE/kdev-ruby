@@ -33,7 +33,7 @@
 
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 REGISTER_TYPE(ClassType);

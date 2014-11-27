@@ -31,8 +31,7 @@ namespace KDevelop
     class TopDUContext;
 }
 
-namespace Ruby
-{
+namespace ruby {
 
 template<class BaseContext>
 class RubyDUContext : public BaseContext

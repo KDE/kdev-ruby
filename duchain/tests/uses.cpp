@@ -32,10 +32,10 @@
 #include <duchain/declarations/moduledeclaration.h>
 
 
-QTEST_MAIN(Ruby::TestUseBuilder)
+QTEST_MAIN(ruby::TestUseBuilder)
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 TestUseBuilder::TestUseBuilder()
@@ -634,5 +634,5 @@ void TestUseBuilder::nestedIdentifier()
 
 //END: Others
 
-} // End of namespace Ruby
+}
 

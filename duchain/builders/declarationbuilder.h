@@ -30,8 +30,7 @@
 #include <duchain/helpers.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class ModuleDeclaration;
 class MethodDeclaration;
@@ -242,6 +241,6 @@ private:
     KDevelop::Declaration *m_lastMethodCall;
 };
 
-} // End of namespace Ruby
+}
 
 #endif // DECLARATION_BUILDER_H

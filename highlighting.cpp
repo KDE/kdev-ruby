@@ -22,7 +22,7 @@
 #include <language/duchain/declaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 
-namespace Ruby {
+using namespace ruby;
 
 using namespace KDevelop;
 
@@ -53,7 +53,7 @@ bool HighlightingInstance::useRainbowColor(KDevelop::Declaration *dec) const
 
 //BEGIN RubyHighlighting
 
-Ruby::Highlighting::Highlighting(QObject *parent)
+ruby::Highlighting::Highlighting(QObject *parent)
     : CodeHighlighting(parent)
 {
 }
@@ -64,6 +64,3 @@ KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const
 }
 
 //END RubyHighlighting
-
-}
-

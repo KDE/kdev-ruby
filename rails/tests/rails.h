@@ -18,16 +18,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #ifndef RAILS_TEST_H
 #define RAILS_TEST_H
 
-
 #include <QtCore/QObject>
 
-
-namespace Rails
-{
+namespace ruby {
+namespace rails {
 
 class Test : public QObject
 {
@@ -41,6 +38,6 @@ private slots:
 };
 
 }
-
+}
 
 #endif /* RAILS_TEST */

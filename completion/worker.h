@@ -27,8 +27,7 @@
 #include <completion/completionexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class CodeCompletionModel;
 class CodeCompletionContext;
@@ -53,7 +52,7 @@ protected:
                                                                      const KDevelop::CursorInRevision &position) const override;
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif /* RUBY_COMPLETION_WORKER_H */

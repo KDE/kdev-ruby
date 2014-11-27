@@ -23,7 +23,7 @@
 #include <completion/model.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 CodeCompletionModel::CodeCompletionModel(QObject *parent)
@@ -39,7 +39,7 @@ CodeCompletionModel::~CodeCompletionModel()
 
 KDevelop::CodeCompletionWorker * CodeCompletionModel::createCompletionWorker()
 {
-    return new Ruby::CodeCompletionWorker(this);
+    return new ruby::CodeCompletionWorker(this);
 }
 
-} // End of namespace Ruby
+}

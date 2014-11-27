@@ -44,7 +44,7 @@
 
 
 using namespace KDevelop;
-namespace Ruby
+namespace ruby
 {
 
 ParseJob::ParseJob(const KDevelop::IndexedString &url, ILanguageSupport *languageSupport)

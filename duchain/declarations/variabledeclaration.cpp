@@ -22,7 +22,7 @@
 #include <language/duchain/duchainregister.h>
 
 
-namespace Ruby
+namespace ruby
 {
 REGISTER_DUCHAIN_ITEM(VariableDeclaration);
 
@@ -70,4 +70,4 @@ int VariableDeclaration::variableKind() const
     return d_func()->m_kind;
 }
 
-} // End of namespace Ruby
+}

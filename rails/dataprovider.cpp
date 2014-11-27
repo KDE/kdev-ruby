@@ -20,7 +20,6 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-
 #include <QDir>
 #include <QFileInfo>
 
@@ -31,9 +30,7 @@
 #include <rails/dataprovider.h>
 #include <rails/helpers.h>
 
-
-namespace Rails
-{
+using namespace ruby::rails;
 
 DataProvider::DataProvider(Kind kind) : m_kind(kind)
 {
@@ -103,7 +100,5 @@ void DataProvider::enableData(const QStringList &items,
                               const QStringList &scopes)
 {
     KDevelop::QuickOpenDataProviderBase::enableData(items, scopes);
-}
-
 }
 

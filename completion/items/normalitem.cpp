@@ -34,7 +34,7 @@
 
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 NormalItem::NormalItem(DeclarationPointer decl,

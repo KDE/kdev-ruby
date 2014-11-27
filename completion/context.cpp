@@ -47,7 +47,7 @@ Q_LOGGING_CATEGORY(COMPLETION, "kdev.ruby.completion")
 
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 const QSet<QString> MEMBER_STRINGS = QString(". :: < include extend").split(' ').toSet();

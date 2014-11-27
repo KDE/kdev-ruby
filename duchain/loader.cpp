@@ -25,7 +25,7 @@
 #include <duchain/editorintegrator.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 QList<KDevelop::Path> Loader::m_rubyPath;

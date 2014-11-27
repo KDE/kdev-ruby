@@ -22,7 +22,7 @@
 
 using namespace KDevelop;
 
-namespace Ruby
+namespace ruby
 {
 
 Parser::Parser()

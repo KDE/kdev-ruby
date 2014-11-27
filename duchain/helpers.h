@@ -31,8 +31,7 @@
 #include <parser/ast.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 class MethodDeclaration;
 class EditorIntegrator;

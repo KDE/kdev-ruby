@@ -25,8 +25,7 @@
 #include <duchain/tests/duchaintestbase.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class TestCompletion
@@ -58,7 +57,7 @@ private slots:
     void fileChoose();
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // RUBYCOMPLETION_H

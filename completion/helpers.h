@@ -35,8 +35,7 @@ namespace KDevelop {
     class Declaration;
 }
 
-namespace Ruby
-{
+namespace ruby {
 
 class NormalItem;
 
@@ -61,7 +60,7 @@ QString KDEVRUBYCOMPLETION_EXPORT getIndendation(const QString &line);
  */
 QString KDEVRUBYCOMPLETION_EXPORT getArgumentList(KDevelop::Declaration *decl, QList<QVariant> *highlighting);
 
-} // End of namespace Ruby
+}
 
 
 #endif // RUBYCOMPLETIONHELPERS_H

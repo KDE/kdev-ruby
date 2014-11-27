@@ -23,7 +23,7 @@
 #include <language/duchain/duchainregister.h>
 
 
-namespace Ruby
+namespace ruby
 {
 
 REGISTER_DUCHAIN_ITEM(ModuleDeclaration);
@@ -180,4 +180,4 @@ KDevelop::Declaration * ModuleDeclaration::clonePrivate() const
     return new ModuleDeclaration(*this);
 }
 
-} // End of namespace Ruby
+}

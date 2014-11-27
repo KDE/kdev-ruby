@@ -28,8 +28,8 @@
 #include <rails/export.h>
 
 
-namespace Rails
-{
+namespace ruby {
+namespace rails {
 
 /**
  * @class Helpers
@@ -66,6 +66,7 @@ public:
     }
 };
 
+}
 }
 
 #endif /* RAILS_HELPERS_H */

@@ -27,8 +27,7 @@
 #include <duchain/duchainexport.h>
 
 
-namespace Ruby
-{
+namespace ruby {
 
 /**
  * @class ClassTypeData
@@ -116,7 +115,7 @@ protected:
     TYPE_DECLARE_DATA(ClassType);
 };
 
-} // End of namespace Ruby
+}
 
 
 #endif // CLASSTYPE_H
