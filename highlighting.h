@@ -17,16 +17,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBYHIGHLIGHTING_H
-#define RUBYHIGHLIGHTING_H
-
+#ifndef RUBY_HIGHLIGHTING_H
+#define RUBY_HIGHLIGHTING_H
 
 #include <language/highlighting/codehighlighting.h>
 
-
-namespace Ruby
-{
+namespace Ruby {
 
 /**
  * @class HighlightingInstance
@@ -36,12 +32,6 @@ namespace Ruby
 class HighlightingInstance : public KDevelop::CodeHighlightingInstance
 {
 public:
-    /**
-     * Constructor.
-     *
-     * @param h The CodeHighlighting in which an instance of this class
-     * belongs to.
-     */
     explicit HighlightingInstance(const KDevelop::CodeHighlighting *h);
 
     /**
@@ -63,7 +53,6 @@ public:
     virtual bool useRainbowColor(KDevelop::Declaration *dec) const override;
 };
 
-
 /**
  * @class Highlighting
  *
@@ -75,11 +64,6 @@ class Highlighting : public KDevelop::CodeHighlighting
     Q_OBJECT
 
 public:
-    /**
-     * Constructor.
-     *
-     * @param parent the QObject this Highlighting is parented to.
-     */
     explicit Highlighting(QObject *parent);
 
 private:
@@ -87,9 +71,10 @@ private:
      * Extends base class CodeHighlighting's createInstance() method to use
      * this plugin's defined one.
      */
-    virtual KDevelop::CodeHighlightingInstance* createInstance() const override;
+    virtual KDevelop::CodeHighlightingInstance * createInstance() const override;
 };
 
 }
 
 #endif // RUBYHIGHLIGHTING_H
+

@@ -18,10 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #ifndef RUBY_DEBUG_H
 #define RUBY_DEBUG_H
-
 
 #include <QLoggingCategory>
 Q_DECLARE_LOGGING_CATEGORY(KDEV_RUBY)
@@ -30,6 +28,5 @@ Q_DECLARE_LOGGING_CATEGORY(KDEV_RUBY)
 #define rWarning() qCWarning(KDEV_RUBY)
 #define rError() qCError(KDEV_RUBY)
 
-
-#endif /* RUBY_DEBUG_H */
+#endif // RUBY_DEBUG_H
 

@@ -5,6 +5,7 @@ include_directories(
 )
 
 set(rubyrails_SRCS
+    support.cpp
     switchers.cpp
     dataprovider.cpp
     helpers.cpp

@@ -24,7 +24,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QProcess>
 #include <QtWidgets/QAction>
-#include <KActionCollection>
 
 //KDevelop
 #include <interfaces/icore.h>
@@ -54,9 +53,8 @@
 #include <languagesupport.h>
 #include <parsejob.h>
 #include <highlighting.h>
-#include <rails/switchers.h>
-#include <rails/dataprovider.h>
 #include <rails/helpers.h>
+#include <rails/support.h>
 #include <duchain/helpers.h>
 #include <completion/model.h>
 #include <codegen/refactoring.h>
@@ -71,15 +69,12 @@ K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<Ruby::LanguageSupport>()
 
 Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
-namespace Ruby
-{
+namespace Ruby {
 
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
-    , m_railsSwitchers(new Rails::Switchers(this))
-    , m_viewsQuickOpenDataProvider(nullptr)
-    , m_testsQuickOpenDataProvider(nullptr)
+    , m_rails(new Rails::Support(this))
     , m_rubyFileLaunchConfiguration(nullptr)
     , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
@@ -93,8 +88,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     m_refactoring = new Ruby::Refactoring(this);
     CodeCompletionModel *rModel = new CodeCompletionModel(this);
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
-
-    setupQuickOpen();
 
     /* Retrieving Ruby version */
     QProcess ruby;
@@ -285,27 +278,9 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*
 {
     _xmlFile = xmlFile();
 
-    QAction *action = actions.addAction("ruby_switch_to_controller");
-    action->setText(i18n("Switch To Controller"));
-    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_1);
-    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToController()));
+    m_rails->setupActions(actions);
 
-    action = actions.addAction("ruby_switch_to_model");
-    action->setText(i18n("Switch To Model"));
-    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_2);
-    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToModel()));
-
-    action = actions.addAction("ruby_switch_to_view");
-    action->setText(i18n("Switch To View"));
-    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_3);
-    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToView()));
-
-    action = actions.addAction("ruby_switch_to_test");
-    action->setText(i18n("Switch To Test"));
-    action->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_4);
-    connect(action, SIGNAL(triggered(bool)), m_railsSwitchers, SLOT(switchToTest()));
-
-    action = actions.addAction("ruby_run_current_file");
+    QAction *action = actions.addAction("ruby_run_current_file");
     action->setText(i18n("Run Current File"));
     action->setShortcut(Qt::META | Qt::Key_F9);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentFile()));
@@ -316,18 +291,7 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*
     connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
 }
 
-void LanguageSupport::setupQuickOpen()
-{
-    KDevelop::IQuickOpen * quickOpen = core()->pluginController()->extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
-    if (quickOpen) {
-        m_viewsQuickOpenDataProvider = new Rails::DataProvider(Rails::Kind::Views);
-        quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Views")), m_viewsQuickOpenDataProvider);
-
-        m_testsQuickOpenDataProvider = new Rails::DataProvider(Rails::Kind::Tests);
-        quickOpen->registerProvider(Rails::DataProvider::scopes(), QStringList(i18n("Rails Tests")), m_testsQuickOpenDataProvider);
-    }
-}
-
 }
 
 #include "languagesupport.moc"
+

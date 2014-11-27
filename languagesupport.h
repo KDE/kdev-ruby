@@ -18,16 +18,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
-#ifndef KDEVRUBYLANGUAGESUPPORT_H
-#define KDEVRUBYLANGUAGESUPPORT_H
-
+#ifndef RUBY_LANGUAGESUPPORT_H
+#define RUBY_LANGUAGESUPPORT_H
 
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
 #include <language/duchain/topducontext.h>
-#include <parser/node.h>
 
+#include <parser/node.h>
 
 class KConfigGroup;
 
@@ -39,12 +37,10 @@ namespace KDevelop {
 }
 
 namespace Rails {
-    class Switchers;
-    class DataProvider;
+    class Support;
 }
 
-namespace Ruby
-{
+namespace Ruby {
 
 class Highlighting;
 class Refactoring;
@@ -57,23 +53,15 @@ class Refactoring;
  * not least, this class also enables the plugin to execute the current Ruby
  * file or test functions.
  */
-class LanguageSupport : public KDevelop::IPlugin, public KDevelop::ILanguageSupport
+class LanguageSupport
+    : public KDevelop::IPlugin
+    , public KDevelop::ILanguageSupport
 {
     Q_OBJECT
     Q_INTERFACES(KDevelop::ILanguageSupport)
 
 public:
-    /**
-     * Constructor.
-     *
-     * @param parent The QObject this LanguageSupport is parented to.
-     * @param args A QVariantList that can be passed to this plugin as parameters.
-     */
-    explicit LanguageSupport(QObject *parent, const QVariantList &args = QVariantList());
-
-    /**
-     * Destructor.
-     */
+    explicit LanguageSupport(QObject *parent, const QVariantList &args = {});
     virtual ~LanguageSupport();
 
     /**
@@ -121,9 +109,9 @@ public:
 private:
     /**
      * @internal Find or create a launch for a the given @p name.
-     * @return the launcj configuration for the given @p name.
+     * @return the launch configuration for the given @p name.
      */
-    KDevelop::ILaunchConfiguration *findOrCreateLaunchConfiguration(const QString &name);
+    KDevelop::ILaunchConfiguration * findOrCreateLaunchConfiguration(const QString &name);
 
     /**
      * @internal Set up the launch configuration before the run occurs.
@@ -155,13 +143,12 @@ private:
     Ruby::Refactoring *m_refactoring;
     enum ruby_version m_version;
 
-    Rails::Switchers *m_railsSwitchers;
-    Rails::DataProvider *m_viewsQuickOpenDataProvider;
-    Rails::DataProvider *m_testsQuickOpenDataProvider;
+    Rails::Support *m_rails;
     KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
     KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 };
 
 }
 
-#endif // KDEVRUBYLANGUAGESUPPORT_H
+#endif // RUBY_LANGUAGESUPPORT_H
+

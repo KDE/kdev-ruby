@@ -17,32 +17,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-//KDevelop
-#include <language/duchain/declaration.h>
-
-//Ruby
 #include <highlighting.h>
+
+#include <language/duchain/declaration.h>
 #include <duchain/declarations/variabledeclaration.h>
 
+namespace Ruby {
 
-namespace Ruby
-{
+using namespace KDevelop;
 
 //BEGIN RubyHighlightingInstance
 
-HighlightingInstance::HighlightingInstance(const KDevelop::CodeHighlighting *h)
+HighlightingInstance::HighlightingInstance(const CodeHighlighting *h)
     : CodeHighlightingInstance(h)
 {
-    /* There's nothing to do here */
 }
 
-KDevelop::HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(KDevelop::Declaration *decl,
-                                                                                    KDevelop::DUContext *ctx) const
+HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(
+    Declaration *decl, DUContext *ctx) const
 {
     VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decl);
-    if (decl && !decl->isFunctionDeclaration() && decl->abstractType() && !vd)
+    if (decl && !decl->isFunctionDeclaration() &&
+        decl->abstractType() && !vd) {
         return EnumType;
+    }
     return CodeHighlightingInstance::typeForDeclaration(decl, ctx);
 }
 
@@ -58,7 +56,6 @@ bool HighlightingInstance::useRainbowColor(KDevelop::Declaration *dec) const
 Ruby::Highlighting::Highlighting(QObject *parent)
     : CodeHighlighting(parent)
 {
-    /* There's nothing to do here! */
 }
 
 KDevelop::CodeHighlightingInstance* Highlighting::createInstance() const

@@ -53,7 +53,7 @@ const IndexedString & languageString()
 
 const IndexedString & builtinsFile()
 {
-    const auto &rb= QStringLiteral("kdevrubysupport/documentation/builtins.rb");
+    const auto &rb = QStringLiteral("kdevrubysupport/documentation/builtins.rb");
     static IndexedString doc(QStandardPaths::locate(
                                 QStandardPaths::GenericDataLocation, rb));
     return doc;
