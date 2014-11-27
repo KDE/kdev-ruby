@@ -29,7 +29,9 @@
 
 
 namespace ruby {
-typedef KDevelop::AbstractUseBuilder<Ast, NameAst, ContextBuilder> UseBuilderBase;
+
+using UseBuilderBase =
+    KDevelop::AbstractUseBuilder<Ast, NameAst, ContextBuilder>;
 
 /**
  * @class UseBuilder

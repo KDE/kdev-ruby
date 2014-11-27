@@ -28,7 +28,8 @@
 
 namespace ruby {
 
-typedef KDevelop::AbstractIncludeFileCompletionItem<ruby::NavigationWidget> BaseIncludeFileItem;
+using BaseIncludeFileItem =
+    KDevelop::AbstractIncludeFileCompletionItem<ruby::NavigationWidget>;
 
 /**
  * @class RequireFileItem

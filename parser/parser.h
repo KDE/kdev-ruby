@@ -26,7 +26,7 @@
 #include <parser/export.h>
 
 namespace ruby {
-/// Convenient typedef that packs a DUContextPointer and a RangeInRevision.
+/// Convenient alias that packs a DUContextPointer and a RangeInRevision.
 using SimpleUse = QPair<KDevelop::DUContextPointer,
                         KDevelop::RangeInRevision>;
 

@@ -35,7 +35,8 @@ namespace ruby {
 class ModuleDeclaration;
 class MethodDeclaration;
 
-typedef KDevelop::AbstractDeclarationBuilder<Ast, NameAst, TypeBuilder> DeclarationBuilderBase;
+using DeclarationBuilderBase =
+    KDevelop::AbstractDeclarationBuilder<Ast, NameAst, TypeBuilder>;
 
 /**
  * @class DeclarationBuilder

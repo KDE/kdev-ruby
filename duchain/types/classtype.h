@@ -65,7 +65,7 @@ public:
 class KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
 {
 public:
-    typedef KDevelop::TypePtr<ClassType> Ptr;
+    using Ptr = KDevelop::TypePtr<ClassType>;
 
     /// Constructor.
     ClassType();
@@ -108,8 +108,8 @@ public:
 
     enum { Identity = 41 /** The id of this Type. */ };
 
-    typedef ClassTypeData Data;
-    typedef KDevelop::StructureType BaseType;
+    using Data = ClassTypeData;
+    using BaseType = KDevelop::StructureType;
 
 protected:
     TYPE_DECLARE_DATA(ClassType);

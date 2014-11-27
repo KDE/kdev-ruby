@@ -31,7 +31,8 @@ namespace ruby
 {
 
 //BEGIN: Helper structures
-typedef CodeCompletionItemTester<CodeCompletionContext> BaseRubyCompletionTester;
+using BaseRubyCompletionTester =
+    CodeCompletionItemTester<CodeCompletionContext>;
 
 class RubyCompletionTester : public BaseRubyCompletionTester
 {

@@ -35,7 +35,7 @@ namespace KDevelop {
 namespace ruby {
 
 enum class ContextType;
-typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
+using DeclarationPair = QPair<KDevelop::Declaration *, int>;
 
 /**
  * @class CodeCompletionContext
@@ -48,7 +48,7 @@ typedef QPair<KDevelop::Declaration *, int> DeclarationPair;
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionContext : public KDevelop::CodeCompletionContext
 {
 public:
-    typedef QExplicitlySharedDataPointer<CodeCompletionContext> Ptr;
+    using Ptr = QExplicitlySharedDataPointer<CodeCompletionContext>;
 
     /// Constructor.
     explicit CodeCompletionContext(KDevelop::DUContextPointer ctxt,

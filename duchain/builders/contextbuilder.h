@@ -35,7 +35,7 @@
 namespace ruby {
 
 class EditorIntegrator;
-typedef KDevelop::AbstractContextBuilder<Ast, NameAst> ContextBuilderBase;
+using ContextBuilderBase = KDevelop::AbstractContextBuilder<Ast, NameAst>;
 
 /**
  * @class ContextBuilder

@@ -35,7 +35,7 @@ namespace ruby {
 
 template<class BaseContext>
 class RubyDUContext : public BaseContext
-{	
+{
 public:
     template<class Data>
     explicit RubyDUContext(Data &data) : BaseContext(data)
@@ -88,8 +88,8 @@ public:
     enum { Identity = BaseContext::Identity + 41 };
 };
 
-typedef RubyDUContext<KDevelop::TopDUContext> RubyTopDUContext;
-typedef RubyDUContext<KDevelop::DUContext> RubyNormalDUContext;
+using RubyTopDUContext = RubyDUContext<KDevelop::TopDUContext>;
+using RubyNormalDUContext = RubyDUContext<KDevelop::DUContext>;
 
 }
 

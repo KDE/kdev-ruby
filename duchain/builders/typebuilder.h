@@ -30,7 +30,8 @@
 
 namespace ruby {
 
-typedef KDevelop::AbstractTypeBuilder<Ast, NameAst, ContextBuilder> TypeBuilderBase;
+using TypeBuilderBase =
+    KDevelop::AbstractTypeBuilder<Ast, NameAst, ContextBuilder>;
 
 /**
  * @class TypeBuilder
