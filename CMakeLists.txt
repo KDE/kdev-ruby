@@ -41,9 +41,10 @@ add_subdirectory(completion)
 add_subdirectory(app_templates)
 
 add_library(kdevrubylanguagesupport MODULE
-    parsejob.cpp
     highlighting.cpp
     languagesupport.cpp
+    launcher.cpp
+    parsejob.cpp
     codegen/refactoring.cpp
 )
 

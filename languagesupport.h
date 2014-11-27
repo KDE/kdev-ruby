@@ -1,6 +1,7 @@
 /* This file is part of KDevelop
  *
  * Copyright 2006-2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -18,33 +19,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RUBY_LANGUAGESUPPORT_H
-#define RUBY_LANGUAGESUPPORT_H
+#ifndef RUBY_LANGUAGE_SUPPORT_H
+#define RUBY_LANGUAGE_SUPPORT_H
 
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
-#include <language/duchain/topducontext.h>
 
 #include <parser/node.h>
-
-class KConfigGroup;
-
-namespace KDevelop {
-    class IDocument;
-    class IProject;
-    class ILaunchConfiguration;
-    class ICodeHighlighting;
-}
 
 namespace ruby {
 
 class Highlighting;
+class Launcher;
 class Refactoring;
 
 namespace rails {
     class Support;
 }
-
 
 /**
  * @class LanguageSupport
@@ -107,44 +98,17 @@ public:
     virtual void createActionsForMainWindow(Sublime::MainWindow *window,
                                             QString &xmlFile,
                                             KActionCollection &actions) override;
-private:
-    /**
-     * @internal Find or create a launch for a the given @p name.
-     * @return the launch configuration for the given @p name.
-     */
-    KDevelop::ILaunchConfiguration * findOrCreateLaunchConfiguration(const QString &name);
-
-    /**
-     * @internal Set up the launch configuration before the run occurs.
-     * @param cfg the KConfigGroup for this launch.
-     * @param activeDocument the currently active document.
-     */
-    void setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument);
-
-    /**
-     * @internal Find the method under the cursor in the given \p doc. It's
-     * used by the runCurrentTestFunction() slot.
-     */
-    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
-
-private Q_SLOTS:
-     /// The slot that allows this plugin to run the current Ruby file.
-    void runCurrentFile();
-
-    /// The slot that allows this plugin to run the current test function.
-    void runCurrentTestFunction();
 
 private:
-    ruby::Highlighting *m_highlighting;
-    ruby::Refactoring *m_refactoring;
+    Highlighting *m_highlighting;
+    Refactoring *m_refactoring;
+    Launcher *m_launcher;
     enum ruby_version m_version;
 
     rails::Support *m_rails;
-    KDevelop::ILaunchConfiguration *m_rubyFileLaunchConfiguration;
-    KDevelop::ILaunchConfiguration *m_rubyCurrentFunctionLaunchConfiguration;
 };
 
 }
 
-#endif // RUBY_LANGUAGESUPPORT_H
+#endif // RUBY_LANGUAGE_SUPPORT_H
 

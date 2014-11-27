@@ -1,0 +1,90 @@
+/* This file is part of KDevelop
+ *
+ * Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#ifndef RUBY_LAUNCHER_H
+#define RUBY_LAUNCHER_H
+
+#include <kactioncollection.h>
+
+namespace KDevelop {
+    class IDocument;
+    class ILaunchConfiguration;
+}
+
+namespace ruby {
+
+class LanguageSupport;
+
+/**
+ * @class Launcher
+ *
+ * The class responsible for all the default launcher for this plugin. It's
+ * only used by the LanguageSupport class, but I rather have this functionality
+ * in this separate class than having a bloated LanguageSupport class.
+ */
+class Launcher : public QObject
+{
+public:
+    explicit Launcher(LanguageSupport *support);
+
+    /**
+     * Setup the Main Window actions.
+     *
+     * @param actions The main window actions to be modified.
+     */
+    void setupActions(KActionCollection &actions);
+
+private:
+    /**
+     * @internal Find or create a launch for a the given @p name.
+     * @return the launch configuration for the given @p name.
+     */
+    KDevelop::ILaunchConfiguration * launchConfiguration(const QString &name);
+
+    /**
+     * @internal Set up the launch configuration before the run occurs.
+     * @param cfg the KConfigGroup for this launch.
+     * @param document the currently active document.
+     */
+    void setupBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *document);
+
+    /**
+     * @internal Find the method under the cursor in the given \p doc. It's
+     * used by the runCurrentTestFunction() slot.
+     */
+    QString findFunctionUnderCursor(KDevelop::IDocument *doc);
+
+private slots:
+    /// The slot that allows this plugin to run the current Ruby file.
+    void runCurrentFile();
+
+    /// The slot that allows this plugin to run the current test function.
+    void runCurrentTest();
+
+private:
+    LanguageSupport *m_support;
+    KDevelop::ILaunchConfiguration *m_file;
+    KDevelop::ILaunchConfiguration *m_function;
+};
+
+}
+
+#endif // RUBY_LAUNCHER_H
+

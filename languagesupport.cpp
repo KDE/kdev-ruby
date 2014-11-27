@@ -1,6 +1,7 @@
 /* This file is part of KDevelop
  *
  * Copyright 2006-2010 Alexander Dymo <adymo@kdevelop.org>
+ * Copyright 2014 Miquel Sabaté Solà <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -59,11 +60,8 @@
 #include <completion/model.h>
 #include <codegen/refactoring.h>
 #include <debug.h>
+#include <launcher.h>
 //END Includes
-
-
-#define RUBY_FILE_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby File")
-#define RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME i18n("Current Ruby Test Function")
 
 K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<ruby::LanguageSupport>();)
 
@@ -74,14 +72,14 @@ using namespace ruby;
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
-    , m_rails(new rails::Support(this))
-    , m_rubyFileLaunchConfiguration(nullptr)
-    , m_rubyCurrentFunctionLaunchConfiguration(nullptr)
 {
     KDEV_USE_EXTENSION_INTERFACE(KDevelop::ILanguageSupport)
 
     // TODO: this should be removed once KDE knows how to handle categories.
     QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
+
+    m_rails = new rails::Support(this);
+    m_launcher = new Launcher(this);
 
     setXMLFile("kdevrubysupport.rc");
     m_highlighting = new ruby::Highlighting(this);
@@ -147,131 +145,6 @@ enum ruby_version LanguageSupport::version() const
     return m_version;
 }
 
-void LanguageSupport::runCurrentFile()
-{
-    KDevelop::IDocument *doc = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!doc)
-        return;
-
-    // Get out if this is not a Ruby file.
-    if (!KDevelop::ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
-        return;
-
-    if (!m_rubyFileLaunchConfiguration)
-        m_rubyFileLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_FILE_LAUNCH_CONFIGURATION_NAME);
-    if (!m_rubyFileLaunchConfiguration)
-        return;
-
-    KConfigGroup cfg = m_rubyFileLaunchConfiguration->config();
-    setUpLaunchConfigurationBeforeRun(cfg, doc);
-    cfg.writeEntry("Arguments", QStringList() << doc->url().toLocalFile());
-    cfg.sync();
-
-    core()->runController()->execute(QStringLiteral("execute"),
-                                     m_rubyFileLaunchConfiguration);
-}
-
-void LanguageSupport::runCurrentTestFunction()
-{
-    KDevelop::IDocument *doc = KDevelop::ICore::self()->documentController()->activeDocument();
-    if (!doc)
-        return;
-
-    // Get out if this is not a Ruby file.
-    if (!KDevelop::ICore::self()->languageController()->languagesForUrl(doc->url()).contains(language()))
-        return;
-
-    if (!m_rubyCurrentFunctionLaunchConfiguration)
-        m_rubyCurrentFunctionLaunchConfiguration = findOrCreateLaunchConfiguration(RUBY_CURRENT_FUNCTION_LAUNCH_CONFIGURATION_NAME);
-    if (!m_rubyCurrentFunctionLaunchConfiguration)
-        return;
-
-    // Find function under the cursor (if any)
-    QString currentFunction = findFunctionUnderCursor(doc);
-    rDebug() << "current function" << currentFunction;
-    if (currentFunction.isEmpty())
-        return;
-
-    KConfigGroup cfg = m_rubyCurrentFunctionLaunchConfiguration->config();
-    setUpLaunchConfigurationBeforeRun(cfg, doc);
-    QStringList args;
-    args << doc->url().toLocalFile() << "-n" << currentFunction;
-    cfg.writeEntry("Arguments", args.join(" "));
-    cfg.sync();
-
-    core()->runController()->execute(QStringLiteral("execute"),
-                                     m_rubyCurrentFunctionLaunchConfiguration);
-}
-
-QString LanguageSupport::findFunctionUnderCursor(KDevelop::IDocument *doc)
-{
-    QString function;
-    KDevelop::DUChainReadLocker lock;
-
-    KDevelop::TopDUContext *topContext = KDevelop::DUChainUtils::standardContextForUrl(doc->url());
-    if (!topContext) {
-        return "";
-    }
-
-    KDevelop::CursorInRevision cursor = KDevelop::CursorInRevision(doc->cursorPosition().line(), doc->cursorPosition().column());
-    KDevelop::DUContext* context = topContext->findContextAt(cursor);
-    if (!context)
-        return "";
-
-    rDebug() << "CONTEXT ID" << context->localScopeIdentifier();
-    return context->localScopeIdentifier().toString();
-}
-
-void LanguageSupport::setUpLaunchConfigurationBeforeRun(KConfigGroup &cfg, KDevelop::IDocument *activeDocument)
-{
-    KDevelop::Path root = rails::Helpers::findRailsRoot(activeDocument->url());
-    if (root.isValid()) {
-        cfg.writeEntry("Working Directory", root.toLocalFile());
-    } else {
-        cfg.writeEntry("Working Directory", root.parent().path());
-    }
-}
-
-KDevelop::ILaunchConfiguration * LanguageSupport::findOrCreateLaunchConfiguration(const QString &name)
-{
-    foreach (KDevelop::ILaunchConfiguration *config, core()->runController()->launchConfigurations()) {
-        if (config->name() == name) {
-            return config;
-        }
-    }
-    KDevelop::ILaunchConfiguration *config = nullptr;
-
-    IExecutePlugin* executePlugin = core()->pluginController()->pluginForExtension("org.kdevelop.IExecutePlugin")->extension<IExecutePlugin>();
-    KDevelop::LaunchConfigurationType* type = core()->runController()->launchConfigurationTypeForId(executePlugin->nativeAppConfigTypeId());
-    if (!type) {
-        return nullptr;
-    }
-
-    KDevelop::ILaunchMode* mode = core()->runController()->launchModeForId("execute");
-    if (!mode) {
-        return nullptr;
-    }
-
-    KDevelop::ILauncher *launcher = nullptr;
-    foreach (KDevelop::ILauncher *l, type->launchers()) {
-        if (l->supportedModes().contains(QStringLiteral("execute"))) {
-            launcher = l;
-        }
-    }
-    if (!launcher) {
-        return nullptr;
-    }
-
-    config = core()->runController()->createLaunchConfiguration(type, qMakePair(mode->id(), launcher->id()), nullptr, name);
-
-    KConfigGroup cfg = config->config();
-    cfg.writeEntry("isExecutable", true);
-    cfg.writeEntry("Executable", "ruby");
-    cfg.sync();
-
-    return config;
-}
-
 void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*/,
                                                  QString &_xmlFile,
                                                  KActionCollection &actions)
@@ -279,16 +152,8 @@ void LanguageSupport::createActionsForMainWindow(Sublime::MainWindow * /*window*
     _xmlFile = xmlFile();
 
     m_rails->setupActions(actions);
-
-    QAction *action = actions.addAction("ruby_run_current_file");
-    action->setText(i18n("Run Current File"));
-    action->setShortcut(Qt::META | Qt::Key_F9);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentFile()));
-
-    action = actions.addAction("ruby_run_current_test_function");
-    action->setText(i18n("Run Current Test Function"));
-    action->setShortcut(Qt::META | Qt::SHIFT | Qt::Key_F9);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(runCurrentTestFunction()));
+    m_launcher->setupActions(actions);
 }
 
 #include "languagesupport.moc"
+
