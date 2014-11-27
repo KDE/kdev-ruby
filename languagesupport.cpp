@@ -77,7 +77,6 @@ namespace Ruby
 LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : KDevelop::IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , KDevelop::ILanguageSupport()
-    , m_builtinsLoaded(false)
     , m_railsSwitchers(new Rails::Switchers(this))
     , m_viewsQuickOpenDataProvider(nullptr)
     , m_testsQuickOpenDataProvider(nullptr)
@@ -89,8 +88,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     // TODO: this should be removed once KDE knows how to handle categories.
     QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
 
-    m_builtinsLock.lockForWrite();
-
     setXMLFile("kdevrubysupport.rc");
     m_highlighting = new Ruby::Highlighting(this);
     m_refactoring = new Ruby::Refactoring(this);
@@ -98,8 +95,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     new KDevelop::CodeCompletion(this, rModel, "Ruby");
 
     setupQuickOpen();
-
-    QTimer::singleShot(0, this, SLOT(updateBuiltins()));
 
     /* Retrieving Ruby version */
     QProcess ruby;
@@ -120,7 +115,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
 
 LanguageSupport::~LanguageSupport()
 {
-    /* There's nothing to do here! */
 }
 
 QString LanguageSupport::name() const
@@ -155,33 +149,9 @@ KDevelop::ContextMenuExtension LanguageSupport::contextMenuExtension(KDevelop::C
     return cm;
 }
 
-bool LanguageSupport::builtinsLoaded() const
-{
-    return m_builtinsLoaded;
-}
-
-QReadWriteLock * LanguageSupport::builtinsLock()
-{
-    return &m_builtinsLock;
-}
-
 enum ruby_version LanguageSupport::version() const
 {
     return m_version;
-}
-
-void LanguageSupport::updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext)
-{
-    Q_UNUSED(topContext)
-    rDebug() << "builtins file is up to date " << url.str();
-    m_builtinsLoaded = true;
-    m_builtinsLock.unlock();
-}
-
-void LanguageSupport::updateBuiltins()
-{
-    rDebug() << "making sure that the builtins file is up to date";
-    KDevelop::DUChain::self()->updateContextForUrl(internalBuiltinsFile(), KDevelop::TopDUContext::AllDeclarationsAndContexts, this, -10);
 }
 
 void LanguageSupport::runCurrentFile()

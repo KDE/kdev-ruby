@@ -51,6 +51,11 @@ class EditorIntegrator;
     };
 
     /**
+     * @returns the language string.
+     */
+    KDEVRUBYDUCHAIN_EXPORT const KDevelop::IndexedString & languageString();
+
+    /**
      * Get the url of the Ruby builtins file.
      *
      * @return A KDevelop::IndexedString that contains the url of the Ruby

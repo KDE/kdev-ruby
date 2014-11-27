@@ -23,7 +23,6 @@
 #define KDEVRUBYLANGUAGESUPPORT_H
 
 
-#include <QReadLocker>
 #include <interfaces/iplugin.h>
 #include <language/interfaces/ilanguagesupport.h>
 #include <language/duchain/topducontext.h>
@@ -109,16 +108,6 @@ public:
     virtual KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context) override;
 
     /**
-     * @return true if the builtins file is loaded, false otherwise.
-     */
-    bool builtinsLoaded() const;
-
-    /**
-     * @return the lock for the builtins file.
-     */
-    QReadWriteLock * builtinsLock();
-
-    /**
      * @return the version of Ruby to be picked.
      */
     enum ruby_version version() const;
@@ -154,14 +143,6 @@ private:
      */
     void setupQuickOpen();
 
-public slots:
-    /// Get notified by background parser when the builtins file is loaded.
-    void updateReady(KDevelop::IndexedString url, KDevelop::ReferencedTopDUContext topContext);
-
-private slots:
-    /// Update the builtins file when the plugin has been loaded.
-    void updateBuiltins();
-
 private Q_SLOTS:
      /// The slot that allows this plugin to run the current Ruby file.
     void runCurrentFile();
@@ -172,8 +153,6 @@ private Q_SLOTS:
 private:
     Ruby::Highlighting *m_highlighting;
     Ruby::Refactoring *m_refactoring;
-    bool m_builtinsLoaded;
-    QReadWriteLock m_builtinsLock;
     enum ruby_version m_version;
 
     Rails::Switchers *m_railsSwitchers;

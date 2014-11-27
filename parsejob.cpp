@@ -19,6 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <mutex>
 
 // Qt + KDE
 #include <QReadLocker>
@@ -69,19 +70,23 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
     Q_UNUSED(pointer);
     Q_UNUSED(thread);
 
-    if (!ruby() || abortRequested()) {
-        return abortJob();
+    // Make sure that the builtins file is already loaded.
+    if (document() != internalBuiltinsFile()) {
+        const auto &langSupport = languageSupport();
+        static std::once_flag once;
+
+        std::call_once(once, [langSupport] {
+            rDebug() << "Initializing internal function file" << internalBuiltinsFile();
+            ParseJob internalJob(internalBuiltinsFile(), langSupport);
+            internalJob.setMinimumFeatures(TopDUContext::AllDeclarationsAndContexts);
+            internalJob.run({}, nullptr);
+            Q_ASSERT(internalJob.success());
+        });
     }
 
-    /* Make sure that the builtins file is already loaded */
-    if (!ruby()->builtinsLoaded() && document() != internalBuiltinsFile()) {
-        rDebug() << "waiting for builtins file to finish parsing";
-        QReadLocker(ruby()->builtinsLock());
-    }
-
-    KDevelop::UrlParseLock urlLock(document());
-    static const IndexedString langString("Ruby");
-    if (!(minimumFeatures() & Rescheduled) && !isUpdateRequired(langString)) {
+    UrlParseLock urlLock(document());
+    if (!(minimumFeatures() & Rescheduled) &&
+        !isUpdateRequired(languageString())) {
         return;
     }
 
@@ -211,7 +216,7 @@ void ParseJob::run(ThreadWeaver::JobPointer pointer, ThreadWeaver::Thread *threa
             m_duContext->clearProblems();
         } else {
             ParsingEnvironmentFile *file = new ParsingEnvironmentFile(document());
-            file->setLanguage(langString);
+            file->setLanguage(languageString());
             m_duContext = new TopDUContext(document(), RangeInRevision(0, 0, INT_MAX, INT_MAX), file);
             DUChain::self()->addDocumentChain(m_duContext);
         }

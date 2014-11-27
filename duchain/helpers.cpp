@@ -45,6 +45,12 @@ namespace Ruby
 {
 using namespace KDevelop;
 
+const IndexedString & languageString()
+{
+    static const IndexedString lang("ruby");
+    return lang;
+}
+
 const IndexedString & internalBuiltinsFile()
 {
     static IndexedString doc(QStandardPaths::locate(
