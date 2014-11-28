@@ -17,21 +17,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <duchain/builders/usebuilder.h>
 
 #include <language/duchain/types/functiontype.h>
 
 #include <parser/parser.h>
-#include <duchain/helpers.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/expressionvisitor.h>
-#include <duchain/builders/usebuilder.h>
-#include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 
-
 using namespace KDevelop;
-namespace ruby
-{
+using namespace ruby;
 
 UseBuilder::UseBuilder(EditorIntegrator *editor) : UseBuilderBase()
 {
@@ -50,7 +46,7 @@ void UseBuilder::visitName(Ast *node)
 {
     const QualifiedIdentifier &id = getIdentifier(node);
     const RangeInRevision &range = editorFindRange(node, node);
-    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(currentContext()));
+    auto decl = getDeclaration(id, range, DUContextPointer(currentContext()));
 
     if (!decl || decl->range() == range) {
         return;
@@ -113,8 +109,9 @@ void UseBuilder::visitMethodCall(Ast *node)
     }
     m_classMethod = true;
     visitMethodCallMembers(node);
-    if (!m_depth)
+    if (!m_depth) {
         m_lastCtx = nullptr;
+    }
 
     /* Visit the method arguments */
     node->tree = n->r;
@@ -136,10 +133,8 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
     Declaration *last;
     ExpressionVisitor ev(ctx, editor());
 
-    /*
-     * Go to the next element since we're coming from a recursion and we've
-     * already checked its children nodes.
-     */
+    // Go to the next element since we're coming from a recursion and we've
+    // already checked its children nodes.
     if (node->tree->kind == token_method_call) {
         node->tree = node->tree->next;
     }
@@ -167,7 +162,7 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
         last = ev.lastDeclaration().data();
         StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
 
-        /* Handle the difference between instance & class methods */
+        // Handle the difference between instance & class methods.
         if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data())) {
             m_classMethod = true;
         } else {
@@ -179,10 +174,8 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
             UseBuilderBase::newUse(node, range, DeclarationPointer(last));
         }
 
-        /*
-         * If this is a StructureType, it means that we're in a case like;
-         * "A::B::" and therefore the next context should be A::B.
-         */
+        // If this is a StructureType, it means that we're in a case like;
+        // "A::B::" and therefore the next context should be A::B.
         if (!sType) {
             // It's not a StructureType, therefore it's a variable or a method.
             FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
@@ -207,4 +200,3 @@ void UseBuilder::visitRequire(Ast *node, bool relative)
     Q_UNUSED(relative);
 }
 
-}

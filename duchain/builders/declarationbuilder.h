@@ -20,15 +20,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
-#ifndef DECLARATION_BUILDER_H
-#define DECLARATION_BUILDER_H
-
+#ifndef RUBY_DECLARATION_BUILDER_H
+#define RUBY_DECLARATION_BUILDER_H
 
 #include <language/duchain/builders/abstractdeclarationbuilder.h>
+
 #include <duchain/builders/typebuilder.h>
 #include <duchain/helpers.h>
-
 
 namespace ruby {
 
@@ -46,13 +44,7 @@ using DeclarationBuilderBase =
 class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
-    /**
-     * Constructor.
-     * @param editor The EditorIntegrator to be used.
-     */
     explicit DeclarationBuilder(EditorIntegrator *editor);
-
-    /// Destructor.
     virtual ~DeclarationBuilder();
 
 protected:
@@ -244,4 +236,4 @@ private:
 
 }
 
-#endif // DECLARATION_BUILDER_H
+#endif // RUBY_DECLARATION_BUILDER_H

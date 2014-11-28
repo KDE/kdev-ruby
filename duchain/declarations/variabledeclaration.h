@@ -17,48 +17,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef RUBY_VARIABLE_DECLARATION_H
+#define RUBY_VARIABLE_DECLARATION_H
 
-#ifndef RUBY_VARIABLEDECLARATION_H
-#define RUBY_VARIABLEDECLARATION_H
-
-
+#include <duchain/duchainexport.h>
 #include <language/duchain/declaration.h>
 #include <language/duchain/declarationdata.h>
-#include <parser/node.h>
-#include <duchain/duchainexport.h>
 
+#include <parser/node.h>
 
 namespace ruby {
 
-/**
- * @class VariableDeclarationData
- * Private data structure for VariableDeclaration.
- */
 class KDEVRUBYDUCHAIN_EXPORT VariableDeclarationData : public KDevelop::DeclarationData
 {
 public:
-    /// Constructor
-    VariableDeclarationData() : KDevelop::DeclarationData(), m_kind(2)
+    VariableDeclarationData()
+        : KDevelop::DeclarationData()
+        , kind(flags_t::int_l)
     {
-        /* There's nothing to do here */
     }
 
-    /// Copy constructor.
     explicit VariableDeclarationData(const VariableDeclarationData &rhs)
         : KDevelop::DeclarationData(rhs)
     {
-        m_kind = rhs.m_kind;
+        kind = rhs.kind;
     }
 
-    /// Destructor.
     ~VariableDeclarationData()
     {
-        /* There's nothing to do here */
     }
 
-public:
     /// The kind of a variable declaration (i.e. constant, ivar, ...)
-    int m_kind;
+    int kind;
 };
 
 /**
@@ -69,32 +59,12 @@ public:
 class KDEVRUBYDUCHAIN_EXPORT VariableDeclaration : public KDevelop::Declaration
 {
 public:
-    /**
-     * Constructor.
-     * @param range The range of this declaration.
-     * @param ctx The context of this declaration.
-     */
-    explicit VariableDeclaration(const KDevelop::RangeInRevision &range,
-                                 KDevelop::DUContext *context);
-
-    /**
-     * Constructor.
-     * @param data The data to be copied.
-     * @param range The range of this declaration.
-     */
-    explicit VariableDeclaration(VariableDeclarationData &data,
-                                 const KDevelop::RangeInRevision &range);
-
-    /// Copy constructor
+    VariableDeclaration(const KDevelop::RangeInRevision &range,
+                        KDevelop::DUContext *context);
+    VariableDeclaration(VariableDeclarationData &data,
+                        const KDevelop::RangeInRevision &range);
     explicit VariableDeclaration(const VariableDeclaration &rhs);
-
-    /// Copy constructor.
     explicit VariableDeclaration(VariableDeclarationData &data);
-
-    /**
-     * Copy constructor.
-     * @param data The data to be copied.
-     */
     explicit VariableDeclaration(KDevelop::DeclarationData &data);
 
     /// Given a @p node, set the variable kind.
@@ -108,17 +78,17 @@ public:
 
     // Helper methods
 
-    inline bool isNormal() const { return d_func()->m_kind == flags_t::var; }
-    inline bool isGlobal() const { return d_func()->m_kind == flags_t::global; }
-    inline bool isIvar() const { return d_func()->m_kind == flags_t::ivar; }
-    inline bool isCvar() const { return d_func()->m_kind == flags_t::cvar; }
-    inline bool isConstant() const { return d_func()->m_kind == flags_t::constant; }
+    inline bool isNormal() const { return d_func()->kind == flags_t::var; }
+    inline bool isGlobal() const { return d_func()->kind == flags_t::global; }
+    inline bool isIvar() const { return d_func()->kind == flags_t::ivar; }
+    inline bool isCvar() const { return d_func()->kind == flags_t::cvar; }
+    inline bool isConstant() const { return d_func()->kind == flags_t::constant; }
 
     // Arguments
 
-    inline bool hasStar() const { return d_func()->m_kind == flags_t::kwrest; }
-    inline bool isBlock() const { return d_func()->m_kind == flags_t::block; }
-    inline bool isOpt() const { return d_func()->m_kind == flags_t::opt; }
+    inline bool hasStar() const { return d_func()->kind == flags_t::kwrest; }
+    inline bool isBlock() const { return d_func()->kind == flags_t::block; }
+    inline bool isOpt() const { return d_func()->kind == flags_t::opt; }
 
     enum { Identity = 47 /** The id of this Type. */ };
 
@@ -128,5 +98,4 @@ private:
 
 }
 
-
-#endif // RUBY_VARIABLEDECLARATION_H
+#endif // RUBY_VARIABLE_DECLARATION_H

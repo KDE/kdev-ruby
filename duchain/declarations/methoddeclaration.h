@@ -17,15 +17,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef R_METHOD_DECLARATION_H
-#define R_METHOD_DECLARATION_H
-
+#ifndef RUBY_METHOD_DECLARATION_H
+#define RUBY_METHOD_DECLARATION_H
 
 #include <duchain/duchainexport.h>
 #include <language/duchain/appendedlist.h>
 #include <language/duchain/functiondeclaration.h>
-
 
 namespace ruby {
 
@@ -36,36 +33,27 @@ struct KDEVRUBYDUCHAIN_EXPORT YieldType {
 
 KDEVRUBYDUCHAIN_EXPORT DECLARE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
-/**
- * @class MethodDeclarationData
- *
- * Private data structure for MethodDeclaration.
- */
-class KDEVRUBYDUCHAIN_EXPORT MethodDeclarationData : public KDevelop::FunctionDeclarationData
+class KDEVRUBYDUCHAIN_EXPORT MethodDeclarationData
+    : public KDevelop::FunctionDeclarationData
 {
 public:
-    /// Constructor.
-    explicit MethodDeclarationData()
-        : KDevelop::FunctionDeclarationData(), classMethod(false)
-        , m_accessPolicy(KDevelop::Declaration::Public)
+    MethodDeclarationData()
+        : KDevelop::FunctionDeclarationData()
+        , classMethod(false)
+        , accessPolicy(KDevelop::Declaration::Public)
     {
         initializeAppendedLists();
     }
 
-    /**
-     * Copy constructor.
-     * @param rhs data to copy.
-     */
     explicit MethodDeclarationData(const MethodDeclarationData &rhs)
         : KDevelop::FunctionDeclarationData(rhs)
     {
         initializeAppendedLists();
         copyListsFrom(rhs);
         classMethod = rhs.classMethod;
-        m_accessPolicy = rhs.m_accessPolicy;
+        accessPolicy = rhs.accessPolicy;
     }
 
-    /// Destructor
     ~MethodDeclarationData()
     {
         freeAppendedLists();
@@ -75,7 +63,7 @@ public:
     bool classMethod;
 
     /// The access policy for this method.
-    KDevelop::Declaration::AccessPolicy m_accessPolicy;
+    KDevelop::Declaration::AccessPolicy accessPolicy;
 
     /// The list of yield types.
     START_APPENDED_LISTS_BASE(MethodDeclarationData, KDevelop::DeclarationData);
@@ -91,24 +79,13 @@ public:
  * this information and, therefore, this is the one to be used instead
  * of the regular KDevelop::FunctionDeclaration.
  */
-class KDEVRUBYDUCHAIN_EXPORT MethodDeclaration : public KDevelop::FunctionDeclaration
+class KDEVRUBYDUCHAIN_EXPORT MethodDeclaration
+    : public KDevelop::FunctionDeclaration
 {
 public:
-    /**
-     * Constructor.
-     * @param range The range of this declaration.
-     * @param ctx The context of this declaration.
-     */
-    explicit MethodDeclaration(const KDevelop::RangeInRevision &range,
-                               KDevelop::DUContext *ctx);
-
-    /// Copy constructor.
+    MethodDeclaration(const KDevelop::RangeInRevision &range,
+                      KDevelop::DUContext *ctx);
     explicit MethodDeclaration(const MethodDeclaration &rhs);
-
-    /**
-     * Copy constructor.
-     * @param data The data to be copied.
-     */
     explicit MethodDeclaration(MethodDeclarationData &data);
 
     /**
@@ -157,5 +134,4 @@ private:
 
 }
 
-
-#endif /* R_METHOD_DECLARATION_H */
+#endif // RUBY_METHOD_DECLARATION_H

@@ -17,36 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <completion/items/keyworditem.h>
 
-// KTextEditor + KDevelop
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
-#include <language/duchain/ducontext.h>
+
 #include <language/codecompletion/codecompletionmodel.h>
+#include <language/duchain/ducontext.h>
 
-// Ruby
-#include <completion/items/keyworditem.h>
 #include <completion/helpers.h>
-
 
 using namespace KTextEditor;
 using namespace KDevelop;
 
-namespace ruby
-{
+namespace ruby {
 
 KeywordItem::KeywordItem(CodeCompletionContext::Ptr ctx,
                          const QString &keyword,
-                         const QString &customReplacement, bool line)
+                         const QString &customReplacement,
+                         bool line)
     : NormalDeclarationCompletionItem(DeclarationPointer(), ctx)
-    , m_keyword(keyword), m_replacement(customReplacement), m_wholeLine(line)
+    , m_keyword(keyword)
+    , m_replacement(customReplacement)
+    , m_wholeLine(line)
 {
-    /* There's nothing to do here */
 }
 
 void KeywordItem::execute(View *view, const Range &word)
 {
-    KTextEditor::Document *document = view->document();
+    auto document = view->document();
 
     if (!m_replacement.isEmpty()) {
         QString replacement = m_replacement;

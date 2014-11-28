@@ -18,15 +18,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
-#ifndef MODULE_DECLARATION_H
-#define MODULE_DECLARATION_H
-
+#ifndef RUBY_MODULE_DECLARATION_H
+#define RUBY_MODULE_DECLARATION_H
 
 #include <duchain/duchainexport.h>
 #include <language/duchain/declaration.h>
 #include <language/duchain/declarationdata.h>
-
 
 namespace ruby {
 
@@ -48,13 +45,13 @@ KDEVRUBYDUCHAIN_EXPORT DECLARE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, M
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclarationData : public KDevelop::DeclarationData
 {
 public:
-    /// Constructor.
-    ModuleDeclarationData() : isModule(true), eigenClass(nullptr)
+    ModuleDeclarationData()
+        : isModule(true)
+        , eigenClass(nullptr)
     {
         initializeAppendedLists();
     }
 
-    /// Copy constructor.
     explicit ModuleDeclarationData(const ModuleDeclarationData &rhs)
         : KDevelop::DeclarationData(rhs)
     {
@@ -65,7 +62,6 @@ public:
         eigenClass = rhs.eigenClass;
     }
 
-    /// Destructor.
     ~ModuleDeclarationData()
     {
         freeAppendedLists();
@@ -96,30 +92,12 @@ public:
 class KDEVRUBYDUCHAIN_EXPORT ModuleDeclaration : public KDevelop::Declaration
 {
 public:
-    /**
-     * Constructor.
-     *
-     * @param data The data for this ModuleDeclaration.
-     * @param range The range of this declaration.
-     */
-    explicit ModuleDeclaration(ModuleDeclarationData &data,
+    // Constructors.
+    ModuleDeclaration(ModuleDeclarationData &data,
                                const KDevelop::RangeInRevision &range);
-
-    /**
-     * Constructor.
-     * @param range The range of this declaration.
-     * @param ctx The context of this declaration.
-     */
-    explicit ModuleDeclaration(const KDevelop::RangeInRevision &range,
+    ModuleDeclaration(const KDevelop::RangeInRevision &range,
                                KDevelop::DUContext *context);
-
-    /// Copy constructor.
     explicit ModuleDeclaration(const ModuleDeclaration &rhs);
-
-    /**
-     * Copy constructor.
-     * @param data The data to be copied.
-     */
     explicit ModuleDeclaration(ModuleDeclarationData &data);
 
     /// Clean the list of module mix-ins.
@@ -197,5 +175,4 @@ private:
 
 Q_DECLARE_TYPEINFO(ruby::ModuleMixin, Q_MOVABLE_TYPE);
 
-
-#endif /* MODULE_DECLARATION_H */
+#endif // RUBY_MODULE_DECLARATION_H

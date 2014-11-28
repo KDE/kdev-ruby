@@ -18,40 +18,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef RUBY_CLASS_TYPE_H
+#define RUBY_CLASS_TYPE_H
 
-#ifndef CLASSTYPE_H
-#define CLASSTYPE_H
-
-
-#include <language/duchain/types/structuretype.h>
 #include <duchain/duchainexport.h>
-
+#include <language/duchain/types/structuretype.h>
 
 namespace ruby {
 
-/**
- * @class ClassTypeData
- *
- * The data class for the ClassType class.
- */
-class KDEVRUBYDUCHAIN_EXPORT ClassTypeData: public KDevelop::StructureTypeData
+struct KDEVRUBYDUCHAIN_EXPORT ClassTypeData : public KDevelop::StructureTypeData
 {
-public:
-    /// Default constructor.
-    ClassTypeData() : KDevelop::StructureTypeData(), m_contentType()
+    ClassTypeData() : KDevelop::StructureTypeData(), contentType()
     {
-        /* There's nothing to do here! */
     }
 
     /// Copy constructor. @param rhs data to copy.
     explicit ClassTypeData(const ClassTypeData &rhs)
-        : KDevelop::StructureTypeData(rhs), m_contentType(rhs.m_contentType)
+        : KDevelop::StructureTypeData(rhs)
+        , contentType(rhs.contentType)
     {
-        /* There's nothing to do here! */
     }
 
     /// The type of the content.
-    KDevelop::IndexedType m_contentType;
+    KDevelop::IndexedType contentType;
 };
 
 /**
@@ -62,24 +51,15 @@ public:
  * can potentially become a container. The contained type can be accessed
  * through the methods addContentType(newType) and contentType().
  */
-class KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
+struct KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
 {
-public:
+    using BaseType = KDevelop::StructureType;
+    using Data = ClassTypeData;
     using Ptr = KDevelop::TypePtr<ClassType>;
 
-    /// Constructor.
+    /// The different constructors.
     ClassType();
-
-    /**
-     * Copy constructor.
-     * @param rhs data to copy.
-     */
     explicit ClassType(const ClassType &rhs);
-
-    /**
-     * Copy constructor.
-     * @param data data to copy.
-     */
     explicit ClassType(ClassTypeData &data);
 
     /// Add the given type @p typeToAdd to the contents.
@@ -107,9 +87,6 @@ public:
     QString containerToString() const;
 
     enum { Identity = 41 /** The id of this Type. */ };
-
-    using Data = ClassTypeData;
-    using BaseType = KDevelop::StructureType;
 
 protected:
     TYPE_DECLARE_DATA(ClassType);

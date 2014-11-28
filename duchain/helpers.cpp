@@ -40,14 +40,110 @@
 #include <duchain/declarations/variabledeclaration.h>
 #include <duchain/types/classtype.h>
 
-
-namespace ruby
-{
 using namespace KDevelop;
+namespace ruby {
+
+// The following anonymous namespace contains helper functions that should not
+// be exported outside.
+namespace {
+
+/**
+ * @returns true if the given @p type is useful, and false otherwise.
+ */
+bool isUsefulType(const AbstractType::Ptr &type)
+{
+    if (!type) {
+        return false;
+    }
+    if (type->whichType() != AbstractType::TypeIntegral) {
+        ClassType::Ptr ct = ClassType::Ptr::dynamicCast(type);
+        if (ct) {
+            return ct->isUseful();
+        }
+        return true;
+    }
+
+    const auto &data = type.cast<IntegralType>()->dataType();
+    return data == IntegralType::TypeMixed ||
+           data == IntegralType::TypeNone ||
+           data == IntegralType::TypeNull;
+}
+
+/**
+ * Find a declaration from the Persistent Symbol Table.
+ *
+ * @param id The qualified indentifier of the declaration.
+ * @param context The current context.
+ * @param kind The kind of the declaration.
+ * @returns the first declaration that matches the given parameters from
+ * the Persistent Symbol Table.
+ * @note The given context has to be valid.
+ * @note This method already acquires a write lock for the DUChain.
+ */
+DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
+                                         const DUContextPointer &context,
+                                         DeclarationKind kind)
+{
+    // As specified by the documentation, the context *has* to be valid.
+    Q_ASSERT(context);
+    DUChainWriteLocker lock;
+
+    uint nr;
+    const IndexedDeclaration *decls = nullptr;
+    PersistentSymbolTable::self().declarations(id, nr, decls);
+
+    for (uint i = 0; i < nr; ++i) {
+        // Check that the file matches the environment.
+        ParsingEnvironmentFilePointer env = DUChain::self()->
+            environmentFileForDocument(decls[i].indexedTopContext());
+        if(!env || env->language() != languageString()) {
+            continue;
+        }
+
+        // It doesn't have a declaration, skipping.
+        Declaration *d = decls[i].declaration();
+        if (!d) {
+            continue;
+        }
+
+        /*
+         * Only global variables should be available for other files, but
+         * global variables are always fetched by the getDeclaration method.
+         * Therefore, at this point, we discard variable declarations.
+         */
+        if (dynamic_cast<VariableDeclaration *>(d)) {
+            continue;
+        }
+
+        // If it's a method declaration, check that we've got the proper one.
+        if (kind != DeclarationKind::Unknown) {
+            MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(d);
+            if (mDecl) {
+                // TODO: remove this.
+                if ((mDecl->isClassMethod() && kind != DeclarationKind::ClassMethod) ||
+                    (!mDecl->isClassMethod() && kind != DeclarationKind::InstanceMethod)) {
+                    continue;
+                }
+            }
+        }
+
+        // Get the declaration and add its top context to the current one.
+        TopDUContext *top = decls[i].declaration()->context()->topContext();
+        auto mods = top->parsingEnvironmentFile()->allModificationRevisions();
+        context->topContext()->addImportedParentContext(top);
+        context->topContext()->parsingEnvironmentFile()->
+            addModificationRevisions(mods);
+        context->topContext()->updateImportsCache();
+        return DeclarationPointer(decls[i].declaration());
+    }
+    return DeclarationPointer();
+}
+
+}
 
 const IndexedString & languageString()
 {
-    static const IndexedString lang("ruby");
+    static const IndexedString lang("Ruby");
     return lang;
 }
 
@@ -70,8 +166,10 @@ const QByteArray getComment(Ast *ast)
     return (m_comment) ? QByteArray(m_comment) : QByteArray("");
 }
 
-DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRevision &range,
-                                  const DUContextPointer &context, DeclarationKind kind)
+DeclarationPointer getDeclaration(const QualifiedIdentifier &id,
+                                  const RangeInRevision &range,
+                                  const DUContextPointer &context,
+                                  DeclarationKind kind)
 {
     QList<Declaration *> decls;
 
@@ -82,8 +180,9 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
         DUChainReadLocker lock;
 
         // If this is a class method, look at the eigen class and get out.
-        if (kind == DeclarationKind::ClassMethod
-                || kind == DeclarationKind::Unknown) {
+        if (kind == DeclarationKind::ClassMethod ||
+            kind == DeclarationKind::Unknown) {
+
             Declaration *d = context->owner();
             ModuleDeclaration *md = dynamic_cast<ModuleDeclaration *>(d);
             if (md) {
@@ -130,71 +229,14 @@ DeclarationPointer getDeclaration(const QualifiedIdentifier &id, const RangeInRe
     return DeclarationPointer(decls.last());
 }
 
-DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
-                                         const DUContextPointer &context,
-                                         DeclarationKind kind)
-{
-    // As specified by the documentation, the context *has* to be valid.
-    Q_ASSERT(context);
-    DUChainWriteLocker lock;
-
-    uint nr;
-    static const IndexedString lang("Ruby");
-    const IndexedDeclaration *decls = nullptr;
-    PersistentSymbolTable::self().declarations(id, nr, decls);
-
-    for (uint i = 0; i < nr; ++i) {
-        // Check that the file matches the environment.
-        ParsingEnvironmentFilePointer env = DUChain::self()->environmentFileForDocument(decls[i].indexedTopContext());
-        if(!env || env->language() != lang) {
-            continue;
-        }
-
-        // It doesn't have a declaration, skipping.
-        Declaration *d = decls[i].declaration();
-        if (!d) {
-            continue;
-        }
-
-        /*
-         * Only global variables should be available for other files, but
-         * global variables are always fetched by the getDeclaration method.
-         * Therefore, at this point, we discard variable declarations.
-         */
-        if (dynamic_cast<VariableDeclaration *>(d)) {
-            continue;
-        }
-
-        // If it's a method declaration, check that we've got the proper one.
-        if (kind != DeclarationKind::Unknown) {
-            MethodDeclaration *mDecl = dynamic_cast<MethodDeclaration *>(d);
-            if (mDecl) {
-                // TODO: remove this.
-                if ((mDecl->isClassMethod() && kind != DeclarationKind::ClassMethod) ||
-                    (!mDecl->isClassMethod() && kind != DeclarationKind::InstanceMethod)) {
-                    continue;
-                }
-            }
-        }
-
-        // Get the declaration and add its top context to the current one.
-        TopDUContext *top = decls[i].declaration()->context()->topContext();
-        context->topContext()->addImportedParentContext(top);
-        context->topContext()->parsingEnvironmentFile()
-            ->addModificationRevisions(top->parsingEnvironmentFile()->allModificationRevisions());
-        context->topContext()->updateImportsCache();
-        return DeclarationPointer(decls[i].declaration());
-    }
-    return DeclarationPointer();
-}
-
-TypePtr<AbstractType> getBuiltinsType(const QString &desc, const DUContext *ctx)
+TypePtr<AbstractType> getBuiltinsType(const QString &desc,
+                                      const DUContext *ctx)
 {
     // As specified by the documentation, the context *has* to be valid.
     Q_ASSERT(ctx);
 
     DUChainReadLocker lock;
-    QList<Declaration *> decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
+    auto decls = ctx->topContext()->findDeclarations(QualifiedIdentifier(desc));
     Declaration *dec = (decls.isEmpty()) ? nullptr : decls.first();
     AbstractType::Ptr type = dec ? dec->abstractType() : AbstractType::Ptr(nullptr);
     return type;
@@ -206,31 +248,12 @@ DUContext * getClassContext(const DUContext *ctx)
     Q_ASSERT(ctx);
 
     DUChainReadLocker lock;
-    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(getBuiltinsType(QStringLiteral("Class"), ctx));
+    const auto &type = getBuiltinsType(QStringLiteral("Class"), ctx);
+    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(type);
     if (klass) {
         return klass->declaration(ctx->topContext())->internalContext();
     }
     return nullptr;
-}
-
-bool isUsefulType(const AbstractType::Ptr &type)
-{
-    if (!type) {
-        return false;
-    }
-    if (type->whichType() != AbstractType::TypeIntegral) {
-        ClassType::Ptr ct = ClassType::Ptr::dynamicCast(type);
-        if (ct) {
-            return ct->isUseful();
-        }
-        return true;
-    }
-    QList<uint> skipTypes;
-    skipTypes << IntegralType::TypeMixed << IntegralType::TypeNone << IntegralType::TypeNull;
-    if (!skipTypes.contains(type.cast<IntegralType>()->dataType())) {
-        return true;
-    }
-    return false;
 }
 
 AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)

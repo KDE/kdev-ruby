@@ -18,41 +18,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <klocalizedstring.h>
 
-// KDE + KDevelop
-#include <KLocalizedString>
-#include <language/duchain/duchain.h>
-#include <language/duchain/duchainlock.h>
-#include <language/duchain/types/typeregister.h>
-#include <language/util/kdevhash.h>
-
-// Ruby
 #include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
-
+#include <language/duchain/types/typeregister.h>
 
 using namespace KDevelop;
-
-namespace ruby
-{
+using namespace ruby;
 
 REGISTER_TYPE(ClassType);
 
 ClassType::ClassType() : KDevelop::StructureType(createData<ClassType>())
 {
-    /* There's nothing to do here */
 }
 
 ClassType::ClassType(const ClassType &rhs)
     : KDevelop::StructureType(copyData<ClassType>(*rhs.d_func()))
 {
-    /* There's nothing to do here */
 }
 
 ClassType::ClassType(ClassTypeData &data)
     : KDevelop::StructureType(data)
 {
-    /* There's nothing to do here */
 }
 
 void ClassType::addContentType(AbstractType::Ptr typeToAdd)
@@ -60,13 +48,13 @@ void ClassType::addContentType(AbstractType::Ptr typeToAdd)
     if (!typeToAdd) { // TODO: not sure :/
         return;
     }
-    AbstractType::Ptr type = mergeTypes(contentType().abstractType(), typeToAdd);
-    d_func_dynamic()->m_contentType = type->indexed();
+    auto type = mergeTypes(contentType().abstractType(), typeToAdd);
+    d_func_dynamic()->contentType = type->indexed();
 }
 
 const IndexedType & ClassType::contentType() const
 {
-    return d_func()->m_contentType;
+    return d_func()->contentType;
 }
 
 bool ClassType::isUseful() const
@@ -83,7 +71,7 @@ AbstractType * ClassType::clone() const
 uint ClassType::hash() const
 {
     return KDevHash(StructureType::hash()) <<
-        ( contentType().abstractType() ? contentType().abstractType()->hash() : 0 );
+        (contentType().abstractType() ? contentType().abstractType()->hash() : 0);
 }
 
 bool ClassType::equals(const AbstractType *rhs) const
@@ -100,7 +88,7 @@ bool ClassType::equals(const AbstractType *rhs) const
 
 QString ClassType::toString() const
 {
-    QString prefix = KDevelop::StructureType::toString();
+    QString prefix = StructureType::toString();
     AbstractType::Ptr content = contentType().abstractType();
     return content ? i18n("%1 of %2", prefix, content->toString()) : prefix;
 }
@@ -108,7 +96,5 @@ QString ClassType::toString() const
 QString ClassType::containerToString() const
 {
     return KDevelop::StructureType::toString();
-}
-
 }
 

@@ -18,37 +18,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #include <duchain/declarations/moduledeclaration.h>
 #include <language/duchain/duchainregister.h>
 
-
-namespace ruby
-{
+namespace ruby {
 
 REGISTER_DUCHAIN_ITEM(ModuleDeclaration);
 DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, moduleMixins, ModuleMixin)
 DEFINE_LIST_MEMBER_HASH(ModuleDeclarationData, mixers, ModuleMixin)
 
-ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData &data, const KDevelop::RangeInRevision &range)
+ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData &data,
+                                     const KDevelop::RangeInRevision &range)
     : KDevelop::Declaration(data, range)
 {
-    /* There's nothing to do here */
 }
 
 ModuleDeclaration::ModuleDeclaration(const ModuleDeclaration &rhs)
     : KDevelop::Declaration(*new ModuleDeclarationData(*rhs.d_func()))
 {
-    /* There's nothing to do here */
 }
 
 ModuleDeclaration::ModuleDeclaration(ModuleDeclarationData &data)
     : KDevelop::Declaration(data)
 {
-    /* There's nothing to do here */
 }
 
-ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *context)
+ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range,
+                                     KDevelop::DUContext *context)
     : KDevelop::Declaration(*new ModuleDeclarationData, range)
 {
     d_func_dynamic()->setClassId(this);

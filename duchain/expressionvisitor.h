@@ -18,21 +18,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef RUBY_EXPRESSION_VISITOR_H
+#define RUBY_EXPRESSION_VISITOR_H
 
-#ifndef RUBY_EXPRESSIONVISITOR_H
-#define RUBY_EXPRESSIONVISITOR_H
-
-
-#include <parser/astvisitor.h>
-#include <duchain/helpers.h>
 #include <duchain/duchainexport.h>
+#include <duchain/helpers.h>
 #include <duchain/types/classtype.h>
-
+#include <parser/astvisitor.h>
 
 namespace ruby {
 
 class EditorIntegrator;
-
 
 /**
  * @class ExpressionVisitor
@@ -48,18 +44,7 @@ class EditorIntegrator;
 class KDEVRUBYDUCHAIN_EXPORT ExpressionVisitor : public AstVisitor
 {
 public:
-    /**
-     * Constructor.
-     * @param ctx The DUContext this visitor is related to.
-     * @param editor The EditorIntegrator for this visitor.
-     */
-    explicit ExpressionVisitor(KDevelop::DUContext *ctx,
-                               EditorIntegrator *editor);
-
-    /**
-     * Constructor.
-     * @param parent The ExpressionVisitor this instance is parented to.
-     */
+    ExpressionVisitor(KDevelop::DUContext *ctx, EditorIntegrator *editor);
     explicit ExpressionVisitor(ExpressionVisitor *parent);
 
     /// @returns the last type seen.
@@ -177,4 +162,4 @@ private:
 
 }
 
-#endif /* RUBY_EXPRESSIONVISITOR_H */
+#endif // RUBY_EXPRESSION_VISITOR_H

@@ -17,34 +17,31 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #include <duchain/declarations/variabledeclaration.h>
 #include <language/duchain/duchainregister.h>
 
+namespace ruby {
 
-namespace ruby
-{
 REGISTER_DUCHAIN_ITEM(VariableDeclaration);
 
 VariableDeclaration::VariableDeclaration(VariableDeclarationData &data)
     : KDevelop::Declaration(data)
 {
-    /* There's nothing to do here */
 }
 
-VariableDeclaration::VariableDeclaration(VariableDeclarationData &data, const KDevelop::RangeInRevision &range)
+VariableDeclaration::VariableDeclaration(VariableDeclarationData &data,
+                                         const KDevelop::RangeInRevision &range)
     : KDevelop::Declaration(data, range)
 {
-    /* There's nothing to do here */
 }
 
 VariableDeclaration::VariableDeclaration(const VariableDeclaration &rhs)
     : KDevelop::Declaration(*new VariableDeclarationData(*rhs.d_func()))
 {
-    /* There's nothing to do here */
 }
 
-VariableDeclaration::VariableDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *context)
+VariableDeclaration::VariableDeclaration(const KDevelop::RangeInRevision &range,
+                                         KDevelop::DUContext *context)
     : KDevelop::Declaration(*new VariableDeclarationData, range)
 {
     d_func_dynamic()->setClassId(this);
@@ -56,18 +53,18 @@ VariableDeclaration::VariableDeclaration(const KDevelop::RangeInRevision &range,
 void VariableDeclaration::setVariableKind(const Node *node)
 {
     if (node) {
-        d_func_dynamic()->m_kind = node->flags;
+        d_func_dynamic()->kind = node->flags;
     }
 }
 
 void VariableDeclaration::setVariableKind(int kind)
 {
-    d_func_dynamic()->m_kind = kind;
+    d_func_dynamic()->kind = kind;
 }
 
 int VariableDeclaration::variableKind() const
 {
-    return d_func()->m_kind;
+    return d_func()->kind;
 }
 
 }

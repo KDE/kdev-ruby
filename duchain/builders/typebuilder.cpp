@@ -18,16 +18,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #include <duchain/builders/typebuilder.h>
 
-
-namespace ruby
-{
+using namespace ruby;
 
 TypeBuilder::TypeBuilder() : TypeBuilderBase()
 {
-    /* There's nothing to do here! */
 }
 
-}

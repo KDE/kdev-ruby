@@ -17,16 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef USE_BUILDER_H
-#define USE_BUILDER_H
-
+#ifndef RUBY_USE_BUILDER_H
+#define RUBY_USE_BUILDER_H
 
 #include <language/duchain/builders/abstractusebuilder.h>
+
 #include <duchain/builders/contextbuilder.h>
 #include <duchain/duchainexport.h>
-#include <parser/ast.h>
-
 
 namespace ruby {
 
@@ -41,10 +38,6 @@ using UseBuilderBase =
 class KDEVRUBYDUCHAIN_EXPORT UseBuilder : public UseBuilderBase
 {
 public:
-    /**
-     * Constructor.
-     * @param editor The EditorIntegrator for this class.
-     */
     explicit UseBuilder(EditorIntegrator *editor);
 
 protected:
@@ -81,5 +74,4 @@ private:
 
 }
 
-
-#endif // USE_BUILDER_H
+#endif // RUBY_USE_BUILDER_H

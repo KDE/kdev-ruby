@@ -17,16 +17,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBYDUCONTEXT_H
-#define RUBYDUCONTEXT_H
-
+#ifndef RUBY_DUCONTEXT_H
+#define RUBY_DUCONTEXT_H
 
 #include <language/duchain/ducontext.h>
 
-
-namespace KDevelop
-{
+namespace KDevelop {
     class Declaration;
     class TopDUContext;
 }
@@ -40,15 +36,14 @@ public:
     template<class Data>
     explicit RubyDUContext(Data &data) : BaseContext(data)
     {
-        /* There's nothing to do here */
     };
 
     /**
      * Parameters will be reached to the base-class.
      */
     template<class Param1, class Param2>
-    explicit RubyDUContext(const Param1 &p1, const Param2 &p2,
-                           bool isInstantiationContext)
+    RubyDUContext(const Param1 &p1, const Param2 &p2,
+                  bool isInstantiationContext)
 		: BaseContext(p1, p2, isInstantiationContext)
     {
         static_cast<KDevelop::DUChainBase*>(this)->d_func_dynamic()->setClassId(this);
@@ -79,10 +74,10 @@ public:
      * @param htmlPrefix Html-formatted text that should be prepended before any information shown by this widget
      * @param htmlSuffix Html-formatted text that should be appended to any information shown by this widget
      */
-    virtual QWidget* createNavigationWidget(KDevelop::Declaration *decl = nullptr,
-                                            KDevelop::TopDUContext *topContext = nullptr,
-                                            const QString &htmlPrefix = QString(),
-                                            const QString &htmlSuffix = QString()) const override;
+    virtual QWidget * createNavigationWidget(KDevelop::Declaration *decl = nullptr,
+                                             KDevelop::TopDUContext *topContext = nullptr,
+                                             const QString &htmlPrefix = QString(),
+                                             const QString &htmlSuffix = QString()) const override;
 
 public:
     enum { Identity = BaseContext::Identity + 41 };
@@ -93,4 +88,4 @@ using RubyNormalDUContext = RubyDUContext<KDevelop::DUContext>;
 
 }
 
-#endif // RUBYDUCONTEXT_H
+#endif // RUBY_DUCONTEXT_H

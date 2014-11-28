@@ -18,15 +18,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef RUBY_TYPE_BUILDER_H
+#define RUBY_TYPE_BUILDER_H
 
-#ifndef TYPEBUILDER_H
-#define TYPEBUILDER_H
-
-
-// KDevelop + Ruby
 #include <language/duchain/builders/abstracttypebuilder.h>
 #include <duchain/builders/contextbuilder.h>
-
 
 namespace ruby {
 
@@ -39,17 +35,12 @@ using TypeBuilderBase =
  * It's just declared to feed the chain of DUChain classes but it's not
  * really used for anything.
  */
-class KDEVRUBYDUCHAIN_EXPORT TypeBuilder: public TypeBuilderBase
+struct KDEVRUBYDUCHAIN_EXPORT TypeBuilder : public TypeBuilderBase
 {
-public:
-    /**
-     * Constructor.
-     */
     TypeBuilder();
 };
 
 }
 
-
-#endif // TYPEBUILDER_H
+#endif // RUBY_TYPE_BUILDER_H
 

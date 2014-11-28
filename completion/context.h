@@ -132,7 +132,7 @@ private:
     char m_closing;
     QString m_following;
     ContextType m_kind;
-    QList<KDevelop::IncludeItem> m_includeItems;
+    QVector<KDevelop::IncludeItem> m_includeItems;
     QList<KDevelop::CompletionTreeElementPointer> m_ungroupedItems;
 };
 

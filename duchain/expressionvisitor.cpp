@@ -18,41 +18,41 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <duchain/editorintegrator.h>
 
-// KDevelop
-#include <language/duchain/topducontext.h>
-#include <language/duchain/declaration.h>
 #include <language/duchain/aliasdeclaration.h>
-#include <language/duchain/types/integraltype.h>
+#include <language/duchain/declaration.h>
+#include <language/duchain/topducontext.h>
 #include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/integraltype.h>
 #include <language/duchain/types/unsuretype.h>
 
-// Ruby
-#include <duchain/helpers.h>
-#include <duchain/editorintegrator.h>
-#include <duchain/expressionvisitor.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
-
-
-namespace ruby
-{
+#include <duchain/expressionvisitor.h>
+#include <duchain/helpers.h>
 
 using namespace KDevelop;
+namespace ruby {
 
 ExpressionVisitor::ExpressionVisitor(DUContext *ctx, EditorIntegrator *editor)
-    : m_ctx(ctx), m_editor(editor), m_lastDeclaration(nullptr), m_alias(false)
+    : m_ctx(ctx)
+    , m_editor(editor)
+    , m_lastDeclaration(nullptr)
+    , m_alias(false)
 {
-    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastType = nullptr;
     m_lastCtx = nullptr;
     m_declarationKind = DeclarationKind::Unknown;
 }
 
 ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
-    : m_ctx(parent->m_ctx), m_editor(parent->m_editor),
-        m_lastDeclaration(nullptr), m_alias(false)
+    : m_ctx(parent->m_ctx)
+    , m_editor(parent->m_editor)
+    , m_lastDeclaration(nullptr)
+    , m_alias(false)
 {
-    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastType = nullptr;
     m_lastCtx = nullptr;
     m_declarationKind = DeclarationKind::Unknown;
 }
@@ -60,7 +60,7 @@ ExpressionVisitor::ExpressionVisitor(ExpressionVisitor *parent)
 void ExpressionVisitor::setContext(DUContext *ctx)
 {
     m_ctx = ctx;
-    m_lastType = AbstractType::Ptr(nullptr);
+    m_lastType = nullptr;
     m_lastDeclaration = nullptr;
     m_alias = false;
     m_lastCtx = nullptr;
@@ -115,7 +115,9 @@ void ExpressionVisitor::visitName(Ast *node)
 
     QualifiedIdentifier id = getIdentifier(node);
     RangeInRevision range = m_editor->findRange(node->tree);
-    DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx), m_declarationKind);
+    DeclarationPointer decl = getDeclaration(id, range,
+                                             DUContextPointer(m_ctx),
+                                             m_declarationKind);
     DUChainReadLocker lock;
 
     if (decl) {
@@ -205,10 +207,17 @@ void ExpressionVisitor::visitNumeric(Ast *node)
     QString type;
 
     switch (node->tree->flags) {
-    case float_l: type = QStringLiteral("Float"); break;
-    case rational_l: type = QStringLiteral("Rational"); break;
-    case imaginary_l: type = QStringLiteral("Complex"); break;
-    default: type = QStringLiteral("Fixnum"); break;
+    case float_l:
+        type = QStringLiteral("Float");
+        break;
+    case rational_l:
+        type = QStringLiteral("Rational");
+        break;
+    case imaginary_l:
+        type = QStringLiteral("Complex");
+        break;
+    default:
+        type = QStringLiteral("Fixnum");
     }
     AbstractType::Ptr obj = getBuiltinsType(type, m_ctx);
     encounter(obj);
@@ -306,7 +315,7 @@ void ExpressionVisitor::visitSuper(Ast *)
         return;
     }
 
-    foreach (Declaration *d, ctx->findLocalDeclarations(md->identifier())) {
+    for (const Declaration *d : ctx->findLocalDeclarations(md->identifier())) {
         if (d->type<FunctionType>()) {
             encounter(d->type<FunctionType>()->returnType());
             break;
@@ -353,9 +362,9 @@ void ExpressionVisitor::visitBinary(Ast *node)
 
 void ExpressionVisitor::visitBoolean(Ast *)
 {
-    AbstractType::Ptr truthy = getBuiltinsType(QStringLiteral("TrueClass"), m_ctx);
-    AbstractType::Ptr falsy = getBuiltinsType(QStringLiteral("FalseClass"), m_ctx);
-    encounter(mergeTypes(truthy, falsy));
+    AbstractType::Ptr t = getBuiltinsType(QStringLiteral("TrueClass"), m_ctx);
+    AbstractType::Ptr f = getBuiltinsType(QStringLiteral("FalseClass"), m_ctx);
+    encounter(mergeTypes(t, f));
 }
 
 void ExpressionVisitor::visitIfStatement(Ast *node)
@@ -403,6 +412,7 @@ ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ast 
 
     if (ct) {
         ExpressionVisitor ev(this);
+        // TODO: I bet we can avoid this heap allocation.
         Ast *ast = new Ast(node->tree->l, node->context);
         for (Node *n = ast->tree; n != nullptr; n = n->next) {
             if (hasKey) {

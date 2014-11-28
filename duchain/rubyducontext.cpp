@@ -17,25 +17,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <duchain/rubyducontext.h>
 
 #include <kio/global.h>
-#include <language/duchain/topducontextdata.h>
-#include <language/duchain/duchainregister.h>
-#include <language/util/includeitem.h>
-#include <duchain/rubyducontext.h>
+
 #include <duchain/navigation/navigationwidget.h>
+#include <language/duchain/duchainregister.h>
+#include <language/duchain/topducontextdata.h>
+#include <language/util/includeitem.h>
 
-
-namespace ruby
-{
 using namespace KDevelop;
+namespace ruby {
 
 REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyTopDUContext, TopDUContextData);
 REGISTER_DUCHAIN_ITEM_WITH_DATA(RubyNormalDUContext, DUContextData);
 
 template<>
-QWidget * RubyTopDUContext::createNavigationWidget(Declaration *decl, TopDUContext *topContext,
-                                                   const QString &htmlPrefix, const QString &htmlSuffix) const
+QWidget * RubyTopDUContext::createNavigationWidget(Declaration *decl,
+                                                   TopDUContext *topContext,
+                                                   const QString &htmlPrefix,
+                                                   const QString &htmlSuffix) const
 {
     if (!decl) {
         QUrl u = QUrl::fromLocalFile(url().str());
@@ -54,8 +55,9 @@ QWidget * RubyNormalDUContext::createNavigationWidget(Declaration *decl, TopDUCo
                                                       const QString &htmlPrefix, const QString &htmlSuffix) const
 {
     if (!decl) {
-        if (owner())
+        if (owner()) {
             return new NavigationWidget(DeclarationPointer(owner()), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
+        }
         return nullptr;
     }
     return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);

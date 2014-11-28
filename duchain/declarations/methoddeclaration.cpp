@@ -17,37 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#include <language/duchain/duchainregister.h>
 #include <duchain/declarations/methoddeclaration.h>
+
 #include <duchain/helpers.h>
+#include <language/duchain/duchainregister.h>
 
+namespace ruby {
 
-namespace ruby
-{
 REGISTER_DUCHAIN_ITEM(MethodDeclaration);
 DEFINE_LIST_MEMBER_HASH(MethodDeclarationData, yieldTypes, YieldType)
 
-
-MethodDeclaration::MethodDeclaration(const KDevelop::RangeInRevision &range, KDevelop::DUContext *ctx)
+MethodDeclaration::MethodDeclaration(const KDevelop::RangeInRevision &range,
+                                     KDevelop::DUContext *ctx)
     : KDevelop::FunctionDeclaration(*new MethodDeclarationData)
 {
     setRange(range);
     d_func_dynamic()->setClassId(this);
-    if (ctx)
+    if (ctx) {
         setContext(ctx);
+    }
 }
 
 MethodDeclaration::MethodDeclaration(const MethodDeclaration &rhs)
     : KDevelop::FunctionDeclaration(*new MethodDeclarationData(*rhs.d_func()))
 {
-    /* There's nothing to do here */
 }
 
 MethodDeclaration::MethodDeclaration(MethodDeclarationData &data)
     : KDevelop::FunctionDeclaration(data)
 {
-    /* There's nothing to do here */
 }
 
 bool MethodDeclaration::isClassMethod() const
@@ -62,12 +60,12 @@ void MethodDeclaration::setClassMethod(const bool isClass)
 
 KDevelop::Declaration::AccessPolicy MethodDeclaration::accessPolicy() const
 {
-    return d_func()->m_accessPolicy;
+    return d_func()->accessPolicy;
 }
 
 void MethodDeclaration::setAccessPolicy(const KDevelop::Declaration::AccessPolicy &policy)
 {
-    d_func_dynamic()->m_accessPolicy = policy;
+    d_func_dynamic()->accessPolicy = policy;
 }
 
 void MethodDeclaration::clearYieldTypes()

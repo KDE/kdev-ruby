@@ -17,14 +17,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef RUBY_KEYWORDITEM_H
-#define RUBY_KEYWORDITEM_H
-
+#ifndef RUBY_KEYWORD_ITEM_H
+#define RUBY_KEYWORD_ITEM_H
 
 #include <language/codecompletion/normaldeclarationcompletionitem.h>
 #include <completion/completionexport.h>
-
 
 namespace ruby {
 
@@ -34,7 +31,8 @@ namespace ruby {
  * A completion item for a ruby keyword. Depending on how it's initialized
  * this class, it will add some extra code.
  */
-class KDEVRUBYCOMPLETION_EXPORT KeywordItem : public KDevelop::NormalDeclarationCompletionItem
+class KDEVRUBYCOMPLETION_EXPORT KeywordItem
+    : public KDevelop::NormalDeclarationCompletionItem
 {
 public:
     /**
@@ -72,5 +70,4 @@ private:
 
 }
 
-
-#endif // RUBY_KEYWORDITEM_H
+#endif // RUBY_KEYWORD_ITEM_H

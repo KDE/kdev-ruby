@@ -20,17 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef RUBY_CONTEXT_BUILDER_H
+#define RUBY_CONTEXT_BUILDER_H
 
-#ifndef CONTEXT_BUILDER_H
-#define CONTEXT_BUILDER_H
-
-
+#include <duchain/duchainexport.h>
 #include <language/duchain/builders/abstractcontextbuilder.h>
 #include <language/duchain/problem.h>
-#include <util/path.h>
 #include <parser/astvisitor.h>
-#include <duchain/duchainexport.h>
-
+#include <util/path.h>
 
 namespace ruby {
 
@@ -43,15 +40,18 @@ using ContextBuilderBase = KDevelop::AbstractContextBuilder<Ast, NameAst>;
  * The ContextBuilder is a convenient class to handle contexts on the AST.
  * The other builders have this class as a base class.
  */
-class KDEVRUBYDUCHAIN_EXPORT ContextBuilder : public ContextBuilderBase, public AstVisitor
+class KDEVRUBYDUCHAIN_EXPORT ContextBuilder
+    : public ContextBuilderBase
+    , public AstVisitor
 {
 public:
     ContextBuilder();
     virtual ~ContextBuilder();
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url, Ast *node,
-        KDevelop::ReferencedTopDUContext updateContext = KDevelop::ReferencedTopDUContext()) override;
+    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url,
+                                                   Ast *node,
+                                                   KDevelop::ReferencedTopDUContext updateContext = {}) override;
 
     /// @returns a list of unresolved imports.
     inline const QVector<KDevelop::IndexedString> unresolvedImports() const
@@ -158,5 +158,4 @@ private:
 
 }
 
-
-#endif // CONTEXT_BUILDER_H
+#endif // RUBY_CONTEXT_BUILDER_H

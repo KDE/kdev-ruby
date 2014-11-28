@@ -17,32 +17,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#include <QtCore/QProcess>
-#include <QtCore/QDirIterator>
-#include <parser/node.h>
 #include <duchain/loader.h>
+
+#include <QtCore/QDirIterator>
+#include <QtCore/QProcess>
+
 #include <duchain/editorintegrator.h>
+#include <parser/node.h>
 
+namespace ruby {
 
-namespace ruby
-{
-
-QList<KDevelop::Path> Loader::m_rubyPath;
-QList<KDevelop::Path> Loader::m_gemPath;
+QList<KDevelop::Path> Loader::s_rubyPath;
+QList<KDevelop::Path> Loader::s_gemPath;
 
 KDevelop::Path Loader::getRequiredFile(Node *node,
                                        const EditorIntegrator *editor,
                                        bool local)
 {
     QList<KDevelop::Path> searchPaths;
-    QString name("");
 
-    /* Get the name of the file and update the cache of search paths. */
-    name = editor->tokenToString(node);
-    if (name.startsWith(QStringLiteral("'"))
-            || name.startsWith(QStringLiteral("\""))) {
-        name.replace(name[0], ""); // remove surrounding '
+    // Get the name of the file and update the cache of search paths.
+    auto name = editor->tokenToString(node);
+    if (name.startsWith(QStringLiteral("'")) ||
+        name.startsWith(QStringLiteral("\""))) {
+
+        // remove surrounding '
+        name.replace(name[0], "");
     }
     if (!name.endsWith(QStringLiteral(".rb"))) {
         name += ".rb";
@@ -50,20 +50,20 @@ KDevelop::Path Loader::getRequiredFile(Node *node,
     searchPaths << KDevelop::Path(editor->url().toUrl()).parent();
     if (!local) {
         fillUrlCache();
-        searchPaths << m_rubyPath;
+        searchPaths << s_rubyPath;
     }
 
-    /* Check first in the standard search path */
+    // Check first in the standard search path.
     int i = 0;
-    foreach (const KDevelop::Path &path, searchPaths) {
+    for (const KDevelop::Path &path : searchPaths) {
         KDevelop::Path url(path, name);
         QFile script(url.path());
         QFileInfo info(url.path());
         if (script.exists() && !info.isDir()) {
-            /* Sort the cache to break this loop sooner next time. */
+            // Sort the cache to break this loop sooner next time.
             if (i > 1) {
-                m_rubyPath.prepend(m_rubyPath.at(i - 1));
-                m_rubyPath.removeAt(i);
+                s_rubyPath.prepend(s_rubyPath.at(i - 1));
+                s_rubyPath.removeAt(i);
             }
             return url;
         }
@@ -73,29 +73,28 @@ KDevelop::Path Loader::getRequiredFile(Node *node,
         return KDevelop::Path();
     }
 
-    /*
-     * This is not a local search and we haven't found it yet, go for the gems.
-     */
+    // This is not a local search and we haven't found it yet, go for the gems.
     name.chop(3); // .rb
     return getGem(name);
 }
 
-QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
-                                                          const QString &hint,
-                                                          const KDevelop::Path &relative)
+QVector<KDevelop::IncludeItem>
+Loader::getFilesInSearchPath(const QString &url,
+                             const QString &hint,
+                             const KDevelop::Path &relative)
 {
     int number = 0;
     QList<KDevelop::Path> paths;
-    QList<KDevelop::IncludeItem> res;
+    QVector<KDevelop::IncludeItem> res;
 
     if (relative.isValid()) {
         paths << relative;
     } else {
         fillUrlCache();
-        paths = m_rubyPath;
+        paths = s_rubyPath;
 
         /* Gem paths need some extra work :P */
-        foreach (const KDevelop::Path &path, m_gemPath) {
+        foreach (const KDevelop::Path &path, s_gemPath) {
             QDir dir(path.path() + "/");
             QStringList list = dir.entryList(QStringList() << hint + "*");
             foreach (const QString &inside, list) {
@@ -104,7 +103,7 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
         }
     }
 
-    foreach (const KDevelop::Path &path, paths) {
+    for (const KDevelop::Path &path : paths) {
         KDevelop::Path aux(path, url);
         QDirIterator it(aux.path());
 
@@ -112,9 +111,10 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
             it.next();
             KDevelop::IncludeItem item;
             item.name = it.fileInfo().fileName();
-            if (item.name.startsWith(QStringLiteral("."))
-                    || item.name.endsWith(QStringLiteral("~"))
-                    || item.name.endsWith(QStringLiteral(".so"))) {
+            if (item.name.startsWith(QStringLiteral(".")) ||
+                item.name.endsWith(QStringLiteral("~")) ||
+                item.name.endsWith(QStringLiteral(".so"))) {
+
                 continue;
             }
             item.pathNumber = number;
@@ -129,27 +129,26 @@ QList<KDevelop::IncludeItem> Loader::getFilesInSearchPath(const QString &url,
 
 KDevelop::Path Loader::getGem(const QString &name)
 {
-    const QString &real = name + QStringLiteral(".rb");
-    QStringList filter;
-
     if (name.isEmpty()) {
       return KDevelop::Path();
     }
 
-    filter = QStringList() << QString(name[0]) + "*";
-    foreach (const KDevelop::Path &path, m_gemPath) {
+    QStringList filter{ QString(name[0]) + "*" };
+    const QString &real = name + QStringLiteral(".rb");
+
+    for (const KDevelop::Path &path : s_gemPath) {
         QDir dir(path.path());
         QStringList list = dir.entryList(filter, QDir::Dirs);
         int i = 0;
-        foreach (const QString &inside, list) {
+        for (const QString &inside : list) {
             KDevelop::Path url(path, inside + "/lib/" + real);
             QFile script(url.path());
             QFileInfo info(url.path());
             if (script.exists() && !info.isDir()) {
-                /* Sort the cache to break this loop sooner next time. */
+                // Sort the cache to break this loop sooner next time.
                 if (i > 1) {
-                    m_gemPath.prepend(m_gemPath.at(i - 1));
-                    m_gemPath.removeAt(i);
+                    s_gemPath.prepend(s_gemPath.at(i - 1));
+                    s_gemPath.removeAt(i);
                 }
                 return url;
             }
@@ -162,31 +161,29 @@ KDevelop::Path Loader::getGem(const QString &name)
 
 void Loader::fillUrlCache()
 {
-    int it;
     QProcess ruby;
-    QStringList code;
     QList<QByteArray> rpaths, epaths;
 
     if (urlsCached()) {
         return;
     }
-    m_rubyPath = QList<KDevelop::Path>();
-    m_gemPath = QList<KDevelop::Path>();
+    s_rubyPath = {};
+    s_gemPath = {};
 
-    code << "ruby" << "-e" << "puts $:; STDERR.puts Gem.path";
+    QStringList code{ "ruby", "-e", "puts $:; STDERR.puts Gem.path" };
     ruby.start(QStringLiteral("/usr/bin/env"), code);
     ruby.waitForFinished();
     rpaths = ruby.readAllStandardOutput().split('\n');
     epaths = ruby.readAllStandardError().split('\n');
 
     /* For both rpaths and epaths, the last item is empty */
-    for (it = 0; it < rpaths.size() - 1; it++) {
-        m_rubyPath << KDevelop::Path(rpaths.at(it));
+    for (int it = 0; it < rpaths.size() - 1; it++) {
+        s_rubyPath << KDevelop::Path(rpaths.at(it));
     }
-    for (it = 0; it < epaths.size() - 1; it++) {
+    for (int it = 0; it < epaths.size() - 1; it++) {
         KDevelop::Path aux(epaths.at(it));
         aux.addPath(QStringLiteral("gems"));
-        m_rubyPath << aux;
+        s_rubyPath << aux;
     }
 }
 

@@ -20,26 +20,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <duchain/builders/contextbuilder.h>
 
-// KDevelop
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <language/backgroundparser/backgroundparser.h>
 
-// Ruby
 #include <duchain/debug.h>
+#include <duchain/editorintegrator.h>
 #include <duchain/helpers.h>
 #include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
-#include <duchain/editorintegrator.h>
-#include <duchain/builders/contextbuilder.h>
-
 
 Q_LOGGING_CATEGORY(DUCHAIN, "kdev.ruby.duchain")
 
 using namespace KDevelop;
-namespace ruby
-{
+using namespace ruby;
 
 ContextBuilder::ContextBuilder()
 {
@@ -48,10 +44,10 @@ ContextBuilder::ContextBuilder()
 
 ContextBuilder::~ContextBuilder()
 {
-    /* There's nothing to do here! */
 }
 
-ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, Ast *node,
+ReferencedTopDUContext ContextBuilder::build(const IndexedString &url,
+                                             Ast *node,
                                              ReferencedTopDUContext updateContext)
 {
     if (!updateContext) {
@@ -69,7 +65,7 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url, Ast *node
         rDebug() << "Compiling";
     }
 
-    ReferencedTopDUContext top = ContextBuilderBase::build(url, node, updateContext);
+    auto top = ContextBuilderBase::build(url, node, updateContext);
     {
         DUChainWriteLocker lock(DUChain::lock());
         top->updateImportsCache();
@@ -89,15 +85,16 @@ EditorIntegrator * ContextBuilder::editor() const
 
 void ContextBuilder::setContextOnNode(Ast *node, KDevelop::DUContext *ctx)
 {
-    if (node->tree)
+    if (node->tree) {
         node->tree->context = ctx;
+    }
     node->context = ctx;
 }
 
 KDevelop::DUContext * ContextBuilder::contextFromNode(Ast *node)
 {
     if (node->tree) {
-        DUContext *ctx = (DUContext *) node->tree->context;
+        DUContext *ctx = static_cast<DUContext *>(node->tree->context);
         return ctx;
     }
     return node->context;
@@ -126,7 +123,8 @@ const KDevelop::CursorInRevision ContextBuilder::startPos(const Ast *node) const
     return m_editor->findPosition(node->tree, Edge::FrontEdge);
 }
 
-KDevelop::RangeInRevision ContextBuilder::editorFindRange(Ast *fromRange, Ast *toRange)
+KDevelop::RangeInRevision ContextBuilder::editorFindRange(Ast *fromRange,
+                                                          Ast *toRange)
 {
     return m_editor->findRange(fromRange->tree, toRange->tree);
 }
@@ -171,7 +169,7 @@ void ContextBuilder::startVisiting(Ast *node)
         }
         if (!hasImports && top->url() != builtins) {
             DUChainWriteLocker wlock;
-            TopDUContext* import = DUChain::self()->chainForDocument(builtins);
+            TopDUContext *import = DUChain::self()->chainForDocument(builtins);
             if (!import) {
                 rDebug() << "importing the builtins file failed";
                 Q_ASSERT(false);
@@ -186,14 +184,16 @@ void ContextBuilder::startVisiting(Ast *node)
 
 void ContextBuilder::visitModuleStatement(Ast *node)
 {
-    if (!node->foundProblems)
+    if (!node->foundProblems) {
         AstVisitor::visitModuleStatement(node);
+    }
 }
 
 void ContextBuilder::visitClassStatement(Ast *node)
 {
-    if (!node->foundProblems)
+    if (!node->foundProblems) {
         AstVisitor::visitClassStatement(node);
+    }
 }
 
 void ContextBuilder::visitMethodStatement(Ast *node)
@@ -226,8 +226,9 @@ void ContextBuilder::visitMethodStatement(Ast *node)
 
 void ContextBuilder::visitBlock(Ast *node)
 {
-    if (!node->tree)
+    if (!node->tree) {
         return;
+    }
 
     DUContext *block = openContext(node, DUContext::Other);
     if (compilingContexts()) {
@@ -244,13 +245,17 @@ void ContextBuilder::visitRequire(Ast *node, bool relative)
     Node *aux = node->tree->r;
 
     /* If this is not a string, don't even care about it. */
-    if (aux->kind != token_string)
+    if (aux->kind != token_string) {
         return;
+    }
 
-    KDevelop::Path path = Loader::getRequiredFile(aux, m_editor, relative);
+    Path path = Loader::getRequiredFile(aux, m_editor, relative);
     if (!path.isValid()) {
-        QString msg = i18n("LoadError: cannot load such file: %1", path.path());
-        appendProblem(aux, msg, ProblemData::Warning);
+        appendProblem(
+            aux,
+            i18n("LoadError: cannot load such file: %1", path.path()),
+            ProblemData::Warning
+        );
         return;
     }
     require(path);
@@ -268,51 +273,54 @@ void ContextBuilder::require(const KDevelop::Path &path)
          * for reparsing after that is done.
          */
         m_unresolvedImports.append(idx);
-        BackgroundParser *backgroundParser = KDevelop::ICore::self()->languageController()->backgroundParser();
-        if (backgroundParser->isQueued(idx))
-            backgroundParser->removeDocument(idx);
-        backgroundParser->addDocument(idx, TopDUContext::ForceUpdate,
-            m_priority - 1, nullptr, ParseJob::FullSequentialProcessing);
-        return;
-    } else
+        auto parser = ICore::self()->languageController()->backgroundParser();
+        if (parser->isQueued(idx)) {
+            parser->removeDocument(idx);
+        }
+        parser->addDocument(idx, TopDUContext::ForceUpdate, m_priority - 1,
+                            nullptr, ParseJob::FullSequentialProcessing);
+    } else {
         currentContext()->addImportedParentContext(ctx);
+    }
 }
 
 void ContextBuilder::appendProblem(const Node *node, const QString &msg,
                                    ProblemData::Severity sev)
 {
-    KDevelop::Problem *p = new KDevelop::Problem();
+    ProblemPointer p(new Problem());
     p->setFinalLocation(getDocumentRange(node));
     p->setSource(KDevelop::ProblemData::SemanticAnalysis);
     p->setDescription(msg);
     p->setSeverity(sev);
+
     {
         DUChainWriteLocker lock;
-        topContext()->addProblem(ProblemPointer(p));
+        topContext()->addProblem(p);
     }
 }
 
 void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &msg,
                                    ProblemData::Severity sev)
 {
-    KDevelop::Problem *p = new KDevelop::Problem();
+    ProblemPointer p(new Problem());
     p->setFinalLocation(getDocumentRange(range));
     p->setSource(KDevelop::ProblemData::SemanticAnalysis);
     p->setDescription(msg);
     p->setSeverity(sev);
+
     {
         DUChainWriteLocker lock;
-        topContext()->addProblem(ProblemPointer(p));
+        topContext()->addProblem(p);
     }
 }
 
 const RangeInRevision ContextBuilder::rangeForMethodArguments(Ast *node)
 {
-    if (!node->tree)
+    if (!node->tree) {
         return RangeInRevision();
+    }
 
     Ast last(get_last_expr(node->tree), node->context);
     return editorFindRange(node, &last);
 }
 
-}

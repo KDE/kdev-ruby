@@ -20,38 +20,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <duchain/builders/declarationbuilder.h>
 
-// KDevelop
-#include <language/duchain/types/functiontype.h>
-#include <language/duchain/types/integraltype.h>
-#include <language/duchain/types/unsuretype.h>
 #include <language/duchain/aliasdeclaration.h>
 #include <language/duchain/duchainutils.h>
+#include <language/duchain/types/functiontype.h>
+#include <language/duchain/types/unsuretype.h>
 
 // Ruby
 #include <duchain/debug.h>
-#include <duchain/helpers.h>
-#include <duchain/expressionvisitor.h>
-#include <duchain/editorintegrator.h>
-#include <duchain/builders/declarationbuilder.h>
-#include <duchain/declarations/variabledeclaration.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
-
+#include <duchain/declarations/variabledeclaration.h>
+#include <duchain/editorintegrator.h>
+#include <duchain/expressionvisitor.h>
 
 using namespace KDevelop;
-namespace ruby
-{
+using namespace ruby;
 
 DeclarationBuilder::DeclarationBuilder(EditorIntegrator *editor)
-    : DeclarationBuilderBase(), m_editor(editor)
+    : DeclarationBuilderBase()
+    , m_editor(editor)
 {
     setEditor(editor);
 }
 
 DeclarationBuilder::~DeclarationBuilder()
 {
-    /* There's nothing to do here! */
 }
 
 void DeclarationBuilder::closeDeclaration()
@@ -68,7 +63,8 @@ void DeclarationBuilder::closeContext()
 {
     if (currentContext()->type() == DUContext::Function) {
         Q_ASSERT(currentDeclaration<AbstractFunctionDeclaration>());
-        currentDeclaration<AbstractFunctionDeclaration>()->setInternalFunctionContext(currentContext());
+        currentDeclaration<AbstractFunctionDeclaration>()->
+            setInternalFunctionContext(currentContext());
     }
 
     DeclarationBuilderBase::closeContext();
@@ -129,23 +125,28 @@ void DeclarationBuilder::visitClassStatement(Ast *node)
         lock.lock();
         if (baseDecl) {
             baseClass = dynamic_cast<ModuleDeclaration *>(baseDecl.data());
-            if (!baseClass || baseClass->isModule())
-                appendProblem(node->tree, i18n("TypeError: wrong argument type (expected Class)"));
-            else if (baseClass->internalContext())
+            if (!baseClass || baseClass->isModule()) {
+                appendProblem(
+                    node->tree,
+                    i18n("TypeError: wrong argument type (expected Class)")
+                );
+            } else if (baseClass->internalContext()) {
                 decl->setBaseClass(baseClass->indexedType());
+            }
         }
     }
     node->tree = aux;
 
     /*  Setup types and go for the class body */
-    ClassType::Ptr type = ClassType::Ptr(new ClassType());
+    ClassType::Ptr type(new ClassType());
     type->setDeclaration(decl);
     decl->setType(type);
     openType(type);
 
     openContextForClassDefinition(decl, node);
-    if (baseClass && baseClass->internalContext())
+    if (baseClass && baseClass->internalContext()) {
         currentContext()->addImportedParentContext(baseClass->internalContext());
+    }
     decl->setInternalContext(currentContext());
     lock.unlock();
     DeclarationBuilderBase::visitClassStatement(node);
@@ -172,16 +173,18 @@ void DeclarationBuilder::visitSingletonClass(Ast *node)
             if (!d->internalContext()) {
                 StructureType::Ptr sType;
                 UnsureType::Ptr ut = ev.lastType().cast<UnsureType>();
-                if (ut && ut->typesSize() > 0)
+                if (ut && ut->typesSize() > 0) {
                     sType = ut->types()[0].type<StructureType>();
-                else
+                } else {
                     sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                }
                 if (sType) {
                     DUChainWriteLocker lock;
                     d = sType->declaration(topContext());
                     m_instance = true;
-                } else
+                } else {
                     d = DeclarationPointer();
+                }
             }
             if (d) {
                 m_classDeclarations.push(d);
@@ -218,8 +221,9 @@ void DeclarationBuilder::visitModuleStatement(Ast *node)
 
     // Initialize the declaration.
     DUChainWriteLocker wlock;
-    if (!comment.isEmpty())
+    if (!comment.isEmpty()) {
         decl->setComment(comment);
+    }
     decl->setIsModule(true);
     decl->clearModuleMixins();
     decl->clearMixers();
@@ -227,7 +231,7 @@ void DeclarationBuilder::visitModuleStatement(Ast *node)
     m_accessPolicy.push(Declaration::Public);
     m_classDeclarations.push(DeclarationPointer(decl));
 
-    StructureType::Ptr type = StructureType::Ptr(new StructureType());
+    StructureType::Ptr type(new StructureType());
     type->setDeclaration(decl);
     decl->setType(type);
     openType(type);
@@ -291,14 +295,16 @@ void DeclarationBuilder::visitMethodStatement(Ast *node)
     MethodDeclaration *decl = reopenDeclaration(id, range, isClassMethod);
 
     DUChainWriteLocker lock;
-    if (!comment.isEmpty())
+    if (!comment.isEmpty()) {
         decl->setComment(comment);
+    }
     decl->clearYieldTypes();
     decl->setClassMethod(isClassMethod);
 
     FunctionType::Ptr type = FunctionType::Ptr(new FunctionType());
-    if (currentContext()->type() == DUContext::Class)
+    if (currentContext()->type() == DUContext::Class) {
         decl->setAccessPolicy(currentAccessPolicy());
+    }
 
     openType(type);
     decl->setInSymbolTable(false);
@@ -322,8 +328,9 @@ void DeclarationBuilder::visitMethodStatement(Ast *node)
             lock.unlock();
             ExpressionVisitor ev(node->context, m_editor);
             ev.visitNode(node);
-            if (ev.lastType())
+            if (ev.lastType()) {
                 type->setReturnType(mergeTypes(ev.lastType(), type->returnType()));
+            }
             lock.lock();
         }
     }
@@ -1104,4 +1111,3 @@ void DeclarationBuilder::visitMethodCallArgs(const Ast *mc, const DeclarationPoi
     delete node;
 }
 
-}

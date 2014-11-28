@@ -17,20 +17,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #ifndef RUBY_LOADER_H
 #define RUBY_LOADER_H
 
-
-#include <util/path.h>
+#include <duchain/duchainexport.h>
 #include <language/duchain/declaration.h>
 #include <language/util/includeitem.h>
-#include <duchain/duchainexport.h>
-
+#include <util/path.h>
 
 namespace ruby {
 
 class EditorIntegrator;
+struct Node;
 
 /**
  * @class Loader
@@ -68,9 +66,9 @@ public:
      * @returns a list of IncludeItem's containing all the files/directories
      * that fit the given parameters.
      */
-    static QList<KDevelop::IncludeItem> getFilesInSearchPath(const QString &url,
-                                                             const QString &hint,
-                                                             const KDevelop::Path &relative = KDevelop::Path());
+    static QVector<KDevelop::IncludeItem>
+    getFilesInSearchPath(const QString &url, const QString &hint,
+                         const KDevelop::Path &relative = KDevelop::Path());
 
 protected:
     /**
@@ -92,7 +90,7 @@ private:
     /// @returns true if the url cache has been filled with search paths.
     static inline bool urlsCached()
     {
-        return !m_rubyPath.isEmpty() || !m_gemPath.isEmpty();
+        return !s_rubyPath.isEmpty() || !s_gemPath.isEmpty();
     }
 
 protected:
@@ -101,11 +99,10 @@ protected:
      * search paths for the Ruby standard library. The m_gemPath attribute
      * is the list of search paths for the gems.
      */
-    static QList<KDevelop::Path> m_rubyPath;
-    static QList<KDevelop::Path> m_gemPath;
+    static QList<KDevelop::Path> s_rubyPath;
+    static QList<KDevelop::Path> s_gemPath;
 };
 
 }
-
 
 #endif /* RUBY_LOADER_H */
