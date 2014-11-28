@@ -31,7 +31,7 @@ namespace ruby {
 
 class Highlighting;
 class Launcher;
-class Refactoring;
+struct Refactoring;
 
 namespace rails {
     class Support;

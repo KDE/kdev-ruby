@@ -17,14 +17,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef RUBY_AST_VISITOR_H
+#define RUBY_AST_VISITOR_H
 
-#ifndef RUBY_ASTVISITOR_H
-#define RUBY_ASTVISITOR_H
-
-
-#include <parser/export.h>
 #include <parser/ast.h>
-
+#include <parser/export.h>
 
 namespace ruby {
 
@@ -36,7 +33,6 @@ namespace ruby {
 class KDEVRUBYPARSER_EXPORT AstVisitor
 {
 public:
-    /// Destructor.
     virtual ~AstVisitor();
 
     /**
@@ -154,3 +150,4 @@ private:
 }
 
 #endif // RUBY_ASTVISITOR_H
+

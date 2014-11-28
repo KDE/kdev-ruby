@@ -20,20 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
-#ifndef RUBY_EDITORINTEGRATOR_H
-#define RUBY_EDITORINTEGRATOR_H
-
+#ifndef RUBY_EDITOR_INTEGRATOR_H
+#define RUBY_EDITOR_INTEGRATOR_H
 
 #include <language/editor/rangeinrevision.h>
 #include <serialization/indexedstring.h>
-#include <parser/node.h>
-#include <duchain/duchainexport.h>
 
+#include <duchain/duchainexport.h>
 
 namespace ruby {
 
 class Parser;
+struct node;
 
 /**
  * The different positions around a Node.
@@ -47,8 +45,9 @@ enum class Edge { FrontEdge, BackEdge };
  */
 class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 {
+    using Node = node;
+
 public:
-    /// Constructor.
     EditorIntegrator();
 
     /**
@@ -77,18 +76,18 @@ public:
     const KDevelop::RangeInRevision findRange(const Node *node) const;
 
     /**
-     * Set the parse session (parser) for this EditorIntegrator.
-     *
-     * @param session the given RubyParser.
-     */
-    void setParseSession(Parser *session);
-
-    /**
      * Get the url of the document we are editing.
      *
      * @return the url of the document we are editing.
      */
     const KDevelop::IndexedString & url() const;
+
+    /**
+     * Set the parse session (parser) for this EditorIntegrator.
+     *
+     * @param session the given RubyParser.
+     */
+    void setParseSession(Parser *session);
 
     /**
      * Implemented to make the AbstractUseBuilder happy.
@@ -104,13 +103,9 @@ public:
     const QString tokenToString(const Node *node) const;
 
 private:
-    /**
-     * The parse session for this EditorIntegrator.
-     */
     Parser *m_session;
 };
 
 }
 
-
-#endif // RUBY_EDITORINTEGRATOR_H
+#endif // RUBY_EDITOR_INTEGRATOR_H

@@ -17,12 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#include <parser/debug.h>
 #include <parser/astvisitor.h>
+#include <parser/debug.h>
 
-
-Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser")
+Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser");
 
 /*
  * Note that each visitor method has a comment that explains how the AST
@@ -31,13 +29,10 @@ Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser")
  * specified, it means that its value is just nullptr.
  */
 
-
-namespace ruby
-{
+using namespace ruby;
 
 AstVisitor::~AstVisitor()
 {
-    /* There's nothing to do here */
 }
 
 void AstVisitor::visitCode(Ast *node)
@@ -804,4 +799,3 @@ void AstVisitor::checkMethodCall(Ast *mc)
     }
 }
 
-}

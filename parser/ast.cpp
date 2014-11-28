@@ -17,17 +17,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #include <parser/ast.h>
 
-
-namespace ruby
-{
+using namespace ruby;
 
 Ast::Ast(Node *n, KDevelop::DUContext *ctx)
-    : tree(n), context(ctx), foundProblems(false)
+    : tree(n)
+    , context(ctx)
+    , foundProblems(false)
 {
-        /* There's nothing to do here! */
 }
 
 NameAst::NameAst(const Ast *ast) : Ast(ast->tree, ast->context)
@@ -41,7 +39,5 @@ NameAst::NameAst(const Ast *ast) : Ast(ast->tree, ast->context)
     } else {
         value = QString(tree->name);
     }
-}
-
 }
 

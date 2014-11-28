@@ -17,15 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #ifndef RUBY_AST_H
 #define RUBY_AST_H
 
-
 #include <language/duchain/ducontext.h>
+
 #include <parser/export.h>
 #include <parser/node.h>
-
 
 namespace ruby {
 
@@ -44,7 +42,7 @@ public:
      * @param n the code that this RubAst represents.
      * @param ctx the KDevelop::DUContext associated with it.
      */
-    Ast(Node *n, KDevelop::DUContext *ctx = nullptr);
+    explicit Ast(Node *n, KDevelop::DUContext *ctx = nullptr);
 
 public:
     /// The tree of this AST.
@@ -71,7 +69,7 @@ public:
      *
      * @param ast the RubyAst this class extends.
      */
-    NameAst(const Ast *ast);
+    explicit NameAst(const Ast *ast);
 
 public:
     /// The QString that represents this class.

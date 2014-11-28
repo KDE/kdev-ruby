@@ -20,18 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #include <duchain/editorintegrator.h>
+
 #include <parser/parser.h>
 
-
 using namespace KDevelop;
-namespace ruby
-{
+namespace ruby {
 
 EditorIntegrator::EditorIntegrator()
 {
-    /* There's nothing to do here! */
 }
 
 const CursorInRevision EditorIntegrator::findPosition(const Node *node,
@@ -41,9 +38,8 @@ const CursorInRevision EditorIntegrator::findPosition(const Node *node,
 
     if (edge == Edge::BackEdge) {
         return CursorInRevision(node->pos.end_line - 1, node->pos.end_col);
-    } else {
-        return CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
     }
+    return CursorInRevision(node->pos.start_line - 1, node->pos.start_col);
 }
 
 const RangeInRevision EditorIntegrator::findRange(const Node *from,

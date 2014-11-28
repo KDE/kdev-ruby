@@ -18,16 +18,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 #include <codegen/refactoring.h>
 
-
-namespace ruby
-{
+using namespace ruby;
 
 Refactoring::Refactoring(QObject *parent) : BasicRefactoring(parent)
 {
     /* There's nothing to do here. */
 }
 
-}

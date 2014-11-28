@@ -18,22 +18,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
-#ifndef REFACTORING_H
-#define REFACTORING_H
-
+#ifndef RUBY_REFACTORING_H
+#define RUBY_REFACTORING_H
 
 #include <language/codegen/basicrefactoring.h>
 
-
 namespace ruby {
 
-class Refactoring : public KDevelop::BasicRefactoring
+struct Refactoring : public KDevelop::BasicRefactoring
 {
-public:
     explicit Refactoring(QObject *parent = nullptr);
 };
 
 }
 
-#endif /* REFACTORING_H */
+#endif // REFACTORING_H
+
