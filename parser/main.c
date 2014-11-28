@@ -30,7 +30,7 @@ extern int rb_debug_file(struct options_t *opts);
  * all the comments that the parser has stored. All the comments
  * are printed to the stdout.
  */
-void fetch_comments(struct node *tree)
+void fetch_comments(struct Node *tree)
 {
     if (!tree)
         return;

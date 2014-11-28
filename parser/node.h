@@ -142,7 +142,7 @@ struct error_t {
  * using this parser.
  */
 struct ast_t {
-    struct node *tree;
+    struct Node *tree;
     struct error_t *errors;
     unsigned char unrecoverable : 1;
 };
@@ -187,7 +187,7 @@ enum flags_t {
  * This structure defines a node
  * in the abstract syntax tree
  */
-struct node {
+struct Node {
 /* Node info */
     int kind;
     enum flags_t flags;
@@ -199,25 +199,19 @@ struct node {
     char *comment;
 
 /* Left/Right childs */
-    struct node *l;
-    struct node *r;
+    struct Node *l;
+    struct Node *r;
 
 /* Condition expression */
-    struct node *cond;
+    struct Node *cond;
 
 /* Ensure expression (Exception-AST only) */
-    struct node *ensure;
+    struct Node *ensure;
 
 /* List of inner statements */
-    struct node *next;
-    struct node *last;
+    struct Node *next;
+    struct Node *last;
 };
-
-/*
- * Although it's not used internally, maybe this is more comfortable
- * to the "outside" programmer ;)
- */
-typedef struct node Node;
 
 /**
  * This is a convenient enum to store the version of Ruby to be used.
@@ -270,7 +264,7 @@ KDEVRUBYPARSER_EXPORT void rb_free(struct ast_t *ra);
  *
  * @param n The root node.
  */
-KDEVRUBYPARSER_EXPORT struct node * rb_name_node(struct node *n);
+KDEVRUBYPARSER_EXPORT struct Node * rb_name_node(struct Node *n);
 
 /**
  * Free the node of an ast_t. Note that this function is already called
@@ -278,7 +272,7 @@ KDEVRUBYPARSER_EXPORT struct node * rb_name_node(struct node *n);
  *
  * @param n The root node.
  */
-void free_ast(struct node *n);
+void free_ast(struct Node *n);
 
 /**
  * Free the errors of an ast_t. Note that this function is already called
@@ -294,11 +288,11 @@ void free_errors(struct ast_t *ra);
  * should use alloc_cond. Moreover, if the node has an ensure statement,
  * we should use alloc_ensure.
  */
-struct node * alloc_node(int kind, struct node *l, struct node *r);
-struct node * alloc_cond(int kind, struct node *cond, struct node *l,
-                         struct node *r);
-struct node * alloc_ensure(int kind, struct node * l, struct node *r,
-                           struct node *els, struct node *ensure);
+struct Node * alloc_node(int kind, struct Node *l, struct Node *r);
+struct Node * alloc_cond(int kind, struct Node *cond, struct Node *l,
+                         struct Node *r);
+struct Node * alloc_ensure(int kind, struct Node * l, struct Node *r,
+                           struct Node *els, struct Node *ensure);
 
 
 /*
@@ -306,9 +300,9 @@ struct node * alloc_ensure(int kind, struct node * l, struct node *r,
  * They're useful to create or update a list of nodes or to concatenate
  * two different lists,
  */
-struct node * create_list(struct node *head, struct node *tail);
-struct node * update_list(struct node *head, struct node *tail);
-struct node * concat_list(struct node *head, struct node *tail);
+struct Node * create_list(struct Node *head, struct Node *tail);
+struct Node * update_list(struct Node *head, struct Node *tail);
+struct Node * concat_list(struct Node *head, struct Node *tail);
 #define pop_list(head, tail) \
     (tail->last == NULL) ? update_list(head, tail) : create_list(head, tail)
 
@@ -316,7 +310,7 @@ struct node * concat_list(struct node *head, struct node *tail);
 /* Debugging utilities */
 
 #ifdef BUILD_TESTS
-void print_node(struct node *n);
+void print_node(struct Node *n);
 KDEVRUBYPARSER_EXPORT void print_errors(struct error_t *errors);
 #endif
 

@@ -26,9 +26,6 @@
 #include <parser/export.h>
 
 namespace ruby {
-/// Convenient alias that packs a DUContextPointer and a RangeInRevision.
-using SimpleUse = QPair<KDevelop::DUContextPointer,
-                        KDevelop::RangeInRevision>;
 
 /**
  * @class Parser
@@ -38,6 +35,10 @@ using SimpleUse = QPair<KDevelop::DUContextPointer,
  */
 class KDEVRUBYPARSER_EXPORT Parser
 {
+    /// Convenient alias that packs a DUContextPointer and a RangeInRevision.
+    using SimpleUse = QPair<KDevelop::DUContextPointer,
+                            KDevelop::RangeInRevision>;
+
 public:
     Parser();
     Parser(const KDevelop::IndexedString &fileName, const QByteArray &contents);

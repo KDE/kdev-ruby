@@ -35,7 +35,6 @@ namespace KDevelop {
 namespace ruby {
 
 enum class ContextType;
-using DeclarationPair = QPair<KDevelop::Declaration *, int>;
 
 /**
  * @class CodeCompletionContext
@@ -47,17 +46,16 @@ using DeclarationPair = QPair<KDevelop::Declaration *, int>;
  */
 class KDEVRUBYCOMPLETION_EXPORT CodeCompletionContext : public KDevelop::CodeCompletionContext
 {
-public:
+    using DeclarationPair = QPair<KDevelop::Declaration *, int>;
     using Ptr = QExplicitlySharedDataPointer<CodeCompletionContext>;
 
-    /// Constructor.
-    explicit CodeCompletionContext(KDevelop::DUContextPointer ctxt,
-                                   const QString &text,
-                                   const QString &followingText,
-                                   const KDevelop::CursorInRevision &pos,
-                                   int depth = 0);
+public:
+    CodeCompletionContext(KDevelop::DUContextPointer ctxt,
+                          const QString &text,
+                          const QString &followingText,
+                          const KDevelop::CursorInRevision &pos,
+                          int depth = 0);
 
-    /// Destructor.
     virtual ~CodeCompletionContext();
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
@@ -66,8 +64,6 @@ public:
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
     virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;
-
-public:
 
 private:
     /**

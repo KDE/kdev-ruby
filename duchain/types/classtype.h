@@ -117,5 +117,4 @@ protected:
 
 }
 
-
 #endif // CLASSTYPE_H

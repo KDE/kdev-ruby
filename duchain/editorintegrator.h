@@ -31,7 +31,7 @@
 namespace ruby {
 
 class Parser;
-struct node;
+struct Node;
 
 /**
  * The different positions around a Node.
@@ -45,8 +45,6 @@ enum class Edge { FrontEdge, BackEdge };
  */
 class KDEVRUBYDUCHAIN_EXPORT EditorIntegrator
 {
-    using Node = node;
-
 public:
     EditorIntegrator();
 

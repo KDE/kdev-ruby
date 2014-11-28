@@ -132,7 +132,7 @@ struct comment_t {
  */
 struct parser_t {
     /* Abstract Syntax Tree */
-    struct node *ast;
+    struct Node *ast;
 
     /* Stack of positions */
     struct pos_t *pos_stack;
@@ -205,12 +205,12 @@ static void yyerror(struct parser_t *, const char *);
 #define yywarning(msg) { parser->warning = 1; yyerror(parser, (msg)); parser->warning = 0;}
 
 /* The static functions below deal with stacks. */
-static void pop_stack(struct parser_t *parser, struct node *n);
+static void pop_stack(struct parser_t *parser, struct Node *n);
 static void push_last_comment(struct parser_t *parser);
-static void pop_comment(struct parser_t *parser, struct node *n);
-static void pop_pos(struct parser_t *parser, struct node *n);
-static void pop_start(struct parser_t *parser, struct node *n);
-static void pop_end(struct parser_t *parser, struct node *n);
+static void pop_comment(struct parser_t *parser, struct Node *n);
+static void pop_pos(struct parser_t *parser, struct Node *n);
+static void pop_start(struct parser_t *parser, struct Node *n);
+static void pop_end(struct parser_t *parser, struct Node *n);
 
 /* Helper macros for nodes, positions and stacks */
 #define ALLOC_N(kind, l, r) alloc_node(kind, l, r); pop_pos(parser, yyval.n);
@@ -225,7 +225,7 @@ static void pop_end(struct parser_t *parser, struct node *n);
 %lex-param {struct parser_t *parser }
 %parse-param { struct parser_t *parser }
 %union {
-    struct node *n;
+    struct Node *n;
     int num;
     struct term_t *term;
 }
@@ -331,9 +331,9 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     | tALIAS GLOBAL GLOBAL
     {
         /* Ugly as hell, but it works */
-        struct node *l = alloc_node(token_object, NULL, NULL);
+        struct Node *l = alloc_node(token_object, NULL, NULL);
         l->flags = global;
-        struct node *r = alloc_node(token_object, NULL, NULL);
+        struct Node *r = alloc_node(token_object, NULL, NULL);
         r->flags = global;
         pop_pos(parser, r);
         pop_pos(parser, l);
@@ -392,17 +392,17 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     | variable tOP_ASGN command_call { $$ = alloc_node(token_op_assign, $1, $3); }
     | primary '[' opt_call_args rbracket tOP_ASGN command_call
     {
-        struct node *aux = alloc_node(token_array_value, $1, $3);
+        struct Node *aux = alloc_node(token_array_value, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $6);
     }
     | primary '.' base tOP_ASGN command_call
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary '.' const tOP_ASGN command_call
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary tCOLON2 const tOP_ASGN command_call
@@ -413,7 +413,7 @@ stmt: tALIAS fsym { lex_state = EXPR_FNAME; } fsym
     }
     | primary tCOLON2 base tOP_ASGN command_call
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | backref tOP_ASGN command_call { $$ = alloc_node(token_op_assign, $1, $3); }
@@ -438,12 +438,12 @@ command_call: command | block_command
 block_command: block_call
     | block_call '.' operation2 command_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
     | block_call tCOLON2 operation2 command_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
 ;
@@ -465,22 +465,22 @@ command: operation command_args             %prec tLOWEST
     }
     | primary '.' operation2 command_args         %prec tLOWEST
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
     | primary '.' operation2 command_args cmd_brace_block
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_cond(token_method_call, $5, aux, $4);
     }
     | primary tCOLON2 operation2 command_args %prec tLOWEST
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
     | primary tCOLON2 operation2 command_args cmd_brace_block
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_cond(token_method_call, $5, aux, $4);
     }
     | tSUPER call_args  { $$ = alloc_node(token_method_call, $2, NULL); }
@@ -656,33 +656,33 @@ reswords: tLINE | tFILE | tENCODING | upBEGIN | upEND | tALIAS | tKWAND
 arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | lhs '=' arg modifier_rescue arg
     {
-        struct node *aux = alloc_cond(token_rescue, $5, $3, NULL);
+        struct Node *aux = alloc_cond(token_rescue, $5, $3, NULL);
         $$ = alloc_node(token_assign, $1, aux);
     }
     | variable tOP_ASGN arg { $$ = alloc_node(token_op_assign, $1, $3); }
     | variable tOP_ASGN arg modifier_rescue arg
     {
-        struct node *aux = alloc_cond(token_rescue, $5, $3, NULL);
+        struct Node *aux = alloc_cond(token_rescue, $5, $3, NULL);
         $$ = alloc_node(token_op_assign, $1, aux);
     }
     | primary '[' opt_call_args rbracket tOP_ASGN arg
     {
-        struct node *aux = alloc_node(token_array_value, $1, $3);
+        struct Node *aux = alloc_node(token_array_value, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $6);
     }
     | primary '.' base tOP_ASGN arg
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary '.' const tOP_ASGN arg
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary tCOLON2 base tOP_ASGN arg
     {
-        struct node *aux = alloc_node(token_object, $1, $3);
+        struct Node *aux = alloc_node(token_object, $1, $3);
         $$ = alloc_node(token_op_assign, aux, $5);
     }
     | primary tCOLON2 const tOP_ASGN arg
@@ -708,7 +708,7 @@ arg: lhs '=' arg { $$ = alloc_node(token_assign, $1, $3); }
     | arg tPOW arg { $$ = alloc_node(token_pow, $1, $3);}
     | tUMINUS_NUM simple_numeric tPOW arg
     {
-        struct node *aux = alloc_node(token_pow, $2, $4);
+        struct Node *aux = alloc_node(token_pow, $2, $4);
         $$ = alloc_node(token_unary_minus, aux, NULL);
     }
     | tUPLUS arg    { $$ = alloc_node(token_unary_plus, $2, NULL);    }
@@ -759,13 +759,13 @@ call_args: command
     | args opt_block_arg { $$ = update_list($1, $2); }
     | assocs opt_block_arg
     {
-        struct node *aux = alloc_node(token_hash, $1, NULL);
+        struct Node *aux = alloc_node(token_hash, $1, NULL);
         $$ = update_list(aux, $2);
     }
     | args ',' assocs opt_block_arg
     {
-        struct node *aux = alloc_node(token_hash, $3, NULL);
-        struct node *n = update_list(aux, $4);
+        struct Node *aux = alloc_node(token_hash, $3, NULL);
+        struct Node *n = update_list(aux, $4);
         $$ = concat_list($1, n);
     }
     | block_arg
@@ -810,7 +810,7 @@ primary: literal
     | tLPAREN compstmt ')'      { $$ = $2; }
     | primary tCOLON2 const
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, NULL);
     }
     | tCOLON3 const             { $$ = $2; }
@@ -965,12 +965,12 @@ f_margs: f_marg_list { $$ = $1; }
     }
     | f_marg_list ',' tSTAR
     {
-        struct node *n = alloc_node(token_object, NULL, NULL);
+        struct Node *n = alloc_node(token_object, NULL, NULL);
         $$ = update_list($1, n);
     }
     | f_marg_list ',' tSTAR ',' f_marg_list
     {
-        struct node *n = alloc_node(token_object, NULL, NULL);
+        struct Node *n = alloc_node(token_object, NULL, NULL);
         $$ = concat_list($1, update_list(n, $5));
     }
     | tSTAR f_norm_arg { $$ = $2; }
@@ -978,7 +978,7 @@ f_margs: f_marg_list { $$ = $1; }
     | tSTAR { $$ = alloc_node(token_object, NULL, NULL); }
     | tSTAR ',' f_marg_list
     {
-        struct node *n = alloc_node(token_object, NULL, NULL);
+        struct Node *n = alloc_node(token_object, NULL, NULL);
         $$ = update_list(n, $3);
     }
 ;
@@ -1123,12 +1123,12 @@ do_block: tDO_BLOCK opt_block_param compstmt tEND
 block_call: command do_block { $1->cond = $2; $$ = $1; }
     | block_call '.' operation2 opt_paren_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = update_list(aux, $4);
     }
     | block_call tCOLON2 operation2 opt_paren_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = update_list(aux, $4);
     }
 ;
@@ -1139,17 +1139,17 @@ method_call: operation paren_args
     }
     | primary '.' operation2 opt_paren_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
     | primary tCOLON2 operation2 paren_args
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, $4);
     }
     | primary tCOLON2 operation3
     {
-        struct node *aux = update_list($1, $3);
+        struct Node *aux = update_list($1, $3);
         $$ = alloc_node(token_method_call, aux, NULL);
     }
     | primary '.' paren_args
@@ -2039,7 +2039,7 @@ static void push_stack(struct parser_t *parser, const char *buf)
 }
 
 /* Pop name from the stack. */
-static void pop_stack(struct parser_t *parser, struct node *n)
+static void pop_stack(struct parser_t *parser, struct Node *n)
 {
     if (n != NULL)
         n->name = parser->stack[0];
@@ -2064,7 +2064,7 @@ static void push_pos(struct parser_t *parser, struct pos_t tokp)
 }
 
 /* Pop a position from the stack of positions and assign to the given node */
-static void pop_pos(struct parser_t *parser, struct node *n)
+static void pop_pos(struct parser_t *parser, struct Node *n)
 {
     int scale = SSIZE * parser->stack_scale;
     int pos = parser->pos_size - 1 + scale;
@@ -2087,7 +2087,7 @@ static void pop_pos(struct parser_t *parser, struct node *n)
 }
 
 /* Like pop_pos but it just copies the start position to the given node */
-static void pop_start(struct parser_t *parser, struct node *n)
+static void pop_start(struct parser_t *parser, struct Node *n)
 {
     n->pos.start_line = parser->pos_stack[parser->pos_size - 1].start_line;
     n->pos.start_col = parser->pos_stack[parser->pos_size - 1].start_col;
@@ -2095,7 +2095,7 @@ static void pop_start(struct parser_t *parser, struct node *n)
 }
 
 /* Like pop_pos but it just copies the end position to the given node */
-static void pop_end(struct parser_t *parser, struct node *n)
+static void pop_end(struct parser_t *parser, struct Node *n)
 {
     n->pos.end_line = parser->pos_stack[parser->pos_size - 1].start_line;
     n->pos.end_col = parser->pos_stack[parser->pos_size - 1].start_col;
@@ -2117,7 +2117,7 @@ static void push_last_comment(struct parser_t *parser)
 }
 
 /* Pop a comment from the stack of comments and assign it to the given node */
-static void pop_comment(struct parser_t *parser, struct node *n)
+static void pop_comment(struct parser_t *parser, struct Node *n)
 {
     if (parser->comment_index > 0) {
         parser->comment_index--;

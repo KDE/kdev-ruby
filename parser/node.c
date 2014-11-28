@@ -30,9 +30,9 @@
  * alloc functions.
  */
 
-struct node * alloc_node(int kind, struct node *l, struct node *r)
+struct Node * alloc_node(int kind, struct Node *l, struct Node *r)
 {
-    struct node *n = (struct node *) malloc(sizeof(struct node));
+    struct Node *n = (struct Node *) malloc(sizeof(struct Node));
 
     if (!n)
         exit(0);
@@ -53,17 +53,17 @@ struct node * alloc_node(int kind, struct node *l, struct node *r)
     return n;
 }
 
-struct node * alloc_cond(int kind, struct node *cond, struct node *l, struct node *r)
+struct Node * alloc_cond(int kind, struct Node *cond, struct Node *l, struct Node *r)
 {
-    struct node *n = alloc_node(kind, l, r);
+    struct Node *n = alloc_node(kind, l, r);
     n->cond = cond;
     return n;
 }
 
-struct node * alloc_ensure(int kind, struct node *l, struct node *r,
-                           struct node *els, struct node *ensure)
+struct Node * alloc_ensure(int kind, struct Node *l, struct Node *r,
+                           struct Node *els, struct Node *ensure)
 {
-    struct node *n = alloc_cond(kind, els, l, r);
+    struct Node *n = alloc_cond(kind, els, l, r);
     n->ensure = ensure;
     return n;
 }
@@ -73,14 +73,14 @@ struct node * alloc_ensure(int kind, struct node *l, struct node *r,
  * List manipulation functions
  */
 
-struct node * create_list(struct node *head, struct node *tail)
+struct Node * create_list(struct Node *head, struct Node *tail)
 {
     head->next = tail;
     head->last = tail->last;
     return head;
 }
 
-struct node * update_list(struct node *head, struct node *tail)
+struct Node * update_list(struct Node *head, struct Node *tail)
 {
     if (!tail)
         return head;
@@ -90,7 +90,7 @@ struct node * update_list(struct node *head, struct node *tail)
     return head;
 }
 
-struct node * concat_list(struct node *head, struct node *tail)
+struct Node * concat_list(struct Node *head, struct Node *tail)
 {
     if (!tail)
         return head;
@@ -105,7 +105,7 @@ struct node * concat_list(struct node *head, struct node *tail)
 
 #ifdef BUILD_TESTS
 
-void raw_print(struct node *n)
+void raw_print(struct Node *n)
 {
     printf("%i", n->kind);
     if (n->name != NULL)
@@ -118,9 +118,9 @@ void raw_print(struct node *n)
         printf(" ");
 }
 
-void print_list(struct node *n)
+void print_list(struct Node *n)
 {
-    struct node * p;
+    struct Node * p;
 
     printf("\nNext statements: ");
     for (p = n; p != NULL; p = p->next)
@@ -128,7 +128,7 @@ void print_list(struct node *n)
     printf("\nRoot: ");
 }
 
-void print_node(struct node *n)
+void print_node(struct Node *n)
 {
     if (n != NULL) {
         print_node(n->l);
@@ -149,7 +149,7 @@ void print_errors(struct error_t *e)
 
 #endif
 
-void free_ast(struct node *n)
+void free_ast(struct Node *n)
 {
     if (!n)
         return;
@@ -187,9 +187,9 @@ void rb_free(struct ast_t *ra)
     free(ra);
 }
 
-struct node * rb_name_node(struct node *n)
+struct Node * rb_name_node(struct Node *n)
 {
-    struct node *name;
+    struct Node *name;
     const char isMethod = (n->kind == token_function);
 
     if (isMethod)
