@@ -1,15 +1,14 @@
-KDevelop Ruby Support
-=====================
+# KDevelop Ruby Support
 
-== Authors ==
+## Authors
 
 - Alexander Dymo <adymo@kdevelop.org>
   (Started the plugin)
 
 - Miquel Sabaté Solà <mikisabate@gmail.com>
-  (Maintainer, Parser)
+  (Maintainer)
 
-== Hacking ==
+## Hacking
 
 Are you without a nice project and just dying to cut your teeth
 on the Ruby plugin for KDevelop?
@@ -18,7 +17,8 @@ Go ahead then! You might want to get in touch with
 Miquel Sabaté Solà (mssola), the current maintainer; and Alexander Dymo (adymo),
 the original author.
 
-You can find information here: http://techbase.kde.org/Projects/KDevelop4/Ruby
+You can find information
+[here](http://techbase.kde.org/Projects/KDevelop4/Ruby)
 
 Any help will be appreciated but when you write patches, please
-follow the kdelibs coding style. 
+follow the kdelibs coding style.
