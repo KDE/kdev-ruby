@@ -1,24 +1,33 @@
 # KDevelop Ruby Support
 
-## Authors
+This is a [KDevelop](https://www.kdevelop.org/) language plugin that
+implements the support for the Ruby programming language. It provides
+everything that you can expect from a KDevelop language plugin such as:
 
-- Alexander Dymo <adymo@kdevelop.org>
-  (Started the plugin)
+- Parsing of full projects.
+- Semantic highlighting.
+- Code browsing.
+- Full code completion.
 
-- Miquel Sabaté Solà <mikisabate@gmail.com>
-  (Maintainer)
+## Build and Install
 
-## Hacking
+Some distributions have this plugin as a precompiled package already. If you
+want to build this plugin yourself, the page on
+[KDE TechBase](https://techbase.kde.org/Projects/KDevelop4/Ruby) has all the
+info you need and more.
 
-Are you without a nice project and just dying to cut your teeth
-on the Ruby plugin for KDevelop?
+If you're using Mac OSX, you can also try out the old plugin maintained by
+Alexander Dymo that can be installed through
+[Homebrew](https://github.com/adymo/homebrew-kde).
 
-Go ahead then! You might want to get in touch with
-Miquel Sabaté Solà (mssola), the current maintainer; and Alexander Dymo (adymo),
-the original author.
+## Contributing
 
-You can find information
-[here](http://techbase.kde.org/Projects/KDevelop4/Ruby)
+All the basic info that you need can be found in the page on
+[KDE TechBase](https://techbase.kde.org/Projects/KDevelop4/Ruby).
 
-Any help will be appreciated but when you write patches, please
-follow the kdelibs coding style.
+The preferred way to report bugs is through the [KDE Bugtracking
+System](https://bugs.kde.org), and patches shoud be submitted through
+[Review Board](https://git.reviewboard.kde.org/r/new/). That being said,
+you can also submit issues and pull requests through the Github
+[mirror](https://github.com/mssola/kdev-ruby).
+
