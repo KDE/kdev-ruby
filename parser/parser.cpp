@@ -43,6 +43,7 @@ Parser::~Parser()
     if (ast) {
         free_ast(ast->tree);
         delete ast;
+        ast = nullptr;
     }
 }
 

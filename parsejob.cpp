@@ -45,12 +45,14 @@ namespace ruby {
 
 ParseJob::ParseJob(const IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
+    , m_parser(nullptr)
     , m_duContext (nullptr)
 {
 }
 
 ParseJob::~ParseJob()
 {
+    delete m_parser;
 }
 
 LanguageSupport * ParseJob::ruby() const
@@ -89,9 +91,9 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
     // NOTE: Although the parser can retrieve the contents on its own,
     // it's better to use contents().contents because this way the contents
     // are converted in utf8 format always.
-    Parser parser(document(), contents().contents);
-    parser.setRubyVersion(ruby()->version());
-    Ast *ast = parser.parse();
+    m_parser = new Parser(document(), contents().contents);
+    m_parser->setRubyVersion(ruby()->version());
+    Ast *ast = m_parser->parse();
 
     /* Setting up the TopDUContext features */
     ReferencedTopDUContext toUpdate;
@@ -121,14 +123,14 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         }
 
         EditorIntegrator editor;
-        editor.setParseSession(&parser);
+        editor.setParseSession(m_parser);
         DeclarationBuilder builder(&editor);
         builder.setPriority(parsePriority());
         m_duContext = builder.build(editor.url(), ast, toUpdate);
 
         // Add warnings
         DUChainWriteLocker wlock;
-        for (const ProblemPointer p : parser.problems) {
+        for (const ProblemPointer p : m_parser->problems) {
             m_duContext->addProblem(p);
         }
         wlock.unlock();
@@ -208,7 +210,7 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
             DUChain::self()->addDocumentChain(m_duContext);
         }
 
-        for (const ProblemPointer p : parser.problems) {
+        for (const ProblemPointer p : m_parser->problems) {
             rDebug() << "Added problem to context";
             m_duContext->addProblem(p);
         }

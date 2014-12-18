@@ -65,6 +65,8 @@ private:
      */
     LanguageSupport * ruby() const;
 
+    Parser *m_parser;
+
 private:
     KDevelop::ReferencedTopDUContext m_duContext;
 };
