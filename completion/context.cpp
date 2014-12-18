@@ -18,7 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-
 // KDE + KDevelop
 #include <language/duchain/duchainlock.h>
 #include <language/duchain/duchain.h>
@@ -36,7 +35,6 @@
 #include <completion/items/keyworditem.h>
 #include <completion/items/normalitem.h>
 #include <completion/items/requirefileitem.h>
-
 
 Q_LOGGING_CATEGORY(COMPLETION, "kdev.ruby.completion")
 
@@ -183,7 +181,6 @@ CodeCompletionContext::CodeCompletionContext(DUContextPointer ctxt, const QStrin
 
 CodeCompletionContext::~CodeCompletionContext()
 {
-    /* There's nothing to do here */
 }
 
 QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItems(bool &abort, bool fullCompletion)
@@ -194,25 +191,25 @@ QList<KDevelop::CompletionTreeItemPointer> CodeCompletionContext::completionItem
     }
 
     switch(m_kind) {
-        case ContextType::MemberAccess:
-            items += memberAccessItems();
-            break;
-        case ContextType::ModuleMemberAccess:
-            items += moduleMemberAccessItems();
-            break;
-        case ContextType::BaseClassAccess:
-            items += baseClassItems();
-            break;
-        case ContextType::ModuleMixinAccess:
-            items += moduleMixinItems();
-            break;
-        case ContextType::FileChoose:
-            items += fileChooseItems();
-            break;
-        default:
-            items += standardAccessItems();
-            addRubyKeywords();
-            addRubySpecialBuiltins();
+    case ContextType::MemberAccess:
+        items += memberAccessItems();
+        break;
+    case ContextType::ModuleMemberAccess:
+        items += moduleMemberAccessItems();
+        break;
+    case ContextType::BaseClassAccess:
+        items += baseClassItems();
+        break;
+    case ContextType::ModuleMixinAccess:
+        items += moduleMixinItems();
+        break;
+    case ContextType::FileChoose:
+        items += fileChooseItems();
+        break;
+    default:
+        items += standardAccessItems();
+        addRubyKeywords();
+        addRubySpecialBuiltins();
     }
 
     if (shouldAddParentItems(fullCompletion)) {

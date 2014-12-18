@@ -47,7 +47,6 @@ ParseJob::ParseJob(const IndexedString &url, ILanguageSupport *languageSupport)
     : KDevelop::ParseJob(url, languageSupport)
     , m_duContext (nullptr)
 {
-    /* There's nothing to do here. */
 }
 
 ParseJob::~ParseJob()
