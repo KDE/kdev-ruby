@@ -31,3 +31,9 @@ System](https://bugs.kde.org), and patches should be submitted through
 you can also submit issues and pull requests through the Github
 [mirror](https://github.com/mssola/kdev-ruby).
 
+## License
+
+This plugin is licensed under the `GPLv3+`. Read the `LICENSE` file for more
+information about this. There is some legacy code that is licensed under the
+`LGPLv2+` though.
+
