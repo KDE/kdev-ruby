@@ -26,7 +26,7 @@ All the basic info that you need can be found in the page on
 [KDE TechBase](https://techbase.kde.org/Projects/KDevelop4/Ruby).
 
 The preferred way to report bugs is through the [KDE Bugtracking
-System](https://bugs.kde.org), and patches shoud be submitted through
+System](https://bugs.kde.org), and patches should be submitted through
 [Review Board](https://git.reviewboard.kde.org/r/new/). That being said,
 you can also submit issues and pull requests through the Github
 [mirror](https://github.com/mssola/kdev-ruby).
