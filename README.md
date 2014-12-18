@@ -22,7 +22,7 @@ Alexander Dymo that can be installed through
 
 ## Contributing
 
-All the basic info that you need can be found in the page on
+All the basic info that you need can be found in
 [KDE TechBase](https://techbase.kde.org/Projects/KDevelop4/Ruby).
 
 The preferred way to report bugs is through the [KDE Bugtracking
@@ -30,6 +30,13 @@ System](https://bugs.kde.org), and patches should be submitted through
 [Review Board](https://git.reviewboard.kde.org/r/new/). That being said,
 you can also submit issues and pull requests through the Github
 [mirror](https://github.com/mssola/kdev-ruby).
+
+The coding style used in this plugin is of my
+[own](https://github.com/mssola/conventions/blob/master/cpp.md). This coding
+style is compliant with the [KDE Coding
+Style](https://techbase.kde.org/Policies/Kdelibs_Coding_Style) as described in
+[this](https://github.com/mssola/conventions/blob/master/cpp.md#compliance-with-other-coding-conventions)
+section. When writing patches you should at least follow the KDE Coding Style.
 
 ## License
 
