@@ -2,7 +2,7 @@
  *
  * Copyright 2006 Hamish Rodda <rodda@kde.org>
  * Copyright 2010 Alexander Dymo <adymo@kdevelop.org>
- * Copyright (C) 2011-2014 Miquel Sabaté Solà <mikisabate@gmail.com>
+ * Copyright (C) 2011-2015 Miquel Sabaté Solà <mikisabate@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
