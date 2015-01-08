@@ -26,7 +26,6 @@
 #include <QtCore/QReadLocker>
 
 #include <interfaces/icore.h>
-#include <interfaces/ilanguage.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <language/backgroundparser/backgroundparser.h>
 #include <language/backgroundparser/urlparselock.h>
