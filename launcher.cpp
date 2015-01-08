@@ -161,7 +161,7 @@ void Launcher::runCurrentFile()
 
     // Get out if this is not a Ruby file.
     if (!ICore::self()->languageController()->languagesForUrl(doc->url()).
-            contains(m_support->language())) {
+            contains(m_support)) {
         return;
     }
 
@@ -190,7 +190,7 @@ void Launcher::runCurrentTest()
 
     // Get out if this is not a Ruby file.
     if (!ICore::self()->languageController()->languagesForUrl(doc->url()).
-            contains(m_support->language())) {
+            contains(m_support)) {
         return;
     }
 

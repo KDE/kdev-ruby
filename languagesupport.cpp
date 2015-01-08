@@ -96,11 +96,6 @@ KDevelop::ParseJob * LanguageSupport::createParseJob(const IndexedString &url)
     return new ruby::ParseJob(url, this);
 }
 
-ILanguage * LanguageSupport::language()
-{
-    return core()->languageController()->language(name());
-}
-
 ICodeHighlighting * LanguageSupport::codeHighlighting() const
 {
     return m_highlighting;
@@ -112,7 +107,7 @@ ContextMenuExtension LanguageSupport::contextMenuExtension(Context *context)
     EditorContext *ed = dynamic_cast<EditorContext *>(context);
 
     if (ed && ICore::self()->languageController()->languagesForUrl(ed->url()).
-            contains(language())) {
+            contains(this)) {
         // It's safe to add our own ContextMenuExtension.
         m_refactoring->fillContextMenu(cm, context);
     }

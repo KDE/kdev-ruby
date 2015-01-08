@@ -73,11 +73,6 @@ public:
     virtual KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url) override;
 
     /**
-     * @return the language for this support.
-     */
-    virtual KDevelop::ILanguage * language() override;
-
-    /**
      * @return the Code Highlighting for the Ruby language.
      */
     virtual KDevelop::ICodeHighlighting * codeHighlighting() const override;

@@ -82,7 +82,7 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         return;
     }
 
-    QReadLocker parseLock(ruby()->language()->parseLock());
+    QReadLocker parseLock(ruby()->parseLock());
     ProblemPointer p = readContents();
     if (p || abortRequested()) {
         return abortJob();
