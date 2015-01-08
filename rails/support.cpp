@@ -51,8 +51,7 @@ void Support::setupQuickOpen()
 {
     auto qo = m_support->core()->pluginController()->
         extensionForPlugin<KDevelop::IQuickOpen>("org.kdevelop.IQuickOpen");
-
-    if (!qo) {
+    if (qo) {
         m_views = new DataProvider(Kind::Views);
         auto name = QStringList(i18n("Rails Views"));
         qo->registerProvider(DataProvider::scopes(), name, m_views);
