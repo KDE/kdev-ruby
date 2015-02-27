@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=Service
 Exec=blubb
 Comment=Ruby Language Support
+Comment[ast]=Sofitu de llinguax Ruby
 Comment[bg]=Поддръжка на езика Ruby
 Comment[bs]=Podrška za jezik Ruby
 Comment[ca]=Implementació del llenguatge Ruby
