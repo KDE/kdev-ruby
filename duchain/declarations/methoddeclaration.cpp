@@ -69,7 +69,7 @@ void MethodDeclaration::setAccessPolicy(const KDevelop::Declaration::AccessPolic
 
 void MethodDeclaration::clearYieldTypes()
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
     d_func_dynamic()->yieldTypesList().clear();
     setInSymbolTable(wasInSymbolTable);
@@ -77,7 +77,7 @@ void MethodDeclaration::clearYieldTypes()
 
 void MethodDeclaration::replaceYieldTypes(YieldType yield, uint n)
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
 
     setInSymbolTable(false);
     if (n < d_func()->yieldTypesSize()) {

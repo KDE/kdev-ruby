@@ -20,10 +20,8 @@
 #ifndef RUBY_REQUIREFILEITEM_H
 #define RUBY_REQUIREFILEITEM_H
 
-
 #include <language/codecompletion/abstractincludefilecompletionitem.h>
 #include <duchain/navigation/navigationwidget.h>
-
 
 namespace ruby {
 
@@ -38,8 +36,7 @@ class RequireFileItem : public BaseIncludeFileItem
 {
 public:
     /// Constructor
-    explicit RequireFileItem(const KDevelop::IncludeItem &include,
-                             const char closing);
+    RequireFileItem(const KDevelop::IncludeItem &include, const char closing);
 
     /// Re-implemented from KDevelop::AbstractIncludeFileCompletionItem
     virtual void execute(KTextEditor::View *View,
@@ -51,6 +48,5 @@ private:
 };
 
 }
-
 
 #endif /* RUBY_REQUIREFILEITEM_H */

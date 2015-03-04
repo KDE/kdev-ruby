@@ -16,14 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // KDE
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
 
 // Ruby
 #include <completion/items/requirefileitem.h>
-
 
 using namespace KTextEditor;
 
@@ -55,8 +53,9 @@ void RequireFileItem::execute(View *view, const Range &word)
             break;
         }
     }
-    if (!found)
+    if (!found) {
         text += m_closing;
+    }
 
     document->replaceText(word, text);
 }

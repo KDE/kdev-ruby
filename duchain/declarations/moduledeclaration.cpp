@@ -53,7 +53,7 @@ ModuleDeclaration::ModuleDeclaration(const KDevelop::RangeInRevision &range,
 
 void ModuleDeclaration::clearModuleMixins()
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
     d_func_dynamic()->moduleMixinsList().clear();
     setInSymbolTable(wasInSymbolTable);
@@ -71,16 +71,17 @@ const ModuleMixin * ModuleDeclaration::moduleMixins() const
 
 void ModuleDeclaration::addModuleMixin(ModuleMixin module)
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
-    if (!mixinExists(module, false))
+    if (!mixinExists(module, false)) {
         d_func_dynamic()->moduleMixinsList().append(module);
+    }
     setInSymbolTable(wasInSymbolTable);
 }
 
 void ModuleDeclaration::clearMixers()
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
     d_func_dynamic()->mixersList().clear();
     setInSymbolTable(wasInSymbolTable);
@@ -98,7 +99,7 @@ const ModuleMixin* ModuleDeclaration::mixers() const
 
 void ModuleDeclaration::addMixer(ModuleMixin module)
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
     if (!mixinExists(module, true)) {
         d_func_dynamic()->mixersList().append(module);
@@ -128,7 +129,7 @@ void ModuleDeclaration::setEigenClass(KDevelop::DUContext *ctx)
 
 void ModuleDeclaration::clearBaseClass()
 {
-    bool wasInSymbolTable = inSymbolTable();
+    bool wasInSymbolTable = d_func()->m_inSymbolTable;
     setInSymbolTable(false);
     d_func_dynamic()->baseClass = KDevelop::IndexedType();
     setInSymbolTable(wasInSymbolTable);
