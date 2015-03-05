@@ -37,7 +37,7 @@ add_subdirectory(rails)
 add_subdirectory(completion)
 add_subdirectory(app_templates)
 
-add_library(kdevrubylanguagesupport MODULE
+kdevplatform_add_plugin(kdevrubylanguagesupport JSON kdevrubylanguagesupport.json SOURCES
     highlighting.cpp
     languagesupport.cpp
     launcher.cpp
@@ -59,8 +59,8 @@ target_link_libraries(kdevrubylanguagesupport
 )
 
 install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
-configure_file(kdevrubysupport.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdevrubysupport.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kdevrubysupport.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES kdevrubysupport.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/kdevrubysupport)
 install(FILES documentation/builtins.rb DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport/documentation/)
+
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 

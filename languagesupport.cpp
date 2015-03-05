@@ -40,7 +40,7 @@
 #include <rails/helpers.h>
 #include <rails/support.h>
 
-K_PLUGIN_FACTORY(KDevRubySupportFactory, registerPlugin<ruby::LanguageSupport>();)
+K_PLUGIN_FACTORY_WITH_JSON(KDevRubySupportFactory, "kdevrubylanguagesupport.json", registerPlugin<ruby::LanguageSupport>();)
 
 Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
 
