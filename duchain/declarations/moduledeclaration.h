@@ -147,7 +147,7 @@ public:
     KDevelop::DUContext *eigenClass() const;
 
     /// Re-implemented from KDevelop::Declaration.
-    QString toString() const;
+    QString toString() const override;
 
     enum { Identity = 44 /** The id of this Type. */ };
 
