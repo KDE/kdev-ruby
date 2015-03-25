@@ -21,7 +21,6 @@ find_package(KDevPlatform ${KDEVPLATFORM_VERSION} REQUIRED)
 find_package(BISON REQUIRED)
 
 include_directories(
-    ${KDEVPLATFORM_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/libs
