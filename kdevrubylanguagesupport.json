@@ -36,9 +36,25 @@
     "GenericName[zh_CN]": "Ruby 支持", 
     "KPlugin": {
         "Description": "Ruby Language Support", 
+        "Description[ca]": "Implementació del llenguatge Ruby", 
+        "Description[es]": "Implementación del lenguaje Ruby", 
+        "Description[gl]": "Compatibilidade coa linguaxe Ruby", 
+        "Description[nl]": "Ondersteuning voor de taal Ruby", 
+        "Description[pt_BR]": "Suporte à linguagem Ruby", 
+        "Description[sv]": "Ruby-språkstöd", 
+        "Description[uk]": "Підтримка мови Ruby", 
+        "Description[x-test]": "xxRuby Language Supportxx", 
         "Icon": "application-x-ruby", 
         "Id": "KDevRubySupport", 
         "Name": "Ruby Support", 
+        "Name[ca]": "Implementació de Ruby", 
+        "Name[es]": "Implementación de Ruby", 
+        "Name[gl]": "Compatibilidade con Ruby", 
+        "Name[nl]": "Ondersteuning voor Ruby", 
+        "Name[pt_BR]": "Suporte à Ruby", 
+        "Name[sv]": "Stöd för Ruby", 
+        "Name[uk]": "Підтримка Ruby", 
+        "Name[x-test]": "xxRuby Supportxx", 
         "ServiceTypes": [
             "KDevelop/Plugin"
         ]
