@@ -21,7 +21,9 @@
 
 #include <languagesupport.h>
 
-#include <QtCore/QProcess>
+#include <QProcess>
+
+#include <KPluginFactory>
 
 #include <interfaces/contextmenuextension.h>
 #include <interfaces/icore.h>
