@@ -50,6 +50,7 @@
         "Description[sv]": "Ruby-språkstöd", 
         "Description[uk]": "Підтримка мови Ruby", 
         "Description[x-test]": "xxRuby Language Supportxx", 
+        "Description[zh_CN]": "Ruby 语言支持", 
         "Icon": "application-x-ruby", 
         "Id": "KDevRubySupport", 
         "Name": "Ruby Support", 
@@ -67,6 +68,7 @@
         "Name[sv]": "Stöd för Ruby", 
         "Name[uk]": "Підтримка Ruby", 
         "Name[x-test]": "xxRuby Supportxx", 
+        "Name[zh_CN]": "Ruby 支持", 
         "ServiceTypes": [
             "KDevelop/Plugin"
         ]
