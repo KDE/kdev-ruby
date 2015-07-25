@@ -254,7 +254,7 @@ void ContextBuilder::visitRequire(Ast *node, bool relative)
         appendProblem(
             aux,
             i18n("LoadError: cannot load such file: %1", path.path()),
-            ProblemData::Warning
+            IProblem::Warning
         );
         return;
     }
@@ -285,11 +285,11 @@ void ContextBuilder::require(const KDevelop::Path &path)
 }
 
 void ContextBuilder::appendProblem(const Node *node, const QString &msg,
-                                   ProblemData::Severity sev)
+                                   IProblem::Severity sev)
 {
     ProblemPointer p(new Problem());
     p->setFinalLocation(getDocumentRange(node));
-    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setSource(IProblem::SemanticAnalysis);
     p->setDescription(msg);
     p->setSeverity(sev);
 
@@ -300,11 +300,11 @@ void ContextBuilder::appendProblem(const Node *node, const QString &msg,
 }
 
 void ContextBuilder::appendProblem(const RangeInRevision &range, const QString &msg,
-                                   ProblemData::Severity sev)
+                                   IProblem::Severity sev)
 {
     ProblemPointer p(new Problem());
     p->setFinalLocation(getDocumentRange(range));
-    p->setSource(KDevelop::ProblemData::SemanticAnalysis);
+    p->setSource(IProblem::SemanticAnalysis);
     p->setDescription(msg);
     p->setSeverity(sev);
 

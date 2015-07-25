@@ -107,11 +107,11 @@ void Parser::appendProblem(const struct error_t *error)
     DocumentRange location(currentDocument, range);
     problem->setFinalLocation(location);
     problem->setDescription(QString(error->msg));
-    problem->setSource(ProblemData::Parser);
+    problem->setSource(IProblem::Parser);
     if (error->warning) {
-        problem->setSeverity(ProblemData::Error);
+        problem->setSeverity(IProblem::Error);
     } else {
-        problem->setSeverity(ProblemData::Warning);
+        problem->setSeverity(IProblem::Warning);
     }
     problems << problem;
 }

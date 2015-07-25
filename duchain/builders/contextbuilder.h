@@ -123,21 +123,21 @@ protected:
     /**
      * Append a new problem that appeared at the given @p node with @p msg
      * as its description. The @p sev is the severity of the problem, which
-     * is ProblemData::Error by default.
+     * is IProblem::Error by default.
      * @note that you should call i18n() first.
      */
     void appendProblem(const Node *node, const QString &msg,
-                       KDevelop::ProblemData::Severity sev = KDevelop::ProblemData::Error);
+                       KDevelop::IProblem::Severity sev = KDevelop::IProblem::Error);
 
     /**
      * Append a new problem that appeared at the given @p range with @p msg
      * as its description. The @p sev is the severity of the problem, which
-     * is ProblemData::Error by default.
+     * is IProblem::Error by default.
      * @note that you should call i18n() first.
      */
     void appendProblem(const KDevelop::RangeInRevision &range,
                        const QString &msg,
-                       KDevelop::ProblemData::Severity sev = KDevelop::ProblemData::Error);
+                       KDevelop::IProblem::Severity sev = KDevelop::IProblem::Error);
 
 protected:
     bool m_mapAst; // make KDevelop::AbstractContextBuilder happy.
