@@ -20,7 +20,8 @@
 
 #include <QtWidgets/QAction>
 
-#include <klocalizedstring.h>
+#include <KConfigGroup>
+#include <KLocalizedString>
 
 #include <execute/iexecuteplugin.h>
 #include <interfaces/icore.h>

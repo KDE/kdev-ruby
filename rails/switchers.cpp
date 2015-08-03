@@ -23,6 +23,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
+#include <KLocalizedString>
+
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
 #include <interfaces/iplugincontroller.h>

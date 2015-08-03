@@ -20,6 +20,8 @@
 
 #include <QtWidgets/QAction>
 
+#include <KLocalizedString>
+
 #include <interfaces/icore.h>
 #include <interfaces/iplugincontroller.h>
 #include <language/interfaces/iquickopen.h>
