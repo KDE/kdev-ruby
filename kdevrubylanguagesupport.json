@@ -36,6 +36,7 @@
     "GenericName[zh_CN]": "Ruby 支持", 
     "KPlugin": {
         "Description": "Ruby Language Support", 
+        "Description[ca@valencia]": "Implementació del llenguatge Ruby", 
         "Description[ca]": "Implementació del llenguatge Ruby", 
         "Description[cs]": "Podpora jazyka Ruby", 
         "Description[de]": "Sprachunterstützung für Ruby", 
@@ -57,6 +58,7 @@
         "Icon": "application-x-ruby", 
         "Id": "KDevRubySupport", 
         "Name": "Ruby Support", 
+        "Name[ca@valencia]": "Implementació de Ruby", 
         "Name[ca]": "Implementació de Ruby", 
         "Name[cs]": "Podpora Ruby", 
         "Name[de]": "Unterstützung für Ruby", 
