@@ -58,6 +58,7 @@
         "Icon": "application-x-ruby", 
         "Id": "KDevRubySupport", 
         "Name": "Ruby Support", 
+        "Name[ast]": "Sofitu de Ruby", 
         "Name[ca@valencia]": "Implementació de Ruby", 
         "Name[ca]": "Implementació de Ruby", 
         "Name[cs]": "Podpora Ruby", 
