@@ -27,6 +27,7 @@
 
 #include <duchain/builders/typebuilder.h>
 #include <duchain/helpers.h>
+#include <util/stack.h>
 
 namespace ruby {
 
@@ -227,8 +228,8 @@ private:
 
 private:
     EditorIntegrator *m_editor;
-    QStack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
-    QStack<KDevelop::DeclarationPointer> m_classDeclarations;
+    KDevelop::Stack<KDevelop::Declaration::AccessPolicy> m_accessPolicy;
+    KDevelop::Stack<KDevelop::DeclarationPointer> m_classDeclarations;
     bool m_injected;
     bool m_instance;
     KDevelop::Declaration *m_lastMethodCall;
