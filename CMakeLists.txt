@@ -28,8 +28,6 @@ include_directories(
 
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-
 add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(rails)
