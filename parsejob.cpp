@@ -215,6 +215,7 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         }
         setDuChain(m_duContext);
     }
+    DUChain::self()->emitUpdateReady(document(), duChain());
 }
 
 }
