@@ -72,6 +72,8 @@ Ast * Parser::parse()
         for (aux = res->errors; aux; aux = aux->next) {
             appendProblem(aux);
         }
+        delete ast;
+        ast = nullptr;
         rb_free(res);
         return nullptr;
     } else {
