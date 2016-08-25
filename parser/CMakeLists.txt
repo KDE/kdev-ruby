@@ -24,13 +24,13 @@ target_link_libraries(kdevrubyparser LINK_PRIVATE
 )
 
 # Compile & install the tests if needed.
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DBUILD_TESTS)
     add_executable(ruby-parser main.c)
     set_target_properties(ruby-parser PROPERTIES WIN32_EXECUTABLE 0)
     install(DIRECTORY tools DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(ruby-parser kdevrubyparser)
-endif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+endif()
 
 install(TARGETS kdevrubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
