@@ -60,7 +60,7 @@ void ClassType::addContentType(AbstractType::Ptr typeToAdd)
     if (!typeToAdd) // TODO: not sure :/
         return;
     AbstractType::Ptr type = mergeTypes(contentType().abstractType(), typeToAdd);
-    d_func_dynamic()->m_contentType = type->indexed();
+    d_func_dynamic()->m_contentType = IndexedType(type);
 }
 
 const IndexedType & ClassType::contentType() const
