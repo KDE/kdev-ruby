@@ -47,7 +47,7 @@ void ClassType::addContentType(AbstractType::Ptr typeToAdd)
         return;
     }
     auto type = mergeTypes(contentType().abstractType(), typeToAdd);
-    d_func_dynamic()->contentType = type->indexed();
+    d_func_dynamic()->contentType = IndexedType(type);
 }
 
 const IndexedType & ClassType::contentType() const
