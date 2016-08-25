@@ -35,7 +35,8 @@ template<>
 QWidget * RubyTopDUContext::createNavigationWidget(Declaration *decl,
                                                    TopDUContext *topContext,
                                                    const QString &htmlPrefix,
-                                                   const QString &htmlSuffix) const
+                                                   const QString &htmlSuffix,
+                                                   AbstractNavigationWidget::DisplayHints hints) const
 {
     if (!decl) {
         QUrl u = QUrl::fromLocalFile(url().str());
@@ -44,22 +45,23 @@ QWidget * RubyTopDUContext::createNavigationWidget(Declaration *decl,
         i.name = u.fileName();
         i.isDirectory = false;
         i.basePath = KIO::upUrl(u);
-        return new NavigationWidget(i, TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
+        return new NavigationWidget(i, TopDUContextPointer(topContext), htmlPrefix, htmlSuffix, hints);
     }
-    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
+    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix, hints);
 }
 
 template<>
 QWidget * RubyNormalDUContext::createNavigationWidget(Declaration *decl, TopDUContext *topContext,
-                                                      const QString &htmlPrefix, const QString &htmlSuffix) const
+                                                      const QString &htmlPrefix, const QString &htmlSuffix,
+                                                      AbstractNavigationWidget::DisplayHints hints) const
 {
     if (!decl) {
         if (owner()) {
-            return new NavigationWidget(DeclarationPointer(owner()), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
+            return new NavigationWidget(DeclarationPointer(owner()), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix, hints);
         }
         return nullptr;
     }
-    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix);
+    return new NavigationWidget(DeclarationPointer(decl), TopDUContextPointer(topContext), htmlPrefix, htmlSuffix, hints);
 }
 
 };

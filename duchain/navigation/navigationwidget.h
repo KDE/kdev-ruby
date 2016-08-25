@@ -52,7 +52,8 @@ public:
     explicit NavigationWidget(KDevelop::DeclarationPointer decl,
                               KDevelop::TopDUContextPointer topContext,
                               const QString &htmlPrefix = QString(),
-                              const QString &htmlSuffix = QString());
+                              const QString &htmlSuffix = QString(),
+                              KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints);
 
     /**
      * Constructor.
@@ -67,7 +68,8 @@ public:
     explicit NavigationWidget(const KDevelop::IncludeItem &item,
                               KDevelop::TopDUContextPointer topContext,
                               const QString &htmlPrefix = QString(),
-                              const QString &htmlSuffix = QString());
+                              const QString &htmlSuffix = QString(),
+                              KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints);
 
     /**
      * Creates a compact html description given a Declaration.

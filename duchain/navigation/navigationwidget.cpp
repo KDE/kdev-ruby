@@ -29,9 +29,11 @@ using namespace KDevelop;
 NavigationWidget::NavigationWidget( KDevelop::DeclarationPointer decl,
                                     KDevelop::TopDUContextPointer topContext,
                                     const QString &htmlPrefix,
-                                    const QString &htmlSuffix)
+                                    const QString &htmlSuffix,
+                                    KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
     m_topContext = topContext;
+    setDisplayHints(hints);
     initBrowser(200);
 
     m_startContext = NavigationContextPointer(new DeclarationNavigationContext(decl, topContext));
@@ -42,9 +44,11 @@ NavigationWidget::NavigationWidget( KDevelop::DeclarationPointer decl,
 NavigationWidget::NavigationWidget(const KDevelop::IncludeItem &item,
                                    KDevelop::TopDUContextPointer topContext,
                                    const QString &htmlPrefix,
-                                   const QString &htmlSuffix)
+                                   const QString &htmlSuffix,
+                                   KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
     m_topContext = topContext;
+    setDisplayHints(hints);
     initBrowser(200);
 
     m_startContext = NavigationContextPointer(new IncludeNavigationContext(item, topContext));
