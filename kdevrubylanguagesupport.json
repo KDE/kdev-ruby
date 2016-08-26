@@ -84,7 +84,9 @@
         ]
     }, 
     "X-KDevelop-Args": "RUBY", 
-    "X-KDevelop-Interfaces": "ILanguageSupport", 
+    "X-KDevelop-Interfaces": [
+        "ILanguageSupport"
+    ], 
     "X-KDevelop-Language": "Ruby", 
     "X-KDevelop-LoadMode": "AlwaysOn", 
     "X-KDevelop-Mode": "NoGUI", 
