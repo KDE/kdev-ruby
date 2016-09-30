@@ -1,6 +1,20 @@
 # KDE Config File
 [General]
 Name=Simple Ruby Application
+Name[ca]=Una aplicació en Ruby senzilla
+Name[es]=Aplicación sencilla en Ruby
+Name[nl]=Eenvoudig Ruby-programma
+Name[pt]=Aplicação Simples em Ruby
+Name[sv]=Enkelt Ruby-program
+Name[uk]=Проста програма мовою Ruby
+Name[x-test]=xxSimple Ruby Applicationxx
 Category=Ruby
 Comment=Generate a simple Ruby application
+Comment[ca]=Genera una aplicació en Ruby senzilla
+Comment[es]=Generar una aplicación sencilla en Ruby
+Comment[nl]=Een eenvoudig Ruby-programma genereren
+Comment[pt]=Gerar uma aplicação simples em Ruby
+Comment[sv]=Skapa ett enkelt Ruby-program
+Comment[uk]=Створити просту програму мовою Ruby
+Comment[x-test]=xxGenerate a simple Ruby applicationxx
 ShowFilesAfterGeneration=%{PROJECTDIR}/%{APPNAMELC}.rb

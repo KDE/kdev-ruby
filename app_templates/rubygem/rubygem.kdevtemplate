@@ -1,6 +1,20 @@
 # KDE Config File
 [General]
 Name=RubyGem
+Name[ca]=RubyGem
+Name[es]=RubyGem
+Name[nl]=RubyGem
+Name[pt]=RubyGem
+Name[sv]=RubyGem
+Name[uk]=RubyGem
+Name[x-test]=xxRubyGemxx
 Category=Ruby
 Comment=Generate a simple RubyGem
+Comment[ca]=Genera una RubyGem senzilla
+Comment[es]=Generar un sencillo RubyGem
+Comment[nl]=Een eenvoudige RubyGem genereren
+Comment[pt]=Gerar um RubyGem simples
+Comment[sv]=Skapa en enkelt RubyGem
+Comment[uk]=Створити простий RubyGem
+Comment[x-test]=xxGenerate a simple RubyGemxx
 ShowFilesAfterGeneration=%{PROJECTDIR}/lib/%{APPNAMELC}.rb
