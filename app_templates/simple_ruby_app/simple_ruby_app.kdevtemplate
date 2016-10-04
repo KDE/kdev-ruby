@@ -2,6 +2,7 @@
 [General]
 Name=Simple Ruby Application
 Name[ca]=Una aplicació en Ruby senzilla
+Name[ca@valencia]=Una aplicació en Ruby senzilla
 Name[en_GB]=Simple Ruby Application
 Name[es]=Aplicación sencilla en Ruby
 Name[nl]=Eenvoudig Ruby-programma
@@ -14,6 +15,7 @@ Name[x-test]=xxSimple Ruby Applicationxx
 Category=Ruby
 Comment=Generate a simple Ruby application
 Comment[ca]=Genera una aplicació en Ruby senzilla
+Comment[ca@valencia]=Genera una aplicació en Ruby senzilla
 Comment[en_GB]=Generate a simple Ruby application
 Comment[es]=Generar una aplicación sencilla en Ruby
 Comment[nl]=Een eenvoudig Ruby-programma genereren
