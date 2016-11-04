@@ -3,6 +3,7 @@
 Name=RubyGem
 Name[ca]=RubyGem
 Name[ca@valencia]=RubyGem
+Name[cs]=RubyGem
 Name[de]=RubyGem
 Name[en_GB]=RubyGem
 Name[es]=RubyGem
@@ -18,6 +19,7 @@ Category=Ruby
 Comment=Generate a simple RubyGem
 Comment[ca]=Genera una RubyGem senzilla
 Comment[ca@valencia]=Genera una RubyGem senzilla
+Comment[cs]=Vygenerovat jednoduchý RubyGem
 Comment[en_GB]=Generate a simple RubyGem
 Comment[es]=Generar un sencillo RubyGem
 Comment[nl]=Een eenvoudige RubyGem genereren
