@@ -44,7 +44,7 @@
 
 K_PLUGIN_FACTORY_WITH_JSON(KDevRubySupportFactory, "kdevrubylanguagesupport.json", registerPlugin<ruby::LanguageSupport>();)
 
-Q_LOGGING_CATEGORY(KDEV_RUBY, "kdev.ruby")
+Q_LOGGING_CATEGORY(KDEV_RUBY, "kdevelop.languages.ruby")
 
 using namespace ruby;
 using namespace KDevelop;
