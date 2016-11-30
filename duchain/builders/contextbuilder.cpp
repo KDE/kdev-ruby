@@ -32,7 +32,7 @@
 #include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
 
-Q_LOGGING_CATEGORY(DUCHAIN, "kdev.ruby.duchain")
+Q_LOGGING_CATEGORY(DUCHAIN, "kdevelop.languages.ruby.duchain")
 
 using namespace KDevelop;
 using namespace ruby;

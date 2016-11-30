@@ -19,7 +19,7 @@
 #include <parser/astvisitor.h>
 #include <parser/debug.h>
 
-Q_LOGGING_CATEGORY(PARSER, "kdev.ruby.parser");
+Q_LOGGING_CATEGORY(PARSER, "kdevelop.languages.ruby.parser");
 
 /*
  * Note that each visitor method has a comment that explains how the AST

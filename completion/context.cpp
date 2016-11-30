@@ -34,7 +34,7 @@
 #include <completion/items/normalitem.h>
 #include <completion/items/requirefileitem.h>
 
-Q_LOGGING_CATEGORY(COMPLETION, "kdev.ruby.completion")
+Q_LOGGING_CATEGORY(COMPLETION, "kdevelop.languages.ruby.completion")
 
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))

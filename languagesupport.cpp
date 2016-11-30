@@ -56,7 +56,7 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     KDEV_USE_EXTENSION_INTERFACE(ILanguageSupport)
 
     // TODO: this should be removed once KDE knows how to handle categories.
-    QLoggingCategory::setFilterRules(QStringLiteral("kdev.ruby.debug = true"));
+    QLoggingCategory::setFilterRules(QStringLiteral("kdevelop.languages.ruby.debug = true"));
 
     m_rails = new rails::Support(this);
     m_launcher = new Launcher(this);

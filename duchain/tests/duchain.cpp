@@ -38,7 +38,7 @@
 #include <duchain/declarations/variabledeclaration.h>
 
 
-Q_LOGGING_CATEGORY(DUCHAIN_TESTS, "kdev.ruby.duchain.tests")
+Q_LOGGING_CATEGORY(DUCHAIN_TESTS, "kdevelop.languages.ruby.duchain.tests")
 
 QTEST_MAIN(ruby::TestDUChain)
 
