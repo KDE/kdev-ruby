@@ -22,6 +22,7 @@
 #include <languagesupport.h>
 
 #include <QProcess>
+#include <QStandardPaths>
 
 #include <KPluginFactory>
 
@@ -68,19 +69,27 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     new CodeCompletion(this, rModel, "Ruby");
 
     /* Retrieving Ruby version */
-    QProcess ruby;
-    ruby.start("/usr/bin/env", QStringList{ "ruby", "--version" });
-    ruby.waitForFinished();
-    const QString &output = ruby.readAllStandardOutput().split(' ')[1];
-    QStringList version = output.split('.');
-    if (version.size() > 1) {
-        if (version[0] == "1") {
-            m_version = (version[1] == "8") ? ruby18 : ruby19;
-        } else if (version[1] == "0") {
-            m_version = ruby20;
-        } else {
-            m_version = ruby21;
+    QString path = QStandardPaths::findExecutable("ruby");
+    if (!path.isEmpty()) {
+        QProcess ruby;
+        ruby.start(path, QStringList{ "--version" });
+        ruby.waitForFinished(3000);
+        QList<QByteArray> byteArr = ruby.readAllStandardOutput().split(' ');
+        if (byteArr.size() > 1) {
+            const QString &output = byteArr[1];
+            QStringList version = output.split('.');
+            if (version.size() > 1) {
+                if (version[0] == "1") {
+                    m_version = (version[1] == "8") ? ruby18 : ruby19;
+                } else if (version[1] == "0") {
+                    m_version = ruby20;
+                } else {
+                    m_version = ruby21;
+                }
+            }
         }
+    } else {
+        qWarning() << "ruby might not be installed!";
     }
 }
 
