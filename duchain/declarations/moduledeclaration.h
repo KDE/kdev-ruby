@@ -164,7 +164,7 @@ private:
 
 private:
     /// Re-implemented from KDevelop::Declaration.
-    virtual KDevelop::Declaration * clonePrivate() const override;
+    KDevelop::Declaration * clonePrivate() const override;
 
     DUCHAIN_DECLARE_DATA(ModuleDeclaration)
 };

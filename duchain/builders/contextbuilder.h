@@ -80,9 +80,9 @@ protected:
      * KDevelop::AbstractContextBuilder that deal with contexts and nodes.
      */
 
-    virtual void setContextOnNode(Ast *node, KDevelop::DUContext *ctx) override;
-    virtual KDevelop::DUContext * contextFromNode(Ast *node) override;
-    virtual KDevelop::DUContext * newContext(const KDevelop::RangeInRevision &range) override;
+    void setContextOnNode(Ast *node, KDevelop::DUContext *ctx) override;
+    KDevelop::DUContext * contextFromNode(Ast *node) override;
+    KDevelop::DUContext * newContext(const KDevelop::RangeInRevision &range) override;
     virtual KDevelop::TopDUContext * newTopContext(const KDevelop::RangeInRevision &range,
                                                    KDevelop::ParsingEnvironmentFile *file = nullptr) override;
 
@@ -92,7 +92,7 @@ protected:
     const KDevelop::CursorInRevision startPos(const Ast *node) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::RangeInRevision editorFindRange(Ast *fromRange, Ast *toRange) override;
+    KDevelop::RangeInRevision editorFindRange(Ast *fromRange, Ast *toRange) override;
 
     /// Given a @param node, it @returns a KDevelop::DocumentRange.
     const KDevelop::DocumentRange getDocumentRange(const Node *node) const;
@@ -101,16 +101,16 @@ protected:
     const KDevelop::DocumentRange getDocumentRange(const KDevelop::RangeInRevision &range) const;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::QualifiedIdentifier identifierForNode(NameAst *name) override;
+    KDevelop::QualifiedIdentifier identifierForNode(NameAst *name) override;
 
     /// Methods re-implemented from AstVisitor or mere helpers.
 
-    virtual void startVisiting(Ast *node) override;
-    virtual void visitModuleStatement(Ast *node) override;
-    virtual void visitClassStatement(Ast *node) override;
-    virtual void visitMethodStatement(Ast *node) override;
-    virtual void visitBlock(Ast *node) override;
-    virtual void visitRequire(Ast *node, bool relative = false) override;
+    void startVisiting(Ast *node) override;
+    void visitModuleStatement(Ast *node) override;
+    void visitClassStatement(Ast *node) override;
+    void visitMethodStatement(Ast *node) override;
+    void visitBlock(Ast *node) override;
+    void visitRequire(Ast *node, bool relative = false) override;
 
     /**
      * Issue a require. The required file will be scheduled for parsing

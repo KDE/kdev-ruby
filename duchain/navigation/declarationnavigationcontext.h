@@ -55,20 +55,20 @@ protected:
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
      * because the default implementation is just to "C++ centric".
      */
-    virtual QString html(bool shorten = false) override;
+    QString html(bool shorten = false) override;
 
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext
      * because the default implementation assumes that default arguments
      * are always at the end, and in Ruby this is not true.
      */
-    virtual void htmlFunction() override;
+    void htmlFunction() override;
 
     /**
      * Re-implemented from KDevelop::AbstractDeclarationNavigationContext so
      * we can improve the html to be rendered with Ruby-specific stuff.
      */
-    virtual void htmlClass() override;
+    void htmlClass() override;
 
     /**
      * Re-implemented from KDevelop::AbstractNavigationContext so we can also

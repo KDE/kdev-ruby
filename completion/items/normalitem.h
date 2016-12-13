@@ -46,10 +46,10 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const override;
+    QWidget * createExpandingWidget(const KDevelop::CodeCompletionModel *model) const override;
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual bool createsExpandingWidget() const override;
+    bool createsExpandingWidget() const override;
 };
 
 }

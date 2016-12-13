@@ -70,16 +70,16 @@ struct KDEVRUBYDUCHAIN_EXPORT ClassType : public KDevelop::StructureType
     bool isUseful() const;
 
     /// Create a clone of this type.
-    virtual AbstractType * clone() const override;
+    AbstractType * clone() const override;
 
     /// The hash-value for this type.
-    virtual uint hash() const override;
+    uint hash() const override;
 
     /// @returns this type as a string.
-    virtual QString toString() const override;
+    QString toString() const override;
 
     /// @returns true if @p rhs is the same as this type
-    virtual bool equals(const AbstractType *rhs) const override;
+    bool equals(const AbstractType *rhs) const override;
 
     /// @returns the container's type as a string.
     QString containerToString() const;

@@ -52,15 +52,15 @@ public:
     QuickOpenData(const QuickOpenItem &item, const QString &explanation);
 
 protected:
-    virtual QString text() const override;
-    virtual QString htmlDescription() const override;
+    QString text() const override;
+    QString htmlDescription() const override;
 
     bool execute(QString &filterText) override;
 
-    virtual bool isExpandable() const override;
-    virtual QWidget * expandingWidget() const override;
+    bool isExpandable() const override;
+    QWidget * expandingWidget() const override;
 
-    virtual QIcon icon() const override;
+    QIcon icon() const override;
 
     QList<QVariant> highlighting() const override;
 

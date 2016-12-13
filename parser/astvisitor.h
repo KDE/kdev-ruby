@@ -60,7 +60,7 @@ protected:
     virtual bool declaredInContext(const QByteArray &name) const = 0;
 
 protected:
-    /// And the following is a list of virtual methods that can be overriden.
+    /// And the following is a list of methods that can be overriden.
 
     virtual void visitName(Ast *node);
     virtual void visitString(Ast *node);

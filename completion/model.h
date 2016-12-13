@@ -44,7 +44,7 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::CodeCompletionModel.
-    virtual KDevelop::CodeCompletionWorker *createCompletionWorker() override;
+    KDevelop::CodeCompletionWorker *createCompletionWorker() override;
 };
 
 }

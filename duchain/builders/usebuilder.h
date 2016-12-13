@@ -42,13 +42,13 @@ public:
 protected:
     /// Methods re-implemented from AstVisitor.
 
-    virtual bool declaredInContext(const QByteArray &name) const override;
+    bool declaredInContext(const QByteArray &name) const override;
 
-    virtual void visitName(Ast *node) override;
-    virtual void visitClassName(Ast *node) override;
-    virtual void visitMixin(Ast *node, bool include) override;
-    virtual void visitMethodCall(Ast *node) override;
-    virtual void visitRequire(Ast *node, bool relative = false) override;
+    void visitName(Ast *node) override;
+    void visitClassName(Ast *node) override;
+    void visitMixin(Ast *node, bool include) override;
+    void visitMethodCall(Ast *node) override;
+    void visitRequire(Ast *node, bool relative = false) override;
 
 private:
     /// @internal Visit the method call members from the given @p node.

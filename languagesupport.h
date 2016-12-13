@@ -64,23 +64,23 @@ public:
     /**
      * @return the name of the language.
      */
-    virtual QString name() const override;
+    QString name() const override;
 
     /**
      * @return the ParseJob that is going to be used by the Background
      * parser to parse the given @p url.
      */
-    virtual KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url) override;
+    KDevelop::ParseJob * createParseJob(const KDevelop::IndexedString &url) override;
 
     /**
      * @return the Code Highlighting for the Ruby language.
      */
-    virtual KDevelop::ICodeHighlighting * codeHighlighting() const override;
+    KDevelop::ICodeHighlighting * codeHighlighting() const override;
 
     /**
      * @returns the ContextMenuExtension for the Php plugin.
      */
-    virtual KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context) override;
+    KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context) override;
 
     /**
      * @return the version of Ruby to be picked.

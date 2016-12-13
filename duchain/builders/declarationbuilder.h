@@ -50,32 +50,32 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::AbstractDeclarationBuilder.
-    virtual void closeDeclaration() override;
-    virtual void closeContext() override;
+    void closeDeclaration() override;
+    void closeContext() override;
 
     /// Re-implemented from the ContextBuilder.
-    virtual void startVisiting(Ast *node) override;
+    void startVisiting(Ast *node) override;
 
     /// Methods re-implemented from AstVisitor.
 
-    virtual bool declaredInContext(const QByteArray &name) const override;
+    bool declaredInContext(const QByteArray &name) const override;
 
-    virtual void visitClassStatement(Ast *node) override;
-    virtual void visitSingletonClass(Ast *node) override;
-    virtual void visitModuleStatement(Ast *node) override;
-    virtual void visitMethodStatement(Ast *node) override;
-    virtual void visitParameter(Ast *node) override;
-    virtual void visitBlock(Ast *node) override;
-    virtual void visitBlockVariables(Ast *node) override;
-    virtual void visitReturnStatement(Ast *node) override;
-    virtual void visitAssignmentStatement(Ast *node) override;
-    virtual void visitAliasStatement(Ast *node) override;
-    virtual void visitMethodCall(Ast *node) override;
-    virtual void visitMixin(Ast *node, bool include) override;
-    virtual void visitForStatement(Ast *node) override;
-    virtual void visitAccessSpecifier(const access_t policy) override;
-    virtual void visitYieldStatement(Ast *node) override;
-    virtual void visitRescueArg(Ast *node) override;
+    void visitClassStatement(Ast *node) override;
+    void visitSingletonClass(Ast *node) override;
+    void visitModuleStatement(Ast *node) override;
+    void visitMethodStatement(Ast *node) override;
+    void visitParameter(Ast *node) override;
+    void visitBlock(Ast *node) override;
+    void visitBlockVariables(Ast *node) override;
+    void visitReturnStatement(Ast *node) override;
+    void visitAssignmentStatement(Ast *node) override;
+    void visitAliasStatement(Ast *node) override;
+    void visitMethodCall(Ast *node) override;
+    void visitMixin(Ast *node, bool include) override;
+    void visitForStatement(Ast *node) override;
+    void visitAccessSpecifier(const access_t policy) override;
+    void visitYieldStatement(Ast *node) override;
+    void visitRescueArg(Ast *node) override;
 
 private:
     /// @returns the range of the name of the given @p node.

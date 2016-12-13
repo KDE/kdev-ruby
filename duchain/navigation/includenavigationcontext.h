@@ -47,20 +47,20 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::AbstractIncludeNavigationContext
-    virtual void getFileInfo(KDevelop::TopDUContext *duchain) override;
+    void getFileInfo(KDevelop::TopDUContext *duchain) override;
 
     /**
      * Re-implemented from KDevelop::AbstractIncludeNavigationContext to
      * prevent variable declarations to appear on the widget.
      */
-    virtual bool filterDeclaration(KDevelop::Declaration *decl) override;
+    bool filterDeclaration(KDevelop::Declaration *decl) override;
 
     /**
      * Re-implemented from KDevelop::AbstractNavigationContext so we can also
      * show to the user if this declaration has some special meaning for
      * the Ruby interpreter.
      */
-    virtual QString declarationKind(KDevelop::DeclarationPointer decl) override;
+    QString declarationKind(KDevelop::DeclarationPointer decl) override;
 };
 
 }

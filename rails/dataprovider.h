@@ -60,11 +60,11 @@ public:
     static QStringList scopes();
 
 protected:
-    virtual void setFilterText(const QString &text) override;
-    virtual void reset() override;
-    virtual uint itemCount() const override;
-    virtual uint unfilteredItemCount() const override;
-    virtual KDevelop::QuickOpenDataPointer data(uint row) const override;
+    void setFilterText(const QString &text) override;
+    void reset() override;
+    uint itemCount() const override;
+    uint unfilteredItemCount() const override;
+    KDevelop::QuickOpenDataPointer data(uint row) const override;
     virtual void enableData(const QStringList &items,
                             const QStringList &scopes) override;
 

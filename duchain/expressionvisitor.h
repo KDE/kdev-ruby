@@ -73,39 +73,39 @@ public:
     void setDeclarationKind(const DeclarationKind kind);
 
     /// Re-implemented from AstVisitor.
-    virtual void visitParameter(Ast *node) override;
+    void visitParameter(Ast *node) override;
 
 protected:
     /// Visitor methods re-implemented from AstVisitor.
 
-    virtual bool declaredInContext(const QByteArray &name) const override;
+    bool declaredInContext(const QByteArray &name) const override;
 
-    virtual void visitString(Ast *node) override;
-    virtual void visitRegexp(Ast *node) override;
-    virtual void visitNumeric(Ast *node) override;
-    virtual void visitTrue(Ast *node) override;
-    virtual void visitFalse(Ast *node) override;
-    virtual void visitNil(Ast *node) override;
-    virtual void visitLine(Ast *node) override;
-    virtual void visitFile(Ast *node) override;
-    virtual void visitEncoding(Ast *node) override;
-    virtual void visitSelf(Ast *node) override;
-    virtual void visitRange(Ast *node) override;
-    virtual void visitSymbol(Ast *node) override;
-    virtual void visitName(Ast *node) override;
-    virtual void visitArray(Ast *node) override;
-    virtual void visitHash(Ast *node) override;
-    virtual void visitArrayValue(Ast *node) override;
-    virtual void visitMethodCall(Ast *node) override;
-    virtual void visitSuper(Ast *node) override;
-    virtual void visitLambda(Ast *node) override;
-    virtual void visitWhileStatement(Ast *node) override;
-    virtual void visitForStatement(Ast *node) override;
-    virtual void visitBinary(Ast *node) override;
-    virtual void visitBoolean(Ast *node) override;
-    virtual void visitIfStatement(Ast *node) override;
-    virtual void visitCaseStatement(Ast *node) override;
-    virtual void visitMethodStatement(Ast *node) override;
+    void visitString(Ast *node) override;
+    void visitRegexp(Ast *node) override;
+    void visitNumeric(Ast *node) override;
+    void visitTrue(Ast *node) override;
+    void visitFalse(Ast *node) override;
+    void visitNil(Ast *node) override;
+    void visitLine(Ast *node) override;
+    void visitFile(Ast *node) override;
+    void visitEncoding(Ast *node) override;
+    void visitSelf(Ast *node) override;
+    void visitRange(Ast *node) override;
+    void visitSymbol(Ast *node) override;
+    void visitName(Ast *node) override;
+    void visitArray(Ast *node) override;
+    void visitHash(Ast *node) override;
+    void visitArrayValue(Ast *node) override;
+    void visitMethodCall(Ast *node) override;
+    void visitSuper(Ast *node) override;
+    void visitLambda(Ast *node) override;
+    void visitWhileStatement(Ast *node) override;
+    void visitForStatement(Ast *node) override;
+    void visitBinary(Ast *node) override;
+    void visitBoolean(Ast *node) override;
+    void visitIfStatement(Ast *node) override;
+    void visitCaseStatement(Ast *node) override;
+    void visitMethodStatement(Ast *node) override;
 
 private:
     /// Set the last type seen to @p type.

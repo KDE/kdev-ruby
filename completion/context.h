@@ -61,7 +61,7 @@ public:
                                                                        bool fullCompletion = true) override;
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
-    virtual QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;
+    QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;
 
 private:
     /**

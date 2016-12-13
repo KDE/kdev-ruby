@@ -126,7 +126,7 @@ public:
 
 private:
     /// Re-implemented from KDevelop::Declaration.
-    virtual KDevelop::Declaration * clonePrivate() const override;
+    KDevelop::Declaration * clonePrivate() const override;
 
 private:
     DUCHAIN_DECLARE_DATA(MethodDeclaration)

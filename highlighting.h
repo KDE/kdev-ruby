@@ -49,7 +49,7 @@ public:
      *
      * @param dec The involved declaration.
      */
-    virtual bool useRainbowColor(KDevelop::Declaration *dec) const override;
+    bool useRainbowColor(KDevelop::Declaration *dec) const override;
 };
 
 /**
@@ -70,7 +70,7 @@ private:
      * Extends base class CodeHighlighting's createInstance() method to use
      * this plugin's defined one.
      */
-    virtual KDevelop::CodeHighlightingInstance * createInstance() const override;
+    KDevelop::CodeHighlightingInstance * createInstance() const override;
 };
 
 }
