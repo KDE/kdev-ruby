@@ -18,6 +18,7 @@ Name[x-test]=xxRubyGemxx
 Name[zh_CN]=RubyGem
 Category=Ruby
 Comment=Generate a simple RubyGem
+Comment[ast]=Xenera un RubyGem cenciellu
 Comment[ca]=Genera una RubyGem senzilla
 Comment[ca@valencia]=Genera una RubyGem senzilla
 Comment[cs]=Vygenerovat jednoduchý RubyGem
