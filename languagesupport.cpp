@@ -54,8 +54,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , ILanguageSupport()
 {
-    KDEV_USE_EXTENSION_INTERFACE(ILanguageSupport)
-
     // TODO: this should be removed once KDE knows how to handle categories.
     QLoggingCategory::setFilterRules(QStringLiteral("kdevelop.languages.ruby.debug = true"));
 
