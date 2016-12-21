@@ -54,9 +54,6 @@ LanguageSupport::LanguageSupport(QObject *parent, const QVariantList &)
     : IPlugin(QStringLiteral("kdevrubysupport"), parent)
     , ILanguageSupport()
 {
-    // TODO: this should be removed once KDE knows how to handle categories.
-    QLoggingCategory::setFilterRules(QStringLiteral("kdevelop.languages.ruby.debug = true"));
-
     m_rails = new rails::Support(this);
     m_launcher = new Launcher(this);
 
