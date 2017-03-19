@@ -46,41 +46,41 @@ DeclarationNavigationContext::DeclarationNavigationContext( DeclarationPointer d
 QString DeclarationNavigationContext::html(bool shorten)
 {
     clear();
-    m_shorten = shorten;
+    AbstractDeclarationNavigationContext::html(shorten);
     modifyHtml()  += "<html><body><p>" + fontSizePrefix(shorten);
-    addExternalHtml(m_prefix);
+    addExternalHtml(prefix());
 
-    if(!m_declaration.data()) {
+    if(!declaration().data()) {
         modifyHtml() += i18n("<br /> lost declaration <br />");
         return currentHtml();
     }
-    if(m_previousContext) {
-        QString link = createLink(m_previousContext->name(), m_previousContext->name(), NavigationAction(m_previousContext));
+    if(auto context = previousContext()) {
+        QString link = createLink(context->name(), context->name(), NavigationAction(context));
         modifyHtml() += navigationHighlight(i18n("Back to %1<br />", link));
     }
 
     if (!shorten) {
-        const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(m_declaration.data());
+        const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(declaration().data());
         if (mDecl) {
             if (mDecl->qualifiedIdentifier().count() > 1 && mDecl->context() && mDecl->context()->owner()) {
-                Declaration *d = m_declaration->context()->owner();
+                Declaration *d = declaration()->context()->owner();
                 makeLink(declarationName(DeclarationPointer(d)), DeclarationPointer(d), NavigationAction::NavigateDeclaration);
                 modifyHtml() += (mDecl->isClassMethod()) ? "::" : "#";
             }
             htmlFunction();
-        } else if (m_declaration->kind() == Declaration::Instance) {
-            eventuallyMakeTypeLinks(m_declaration->abstractType());
-            const QString &esc = declarationName(m_declaration).toHtmlEscaped();
+        } else if (declaration()->kind() == Declaration::Instance) {
+            eventuallyMakeTypeLinks(declaration()->abstractType());
+            const QString &esc = declarationName(declaration()).toHtmlEscaped();
             modifyHtml() += ' ' + nameHighlight(esc) + "<br>";
-        } else if (m_declaration->kind() == Declaration::Type && m_declaration->abstractType().cast<StructureType>()) {
+        } else if (declaration()->kind() == Declaration::Type && declaration()->abstractType().cast<StructureType>()) {
             htmlClass();
         }
-    } else if (m_declaration->abstractType()) {
-        eventuallyMakeTypeLinks(m_declaration->abstractType());
+    } else if (declaration()->abstractType()) {
+        eventuallyMakeTypeLinks(declaration()->abstractType());
         modifyHtml() += " ";
     }
 
-    QString access = stringFromAccess(m_declaration);
+    QString access = stringFromAccess(declaration());
     if (!access.isEmpty()) {
         access = propertyHighlight(access.toHtmlEscaped());
         modifyHtml() += labelHighlight(i18n("Access: %1 ", access));
@@ -91,12 +91,12 @@ QString DeclarationNavigationContext::html(bool shorten)
         htmlAdditionalNavigation();
         modifyHtml() += "<br />";
         modifyHtml() += labelHighlight(i18n("Def.: "));
-        makeLink(QString("%1 :%2").arg(QUrl(m_declaration->url().str()).fileName()).arg(m_declaration->rangeInCurrentRevision().start().line() + 1), m_declaration, NavigationAction::JumpToSource);
+        makeLink(QString("%1 :%2").arg(QUrl(declaration()->url().str()).fileName()).arg(declaration()->rangeInCurrentRevision().start().line() + 1), declaration(), NavigationAction::JumpToSource);
         modifyHtml() += " ";
-        modifyHtml() += createLink(i18n("Show uses"), "show_uses", NavigationAction(m_declaration, NavigationAction::NavigateUses));
-        if(!shorten && !m_declaration->comment().isEmpty()) {
+        modifyHtml() += createLink(i18n("Show uses"), "show_uses", NavigationAction(declaration(), NavigationAction::NavigateUses));
+        if(!shorten && !declaration()->comment().isEmpty()) {
             modifyHtml() += "<br />";
-            QString comment = QString::fromUtf8(m_declaration->comment());
+            QString comment = QString::fromUtf8(declaration()->comment());
             if(!comment.isEmpty()) {
                 comment.replace("<br />", "\n");
                 comment.replace("<br/>", "\n");
@@ -108,32 +108,32 @@ QString DeclarationNavigationContext::html(bool shorten)
         }
     }
 
-    addExternalHtml(m_suffix);
+    addExternalHtml(suffix());
     modifyHtml() += fontSizeSuffix(shorten) + "</p></body></html>";
     return currentHtml();
 }
 
 void DeclarationNavigationContext::htmlFunction()
 {
-    const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(m_declaration.data());
+    const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(declaration().data());
     Q_ASSERT(mDecl);
 
-    const FunctionType::Ptr type = m_declaration->abstractType().cast<FunctionType>();
+    const FunctionType::Ptr type = declaration()->abstractType().cast<FunctionType>();
     if (!type) {
         modifyHtml() += errorHighlight("Invalid type<br/>");
         return;
     }
 
-    const QString &name = prettyIdentifier(m_declaration).toString();
+    const QString &name = prettyIdentifier(declaration()).toString();
     modifyHtml() += nameHighlight(name.toHtmlEscaped());
     if (type->arguments().size() > 0) {
         bool first = true;
         int nDef = 0;
-        DUContext *ctx = DUChainUtils::getArgumentContext(m_declaration.data());
+        DUContext *ctx = DUChainUtils::getArgumentContext(declaration().data());
 
         if (ctx) {
             modifyHtml() += "( ";
-            foreach (Declaration *d, ctx->localDeclarations(m_topContext.data())) {
+            foreach (Declaration *d, ctx->localDeclarations(topContext().data())) {
                 if (!first)
                     modifyHtml() += ", ";
                 first = false;
@@ -161,17 +161,17 @@ void DeclarationNavigationContext::htmlFunction()
 
 void DeclarationNavigationContext::htmlClass()
 {
-    StructureType::Ptr klass = m_declaration->abstractType().cast<StructureType>();
+    StructureType::Ptr klass = declaration()->abstractType().cast<StructureType>();
     Q_ASSERT(klass);
-    ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(klass->declaration(m_topContext.data()));
+    ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(klass->declaration(topContext().data()));
 
     if (mDecl) {
         if (mDecl->isModule()) {
             modifyHtml() += "module ";
-            eventuallyMakeTypeLinks(m_declaration->abstractType());
+            eventuallyMakeTypeLinks(declaration()->abstractType());
         } else {
             modifyHtml() += "class ";
-            eventuallyMakeTypeLinks(m_declaration->abstractType());
+            eventuallyMakeTypeLinks(declaration()->abstractType());
 
             if (mDecl->baseClass()) {
                 AbstractType::Ptr base = mDecl->baseClass().abstractType();

@@ -32,13 +32,12 @@ NavigationWidget::NavigationWidget( KDevelop::DeclarationPointer decl,
                                     const QString &htmlSuffix,
                                     KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
-    m_topContext = topContext;
     setDisplayHints(hints);
     initBrowser(200);
 
-    m_startContext = NavigationContextPointer(new DeclarationNavigationContext(decl, topContext));
-    m_startContext->setPrefixSuffix(htmlPrefix, htmlSuffix);
-    setContext(m_startContext);
+    auto context = NavigationContextPointer(new DeclarationNavigationContext(decl, topContext));
+    context->setPrefixSuffix(htmlPrefix, htmlSuffix);
+    setContext(context);
 }
 
 NavigationWidget::NavigationWidget(const KDevelop::IncludeItem &item,
@@ -47,13 +46,12 @@ NavigationWidget::NavigationWidget(const KDevelop::IncludeItem &item,
                                    const QString &htmlSuffix,
                                    KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
-    m_topContext = topContext;
     setDisplayHints(hints);
     initBrowser(200);
 
-    m_startContext = NavigationContextPointer(new IncludeNavigationContext(item, topContext));
-    m_startContext->setPrefixSuffix(htmlPrefix, htmlSuffix);
-    setContext(m_startContext);
+    auto context = NavigationContextPointer(new IncludeNavigationContext(item, topContext));
+    context->setPrefixSuffix(htmlPrefix, htmlSuffix);
+    setContext(context);
 }
 
 QString NavigationWidget::shortDescription(KDevelop::Declaration *decl)
@@ -67,6 +65,5 @@ QString NavigationWidget::shortDescription(const KDevelop::IncludeItem &item)
     NavigationContextPointer ctx(new IncludeNavigationContext(item, TopDUContextPointer()));
     return ctx->html(true);
 }
-
 
 }
