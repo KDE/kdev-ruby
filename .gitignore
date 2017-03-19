@@ -1,6 +1,7 @@
 # general
 apidocs
 .kdev4
+*.kdev4
 *~
 *.bak
 doxygen.log
