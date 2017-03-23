@@ -26,6 +26,7 @@
 #include <execute/iexecuteplugin.h>
 #include <interfaces/icore.h>
 #include <interfaces/idocumentcontroller.h>
+#include <interfaces/iruncontroller.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <interfaces/ilaunchconfiguration.h>
 #include <interfaces/ilauncher.h>

@@ -25,6 +25,7 @@
 #include <interfaces/icore.h>
 #include <interfaces/ilanguagecontroller.h>
 #include <language/backgroundparser/backgroundparser.h>
+#include <language/editor/documentrange.h>
 
 #include <duchain/debug.h>
 #include <duchain/editorintegrator.h>

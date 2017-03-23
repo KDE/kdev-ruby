@@ -18,6 +18,8 @@
 
 #include <parser/parser.h>
 
+#include <language/editor/documentrange.h>
+
 using namespace KDevelop;
 
 namespace ruby
