@@ -1,5 +1,5 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="KDevRubyLanguageSupport" version="6">
+<!DOCTYPE gui SYSTEM "kpartgui.dtd">
+<gui name="KDevRubyLanguageSupport" version="6">
 <MenuBar>
   <Menu name="navigation">
     <text context="@title:menu">Navigation</text>
@@ -22,4 +22,4 @@
     <Action name="ruby_new_class"/>
   </Menu>
 </MenuBar>
-</kpartgui>
+</gui>
