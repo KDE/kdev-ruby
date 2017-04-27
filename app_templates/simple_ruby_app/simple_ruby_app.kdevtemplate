@@ -33,4 +33,4 @@ Comment[sv]=Skapa ett enkelt Ruby-program
 Comment[uk]=Створити просту програму мовою Ruby
 Comment[x-test]=xxGenerate a simple Ruby applicationxx
 Comment[zh_CN]=生成一个简单的 Ruby 应用程序
-ShowFilesAfterGeneration=%{PROJECTDIR}/%{APPNAMELC}.rb
+ShowFilesAfterGeneration=%{APPNAMELC}.rb
