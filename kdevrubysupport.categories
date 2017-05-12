@@ -1,0 +1,8 @@
+# KDebugSettings data file
+# Format:
+# logname<space>description
+
+kdevelop.languages.ruby KDevelop plugin: Ruby language support
+kdevelop.languages.ruby.completion KDevelop plugin: Ruby language support - completion
+kdevelop.languages.ruby.duchain KDevelop plugin: Ruby language support - duchain
+kdevelop.languages.ruby.parser KDevelop plugin: Ruby language support - parser
