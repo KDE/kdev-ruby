@@ -67,7 +67,7 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         static std::once_flag once;
 
         std::call_once(once, [langSupport] {
-            rDebug() << "Initializing internal function file" << builtinsFile();
+            qCDebug(KDEV_RUBY) << "Initializing internal function file" << builtinsFile();
             ParseJob internalJob(builtinsFile(), langSupport);
             internalJob.setMinimumFeatures(TopDUContext::AllDeclarationsAndContexts);
             internalJob.run({}, nullptr);
@@ -194,9 +194,9 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         wlock.unlock();
 
         highlightDUChain();
-        rDebug() << "**** Parsing Succeeded ****";
+        qCDebug(KDEV_RUBY) << "**** Parsing Succeeded ****";
     } else {
-        rWarning() << "**** Parsing Failed ****";
+        qCWarning(KDEV_RUBY) << "**** Parsing Failed ****";
         DUChainWriteLocker lock;
         m_duContext = DUChain::self()->chainForDocument(document());
         if (m_duContext) {
@@ -210,7 +210,7 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
         }
 
         for (const ProblemPointer p : m_parser->problems) {
-            rDebug() << "Added problem to context";
+            qCDebug(KDEV_RUBY) << "Added problem to context";
             m_duContext->addProblem(p);
         }
         setDuChain(m_duContext);

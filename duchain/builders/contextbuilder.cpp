@@ -27,13 +27,11 @@
 #include <language/backgroundparser/backgroundparser.h>
 #include <language/editor/documentrange.h>
 
-#include <duchain/debug.h>
+#include <duchaindebug.h>
 #include <duchain/editorintegrator.h>
 #include <duchain/helpers.h>
 #include <duchain/loader.h>
 #include <duchain/rubyducontext.h>
-
-Q_LOGGING_CATEGORY(DUCHAIN, "kdevelop.languages.ruby.duchain")
 
 using namespace KDevelop;
 using namespace ruby;
@@ -56,14 +54,14 @@ ReferencedTopDUContext ContextBuilder::build(const IndexedString &url,
         updateContext = DUChain::self()->chainForDocument(url);
     }
     if (updateContext) {
-        rDebug() << "Re-compiling" << url.str();
+        qCDebug(DUCHAIN) << "Re-compiling" << url.str();
         DUChainWriteLocker lock;
         updateContext->clearImportedParentContexts();
         updateContext->parsingEnvironmentFile()->clearModificationRevisions();
         updateContext->clearProblems();
         updateContext->updateImportsCache();
     } else {
-        rDebug() << "Compiling";
+        qCDebug(DUCHAIN) << "Compiling";
     }
 
     auto top = ContextBuilderBase::build(url, node, updateContext);
@@ -172,7 +170,7 @@ void ContextBuilder::startVisiting(Ast *node)
             DUChainWriteLocker wlock;
             TopDUContext *import = DUChain::self()->chainForDocument(builtins);
             if (!import) {
-                rDebug() << "importing the builtins file failed";
+                qCDebug(DUCHAIN) << "importing the builtins file failed";
                 Q_ASSERT(false);
             } else {
                 top->addImportedParentContext(import);

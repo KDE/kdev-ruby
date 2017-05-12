@@ -19,6 +19,11 @@ set(rubyduchain_SRCS
     declarations/variabledeclaration.cpp
     declarations/moduledeclaration.cpp
 )
+ecm_qt_declare_logging_category(rubyduchain_SRCS
+    HEADER duchaindebug.h
+    IDENTIFIER DUCHAIN
+    CATEGORY_NAME "kdevelop.languages.ruby.duchain"
+)
 
 add_library(kdevrubyduchain SHARED ${rubyduchain_SRCS})
 

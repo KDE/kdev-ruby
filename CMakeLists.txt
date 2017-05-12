@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.12)
+
 project(kdev-ruby)
 
 set(VERSION_MAJOR 1)
@@ -6,14 +8,14 @@ set(VERSION_PATCH 90)
 # KDevplatform dependency version
 set( KDEVPLATFORM_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
-cmake_minimum_required(VERSION 2.8.12)
-find_package (ECM 0.0.9 REQUIRED NO_MODULE)
+find_package (ECM "5.14.0" REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
 include(GenerateExportHeader)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
+include(ECMQtDeclareLoggingCategory)
 
 find_package(Qt5 REQUIRED Core Widgets Test)
 find_package(KF5 REQUIRED COMPONENTS ThreadWeaver TextEditor I18n ItemModels)
@@ -33,13 +35,19 @@ add_subdirectory(rails)
 add_subdirectory(completion)
 add_subdirectory(app_templates)
 
-kdevplatform_add_plugin(kdevrubylanguagesupport JSON kdevrubylanguagesupport.json SOURCES
+set(ruby_PLUGIN_SRCS
     highlighting.cpp
     languagesupport.cpp
     launcher.cpp
     parsejob.cpp
     codegen/refactoring.cpp
 )
+ecm_qt_declare_logging_category(ruby_PLUGIN_SRCS
+    HEADER debug.h
+    IDENTIFIER KDEV_RUBY
+    CATEGORY_NAME "kdevelop.languages.ruby"
+)
+kdevplatform_add_plugin(kdevrubylanguagesupport JSON kdevrubylanguagesupport.json SOURCES ${ruby_PLUGIN_SRCS})
 
 target_link_libraries(kdevrubylanguagesupport
     KF5::I18n

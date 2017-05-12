@@ -16,6 +16,11 @@ set(rubycompletion_SRCS
     items/keyworditem.cpp
     items/requirefileitem.cpp
 )
+ecm_qt_declare_logging_category(rubycompletion_SRCS
+    HEADER completiondebug.h
+    IDENTIFIER COMPLETION
+    CATEGORY_NAME "kdevelop.languages.ruby.completion"
+)
 
 add_library(kdevrubycompletion SHARED ${rubycompletion_SRCS})
 

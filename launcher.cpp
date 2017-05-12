@@ -83,7 +83,7 @@ QString findFunctionUnderCursor(KDevelop::IDocument *doc)
         return "";
     }
 
-    rDebug() << "CONTEXT ID" << context->localScopeIdentifier();
+    qCDebug(KDEV_RUBY) << "CONTEXT ID" << context->localScopeIdentifier();
     return context->localScopeIdentifier().toString();
 }
 

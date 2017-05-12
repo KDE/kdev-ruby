@@ -22,7 +22,7 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <completion/debug.h>
+#include <completiondebug.h>
 #include <parser/parser.h>
 #include <duchain/loader.h>
 #include <duchain/editorintegrator.h>
@@ -33,8 +33,6 @@
 #include <completion/items/keyworditem.h>
 #include <completion/items/normalitem.h>
 #include <completion/items/requirefileitem.h>
-
-Q_LOGGING_CATEGORY(COMPLETION, "kdevelop.languages.ruby.completion")
 
 #define ADD_KEYWORD(name) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name))
 #define ADD_KEYWORD2(name, desc) list << CompletionTreeItemPointer(new KeywordItem(KDevelop::CodeCompletionContext::Ptr(this), name, desc))
@@ -344,7 +342,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::memberAccessItems()
     if (type) {
         list << getCompletionItemsFromType(type);
     } else {
-        rDebug() << "Oops: cannot access at the member";
+        qCDebug(COMPLETION) << "Oops: cannot access at the member";
     }
     return list;
 }
@@ -356,7 +354,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
     if (type) {
         list << getCompletionItemsFromType(type, true);
     } else {
-        rDebug() << "Oops: cannot access at the member";
+        qCDebug(COMPLETION) << "Oops: cannot access at the member";
     }
 
     return list;

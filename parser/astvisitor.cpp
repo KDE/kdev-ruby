@@ -17,9 +17,7 @@
  */
 
 #include <parser/astvisitor.h>
-#include <parser/debug.h>
-
-Q_LOGGING_CATEGORY(PARSER, "kdevelop.languages.ruby.parser");
+#include <parserdebug.h>
 
 /*
  * Note that each visitor method has a comment that explains how the AST
@@ -36,7 +34,7 @@ AstVisitor::~AstVisitor()
 
 void AstVisitor::visitCode(Ast *node)
 {
-    rDebug() << "Visiting Code...";
+    qCDebug(PARSER) << "Visiting Code...";
     Node *aux = node->tree;
 
     for (Node *n = aux; n; n = n->next) {

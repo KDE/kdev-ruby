@@ -28,7 +28,7 @@
 #include <language/duchain/types/unsuretype.h>
 
 // Ruby
-#include <duchain/debug.h>
+#include <duchaindebug.h>
 #include <duchain/declarations/methoddeclaration.h>
 #include <duchain/declarations/moduledeclaration.h>
 #include <duchain/declarations/variabledeclaration.h>
@@ -766,7 +766,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             if (!valid)
                 return nullptr;
 
-            rDebug() << "Reopening the following declaration: " << d->toString();
+            qCDebug(DUCHAIN) << "Reopening the following declaration: " << d->toString();
             openDeclarationInternal(d);
             d->setRange(range);
             setEncountered(d);
@@ -774,7 +774,7 @@ T * DeclarationBuilder::reopenDeclaration(const QualifiedIdentifier &id,
             res = d;
             break;
         } else
-            rDebug() << "Do not reopen since it's not in the same top context";
+            qCDebug(DUCHAIN) << "Do not reopen since it's not in the same top context";
     }
 
     if (!res) {
@@ -813,7 +813,7 @@ MethodDeclaration * DeclarationBuilder::reopenDeclaration(const QualifiedIdentif
     foreach (Declaration *d, decls) {
         MethodDeclaration *method = dynamic_cast<MethodDeclaration *>(d);
         if (method) {
-            rDebug() << "Reopening the following method: " << d->toString();
+            qCDebug(DUCHAIN) << "Reopening the following method: " << d->toString();
             openDeclarationInternal(method);
             method->setRange(range);
             setEncountered(method);

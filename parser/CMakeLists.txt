@@ -8,6 +8,11 @@ set(rubyparser_SRCS
     astvisitor.cpp
     ast.cpp
 )
+ecm_qt_declare_logging_category(rubyparser_SRCS
+    HEADER parserdebug.h
+    IDENTIFIER PARSER
+    CATEGORY_NAME "kdevelop.languages.ruby.parser"
+)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
