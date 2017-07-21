@@ -80,7 +80,7 @@ public:
     /**
      * @returns the ContextMenuExtension for the Php plugin.
      */
-    KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context *context) override;
+    KDevelop::ContextMenuExtension contextMenuExtension(KDevelop::Context* context, QWidget* parent) override;
 
     /**
      * @return the version of Ruby to be picked.

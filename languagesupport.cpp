@@ -105,7 +105,7 @@ ICodeHighlighting * LanguageSupport::codeHighlighting() const
     return m_highlighting;
 }
 
-ContextMenuExtension LanguageSupport::contextMenuExtension(Context *context)
+ContextMenuExtension LanguageSupport::contextMenuExtension(Context* context, QWidget* parent)
 {
     ContextMenuExtension cm;
     EditorContext *ed = dynamic_cast<EditorContext *>(context);
@@ -113,7 +113,7 @@ ContextMenuExtension LanguageSupport::contextMenuExtension(Context *context)
     if (ed && ICore::self()->languageController()->languagesForUrl(ed->url()).
             contains(this)) {
         // It's safe to add our own ContextMenuExtension.
-        m_refactoring->fillContextMenu(cm, context);
+        m_refactoring->fillContextMenu(cm, context, parent);
     }
     return cm;
 }
