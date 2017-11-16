@@ -32,7 +32,7 @@ extern char *strdup(const char *s);
 /* for alloca */
 #ifdef _WIN32
 #include <malloc.h>
-#else
+#elif !defined(__FreeBSD__) /* alloca() on FreeBSD is in stdlib.h (included later) */
 #include <alloca.h>
 #endif
 
