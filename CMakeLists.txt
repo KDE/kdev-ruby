@@ -53,6 +53,9 @@ ecm_qt_declare_logging_category(ruby_PLUGIN_SRCS
     IDENTIFIER KDEV_RUBY
     CATEGORY_NAME "kdevelop.languages.ruby"
 )
+qt5_add_resources(ruby_PLUGIN_SRCS
+    kdevrubysupport.qrc
+)
 kdevplatform_add_plugin(kdevrubylanguagesupport JSON kdevrubylanguagesupport.json SOURCES ${ruby_PLUGIN_SRCS})
 
 target_link_libraries(kdevrubylanguagesupport
@@ -68,7 +71,6 @@ target_link_libraries(kdevrubylanguagesupport
     kdevrubyrails
 )
 
-install(FILES kdevrubysupport.rc DESTINATION ${KDE_INSTALL_KXMLGUI5DIR}/kdevrubysupport)
 install(FILES documentation/builtins.rb DESTINATION ${KDE_INSTALL_DATADIR}/kdevrubysupport/documentation/)
 
 # kdebugsettings file
