@@ -35,6 +35,8 @@ include_directories(
 
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
+add_definitions( -DTRANSLATION_DOMAIN=\"kdevruby\" )
+
 add_subdirectory(parser)
 add_subdirectory(duchain)
 add_subdirectory(rails)

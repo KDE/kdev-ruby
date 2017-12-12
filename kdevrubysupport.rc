@@ -1,5 +1,5 @@
 <!DOCTYPE gui SYSTEM "kpartgui.dtd">
-<gui name="KDevRubyLanguageSupport" version="6">
+<gui name="KDevRubyLanguageSupport" version="6" translationDomain="kdevruby">
 <MenuBar>
   <Menu name="navigation">
     <text context="@title:menu">Navigation</text>
