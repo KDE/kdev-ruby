@@ -304,7 +304,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromTy
 QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOneType(AbstractType::Ptr type, bool scoped)
 {
     QList<CompletionTreeItemPointer> list;
-    QList<DeclarationPair> decls;
+    QVector<DeclarationPair> decls;
     StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
 
     {
@@ -363,7 +363,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMemberAccessItems(
 QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 {
     QList<CompletionTreeItemPointer> list;
-    QList<DeclarationPair> decls;
+    QVector<DeclarationPair> decls;
 
     {
         DUChainReadLocker lock;
@@ -382,7 +382,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::baseClassItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::moduleMixinItems()
 {
     QList<CompletionTreeItemPointer> list;
-    QList<DeclarationPair> decls;
+    QVector<DeclarationPair> decls;
 
     {
         DUChainReadLocker lock;
@@ -410,7 +410,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::fileChooseItems()
 QList<CompletionTreeItemPointer> CodeCompletionContext::standardAccessItems()
 {
     QList<CompletionTreeItemPointer> list;
-    QList<DeclarationPair> decls;
+    QVector<DeclarationPair> decls;
 
     // Add one-liners (i.e. shebang)
     if (m_position.line == 0 && (m_text.startsWith(QStringLiteral("#"))

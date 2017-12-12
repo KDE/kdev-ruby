@@ -64,7 +64,8 @@ void DataProvider::reset()
         urlsToSwitch = Switchers::testsToSwitch();
     }
 
-    QList<QuickOpenItem> items;
+    QVector<QuickOpenItem> items;
+    items.reserve(urlsToSwitch.size());
     foreach (const Path &url, urlsToSwitch) {
         QuickOpenItem item;
         item.url = url.toUrl();
