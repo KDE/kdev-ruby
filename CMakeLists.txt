@@ -27,6 +27,7 @@ set_package_properties(KDevPlatform PROPERTIES
 
 find_package(BISON REQUIRED)
 
+# needed for parser/ module prefix with includes for some minimal namespacing
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}

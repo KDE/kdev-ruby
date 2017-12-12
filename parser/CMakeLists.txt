@@ -14,11 +14,6 @@ ecm_qt_declare_logging_category(rubyparser_SRCS
     CATEGORY_NAME "kdevelop.languages.ruby.parser"
 )
 
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 add_library(kdevrubyparser SHARED ${rubyparser_SRCS})
 
 generate_export_header(kdevrubyparser EXPORT_MACRO_NAME KDEVRUBYPARSER_EXPORT

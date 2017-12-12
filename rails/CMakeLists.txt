@@ -1,9 +1,4 @@
 
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 set(rubyrails_SRCS
     support.cpp
     switchers.cpp
