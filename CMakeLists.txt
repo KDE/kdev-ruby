@@ -68,7 +68,6 @@ target_link_libraries(kdevrubylanguagesupport
     kdevrubyrails
 )
 
-install(TARGETS kdevrubylanguagesupport DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kdevrubysupport.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/kdevrubysupport)
 install(FILES documentation/builtins.rb DESTINATION ${DATA_INSTALL_DIR}/kdevrubysupport/documentation/)
 
