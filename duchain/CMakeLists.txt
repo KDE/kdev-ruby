@@ -39,5 +39,6 @@ target_link_libraries(kdevrubyduchain LINK_PRIVATE
 
 install(TARGETS kdevrubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-add_subdirectory(tests)
-
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

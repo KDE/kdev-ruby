@@ -24,7 +24,7 @@ target_link_libraries(kdevrubyparser LINK_PRIVATE
 )
 
 # Compile & install the tests if needed.
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(BUILD_TESTING AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DBUILD_TESTS)
     add_executable(ruby-parser main.c)
     set_target_properties(ruby-parser PROPERTIES WIN32_EXECUTABLE 0)
