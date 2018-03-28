@@ -50,7 +50,7 @@ void UseBuilder::visitName(Ast *node)
     if (!decl || decl->range() == range) {
         return;
     }
-    UseBuilderBase::newUse(node, range, decl);
+    UseBuilderBase::newUse(range, decl);
 }
 
 void UseBuilder::visitClassName(Ast *node)
@@ -64,7 +64,7 @@ void UseBuilder::visitClassName(Ast *node)
         ev.visitNode(node);
         const DeclarationPointer d = ev.lastDeclaration();
         if (d.data()) {
-            UseBuilderBase::newUse(node, editorFindRange(node, node), d);
+            UseBuilderBase::newUse(editorFindRange(node, node), d);
             ev.setContext(d->internalContext());
         } else {
             break;
@@ -86,7 +86,7 @@ void UseBuilder::visitMixin(Ast *node, bool include)
         ev.visitNode(node);
         const DeclarationPointer d = ev.lastDeclaration();
         if (d) {
-            UseBuilderBase::newUse(node, m_editor->findRange(n), d);
+            UseBuilderBase::newUse(m_editor->findRange(n), d);
             ev.setContext(d->internalContext());
         } else {
             break;
@@ -170,7 +170,7 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
 
         // Mark a new use if possible
         if (last && node->tree->kind != token_self) {
-            UseBuilderBase::newUse(node, range, DeclarationPointer(last));
+            UseBuilderBase::newUse(range, DeclarationPointer(last));
         }
 
         // If this is a StructureType, it means that we're in a case like;
