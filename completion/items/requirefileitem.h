@@ -39,8 +39,8 @@ public:
     RequireFileItem(const KDevelop::IncludeItem &include, const char closing);
 
     /// Re-implemented from KDevelop::AbstractIncludeFileCompletionItem
-    virtual void execute(KTextEditor::View *View,
-                         const KTextEditor::Range &word) override;
+    void execute(KTextEditor::View *View,
+                 const KTextEditor::Range &word) override;
 
 private:
     /// The character that may enclose this item.

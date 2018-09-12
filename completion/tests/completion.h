@@ -40,7 +40,7 @@ public:
 
 protected:
     /// Re-implemented from DUChainTestBase.
-    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+    KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id) override;
 
 private:
     /// Verify that all the items in @p shoulda are contained in @p list.

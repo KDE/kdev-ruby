@@ -40,9 +40,9 @@ public:
                         int inheritanceDepth = 0);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QVariant data(const QModelIndex &index,
-                          int role,
-                          const KDevelop::CodeCompletionModel *model) const override;
+    QVariant data(const QModelIndex &index,
+                  int role,
+                  const KDevelop::CodeCompletionModel *model) const override;
 
 protected:
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.

@@ -46,12 +46,12 @@ class KDEVRUBYDUCHAIN_EXPORT ContextBuilder
 {
 public:
     ContextBuilder();
-    virtual ~ContextBuilder();
+    ~ContextBuilder() override;
 
     /// Re-implemented from KDevelop::AbstractContextBuilder.
-    virtual KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url,
-                                                   Ast *node,
-                                                   const KDevelop::ReferencedTopDUContext& updateContext = {}) override;
+    KDevelop::ReferencedTopDUContext build(const KDevelop::IndexedString &url,
+                                           Ast *node,
+                                           const KDevelop::ReferencedTopDUContext& updateContext = {}) override;
 
     /// @returns a list of unresolved imports.
     inline const QVector<KDevelop::IndexedString> unresolvedImports() const
@@ -83,8 +83,8 @@ protected:
     void setContextOnNode(Ast *node, KDevelop::DUContext *ctx) override;
     KDevelop::DUContext * contextFromNode(Ast *node) override;
     KDevelop::DUContext * newContext(const KDevelop::RangeInRevision &range) override;
-    virtual KDevelop::TopDUContext * newTopContext(const KDevelop::RangeInRevision &range,
-                                                   KDevelop::ParsingEnvironmentFile *file = nullptr) override;
+    KDevelop::TopDUContext * newTopContext(const KDevelop::RangeInRevision &range,
+                                           KDevelop::ParsingEnvironmentFile *file = nullptr) override;
 
     /// And now methods that deal with nodes, documents and ranges.
 

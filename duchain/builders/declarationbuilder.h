@@ -46,7 +46,7 @@ class KDEVRUBYDUCHAIN_EXPORT DeclarationBuilder : public DeclarationBuilderBase
 {
 public:
     explicit DeclarationBuilder(EditorIntegrator *editor);
-    virtual ~DeclarationBuilder();
+    ~DeclarationBuilder() override;
 
 protected:
     /// Re-implemented from KDevelop::AbstractDeclarationBuilder.

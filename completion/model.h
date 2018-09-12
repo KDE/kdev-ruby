@@ -40,7 +40,7 @@ public:
     explicit CodeCompletionModel(QObject *parent);
 
     /// Destructor.
-    virtual ~CodeCompletionModel();
+    ~CodeCompletionModel() override;
 
 protected:
     /// Re-implemented from KDevelop::CodeCompletionModel.

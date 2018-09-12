@@ -54,11 +54,11 @@ public:
                           const KDevelop::CursorInRevision &pos,
                           int depth = 0);
 
-    virtual ~CodeCompletionContext();
+    ~CodeCompletionContext() override;
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
-    virtual QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort,
-                                                                       bool fullCompletion = true) override;
+    QList<KDevelop::CompletionTreeItemPointer> completionItems(bool &abort,
+                                                               bool fullCompletion = true) override;
 
     /// Re-implemented from KDevelop::CodeCompletionContext.
     QList<KDevelop::CompletionTreeElementPointer> ungroupedElements() override;

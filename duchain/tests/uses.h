@@ -39,7 +39,7 @@ public:
 
 protected:
     /// Re-implemented from DUChainTestBase.
-    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+    KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id) override;
 
 private:
     /// Compare the uses of the given declaration @p dec with the given @p range.

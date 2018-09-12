@@ -43,7 +43,7 @@ class KDEVRUBYRAILS_EXPORT Support : public QObject
 
 public:
     explicit Support(ruby::LanguageSupport *language);
-    virtual ~Support();
+    ~Support() override;
 
     /**
      * Setup the Main Window actions.

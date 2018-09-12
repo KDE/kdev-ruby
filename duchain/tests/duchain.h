@@ -45,7 +45,7 @@ public:
 
 protected:
     /// Re-implemented from DUChainTestBase.
-    virtual KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id);
+    KDevelop::TopDUContext * parse(const QByteArray &code, const QString &id) override;
 
 private:
     /**

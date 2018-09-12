@@ -49,15 +49,15 @@ public:
      */
     ParseJob(const KDevelop::IndexedString &url,
              KDevelop::ILanguageSupport *languageSupport);
-    virtual ~ParseJob();
+    ~ParseJob() override;
 
 protected:
     /**
      * Runs this ParseJob. Both of the parameters being passed come from
      * ThreadWeaver and they are both ignored in the implementation.
      */
-    virtual void run(ThreadWeaver::JobPointer pointer,
-                     ThreadWeaver::Thread *thread) override;
+    void run(ThreadWeaver::JobPointer pointer,
+             ThreadWeaver::Thread *thread) override;
 
 private:
     /**

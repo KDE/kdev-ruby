@@ -71,8 +71,8 @@ protected:
     uint itemCount() const override;
     uint unfilteredItemCount() const override;
     KDevelop::QuickOpenDataPointer data(uint row) const override;
-    virtual void enableData(const QStringList &items,
-                            const QStringList &scopes) override;
+    void enableData(const QStringList &items,
+                    const QStringList &scopes) override;
 
 private:
     Kind m_kind;

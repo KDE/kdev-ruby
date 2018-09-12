@@ -53,13 +53,13 @@ public:
                          bool line = false);
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual void execute(KTextEditor::View *view,
-                         const KTextEditor::Range &word) override;
+    void execute(KTextEditor::View *view,
+                 const KTextEditor::Range &word) override;
 
     /// Re-implemented from KDevelop::NormalDeclarationCompletionItem.
-    virtual QVariant data(const QModelIndex &index,
-                          int role,
-                          const KDevelop::CodeCompletionModel *model) const override;
+    QVariant data(const QModelIndex &index,
+                  int role,
+                  const KDevelop::CodeCompletionModel *model) const override;
 
 private:
     QString m_keyword;

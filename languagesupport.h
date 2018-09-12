@@ -54,7 +54,7 @@ class LanguageSupport
 
 public:
     explicit LanguageSupport(QObject *parent, const QVariantList &args = {});
-    virtual ~LanguageSupport();
+    ~LanguageSupport() override;
 
     /**
      * @return an instance of this LanguageSupport.
@@ -90,9 +90,9 @@ public:
     /**
      * Setup the actions defined by this plugin.
      */
-    virtual void createActionsForMainWindow(Sublime::MainWindow *window,
-                                            QString &xmlFile,
-                                            KActionCollection &actions) override;
+    void createActionsForMainWindow(Sublime::MainWindow *window,
+                                    QString &xmlFile,
+                                    KActionCollection &actions) override;
 
 private:
     Highlighting *m_highlighting;
