@@ -55,6 +55,12 @@ public:
     {
         return KDevelop::Path(data.url);
     }
+    inline KDevelop::Path itemPrefixPath(const QuickOpenItem& data) const
+    {
+#warning DataProvider::itemPrefixPath(QuickOpenItem) needs a sane implementation!
+        // FIXME: what should/could be returned here?
+        return KDevelop::Path();
+    }
 
     /// @returns all scopes supported by this data-provider.
     static QStringList scopes();

@@ -78,9 +78,9 @@ protected:
      * @param declaration The involved declaration.
      * @param actionType Important if this is a JumpToSource action.
      */
-    virtual void makeLink(const QString &name,
-                          KDevelop::DeclarationPointer declaration,
-                          KDevelop::NavigationAction::Type actionType) override;
+    void makeLink(const QString &name,
+                  const KDevelop::DeclarationPointer& declaration,
+                  KDevelop::NavigationAction::Type actionType) override;
 
 private:
     /**

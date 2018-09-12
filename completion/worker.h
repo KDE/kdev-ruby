@@ -44,10 +44,10 @@ public:
 
 protected:
     /// Re-implemented from KDevelop::CodeCompletionWorker
-    virtual KDevelop::CodeCompletionContext *createCompletionContext(KDevelop::DUContextPointer context,
-                                                                     const QString &contextText,
-                                                                     const QString &followingText,
-                                                                     const KDevelop::CursorInRevision &position) const override;
+    KDevelop::CodeCompletionContext *createCompletionContext(const KDevelop::DUContextPointer& context,
+                                                             const QString &contextText,
+                                                             const QString &followingText,
+                                                             const KDevelop::CursorInRevision &position) const override;
 };
 
 }

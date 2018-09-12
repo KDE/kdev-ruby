@@ -48,7 +48,7 @@ bool IncludeNavigationContext::filterDeclaration(KDevelop::Declaration *decl)
     return !vd;
 }
 
-QString IncludeNavigationContext::declarationKind(KDevelop::DeclarationPointer decl)
+QString IncludeNavigationContext::declarationKind(const KDevelop::DeclarationPointer& decl)
 {
     const MethodDeclaration *md = dynamic_cast<const MethodDeclaration *>(decl.data());
     if (md)

@@ -47,8 +47,9 @@ ContextBuilder::~ContextBuilder()
 
 ReferencedTopDUContext ContextBuilder::build(const IndexedString &url,
                                              Ast *node,
-                                             ReferencedTopDUContext updateContext)
+                                             const ReferencedTopDUContext& updateContext_)
 {
+    ReferencedTopDUContext updateContext(updateContext_);
     if (!updateContext) {
         DUChainReadLocker lock;
         updateContext = DUChain::self()->chainForDocument(url);

@@ -1530,7 +1530,7 @@ void TestDUChain::guessArgumentsType1()
     DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QVector<Declaration *> args = DUChainUtils::argumentContext(d)->localDeclarations();
     QCOMPARE(args.size(), 7);
 
     // a, b and c are just Fixnum
@@ -1558,7 +1558,7 @@ void TestDUChain::guessArgumentsType2()
     DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QVector<Declaration *> args = DUChainUtils::argumentContext(d)->localDeclarations();
     QCOMPARE(args.size(), 7);
 
     // a is just a Fixnum
@@ -1593,7 +1593,7 @@ void TestDUChain::guessArgumentsType3()
     DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QVector<Declaration *> args = DUChainUtils::argumentContext(d)->localDeclarations();
     QCOMPARE(args.size(), 7);
 
     // a is just a Fixnum
@@ -1655,7 +1655,7 @@ void TestDUChain::hashArgument()
     DUChainWriteLocker lock;
 
     Declaration *d = top->localDeclarations().first();
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(d)->localDeclarations();
+    QVector<Declaration *> args = DUChainUtils::argumentContext(d)->localDeclarations();
     QCOMPARE(args.size(), 3);
 
     // a
@@ -1685,7 +1685,7 @@ void TestDUChain::setUnsureArgument()
 
     MethodDeclaration *md = dynamic_cast<MethodDeclaration *>(top->localDeclarations().first());
     QVERIFY(md);
-    QVector<Declaration *> args = DUChainUtils::getArgumentContext(md)->localDeclarations();
+    QVector<Declaration *> args = DUChainUtils::argumentContext(md)->localDeclarations();
     QVERIFY(args.size() == 2);
     UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(args.first()->indexedType().abstractType());
     QStringList list;

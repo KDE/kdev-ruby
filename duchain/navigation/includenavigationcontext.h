@@ -60,7 +60,7 @@ protected:
      * show to the user if this declaration has some special meaning for
      * the Ruby interpreter.
      */
-    QString declarationKind(KDevelop::DeclarationPointer decl) override;
+    QString declarationKind(const KDevelop::DeclarationPointer& decl) override;
 };
 
 }

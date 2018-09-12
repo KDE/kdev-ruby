@@ -129,7 +129,7 @@ void DeclarationNavigationContext::htmlFunction()
     if (type->arguments().size() > 0) {
         bool first = true;
         int nDef = 0;
-        DUContext *ctx = DUChainUtils::getArgumentContext(declaration().data());
+        DUContext *ctx = DUChainUtils::argumentContext(declaration().data());
 
         if (ctx) {
             modifyHtml() += "( ";
@@ -184,7 +184,7 @@ void DeclarationNavigationContext::htmlClass()
     }
 }
 
-void DeclarationNavigationContext::makeLink(const QString &name, DeclarationPointer declaration,
+void DeclarationNavigationContext::makeLink(const QString &name, const DeclarationPointer& declaration,
                                             NavigationAction::Type actionType)
 {
     if (actionType == NavigationAction::JumpToSource

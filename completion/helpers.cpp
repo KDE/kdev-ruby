@@ -50,7 +50,7 @@ QString getArgumentList(Declaration *decl, QList<QVariant> *highlighting)
     QString ret("(");
     QVector<Declaration *> params;
 
-    if (DUContext *ctx = DUChainUtils::getArgumentContext(decl))
+    if (DUContext *ctx = DUChainUtils::argumentContext(decl))
         params = ctx->localDeclarations();
 
     // TODO: this is just too simplistic

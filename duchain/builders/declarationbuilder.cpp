@@ -1010,7 +1010,7 @@ void DeclarationBuilder::visitMethodCallArgs(const Ast *mc, const DeclarationPoi
 
     DUContext *argCtx = nullptr;
     if (lastMethod.data())
-        argCtx = DUChainUtils::getArgumentContext(lastMethod.data());
+        argCtx = DUChainUtils::argumentContext(lastMethod.data());
     if (!argCtx || !lastMethod->type<FunctionType>()) {
         /*
          * We couldn't get enough info, visit the list of parameters as a

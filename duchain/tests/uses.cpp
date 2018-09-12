@@ -218,7 +218,7 @@ void TestUseBuilder::checkMethodArgumentsContext()
     QCOMPARE(top->localDeclarations().count(), 1);
     Declaration *d = dynamic_cast<Declaration *>(top->localDeclarations().first());
     QVERIFY(d);
-    DUContext *params = DUChainUtils::getArgumentContext(d);
+    DUContext *params = DUChainUtils::argumentContext(d);
     QVERIFY(params);
     QCOMPARE(params->range(), RangeInRevision(0, 8, 0, 12));
 
