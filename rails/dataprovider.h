@@ -57,7 +57,9 @@ public:
     }
     inline KDevelop::Path itemPrefixPath(const QuickOpenItem& data) const
     {
+#ifdef __GNUC__
 #warning DataProvider::itemPrefixPath(QuickOpenItem) needs a sane implementation!
+#endif
         // FIXME: what should/could be returned here?
         return KDevelop::Path();
     }
