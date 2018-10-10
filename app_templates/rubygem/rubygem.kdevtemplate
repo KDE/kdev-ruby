@@ -1,7 +1,6 @@
 # KDE Config File
 [General]
 Name=RubyGem
-Name[ast]=RubyGem
 Name[ca]=RubyGem
 Name[ca@valencia]=RubyGem
 Name[cs]=RubyGem
