@@ -28,6 +28,8 @@
 #include <language/duchain/duchainutils.h>
 #include <language/duchain/problem.h>
 
+#include <language/interfaces/iastcontainer.h>
+
 // Ruby
 #include <duchain/tests/duchain.h>
 #include <duchain/helpers.h>
@@ -1827,6 +1829,25 @@ void TestDUChain::problemOnInvalidMixin()
     QStringList list;
     list << "TypeError: wrong argument type (expected Module)";
     testProblems(top, list);
+}
+
+/**
+ * Test that rspec’s expectation “include” is handled as normal expectation function and not as a module inclusion.
+ */
+void TestDUChain::rspecIncludeIsNormalFunction() {
+    QByteArray code("Then(\"nyaw\") { |string| expect.to include string }");
+    TopDUContext *top = parse(code, "rspecIncludeIsNormalFunction");
+    QVERIFY(top);
+    DUChainReleaser releaser(top);
+    DUChainWriteLocker lock;
+
+    KDevelop::DUContext *childContext = top->childContexts().first();
+    KDevelop::Declaration *declaration = childContext->localDeclarations().first();
+    qDebug() << declaration->comment();
+
+    Declaration *dec1 = top->localDeclarations().at(0);
+    QVERIFY(dec1->type<StructureType>());
+    QCOMPARE(dec1->type<StructureType>()->qualifiedIdentifier(), QualifiedIdentifier("Fixnum"));
 }
 
 //END: Include & Extend

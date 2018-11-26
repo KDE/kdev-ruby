@@ -87,7 +87,14 @@ void UseBuilder::visitMixin(Ast *node, bool include)
         const DeclarationPointer d = ev.lastDeclaration();
         if (d) {
             UseBuilderBase::newUse(m_editor->findRange(n), d);
-            ev.setContext(d->internalContext());
+            // TODO: is this context useful for something actually? If it is, I guess we need to create it.
+            auto context = d->internalContext();
+            // Setting invalid context doesn’t make sense and just causes fail in helpers.cpp’s context assert
+            // TODO: maybe visitClassName() & co. needs this too?
+            if(context) {
+                Q_ASSERT(context);
+                ev.setContext(context);
+            }
         } else {
             break;
         }

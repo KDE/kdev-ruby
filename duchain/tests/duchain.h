@@ -166,6 +166,7 @@ private slots:
     void include2();
     void extend();
     void problemOnInvalidMixin();
+    void rspecIncludeIsNormalFunction();
 };
 
 }
