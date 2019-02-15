@@ -71,7 +71,7 @@ public:
      * @param decl A member-declaration of this context the navigation-widget should be created for. Zero to create a widget for this context.
      * @param topContext Top-context from where the navigation-widget is triggered.
      */
-    QWidget * createNavigationWidget(KDevelop::Declaration *decl = nullptr,
+    KDevelop::AbstractNavigationWidget * createNavigationWidget(KDevelop::Declaration *decl = nullptr,
                                      KDevelop::TopDUContext *topContext = nullptr,
                                      KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints) const override;
 
