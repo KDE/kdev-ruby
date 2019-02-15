@@ -44,15 +44,9 @@ public:
      *
      * @param decl A pointer to the involved declaration.
      * @param topContext The involved Top Context.
-     * @param htmlPrefix Html-formatted text that should be prepended
-     * before any information shown by this widget
-     * @param htmlSuffix Html-formatted text that should be appended to any
-     * information shown by this widget
      */
     explicit NavigationWidget(KDevelop::DeclarationPointer decl,
                               KDevelop::TopDUContextPointer topContext,
-                              const QString &htmlPrefix = QString(),
-                              const QString &htmlSuffix = QString(),
                               KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints);
 
     /**
@@ -60,15 +54,9 @@ public:
      *
      * @param item The involved Include Item.
      * @param topContext The involved Top Context.
-     * @param htmlPrefix Html-formatted text that should be prepended
-     * before any information shown by this widget
-     * @param htmlSuffix Html-formatted text that should be appended to any
-     * information shown by this widget
      */
     explicit NavigationWidget(const KDevelop::IncludeItem &item,
                               KDevelop::TopDUContextPointer topContext,
-                              const QString &htmlPrefix = QString(),
-                              const QString &htmlSuffix = QString(),
                               KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints);
 
     /**

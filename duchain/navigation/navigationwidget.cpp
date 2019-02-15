@@ -28,29 +28,23 @@ using namespace KDevelop;
 
 NavigationWidget::NavigationWidget( KDevelop::DeclarationPointer decl,
                                     KDevelop::TopDUContextPointer topContext,
-                                    const QString &htmlPrefix,
-                                    const QString &htmlSuffix,
                                     KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
     setDisplayHints(hints);
     initBrowser(200);
 
     auto context = NavigationContextPointer(new DeclarationNavigationContext(decl, topContext));
-    context->setPrefixSuffix(htmlPrefix, htmlSuffix);
     setContext(context);
 }
 
 NavigationWidget::NavigationWidget(const KDevelop::IncludeItem &item,
                                    KDevelop::TopDUContextPointer topContext,
-                                   const QString &htmlPrefix,
-                                   const QString &htmlSuffix,
                                    KDevelop::AbstractNavigationWidget::DisplayHints hints)
 {
     setDisplayHints(hints);
     initBrowser(200);
 
     auto context = NavigationContextPointer(new IncludeNavigationContext(item, topContext));
-    context->setPrefixSuffix(htmlPrefix, htmlSuffix);
     setContext(context);
 }
 

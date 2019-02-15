@@ -47,8 +47,7 @@ QString DeclarationNavigationContext::html(bool shorten)
 {
     clear();
     AbstractDeclarationNavigationContext::html(shorten);
-    modifyHtml()  += "<html><body><p>" + fontSizePrefix(shorten);
-    addExternalHtml(prefix());
+    modifyHtml()  += "<html><body><p>";
 
     if(!declaration().data()) {
         modifyHtml() += i18n("<br /> lost declaration <br />");
@@ -108,8 +107,7 @@ QString DeclarationNavigationContext::html(bool shorten)
         }
     }
 
-    addExternalHtml(suffix());
-    modifyHtml() += fontSizeSuffix(shorten) + "</p></body></html>";
+    modifyHtml() += "</p></body></html>";
     return currentHtml();
 }
 

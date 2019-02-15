@@ -70,13 +70,9 @@ public:
      *
      * @param decl A member-declaration of this context the navigation-widget should be created for. Zero to create a widget for this context.
      * @param topContext Top-context from where the navigation-widget is triggered.
-     * @param htmlPrefix Html-formatted text that should be prepended before any information shown by this widget
-     * @param htmlSuffix Html-formatted text that should be appended to any information shown by this widget
      */
     QWidget * createNavigationWidget(KDevelop::Declaration *decl = nullptr,
                                      KDevelop::TopDUContext *topContext = nullptr,
-                                     const QString &htmlPrefix = QString(),
-                                     const QString &htmlSuffix = QString(),
                                      KDevelop::AbstractNavigationWidget::DisplayHints hints = KDevelop::AbstractNavigationWidget::NoHints) const override;
 
 public:
