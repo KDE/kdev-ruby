@@ -24,7 +24,6 @@
         "Description[sv]": "Ruby-språkstöd",
         "Description[tr]": "Ruby Dil Desteği",
         "Description[uk]": "Підтримка мови Ruby",
-        "Description[x-test]": "xxRuby Language Supportxx",
         "Description[zh_CN]": "Ruby 语言支持",
         "Description[zh_TW]": "Ruby 程式語言支援",
         "Icon": "application-x-ruby",
@@ -53,7 +52,6 @@
         "Name[sv]": "Stöd för Ruby",
         "Name[tr]": "Ruby Desteği",
         "Name[uk]": "Підтримка Ruby",
-        "Name[x-test]": "xxRuby Supportxx",
         "Name[zh_CN]": "Ruby 支持",
         "Name[zh_TW]": "Ruby 支援",
         "ServiceTypes": [
