@@ -1,7 +1,7 @@
 # KDE Config File
 [General]
 Name=Simple Ruby Application
-Name[ca]=Una aplicació en Ruby senzilla
+Name[ca]=Una aplicació senzilla en Ruby
 Name[ca@valencia]=Una aplicació en Ruby senzilla
 Name[cs]=Jednoduchá aplikace Ruby
 Name[de]=Einfaches Ruby-Programm
@@ -27,7 +27,7 @@ Name[zh_CN]=简单的 Ruby 应用程序
 Name[zh_TW]=簡易 Ruby 應用程式
 Category=Ruby
 Comment=Generate a simple Ruby application
-Comment[ca]=Genera una aplicació en Ruby senzilla
+Comment[ca]=Genera una aplicació senzilla en Ruby
 Comment[ca@valencia]=Genera una aplicació en Ruby senzilla
 Comment[cs]=Generovat jednoduchou aplikaci Ruby
 Comment[de]=Generiert ein einfaches Ruby-Programm
