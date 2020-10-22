@@ -22,6 +22,8 @@
 
 #include <rails/dataprovider.h>
 
+#include <algorithm>
+
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
@@ -53,28 +55,27 @@ void DataProvider::setFilterText(const QString &text)
 
 void DataProvider::reset()
 {
-    clearFilter();
+    updateItems([this](QVector<QuickOpenItem> &items) {
+        const auto * const doc = ICore::self()->documentController()->activeDocument();
 
-    auto doc = ICore::self()->documentController()->activeDocument();
-
-    QVector<Path> urlsToSwitch;
-    if (m_kind == Kind::Views) {
-        urlsToSwitch = Switchers::viewsToSwitch();
-    } else if (m_kind == Kind::Tests) {
-        urlsToSwitch = Switchers::testsToSwitch();
-    }
-
-    QVector<QuickOpenItem> items;
-    items.reserve(urlsToSwitch.size());
-    foreach (const Path &url, urlsToSwitch) {
-        QuickOpenItem item;
-        item.url = url.toUrl();
-        if (doc) {
-            item.originUrl = Path(doc->url()).toUrl();
+        QVector<Path> urlsToSwitch;
+        if (m_kind == Kind::Views) {
+            urlsToSwitch = Switchers::viewsToSwitch();
+        } else if (m_kind == Kind::Tests) {
+            urlsToSwitch = Switchers::testsToSwitch();
         }
-        items << item;
-    }
-    setItems(items);
+
+        items.resize(urlsToSwitch.size());
+        std::transform(urlsToSwitch.cbegin(), urlsToSwitch.cend(), items.begin(),
+                       [doc](const Path &url) {
+                           QuickOpenItem item;
+                           item.url = url.toUrl();
+                           if (doc) {
+                               item.originUrl = Path(doc->url()).toUrl();
+                           }
+                           return item;
+                       });
+    });
 }
 
 
