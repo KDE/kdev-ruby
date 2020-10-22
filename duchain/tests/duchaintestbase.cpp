@@ -51,7 +51,7 @@ TopDUContext * DUChainTestBase::parse(const QByteArray &code, const QString &id)
     f.close();
 
     return DUChain::self()->waitForUpdate(KDevelop::IndexedString(url.path()),
-                                            static_cast<TopDUContext::Features>(TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate));
+                                          TopDUContext::AllDeclarationsContextsAndUses | TopDUContext::ForceUpdate);
 }
 
 Declaration * DUChainTestBase::getBuiltinDeclaration(const QString &name, TopDUContext *top, DUContext *ctx)

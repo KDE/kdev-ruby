@@ -103,12 +103,11 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
 
     TopDUContext::Features newFeatures = minimumFeatures();
     if (toUpdate) {
-        newFeatures = (TopDUContext::Features)(newFeatures | toUpdate->features());
+        newFeatures |= toUpdate->features();
     }
 
     /* Remove update-flags like 'Recursive' or 'ForceUpdate' */
-    newFeatures = static_cast<TopDUContext::Features>(
-        newFeatures & TopDUContext::AllDeclarationsContextsUsesAndAST);
+    newFeatures &= TopDUContext::AllDeclarationsContextsUsesAndAST;
 
     // And finally we do all the work if parsing was successful. Otherwise,
     // we have to add a new problem
@@ -171,9 +170,10 @@ void ParseJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread *)
             // cases where this might still happen)
             if (!(minimumFeatures() & Rescheduled) && dependencyInQueue) {
                 wlock.lock();
+                constexpr TopDUContext::Features features{TopDUContext::ForceUpdate};
                 ICore::self()->languageController()->backgroundParser()->addDocument(
                     document(),
-                    static_cast<TopDUContext::Features>(TopDUContext::ForceUpdate | Rescheduled),
+                    static_cast<TopDUContext::Features>(features | Rescheduled),
                     parsePriority(),
                     nullptr,
                     ParseJob::FullSequentialProcessing
