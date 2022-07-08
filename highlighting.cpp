@@ -32,13 +32,13 @@ HighlightingInstance::HighlightingInstance(const CodeHighlighting *h)
 {
 }
 
-HighlightingEnumContainer::Types HighlightingInstance::typeForDeclaration(
+CodeHighlightingType HighlightingInstance::typeForDeclaration(
     Declaration *decl, DUContext *ctx) const
 {
     VariableDeclaration *vd = dynamic_cast<VariableDeclaration *>(decl);
     if (decl && !decl->isFunctionDeclaration() &&
         decl->abstractType() && !vd) {
-        return EnumType;
+        return CodeHighlightingType::Enum;
     }
     return CodeHighlightingInstance::typeForDeclaration(decl, ctx);
 }

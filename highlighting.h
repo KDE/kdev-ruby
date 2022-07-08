@@ -40,8 +40,8 @@ public:
      * @param decl The involved declaration.
      * @param ctx The context from where the declaration is used.
      */
-    Types typeForDeclaration(KDevelop::Declaration *decl,
-                             KDevelop::DUContext *ctx) const override;
+    KDevelop::CodeHighlightingType typeForDeclaration(KDevelop::Declaration *decl,
+                                                      KDevelop::DUContext *ctx) const override;
 
     /**
      * Re-implemented from CodeHighlightingInstance to decide whether to
