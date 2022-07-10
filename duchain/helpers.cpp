@@ -82,26 +82,23 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
                                          const DUContextPointer &context,
                                          DeclarationKind kind)
 {
+    DeclarationPointer ret;
+
     // As specified by the documentation, the context *has* to be valid.
     Q_ASSERT(context);
+
     DUChainWriteLocker lock;
-
-    uint nr;
-    const IndexedDeclaration *decls = nullptr;
-    PersistentSymbolTable::self().declarations(id, nr, decls);
-
-    for (uint i = 0; i < nr; ++i) {
+    auto visitor = [&](const IndexedDeclaration &indexedDeclaration) {
         // Check that the file matches the environment.
-        ParsingEnvironmentFilePointer env = DUChain::self()->
-            environmentFileForDocument(decls[i].indexedTopContext());
+        auto env = DUChain::self()->environmentFileForDocument(indexedDeclaration.indexedTopContext());
         if(!env || env->language() != languageString()) {
-            continue;
+            return PersistentSymbolTable::VisitorState::Continue;
         }
 
         // It doesn't have a declaration, skipping.
-        Declaration *d = decls[i].declaration();
+        Declaration *d = indexedDeclaration.declaration();
         if (!d) {
-            continue;
+            return PersistentSymbolTable::VisitorState::Continue;
         }
 
         /*
@@ -110,7 +107,7 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
          * Therefore, at this point, we discard variable declarations.
          */
         if (dynamic_cast<VariableDeclaration *>(d)) {
-            continue;
+            return PersistentSymbolTable::VisitorState::Continue;
         }
 
         // If it's a method declaration, check that we've got the proper one.
@@ -120,21 +117,23 @@ DeclarationPointer getDeclarationFromPST(const QualifiedIdentifier &id,
                 // TODO: remove this.
                 if ((mDecl->isClassMethod() && kind != DeclarationKind::ClassMethod) ||
                     (!mDecl->isClassMethod() && kind != DeclarationKind::InstanceMethod)) {
-                    continue;
+                    return PersistentSymbolTable::VisitorState::Continue;
                 }
             }
         }
 
         // Get the declaration and add its top context to the current one.
-        TopDUContext *top = decls[i].declaration()->context()->topContext();
+        TopDUContext *top = d->context()->topContext();
         auto mods = top->parsingEnvironmentFile()->allModificationRevisions();
         context->topContext()->addImportedParentContext(top);
-        context->topContext()->parsingEnvironmentFile()->
-            addModificationRevisions(mods);
+        context->topContext()->parsingEnvironmentFile()->addModificationRevisions(mods);
         context->topContext()->updateImportsCache();
-        return DeclarationPointer(decls[i].declaration());
-    }
-    return DeclarationPointer();
+        ret = d;
+        return PersistentSymbolTable::VisitorState::Break;
+    };
+    PersistentSymbolTable::self().visitDeclarations(id, visitor);
+
+    return ret;
 }
 
 }
