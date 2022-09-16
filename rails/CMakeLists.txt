@@ -19,7 +19,7 @@ target_link_libraries(kdevrubyrails LINK_PRIVATE
     kdevrubyparser
 )
 
-install(TARGETS kdevrubyrails DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubyrails DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

@@ -32,4 +32,4 @@ target_link_libraries(kdevrubycompletion LINK_PRIVATE
     kdevrubyparser
 )
 
-install(TARGETS kdevrubycompletion DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubycompletion DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

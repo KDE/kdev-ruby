@@ -37,7 +37,7 @@ target_link_libraries(kdevrubyduchain LINK_PRIVATE
     kdevrubyparser
 )
 
-install(TARGETS kdevrubyduchain DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubyduchain DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

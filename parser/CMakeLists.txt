@@ -32,5 +32,5 @@ if(BUILD_TESTING AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(ruby-parser kdevrubyparser)
 endif()
 
-install(TARGETS kdevrubyparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdevrubyparser DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
