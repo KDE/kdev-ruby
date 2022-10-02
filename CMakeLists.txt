@@ -87,5 +87,6 @@ install(FILES documentation/builtins.rb DESTINATION ${KDE_INSTALL_DATADIR}/kdevr
 # kdebugsettings file
 install(FILES kdevrubysupport.categories DESTINATION ${KDE_INSTALL_CONFDIR})
 
-feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
+ki18n_install(po)
 
+feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
