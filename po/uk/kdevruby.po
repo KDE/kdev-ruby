@@ -1,0 +1,263 @@
+# Translation of kdevruby.po to Ukrainian
+# Copyright (C) 2009-2014 This_file_is_part_of_KDE
+# This file is distributed under the license LGPL version 2.1 or
+# version 3 or later versions approved by the membership of KDE e.V.
+#
+# Yuri Chornoivan <yurchor@ukr.net>, 2009, 2010, 2011, 2012, 2013, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: kdevruby\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-27 02:21+0100\n"
+"PO-Revision-Date: 2014-09-09 07:50+0300\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <kde-i18n-uk@kde.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: completion/context.cpp:418
+#, kde-format
+msgid "insert Shebang line"
+msgstr "вставити рядок з послідовністю «#!»"
+
+#: completion/context.cpp:419
+#, kde-format
+msgid "insert encoding line"
+msgstr "вставити рядок кодування"
+
+#: completion/context.cpp:495
+#, kde-format
+msgid "Ruby Keyword"
+msgstr "Ключове слово Ruby"
+
+#: completion/context.cpp:509
+#, kde-format
+msgid "Ruby Builtins"
+msgstr "Вбудовані до Ruby"
+
+#: completion/items/normalitem.cpp:68
+#, kde-format
+msgid "module"
+msgstr "модуль"
+
+#: completion/items/normalitem.cpp:70
+#, kde-format
+msgid "class"
+msgstr "клас"
+
+#: duchain/builders/contextbuilder.cpp:256
+#, kde-format
+msgid "LoadError: cannot load such file: %1"
+msgstr "Помилка завантаження: не вдалося завантажити цей файл: %1"
+
+#: duchain/builders/declarationbuilder.cpp:131
+#, kde-format
+msgid "TypeError: wrong argument type (expected Class)"
+msgstr "Помилковий тип: помилковий тип аргументу (мало бути вказано тип Class)"
+
+#: duchain/builders/declarationbuilder.cpp:419
+#, kde-format
+msgid "Return statement not within function declaration"
+msgstr "Інструкція return поза межами оголошення функції"
+
+#: duchain/builders/declarationbuilder.cpp:566
+#, kde-format
+msgid "undefined method `%1'"
+msgstr "невизначений метод «%1»"
+
+#: duchain/builders/declarationbuilder.cpp:605
+#, kde-format
+msgid "TypeError: wrong argument type (expected Module)"
+msgstr ""
+"Помилковий тип: помилковий тип аргументу (мало бути вказано тип Module)"
+
+#: duchain/builders/declarationbuilder.cpp:972
+#, kde-format
+msgid "TypeError: %1 is not a %2"
+msgstr "Помилка типу: %1 не належить до %2"
+
+#: duchain/builders/declarationbuilder.cpp:1058
+#: duchain/builders/declarationbuilder.cpp:1063
+#, kde-format
+msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
+msgstr "помилкова кількість аргументів (%1 у %2) (помилка аргументів)"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:53
+#, kde-format
+msgid "<br /> lost declaration <br />"
+msgstr "<br /> втрачене оголошення <br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:58
+#, kde-format
+msgid "Back to %1<br />"
+msgstr "Назад до %1<br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:85
+#, kde-format
+msgid "Access: %1 "
+msgstr "Доступ: %1"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:92
+#, kde-format
+msgid "Def.: "
+msgstr "Визн.: "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:95
+#, kde-format
+msgid "Show uses"
+msgstr "Показати випадки використання"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:190
+#, kde-format
+msgid "Ruby Kernel"
+msgstr "Ядро Ruby"
+
+#: duchain/navigation/includenavigationcontext.cpp:40
+#, kde-format
+msgctxt "Count of files this header was included into"
+msgid "Required by"
+msgstr "Потрібен для"
+
+#: duchain/types/classtype.cpp:91
+#, kde-format
+msgid "%1 of %2"
+msgstr "%1 з %2"
+
+#. i18n: ectx: Menu (navigation)
+#: kdevrubysupport.rc:5
+#, kde-format
+msgctxt "@title:menu"
+msgid "Navigation"
+msgstr "Навігація"
+
+#. i18n: ectx: Menu (rails_navigation)
+#: kdevrubysupport.rc:8
+#, kde-format
+msgctxt "@title:menu"
+msgid "Rails Navigation"
+msgstr "Навігація Rails"
+
+#. i18n: ectx: Menu (run)
+#: kdevrubysupport.rc:16
+#, kde-format
+msgid "&Run"
+msgstr "&Виконати"
+
+#. i18n: ectx: Menu (code)
+#: kdevrubysupport.rc:21
+#, kde-format
+msgctxt "@title:menu"
+msgid "Code"
+msgstr "Код"
+
+#: launcher.cpp:103
+#, kde-format
+msgid "Run Current File"
+msgstr "Виконати поточний файл"
+
+#: launcher.cpp:108
+#, kde-format
+msgid "Run Current Test Function"
+msgstr "Виконати поточну тестову функцію"
+
+#: launcher.cpp:171
+#, kde-format
+msgid "Current Ruby File"
+msgstr "Поточний файл Ruby"
+
+#: launcher.cpp:200
+#, kde-format
+msgid "Current Ruby Test Function"
+msgstr "Поточна функція Ruby для перевірки"
+
+#: rails/dataprovider.cpp:98
+#, kde-format
+msgid "View for:"
+msgstr "Перегляд:"
+
+#: rails/dataprovider.cpp:100
+#, kde-format
+msgid "Test for:"
+msgstr "Перевірка:"
+
+#: rails/support.cpp:58 rails/switchers.cpp:296
+#, kde-format
+msgid "Rails Views"
+msgstr "Панелі перегляду Rails"
+
+#: rails/support.cpp:62 rails/switchers.cpp:309
+#, kde-format
+msgid "Rails Tests"
+msgstr "Перевірки Rails"
+
+#: rails/support.cpp:70
+#, kde-format
+msgid "Switch To Controller"
+msgstr "Перемкнутися на контролер"
+
+#: rails/support.cpp:76
+#, kde-format
+msgid "Switch To Model"
+msgstr "Перемкнутися на модель"
+
+#: rails/support.cpp:82
+#, kde-format
+msgid "Switch To View"
+msgstr "Перемкнутися на перегляд"
+
+#: rails/support.cpp:88
+#, kde-format
+msgid "Switch To Test"
+msgstr "Перемкнутися на перевірку"
+
+#~ msgctxt "NAME OF TRANSLATORS"
+#~ msgid "Your names"
+#~ msgstr "Юрій Чорноіван"
+
+#~ msgctxt "EMAIL OF TRANSLATORS"
+#~ msgid "Your emails"
+#~ msgstr "yurchor@ukr.net"
+
+#~ msgid "Ruby Support"
+#~ msgstr "Підтримка Ruby"
+
+#~ msgid "Support for the Ruby Language"
+#~ msgstr "Підтримка мови програмування Ruby"
+
+#~ msgid "Alexander Dymo"
+#~ msgstr "Alexander Dymo"
+
+#~ msgid "Original Author"
+#~ msgstr "Перший автор"
+
+#~ msgid "Miquel Sabaté Solà"
+#~ msgstr "Miquel Sabaté Solà"
+
+#~ msgid "Maintainer, Parser"
+#~ msgstr "Супровідник, інструмент обробки"
+
+#~ msgid "Default methods"
+#~ msgstr "Типові методи"
+
+#~ msgid "Create New Ruby Class"
+#~ msgstr "Створити клас Ruby"
+
+#~ msgid "NameError: undefined local variable or method `%1'"
+#~ msgstr "Помилкова назва: невизначена локальна змінна або метод «%1»"
+
+#~ msgid "Could not open file '%1'"
+#~ msgstr "Не вдалося відкрити файл «%1»"
+
+#~ msgid "File could not be read from."
+#~ msgstr "Неможливо прочитати інформацію з файла."
+
+#~ msgid "File could not be opened."
+#~ msgstr "Неможливо відкрити файл."
+
+#~ msgid "File permissions prevent opening for read."
+#~ msgstr "Дозволи на файл забороняють його читання."

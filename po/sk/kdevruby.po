@@ -1,0 +1,236 @@
+# translation of kdevruby.po to Slovak
+# Roman Paholik <wizzardsk@gmail.com>, 2012, 2013, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: kdevruby\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-27 02:21+0100\n"
+"PO-Revision-Date: 2014-10-10 12:33+0200\n"
+"Last-Translator: Roman Paholik <wizzardsk@gmail.com>\n"
+"Language-Team: Slovak <kde-sk@linux.sk>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: completion/context.cpp:418
+#, kde-format
+msgid "insert Shebang line"
+msgstr "vložiť riadok Shebang"
+
+#: completion/context.cpp:419
+#, kde-format
+msgid "insert encoding line"
+msgstr "vložiť riadok kódovania"
+
+#: completion/context.cpp:495
+#, kde-format
+msgid "Ruby Keyword"
+msgstr "Kľúčové slovo Ruby"
+
+#: completion/context.cpp:509
+#, kde-format
+msgid "Ruby Builtins"
+msgstr "Ruby vstavania"
+
+#: completion/items/normalitem.cpp:68
+#, kde-format
+msgid "module"
+msgstr "modul"
+
+#: completion/items/normalitem.cpp:70
+#, kde-format
+msgid "class"
+msgstr "trieda"
+
+#: duchain/builders/contextbuilder.cpp:256
+#, kde-format
+msgid "LoadError: cannot load such file: %1"
+msgstr "LoadError: nemôžem načítať súbor: %1"
+
+#: duchain/builders/declarationbuilder.cpp:131
+#, kde-format
+msgid "TypeError: wrong argument type (expected Class)"
+msgstr "TypeError: zlý typ argumentu (očakáva sa trieda)"
+
+#: duchain/builders/declarationbuilder.cpp:419
+#, kde-format
+msgid "Return statement not within function declaration"
+msgstr "Návratové vyhlásenie nie je v deklarácii funkcie"
+
+#: duchain/builders/declarationbuilder.cpp:566
+#, kde-format
+msgid "undefined method `%1'"
+msgstr "nedefinovaná metóda `%1'"
+
+#: duchain/builders/declarationbuilder.cpp:605
+#, kde-format
+msgid "TypeError: wrong argument type (expected Module)"
+msgstr "TypeError: zlý typ argumentu (očakáva sa modul)"
+
+#: duchain/builders/declarationbuilder.cpp:972
+#, kde-format
+msgid "TypeError: %1 is not a %2"
+msgstr "TypeError: %1 nie je %2"
+
+#: duchain/builders/declarationbuilder.cpp:1058
+#: duchain/builders/declarationbuilder.cpp:1063
+#, kde-format
+msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
+msgstr "zlý počet argumentov (%1 pre %2) (ArgumentError)"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:53
+#, kde-format
+msgid "<br /> lost declaration <br />"
+msgstr "<br /> stratená deklarácia <br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:58
+#, kde-format
+msgid "Back to %1<br />"
+msgstr "Späť na  %1<br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:85
+#, kde-format
+msgid "Access: %1 "
+msgstr "Prístup: %1 "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:92
+#, kde-format
+msgid "Def.: "
+msgstr "Def.: "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:95
+#, kde-format
+msgid "Show uses"
+msgstr "Ukázať použitia"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:190
+#, kde-format
+msgid "Ruby Kernel"
+msgstr "Ruby Kernel"
+
+#: duchain/navigation/includenavigationcontext.cpp:40
+#, kde-format
+msgctxt "Count of files this header was included into"
+msgid "Required by"
+msgstr "Vyžadovaný "
+
+#: duchain/types/classtype.cpp:91
+#, kde-format
+msgid "%1 of %2"
+msgstr "%1 z %2"
+
+#. i18n: ectx: Menu (navigation)
+#: kdevrubysupport.rc:5
+#, kde-format
+msgctxt "@title:menu"
+msgid "Navigation"
+msgstr "Navigácia"
+
+#. i18n: ectx: Menu (rails_navigation)
+#: kdevrubysupport.rc:8
+#, kde-format
+msgctxt "@title:menu"
+msgid "Rails Navigation"
+msgstr "Navigácia Rails"
+
+#. i18n: ectx: Menu (run)
+#: kdevrubysupport.rc:16
+#, kde-format
+msgid "&Run"
+msgstr "Spustiť"
+
+#. i18n: ectx: Menu (code)
+#: kdevrubysupport.rc:21
+#, kde-format
+msgctxt "@title:menu"
+msgid "Code"
+msgstr "Kód"
+
+#: launcher.cpp:103
+#, kde-format
+msgid "Run Current File"
+msgstr "Spustiť aktuálny Súbor"
+
+#: launcher.cpp:108
+#, kde-format
+msgid "Run Current Test Function"
+msgstr "Spustiť aktuálnu testovaciu funkciu"
+
+#: launcher.cpp:171
+#, kde-format
+msgid "Current Ruby File"
+msgstr "Aktuálny súbor Ruby"
+
+#: launcher.cpp:200
+#, kde-format
+msgid "Current Ruby Test Function"
+msgstr "Aktuálna testovacia funkcia Ruby"
+
+#: rails/dataprovider.cpp:98
+#, kde-format
+msgid "View for:"
+msgstr "Pohľad pre:"
+
+#: rails/dataprovider.cpp:100
+#, kde-format
+msgid "Test for:"
+msgstr "Test pre:"
+
+#: rails/support.cpp:58 rails/switchers.cpp:296
+#, kde-format
+msgid "Rails Views"
+msgstr "Pohľady Rails"
+
+#: rails/support.cpp:62 rails/switchers.cpp:309
+#, kde-format
+msgid "Rails Tests"
+msgstr "Testy Rails"
+
+#: rails/support.cpp:70
+#, kde-format
+msgid "Switch To Controller"
+msgstr "Prepnúť na ovládač"
+
+#: rails/support.cpp:76
+#, kde-format
+msgid "Switch To Model"
+msgstr "Prepnúť na model"
+
+#: rails/support.cpp:82
+#, kde-format
+msgid "Switch To View"
+msgstr "Prepnúť na pohľad"
+
+#: rails/support.cpp:88
+#, kde-format
+msgid "Switch To Test"
+msgstr "Prepnúť na test"
+
+#~ msgctxt "NAME OF TRANSLATORS"
+#~ msgid "Your names"
+#~ msgstr "Roman Paholík"
+
+#~ msgctxt "EMAIL OF TRANSLATORS"
+#~ msgid "Your emails"
+#~ msgstr "wizzardsk@gmail.com"
+
+#~ msgid "Ruby Support"
+#~ msgstr "Podpora Ruby"
+
+#~ msgid "Support for the Ruby Language"
+#~ msgstr "Podpora pre jazyk Ruby"
+
+#~ msgid "Alexander Dymo"
+#~ msgstr "Alexander Dymo"
+
+#~ msgid "Original Author"
+#~ msgstr "Pôvodný autor"
+
+#~ msgid "Miquel Sabaté Solà"
+#~ msgstr "Miquel Sabaté Solà"
+
+#~ msgid "Maintainer, Parser"
+#~ msgstr "Správca, spracovač"

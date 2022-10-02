@@ -1,0 +1,248 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Balázs Úr <urbalazs@gmail.com>, 2012, 2014.
+# Kristóf Kiszel <ulysses@kubuntu.org>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-27 02:21+0100\n"
+"PO-Revision-Date: 2015-02-24 16:07+0100\n"
+"Last-Translator: Kristóf Kiszel <ulysses@kubuntu.org>\n"
+"Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: completion/context.cpp:418
+#, kde-format
+msgid "insert Shebang line"
+msgstr "Shebang-sor beszúrása"
+
+#: completion/context.cpp:419
+#, kde-format
+msgid "insert encoding line"
+msgstr "kódolás sor beszúrása"
+
+#: completion/context.cpp:495
+#, kde-format
+msgid "Ruby Keyword"
+msgstr "Ruby kulcsszó"
+
+#: completion/context.cpp:509
+#, kde-format
+msgid "Ruby Builtins"
+msgstr "Ruby beépítettek"
+
+#: completion/items/normalitem.cpp:68
+#, kde-format
+msgid "module"
+msgstr "modul"
+
+#: completion/items/normalitem.cpp:70
+#, kde-format
+msgid "class"
+msgstr "osztály"
+
+#: duchain/builders/contextbuilder.cpp:256
+#, kde-format
+msgid "LoadError: cannot load such file: %1"
+msgstr "Betöltési hiba: nem tölthető be ez a fájl: %1"
+
+#: duchain/builders/declarationbuilder.cpp:131
+#, kde-format
+msgid "TypeError: wrong argument type (expected Class)"
+msgstr "Típushiba: hibás paramétertípus (elvárt: osztály)"
+
+#: duchain/builders/declarationbuilder.cpp:419
+#, kde-format
+msgid "Return statement not within function declaration"
+msgstr "Return utasítás függvénydeklaráción kívül"
+
+#: duchain/builders/declarationbuilder.cpp:566
+#, kde-format
+msgid "undefined method `%1'"
+msgstr "Nem definiált metódus: %1"
+
+#: duchain/builders/declarationbuilder.cpp:605
+#, kde-format
+msgid "TypeError: wrong argument type (expected Module)"
+msgstr "Típushiba: hibás paramétertípus (elvárt: modul)"
+
+#: duchain/builders/declarationbuilder.cpp:972
+#, kde-format
+msgid "TypeError: %1 is not a %2"
+msgstr "Típushiba: %1 nem %2"
+
+#: duchain/builders/declarationbuilder.cpp:1058
+#: duchain/builders/declarationbuilder.cpp:1063
+#, kde-format
+msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
+msgstr "hibás argumentumszám (%1 ehhez: %2) (ArgumentError)"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:53
+#, kde-format
+msgid "<br /> lost declaration <br />"
+msgstr "<br /> elveszett deklaráció <br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:58
+#, kde-format
+msgid "Back to %1<br />"
+msgstr "Vissza ide: %1<br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:85
+#, kde-format
+msgid "Access: %1 "
+msgstr "Hozzáférés: %1 "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:92
+#, kde-format
+msgid "Def.: "
+msgstr "Megh.: "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:95
+#, kde-format
+msgid "Show uses"
+msgstr "Use direktívák megjelenítése"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:190
+#, kde-format
+msgid "Ruby Kernel"
+msgstr "Ruby rendszermag"
+
+#: duchain/navigation/includenavigationcontext.cpp:40
+#, kde-format
+msgctxt "Count of files this header was included into"
+msgid "Required by"
+msgstr "Igényli"
+
+#: duchain/types/classtype.cpp:91
+#, kde-format
+msgid "%1 of %2"
+msgstr "%1 / %2"
+
+#. i18n: ectx: Menu (navigation)
+#: kdevrubysupport.rc:5
+#, kde-format
+msgctxt "@title:menu"
+msgid "Navigation"
+msgstr "Navigáció"
+
+#. i18n: ectx: Menu (rails_navigation)
+#: kdevrubysupport.rc:8
+#, kde-format
+msgctxt "@title:menu"
+msgid "Rails Navigation"
+msgstr "Rails navigáció"
+
+#. i18n: ectx: Menu (run)
+#: kdevrubysupport.rc:16
+#, kde-format
+msgid "&Run"
+msgstr "&Futtatás"
+
+#. i18n: ectx: Menu (code)
+#: kdevrubysupport.rc:21
+#, kde-format
+msgctxt "@title:menu"
+msgid "Code"
+msgstr "Kód"
+
+#: launcher.cpp:103
+#, kde-format
+msgid "Run Current File"
+msgstr "Jelenlegi fájl futtatása"
+
+#: launcher.cpp:108
+#, kde-format
+msgid "Run Current Test Function"
+msgstr "Jelenlegi tesztfüggvény futtatása"
+
+#: launcher.cpp:171
+#, kde-format
+msgid "Current Ruby File"
+msgstr "Jelenlegi Ruby-fájl"
+
+#: launcher.cpp:200
+#, kde-format
+msgid "Current Ruby Test Function"
+msgstr "Jelenlegi Ruby tesztfüggvény"
+
+#: rails/dataprovider.cpp:98
+#, kde-format
+msgid "View for:"
+msgstr "Nézet ehhez:"
+
+#: rails/dataprovider.cpp:100
+#, kde-format
+msgid "Test for:"
+msgstr "Teszt ehhez:"
+
+#: rails/support.cpp:58 rails/switchers.cpp:296
+#, kde-format
+msgid "Rails Views"
+msgstr "Rails nézetek"
+
+#: rails/support.cpp:62 rails/switchers.cpp:309
+#, kde-format
+msgid "Rails Tests"
+msgstr "Rails tesztek"
+
+#: rails/support.cpp:70
+#, kde-format
+msgid "Switch To Controller"
+msgstr "Váltás a vezérlőre"
+
+#: rails/support.cpp:76
+#, kde-format
+msgid "Switch To Model"
+msgstr "Váltás a modellre"
+
+#: rails/support.cpp:82
+#, kde-format
+msgid "Switch To View"
+msgstr "Váltás a nézetre"
+
+#: rails/support.cpp:88
+#, kde-format
+msgid "Switch To Test"
+msgstr "Váltás a tesztre"
+
+#~ msgctxt "NAME OF TRANSLATORS"
+#~ msgid "Your names"
+#~ msgstr "Úr Balázs"
+
+#~ msgctxt "EMAIL OF TRANSLATORS"
+#~ msgid "Your emails"
+#~ msgstr "urbalazs@gmail.com"
+
+#~ msgid "Ruby Support"
+#~ msgstr "Ruby-támogatás"
+
+#~ msgid "Support for the Ruby Language"
+#~ msgstr "Támogatás a Ruby nyelvhez"
+
+#~ msgid "Alexander Dymo"
+#~ msgstr "Alexander Dymo"
+
+#~ msgid "Original Author"
+#~ msgstr "Eredeti szerző"
+
+#~ msgid "Miquel Sabaté Solà"
+#~ msgstr "Miquel Sabaté Solà"
+
+#~ msgid "Maintainer, Parser"
+#~ msgstr "Karbantartó, feldolgozó"
+
+#~ msgid "Default methods"
+#~ msgstr "Alapértelmezett módszerek"
+
+#~ msgid "Create New Ruby Class"
+#~ msgstr "Új Ruby osztály létrehozása"
+
+#~ msgid "NameError: undefined local variable or method `%1'"
+#~ msgstr "Névhiba: nem definiált helyi változó vagy metódus: „%1”"

@@ -1,0 +1,239 @@
+# translation of kdevruby.po to Spanish
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Eloy Cuadra <ecuadra@eloihr.net>, 2009, 2010, 2011, 2012, 2013, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: kdevruby\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-27 02:21+0100\n"
+"PO-Revision-Date: 2014-09-16 13:09+0200\n"
+"Last-Translator: Eloy Cuadra <ecuadra@eloihr.net>\n"
+"Language-Team: Spanish <kde-l10n-es@kde.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: completion/context.cpp:418
+#, kde-format
+msgid "insert Shebang line"
+msgstr "insertar línea de Shebang"
+
+#: completion/context.cpp:419
+#, kde-format
+msgid "insert encoding line"
+msgstr "insertar línea de codificación"
+
+#: completion/context.cpp:495
+#, kde-format
+msgid "Ruby Keyword"
+msgstr "Palabra clave de Ruby"
+
+#: completion/context.cpp:509
+#, kde-format
+msgid "Ruby Builtins"
+msgstr "Integrados en Ruby"
+
+#: completion/items/normalitem.cpp:68
+#, kde-format
+msgid "module"
+msgstr "módulo"
+
+#: completion/items/normalitem.cpp:70
+#, kde-format
+msgid "class"
+msgstr "clase"
+
+#: duchain/builders/contextbuilder.cpp:256
+#, kde-format
+msgid "LoadError: cannot load such file: %1"
+msgstr "LoadError: no se puede cargar el archivo: %1"
+
+#: duchain/builders/declarationbuilder.cpp:131
+#, kde-format
+msgid "TypeError: wrong argument type (expected Class)"
+msgstr "TypeError: tipo de argumento erróneo (se esperaba Class)"
+
+#: duchain/builders/declarationbuilder.cpp:419
+#, kde-format
+msgid "Return statement not within function declaration"
+msgstr "Sentencia return fuera de la declaración de la función"
+
+#: duchain/builders/declarationbuilder.cpp:566
+#, kde-format
+msgid "undefined method `%1'"
+msgstr "método «%1» no definido"
+
+#: duchain/builders/declarationbuilder.cpp:605
+#, kde-format
+msgid "TypeError: wrong argument type (expected Module)"
+msgstr "TypeError: tipo de argumento erróneo (se esperaba Module)"
+
+#: duchain/builders/declarationbuilder.cpp:972
+#, kde-format
+msgid "TypeError: %1 is not a %2"
+msgstr "TypeError: %1 no es un %2"
+
+#: duchain/builders/declarationbuilder.cpp:1058
+#: duchain/builders/declarationbuilder.cpp:1063
+#, kde-format
+msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
+msgstr "número incorrecto de argumentos (%1 para %2) (ArgumentError)"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:53
+#, kde-format
+msgid "<br /> lost declaration <br />"
+msgstr "<br /> declaración perdida <br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:58
+#, kde-format
+msgid "Back to %1<br />"
+msgstr "Volver a %1<br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:85
+#, kde-format
+msgid "Access: %1 "
+msgstr "Acceso: %1 "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:92
+#, kde-format
+msgid "Def.: "
+msgstr "Def.: "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:95
+#, kde-format
+msgid "Show uses"
+msgstr "Mostrar usos"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:190
+#, kde-format
+msgid "Ruby Kernel"
+msgstr "Núcleo de Ruby"
+
+#: duchain/navigation/includenavigationcontext.cpp:40
+#, kde-format
+msgctxt "Count of files this header was included into"
+msgid "Required by"
+msgstr "Se necesita por"
+
+#: duchain/types/classtype.cpp:91
+#, kde-format
+msgid "%1 of %2"
+msgstr "%1 de %2"
+
+#. i18n: ectx: Menu (navigation)
+#: kdevrubysupport.rc:5
+#, kde-format
+msgctxt "@title:menu"
+msgid "Navigation"
+msgstr "Navegación"
+
+#. i18n: ectx: Menu (rails_navigation)
+#: kdevrubysupport.rc:8
+#, kde-format
+msgctxt "@title:menu"
+msgid "Rails Navigation"
+msgstr "Navegación de Rails"
+
+#. i18n: ectx: Menu (run)
+#: kdevrubysupport.rc:16
+#, kde-format
+msgid "&Run"
+msgstr "&Ejecutar"
+
+#. i18n: ectx: Menu (code)
+#: kdevrubysupport.rc:21
+#, kde-format
+msgctxt "@title:menu"
+msgid "Code"
+msgstr "Código"
+
+#: launcher.cpp:103
+#, kde-format
+msgid "Run Current File"
+msgstr "Ejecutar el archivo actual"
+
+#: launcher.cpp:108
+#, kde-format
+msgid "Run Current Test Function"
+msgstr "Ejecutar la función de prueba actual"
+
+#: launcher.cpp:171
+#, kde-format
+msgid "Current Ruby File"
+msgstr "Archivo de Ruby actual"
+
+#: launcher.cpp:200
+#, kde-format
+msgid "Current Ruby Test Function"
+msgstr "Función de prueba de Ruby actual"
+
+#: rails/dataprovider.cpp:98
+#, kde-format
+msgid "View for:"
+msgstr "Vista de:"
+
+#: rails/dataprovider.cpp:100
+#, kde-format
+msgid "Test for:"
+msgstr "Prueba de:"
+
+#: rails/support.cpp:58 rails/switchers.cpp:296
+#, kde-format
+msgid "Rails Views"
+msgstr "Vistas de Rails"
+
+#: rails/support.cpp:62 rails/switchers.cpp:309
+#, kde-format
+msgid "Rails Tests"
+msgstr "Pruebas de Rails"
+
+#: rails/support.cpp:70
+#, kde-format
+msgid "Switch To Controller"
+msgstr "Cambiar al controlador"
+
+#: rails/support.cpp:76
+#, kde-format
+msgid "Switch To Model"
+msgstr "Cambiar al modelo"
+
+#: rails/support.cpp:82
+#, kde-format
+msgid "Switch To View"
+msgstr "Cambiar a la vista"
+
+#: rails/support.cpp:88
+#, kde-format
+msgid "Switch To Test"
+msgstr "Cambiar a la prueba"
+
+#~ msgctxt "NAME OF TRANSLATORS"
+#~ msgid "Your names"
+#~ msgstr "Eloy Cuadra"
+
+#~ msgctxt "EMAIL OF TRANSLATORS"
+#~ msgid "Your emails"
+#~ msgstr "ecuadra@eloihr.net"
+
+#~ msgid "Ruby Support"
+#~ msgstr "Implementación de Ruby"
+
+#~ msgid "Support for the Ruby Language"
+#~ msgstr "Implementación del lenguaje Ruby"
+
+#~ msgid "Alexander Dymo"
+#~ msgstr "Alexander Dymo"
+
+#~ msgid "Original Author"
+#~ msgstr "Autor original"
+
+#~ msgid "Miquel Sabaté Solà"
+#~ msgstr "Miquel Sabaté Solà"
+
+#~ msgid "Maintainer, Parser"
+#~ msgstr "Encargado, analizador"

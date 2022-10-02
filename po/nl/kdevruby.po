@@ -1,0 +1,235 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Freek de Kruijf <freekdekruijf@kde.nl>, 2010, 2011, 2012, 2013, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-10-27 02:21+0100\n"
+"PO-Revision-Date: 2014-11-19 10:20+0100\n"
+"Last-Translator: Freek de Kruijf <freekdekruijf@kde.nl>\n"
+"Language-Team: Dutch <kde-i18n-nl@kde.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: completion/context.cpp:418
+#, kde-format
+msgid "insert Shebang line"
+msgstr "Shebang-regel invoegen"
+
+#: completion/context.cpp:419
+#, kde-format
+msgid "insert encoding line"
+msgstr "coderingsregel invoegen"
+
+#: completion/context.cpp:495
+#, kde-format
+msgid "Ruby Keyword"
+msgstr "Ruby-sleutelwoord"
+
+#: completion/context.cpp:509
+#, kde-format
+msgid "Ruby Builtins"
+msgstr "In Ruby ingebouwde elementen"
+
+#: completion/items/normalitem.cpp:68
+#, kde-format
+msgid "module"
+msgstr "module"
+
+#: completion/items/normalitem.cpp:70
+#, kde-format
+msgid "class"
+msgstr "klasse"
+
+#: duchain/builders/contextbuilder.cpp:256
+#, kde-format
+msgid "LoadError: cannot load such file: %1"
+msgstr "Laadfout: kan zo'n bestand niet laden: %1"
+
+#: duchain/builders/declarationbuilder.cpp:131
+#, kde-format
+msgid "TypeError: wrong argument type (expected Class)"
+msgstr "Typefout: fout type argument (verwacht Class)"
+
+#: duchain/builders/declarationbuilder.cpp:419
+#, kde-format
+msgid "Return statement not within function declaration"
+msgstr "Return-statement niet in de functiedeclaratie"
+
+#: duchain/builders/declarationbuilder.cpp:566
+#, kde-format
+msgid "undefined method `%1'"
+msgstr "ongedefinieerde methode `%1'"
+
+#: duchain/builders/declarationbuilder.cpp:605
+#, kde-format
+msgid "TypeError: wrong argument type (expected Module)"
+msgstr "Fout in type: fout type argument (verwacht Module)"
+
+#: duchain/builders/declarationbuilder.cpp:972
+#, kde-format
+msgid "TypeError: %1 is not a %2"
+msgstr "Typefout: %1 is geen %2"
+
+#: duchain/builders/declarationbuilder.cpp:1058
+#: duchain/builders/declarationbuilder.cpp:1063
+#, kde-format
+msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
+msgstr "fout aantal argumenten (%1 voor %2) (ArgumentError)"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:53
+#, kde-format
+msgid "<br /> lost declaration <br />"
+msgstr "<br /> verloren declaratie <br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:58
+#, kde-format
+msgid "Back to %1<br />"
+msgstr "Terug naar %1<br />"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:85
+#, kde-format
+msgid "Access: %1 "
+msgstr "Toegang: %1 "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:92
+#, kde-format
+msgid "Def.: "
+msgstr "Def.: "
+
+#: duchain/navigation/declarationnavigationcontext.cpp:95
+#, kde-format
+msgid "Show uses"
+msgstr "Gebruiken tonen"
+
+#: duchain/navigation/declarationnavigationcontext.cpp:190
+#, kde-format
+msgid "Ruby Kernel"
+msgstr "Ruby Kernel"
+
+#: duchain/navigation/includenavigationcontext.cpp:40
+#, kde-format
+msgctxt "Count of files this header was included into"
+msgid "Required by"
+msgstr "Benodigd door"
+
+#: duchain/types/classtype.cpp:91
+#, kde-format
+msgid "%1 of %2"
+msgstr "%1 van %2"
+
+#. i18n: ectx: Menu (navigation)
+#: kdevrubysupport.rc:5
+#, kde-format
+msgctxt "@title:menu"
+msgid "Navigation"
+msgstr "Navigatie"
+
+#. i18n: ectx: Menu (rails_navigation)
+#: kdevrubysupport.rc:8
+#, kde-format
+msgctxt "@title:menu"
+msgid "Rails Navigation"
+msgstr "Rails-navigatie"
+
+#. i18n: ectx: Menu (run)
+#: kdevrubysupport.rc:16
+#, kde-format
+msgid "&Run"
+msgstr "Uitvoe&ren"
+
+#. i18n: ectx: Menu (code)
+#: kdevrubysupport.rc:21
+#, kde-format
+msgctxt "@title:menu"
+msgid "Code"
+msgstr "Code"
+
+#: launcher.cpp:103
+#, kde-format
+msgid "Run Current File"
+msgstr "Huidig bestand uitvoeren"
+
+#: launcher.cpp:108
+#, kde-format
+msgid "Run Current Test Function"
+msgstr "Huidige testfunctie uitvoeren"
+
+#: launcher.cpp:171
+#, kde-format
+msgid "Current Ruby File"
+msgstr "Huidig Ruby-bestand"
+
+#: launcher.cpp:200
+#, kde-format
+msgid "Current Ruby Test Function"
+msgstr "Huidige Ruby-testfunctie"
+
+#: rails/dataprovider.cpp:98
+#, kde-format
+msgid "View for:"
+msgstr "Beeld voor:"
+
+#: rails/dataprovider.cpp:100
+#, kde-format
+msgid "Test for:"
+msgstr "Test voor:"
+
+#: rails/support.cpp:58 rails/switchers.cpp:296
+#, kde-format
+msgid "Rails Views"
+msgstr "Rails-weergave"
+
+#: rails/support.cpp:62 rails/switchers.cpp:309
+#, kde-format
+msgid "Rails Tests"
+msgstr "Rails-tests"
+
+#: rails/support.cpp:70
+#, kde-format
+msgid "Switch To Controller"
+msgstr "Naar controller omschakelen"
+
+#: rails/support.cpp:76
+#, kde-format
+msgid "Switch To Model"
+msgstr "Omschakelen naar model"
+
+#: rails/support.cpp:82
+#, kde-format
+msgid "Switch To View"
+msgstr "Omschakelen naar weergave"
+
+#: rails/support.cpp:88
+#, kde-format
+msgid "Switch To Test"
+msgstr "Naar test wisselen"
+
+#~ msgctxt "NAME OF TRANSLATORS"
+#~ msgid "Your names"
+#~ msgstr "Freek de Kruijf"
+
+#~ msgctxt "EMAIL OF TRANSLATORS"
+#~ msgid "Your emails"
+#~ msgstr "freekdekruijf@kde.nl"
+
+#~ msgid "Ruby Support"
+#~ msgstr "Ondersteuning voor Ruby"
+
+#~ msgid "Alexander Dymo"
+#~ msgstr "Alexander Dymo"
+
+#~ msgid "Original Author"
+#~ msgstr "Oorspronkelijke auteur"
+
+#~ msgid "Default methods"
+#~ msgstr "Standaard methoden"
+
+#~ msgid "Create New Ruby Class"
+#~ msgstr "Nieuwe Ruby-klasse aanmaken"
