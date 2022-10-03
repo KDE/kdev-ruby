@@ -1,212 +1,213 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR This file is copyright:
+# This file is distributed under the same license as the kdev-ruby package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: kdeorg\n"
+"Project-Id-Version: kdev-ruby\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-10-27 02:21+0100\n"
-"PO-Revision-Date: 2022-10-02 15:49\n"
-"Last-Translator: \n"
-"Language-Team: Chinese Simplified\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-10-02 08:06+0200\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
+"Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: kdeorg\n"
-"X-Crowdin-Project-ID: 269464\n"
-"X-Crowdin-Language: zh-CN\n"
-"X-Crowdin-File: /kf5-trunk/messages/kdev-ruby/kdevruby.pot\n"
-"X-Crowdin-File-ID: 5234\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
 
 #: completion/context.cpp:418
 #, kde-format
 msgid "insert Shebang line"
-msgstr "插入 Shebang 行"
+msgstr "shebang ხაზის ჩასმა"
 
 #: completion/context.cpp:419
 #, kde-format
 msgid "insert encoding line"
-msgstr "插入编码行"
+msgstr "კოდირების ხაზის ჩასმა"
 
 #: completion/context.cpp:495
 #, kde-format
 msgid "Ruby Keyword"
-msgstr "Ruby 关键字"
+msgstr "Ruby -ის საკვანძო სიტყვა"
 
 #: completion/context.cpp:509
 #, kde-format
 msgid "Ruby Builtins"
-msgstr "Ruby 内置"
+msgstr "Ruby -ის ჩაშენებულები"
 
 #: completion/items/normalitem.cpp:68
 #, kde-format
 msgid "module"
-msgstr "模块"
+msgstr "მოდული"
 
 #: completion/items/normalitem.cpp:70
 #, kde-format
 msgid "class"
-msgstr "类"
+msgstr "კლასი"
 
 #: duchain/builders/contextbuilder.cpp:256
 #, kde-format
 msgid "LoadError: cannot load such file: %1"
-msgstr "加载错误：无法加载文件：%1"
+msgstr "ჩატვირთვის შეცდომა: ფაილის ჩატვირთვა შეუძლებელია: %1"
 
 #: duchain/builders/declarationbuilder.cpp:131
 #, kde-format
 msgid "TypeError: wrong argument type (expected Class)"
-msgstr "类型错误：错误的参数类型 (应为类)"
+msgstr "ტიპის შეცდომა: არგუმენტის არასწორი ტიპი (მოველოდი კლასს)"
 
 #: duchain/builders/declarationbuilder.cpp:419
 #, kde-format
 msgid "Return statement not within function declaration"
-msgstr "返回语句不在函数声明内"
+msgstr "დაბრუნების რუტინა ფუნქციის აღწერაში არაა"
 
 #: duchain/builders/declarationbuilder.cpp:566
 #, kde-format
 msgid "undefined method `%1'"
-msgstr "未定义方法 “%1”"
+msgstr "აღუწერელი მეთოდი: %1"
 
 #: duchain/builders/declarationbuilder.cpp:605
 #, kde-format
 msgid "TypeError: wrong argument type (expected Module)"
-msgstr "类型错误：错误的参数类型 (应为模块)"
+msgstr "ტიპის შეცდომა: არგუმენტის არასწორი ტიპი (მოველოდი მოდულს)"
 
 #: duchain/builders/declarationbuilder.cpp:972
 #, kde-format
 msgid "TypeError: %1 is not a %2"
-msgstr "类型错误：%1 不是 %2"
+msgstr "ტიპის შეცდომა: %1-ი %2 არაა"
 
 #: duchain/builders/declarationbuilder.cpp:1058
 #: duchain/builders/declarationbuilder.cpp:1063
 #, kde-format
 msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
-msgstr "参数个数错误 (%1，应为 %2) (参数错误)"
+msgstr "არგუმენტების არასწორი რიცხვი (%1-ი %2-სთვის) (არგუმენტის შეცდომა)"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:53
 #, kde-format
 msgid "<br /> lost declaration <br />"
-msgstr "<br /> 缺失声明 <br />"
+msgstr "<br /> აღწერა დაკარგულია <br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:58
 #, kde-format
 msgid "Back to %1<br />"
-msgstr "回到 %1<br />"
+msgstr "%1-ზე დაბრუნება<br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:85
 #, kde-format
 msgid "Access: %1 "
-msgstr "访问: %1 "
+msgstr "წვდომა: %1 "
 
 #: duchain/navigation/declarationnavigationcontext.cpp:92
 #, kde-format
 msgid "Def.: "
-msgstr "定义："
+msgstr "აღწ.: "
 
 #: duchain/navigation/declarationnavigationcontext.cpp:95
 #, kde-format
 msgid "Show uses"
-msgstr "显示使用"
+msgstr "გამოყენების ჩვენება"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:190
 #, kde-format
 msgid "Ruby Kernel"
-msgstr "Ruby 内核"
+msgstr "Ruby -ის ბირთვი"
 
 #: duchain/navigation/includenavigationcontext.cpp:40
 #, kde-format
 msgctxt "Count of files this header was included into"
 msgid "Required by"
-msgstr "引入方"
+msgstr "სჭირდება"
 
 #: duchain/types/classtype.cpp:91
 #, kde-format
 msgid "%1 of %2"
-msgstr "%1 的 %2"
+msgstr "%1-ი %2-დან"
 
 #. i18n: ectx: Menu (navigation)
 #: kdevrubysupport.rc:5
 #, kde-format
 msgctxt "@title:menu"
 msgid "Navigation"
-msgstr "导航"
+msgstr "ნავიგაცია"
 
 #. i18n: ectx: Menu (rails_navigation)
 #: kdevrubysupport.rc:8
 #, kde-format
 msgctxt "@title:menu"
 msgid "Rails Navigation"
-msgstr "Rails 导航"
+msgstr "Rails -ის ნავიგაცია"
 
 #. i18n: ectx: Menu (run)
 #: kdevrubysupport.rc:16
 #, kde-format
 msgid "&Run"
-msgstr "运行(&R)"
+msgstr "&გაშვება"
 
 #. i18n: ectx: Menu (code)
 #: kdevrubysupport.rc:21
 #, kde-format
 msgctxt "@title:menu"
 msgid "Code"
-msgstr "代码"
+msgstr "კოდი"
 
 #: launcher.cpp:103
 #, kde-format
 msgid "Run Current File"
-msgstr "运行当前文件"
+msgstr "მიმდინარე ფაილის გაშვება"
 
 #: launcher.cpp:108
 #, kde-format
 msgid "Run Current Test Function"
-msgstr "运行当前测试函数"
+msgstr "მიმდინარე სატესტო ფუნქციის გაშვება"
 
 #: launcher.cpp:171
 #, kde-format
 msgid "Current Ruby File"
-msgstr "当前 Ruby 文件"
+msgstr "მიმდინარე Ruby-ის ფაილი"
 
 #: launcher.cpp:200
 #, kde-format
 msgid "Current Ruby Test Function"
-msgstr "当前 Ruby 测试函数"
+msgstr "მიმდინარე Ruby-ის სატესტო ფუნქცია"
 
 #: rails/dataprovider.cpp:98
 #, kde-format
 msgid "View for:"
-msgstr "查看："
+msgstr "ნახვა:"
 
 #: rails/dataprovider.cpp:100
 #, kde-format
 msgid "Test for:"
-msgstr "测试："
+msgstr "დატესტვა:"
 
 #: rails/support.cpp:58 rails/switchers.cpp:296
 #, kde-format
 msgid "Rails Views"
-msgstr "Rails 视图"
+msgstr "Rails -ის ხედები"
 
 #: rails/support.cpp:62 rails/switchers.cpp:309
 #, kde-format
 msgid "Rails Tests"
-msgstr "Rails 测试"
+msgstr "Rails -ის ტესტები"
 
 #: rails/support.cpp:70
 #, kde-format
 msgid "Switch To Controller"
-msgstr "切换到控制器"
+msgstr "კონტროლერზე გადართვა"
 
 #: rails/support.cpp:76
 #, kde-format
 msgid "Switch To Model"
-msgstr "切换到模型"
+msgstr "მოდელზე გადართვა"
 
 #: rails/support.cpp:82
 #, kde-format
 msgid "Switch To View"
-msgstr "切换到视图"
+msgstr "ხედზე გადართვა"
 
 #: rails/support.cpp:88
 #, kde-format
 msgid "Switch To Test"
-msgstr "切换到测试"
+msgstr "ტესტზე გადართვა"
