@@ -109,9 +109,6 @@ protected:
 
 private:
     /// Set the last type seen to @p type.
-    template<typename T> void encounter(KDevelop::TypePtr<T> type);
-
-    /// Set the last AbstractType seen to @p type.
     inline void encounter(KDevelop::AbstractType::Ptr type)
     {
         m_lastType = type;

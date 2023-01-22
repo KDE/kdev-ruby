@@ -172,11 +172,11 @@ void DeclarationBuilder::visitSingletonClass(Ast *node)
             m_instance = false;
             if (!d->internalContext()) {
                 StructureType::Ptr sType;
-                UnsureType::Ptr ut = ev.lastType().cast<UnsureType>();
+                auto ut = ev.lastType().dynamicCast<UnsureType>();
                 if (ut && ut->typesSize() > 0) {
                     sType = ut->types()[0].type<StructureType>();
                 } else {
-                    sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                    sType = ev.lastType().dynamicCast<StructureType>();
                 }
                 if (sType) {
                     DUChainWriteLocker lock;
@@ -273,7 +273,7 @@ void DeclarationBuilder::visitMethodStatement(Ast *node)
             if (d) {
                 if (!d->internalContext()) {
                     DUChainWriteLocker lock;
-                    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+                    auto sType = ev.lastType().dynamicCast<StructureType>();
                     d = (sType) ? sType->declaration(topContext()) : nullptr;
                     instance = true;
                 } else
@@ -463,7 +463,7 @@ void DeclarationBuilder::visitAssignmentStatement(Ast *node)
     int rsize = values.length();
     if (rsize == 1) {
         int rest = nodeListSize(node->tree->l);
-        ClassType::Ptr ct = values.first().cast<ClassType>();
+        auto ct = values.first().dynamicCast<ClassType>();
         if (rest > 1 && ct && ct->contentType()) {
             lock.lock();
             QualifiedIdentifier qi = ct.data()->declaration(topContext())->qualifiedIdentifier();
@@ -493,7 +493,7 @@ void DeclarationBuilder::visitAssignmentStatement(Ast *node)
         if (has_star(n)) {
             int rest = nodeListSize(n) - 1;
             int pack = rsize - i - rest;
-            ClassType::Ptr newType = getBuiltinsType(QStringLiteral("Array"), currentContext()).cast<ClassType>();
+            auto newType = getBuiltinsType(QStringLiteral("Array"), currentContext()).dynamicCast<ClassType>();
             DUChainWriteLocker wlock;
             for (int j = pack; j > 0; j--, i++) {
                 newType->addContentType(values.at(i));
@@ -502,7 +502,7 @@ void DeclarationBuilder::visitAssignmentStatement(Ast *node)
             i--;
             if (!is_just_a_star(n)) {
                 QualifiedIdentifier id = getIdentifier(aux);
-                declareVariable(id, newType.cast<AbstractType>(), aux);
+                declareVariable(id, newType, aux);
             }
         } else if (i < rsize) {
             if (alias.at(i)) {
@@ -643,7 +643,7 @@ void DeclarationBuilder::visitForStatement(Ast *node)
 
     DUChainReadLocker rlock;
     if (type) {
-        ClassType::Ptr ctype = type.cast<ClassType>();
+        auto ctype = type.dynamicCast<ClassType>();
         if (ctype && ctype->contentType()) {
             type = ctype->contentType().abstractType();
         } else {
@@ -862,7 +862,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
         var->setVariableKind(node->tree);
         var->setKind(Declaration::Instance);
         AbstractType::Ptr atype = mergeTypes(var->abstractType(), type);
-        UnsureType::Ptr utype = atype.cast<UnsureType>();
+        auto utype = atype.dynamicCast<UnsureType>();
         if (!utype || utype->typesSize() > 0) {
             var->setType(atype);
         } else {
@@ -885,7 +885,7 @@ void DeclarationBuilder::declareVariable(const QualifiedIdentifier &id,
             ClassType::Ptr ct = dec->type<ClassType>();
             if (ct && hintContainer) {
                 ct->addContentType(type);
-                dec->setType(AbstractType::Ptr::dynamicCast(ct));
+                dec->setType(ct);
             } else
                 dec->setType(mergeTypes(dec->abstractType(), type));
             node->tree = aux;
@@ -1103,7 +1103,7 @@ void DeclarationBuilder::visitMethodCallArgs(const Ast *mc, const DeclarationPoi
         DeclarationBuilderBase::visitNode(node);
         wlock.lock();
         av.visitNode(node);
-        AbstractType::Ptr last = av.lastType().cast<AbstractType>();
+        AbstractType::Ptr last = av.lastType();
         AbstractType::Ptr original = args.at(i)->abstractType();
         args.at(i)->setType(mergeTypes(original, last));
         n = n->next;

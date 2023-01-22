@@ -543,7 +543,7 @@ void TestUseBuilder::moduleMixins1()
     compareUses(d, RangeInRevision(0, 55, 0, 56));
 
     AbstractType::Ptr type = getBuiltinsType(QString("Enumerable"), top);
-    StructureType::Ptr sType = type.cast<StructureType>();
+    auto sType = type.dynamicCast<StructureType>();
     QVERIFY(sType);
     d = sType->declaration(top);
     QVERIFY(d);

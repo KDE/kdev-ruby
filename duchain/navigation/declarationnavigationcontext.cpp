@@ -71,7 +71,7 @@ QString DeclarationNavigationContext::html(bool shorten)
             eventuallyMakeTypeLinks(declaration()->abstractType());
             const QString &esc = declarationName(declaration()).toHtmlEscaped();
             modifyHtml() += ' ' + nameHighlight(esc) + "<br>";
-        } else if (declaration()->kind() == Declaration::Type && declaration()->abstractType().cast<StructureType>()) {
+        } else if (declaration()->kind() == Declaration::Type && declaration()->abstractType().dynamicCast<StructureType>()) {
             htmlClass();
         }
     } else if (declaration()->abstractType()) {
@@ -116,7 +116,7 @@ void DeclarationNavigationContext::htmlFunction()
     const MethodDeclaration *mDecl = dynamic_cast<const MethodDeclaration *>(declaration().data());
     Q_ASSERT(mDecl);
 
-    const FunctionType::Ptr type = declaration()->abstractType().cast<FunctionType>();
+    const auto type = declaration()->abstractType().dynamicCast<FunctionType>();
     if (!type) {
         modifyHtml() += errorHighlight("Invalid type<br/>");
         return;
@@ -159,8 +159,8 @@ void DeclarationNavigationContext::htmlFunction()
 
 void DeclarationNavigationContext::htmlClass()
 {
-    StructureType::Ptr klass = declaration()->abstractType().cast<StructureType>();
-    Q_ASSERT(klass);
+    Q_ASSERT(declaration()->abstractType());
+    auto klass = declaration()->abstractType().staticCast<StructureType>();
     ModuleDeclaration *mDecl = dynamic_cast<ModuleDeclaration *>(klass->declaration(topContext().data()));
 
     if (mDecl) {

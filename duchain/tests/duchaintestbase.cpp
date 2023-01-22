@@ -59,7 +59,7 @@ Declaration * DUChainTestBase::getBuiltinDeclaration(const QString &name, TopDUC
     QStringList list = name.split("#");
     DUContext *context = (ctx) ? ctx : top->childContexts().first();
     AbstractType::Ptr type = getBuiltinsType(list.first(), context);
-    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
+    auto sType = type.staticCast<StructureType>();
     Declaration *d = sType->declaration(top);
 
     QualifiedIdentifier id(list.first() + "::" + list.last());

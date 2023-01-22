@@ -54,14 +54,14 @@ bool isUsefulType(const AbstractType::Ptr &type)
         return false;
     }
     if (type->whichType() != AbstractType::TypeIntegral) {
-        ClassType::Ptr ct = ClassType::Ptr::dynamicCast(type);
+        auto ct = type.dynamicCast<ClassType>();
         if (ct) {
             return ct->isUseful();
         }
         return true;
     }
 
-    const auto &data = type.cast<IntegralType>()->dataType();
+    const auto &data = type.staticCast<IntegralType>()->dataType();
     return data == IntegralType::TypeMixed ||
            data == IntegralType::TypeNone ||
            data == IntegralType::TypeNull;
@@ -246,7 +246,7 @@ DUContext * getClassContext(const DUContext *ctx)
 
     DUChainReadLocker lock;
     const auto &type = getBuiltinsType(QStringLiteral("Class"), ctx);
-    StructureType::Ptr klass = StructureType::Ptr::dynamicCast(type);
+    auto klass = type.dynamicCast<StructureType>();
     if (klass) {
         return klass->declaration(ctx->topContext())->internalContext();
     }
@@ -256,8 +256,8 @@ DUContext * getClassContext(const DUContext *ctx)
 AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
 {
     DUChainReadLocker lock;
-    UnsureType::Ptr unsure = UnsureType::Ptr::dynamicCast(type);
-    UnsureType::Ptr newUnsure = UnsureType::Ptr::dynamicCast(newType);
+    auto unsure = type.dynamicCast<UnsureType>();
+    auto newUnsure = newType.dynamicCast<UnsureType>();
     UnsureType::Ptr res;
 
     if (unsure && newUnsure) {
@@ -293,7 +293,7 @@ AbstractType::Ptr mergeTypes(AbstractType::Ptr type, AbstractType::Ptr newType)
     if (res->typesSize() == 1) {
         return res->types()[0].abstractType();
     }
-    return AbstractType::Ptr::staticCast(res);
+    return res;
 }
 
 int nodeListSize(Node *node)

@@ -159,7 +159,7 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
             }
         }
         last = ev.lastDeclaration().data();
-        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+        auto sType = ev.lastType().dynamicCast<StructureType>();
 
         // Handle the difference between instance & class methods.
         if (dynamic_cast<ModuleDeclaration *>(ev.lastDeclaration().data())) {
@@ -177,12 +177,12 @@ void UseBuilder::visitMethodCallMembers(Ast *node)
         // "A::B::" and therefore the next context should be A::B.
         if (!sType) {
             // It's not a StructureType, therefore it's a variable or a method.
-            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            auto fType = ev.lastType().dynamicCast<FunctionType>();
             if (!fType) {
                 ctx = (last) ? last->internalContext() : nullptr;
             } else {
                 DUChainReadLocker lock;
-                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                auto rType = fType->returnType().dynamicCast<StructureType>();
                 ctx = (rType) ? rType->internalContext(topContext()) : nullptr;
             }
         } else {

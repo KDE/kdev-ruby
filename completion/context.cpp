@@ -290,7 +290,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsFromTy
 {
     QList<CompletionTreeItemPointer> res;
     if (type->whichType() == AbstractType::TypeUnsure) {
-        UnsureType::Ptr unsure = type.cast<UnsureType>();
+        auto unsure = type.staticCast<UnsureType>();
         int count = unsure->typesSize();
         for (int i = 0; i < count; i++) {
             res.append(getCompletionItemsForOneType(unsure->types()[i].abstractType(), scoped));
@@ -305,7 +305,7 @@ QList<CompletionTreeItemPointer> CodeCompletionContext::getCompletionItemsForOne
 {
     QList<CompletionTreeItemPointer> list;
     QVector<DeclarationPair> decls;
-    StructureType::Ptr sType = StructureType::Ptr::dynamicCast(type);
+    auto sType = type.dynamicCast<StructureType>();
 
     {
         DUChainReadLocker lock;

@@ -237,14 +237,14 @@ void ExpressionVisitor::visitArray(Ast *node)
 {
     AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Array"), m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node);
-    encounter<ClassType>(ptr);
+    encounter(ptr);
 }
 
 void ExpressionVisitor::visitHash(Ast *node)
 {
     AbstractType::Ptr obj = getBuiltinsType(QStringLiteral("Hash"), m_ctx);
     ClassType::Ptr ptr = getContainer(obj, node, true);
-    encounter<ClassType>(ptr);
+    encounter(ptr);
 }
 
 void ExpressionVisitor::visitArrayValue(Ast *node)
@@ -255,7 +255,7 @@ void ExpressionVisitor::visitArrayValue(Ast *node)
     DeclarationPointer decl = getDeclaration(id, range, DUContextPointer(m_ctx));
 
     if (decl) {
-        ClassType::Ptr vc = decl->abstractType().cast<ClassType>();
+        auto vc = decl->abstractType().dynamicCast<ClassType>();
         if (vc) {
             encounter(vc->contentType().abstractType());
         }
@@ -304,7 +304,7 @@ void ExpressionVisitor::visitSuper(Ast *)
         return;
     }
 
-    StructureType::Ptr type = mDecl->baseClass().abstractType().cast<StructureType>();
+    auto type = mDecl->baseClass().abstractType().dynamicCast<StructureType>();
     if (!type) {
         return;
     }
@@ -399,14 +399,9 @@ void ExpressionVisitor::visitMethodStatement(Ast *)
     encounter(obj);
 }
 
-template <typename T> void ExpressionVisitor::encounter(TypePtr<T> type)
-{
-    encounter(AbstractType::Ptr::staticCast(type));
-}
-
 ClassType::Ptr ExpressionVisitor::getContainer(AbstractType::Ptr ptr, const Ast *node, bool hasKey)
 {
-    ClassType::Ptr ct = ptr.cast<ClassType>();
+    auto ct = ptr.dynamicCast<ClassType>();
 
     if (ct) {
         ExpressionVisitor ev(this);
@@ -467,7 +462,7 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
         rlock.unlock();
         ev.visitNode(node);
         m_lastDeclaration = ev.lastDeclaration().data();
-        StructureType::Ptr sType = StructureType::Ptr::dynamicCast(ev.lastType());
+        auto sType = ev.lastType().dynamicCast<StructureType>();
         rlock.lock();
 
         /*
@@ -476,18 +471,18 @@ void ExpressionVisitor::visitMethodCallMembers(Ast *node)
          */
         if (!sType) {
             // It's not a StructureType, therefore it's a variable or a method.
-            FunctionType::Ptr fType = FunctionType::Ptr::dynamicCast(ev.lastType());
+            auto fType = ev.lastType().dynamicCast<FunctionType>();
             if (!fType) {
                 ctx = (m_lastDeclaration) ? m_lastDeclaration->internalContext() : nullptr;
             } else {
-                StructureType::Ptr rType = StructureType::Ptr::dynamicCast(fType->returnType());
+                auto rType = fType->returnType().dynamicCast<StructureType>();
                 if (rType) {
                     encounter(fType->returnType());
                     ctx = rType->internalContext(ctx->topContext());
                 } else {
-                    UnsureType::Ptr ut = UnsureType::Ptr::dynamicCast(fType->returnType());
+                    auto ut = fType->returnType().dynamicCast<UnsureType>();
                     if (ut) {
-                        encounter<UnsureType>(ut);
+                        encounter(ut);
                     }
                     ctx = nullptr;
                 }
