@@ -107,7 +107,7 @@ msgstr "Def.: "
 #: duchain/navigation/declarationnavigationcontext.cpp:95
 #, kde-format
 msgid "Show uses"
-msgstr "Mostrar os usos"
+msgstr "Amosar os usos"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:190
 #, kde-format
