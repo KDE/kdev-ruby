@@ -1,141 +1,144 @@
-# Translation of kdevruby into esperanto.
+# Translation of kdevruby.pot into esperanto.
+# Copyright (C) 2009 Free Software Foundation, Inc.
+# This file is distributed under the same license as the kdevruby package.
 # Axel Rousseau <axel@esperanto-jeunes.org>, 2009.
+# Oliver Kellogg <okellogg@users.sourceforge.net>, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: kdevruby\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2023-11-05 12:28+0000\n"
-"PO-Revision-Date: 2009-11-15 12:06+0100\n"
-"Last-Translator: Axel Rousseau <axel@esperanto-jeunes.org>\n"
+"PO-Revision-Date: 2023-11-12 22:59+0100\n"
+"Last-Translator: Oliver Kellogg <okellogg@users.sourceforge.net>\n"
 "Language-Team: esperanto <kde-i18n-eo@kde.org>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: pology\n"
+"X-Generator: translate-po (https://github.com/zcribe/translate-po)\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: completion/context.cpp:418
 #, kde-format
 msgid "insert Shebang line"
-msgstr ""
+msgstr "enigi Shebang-linion"
 
 #: completion/context.cpp:419
 #, kde-format
 msgid "insert encoding line"
-msgstr ""
+msgstr "enmeti kodan linion"
 
 #: completion/context.cpp:495
 #, kde-format
 msgid "Ruby Keyword"
-msgstr ""
+msgstr "Ruby Ŝlosilvorto"
 
 #: completion/context.cpp:509
 #, kde-format
 msgid "Ruby Builtins"
-msgstr ""
+msgstr "Ruby Konstruaĵoj"
 
 #: completion/items/normalitem.cpp:68
 #, kde-format
 msgid "module"
-msgstr ""
+msgstr "modulo"
 
 #: completion/items/normalitem.cpp:70
 #, kde-format
 msgid "class"
-msgstr ""
+msgstr "klaso"
 
 #: duchain/builders/contextbuilder.cpp:256
 #, kde-format
 msgid "LoadError: cannot load such file: %1"
-msgstr ""
+msgstr "LoadError: ne povas ŝargi tian dosieron: %1"
 
 #: duchain/builders/declarationbuilder.cpp:131
 #, kde-format
 msgid "TypeError: wrong argument type (expected Class)"
-msgstr ""
+msgstr "TypeError: malĝusta argumenta tipo (atendita Klaso)"
 
 #: duchain/builders/declarationbuilder.cpp:419
 #, kde-format
 msgid "Return statement not within function declaration"
-msgstr ""
+msgstr "Return-instrukcio ne ene de funkciodeklaro"
 
 #: duchain/builders/declarationbuilder.cpp:566
 #, kde-format
 msgid "undefined method `%1'"
-msgstr ""
+msgstr "nedifinita metodo `%1'"
 
 #: duchain/builders/declarationbuilder.cpp:605
 #, kde-format
 msgid "TypeError: wrong argument type (expected Module)"
-msgstr ""
+msgstr "TypeError: malĝusta argumenta tipo (atendita Modulo)"
 
 #: duchain/builders/declarationbuilder.cpp:972
 #, kde-format
 msgid "TypeError: %1 is not a %2"
-msgstr ""
+msgstr "TypeError: %1 ne estas %2"
 
 #: duchain/builders/declarationbuilder.cpp:1058
 #: duchain/builders/declarationbuilder.cpp:1063
 #, kde-format
 msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
-msgstr ""
+msgstr "malĝusta nombro da argumentoj (%1 por %2) (ArgumentError)"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:53
 #, kde-format
 msgid "<br /> lost declaration <br />"
-msgstr ""
+msgstr "<br /> perdita deklaro <br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:58
 #, kde-format
 msgid "Back to %1<br />"
-msgstr ""
+msgstr "Reen al %1<br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:85
 #, kde-format
 msgid "Access: %1 "
-msgstr ""
+msgstr "Aliro: %1"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:92
 #, kde-format
 msgid "Def.: "
-msgstr ""
+msgstr "Def.:"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:95
 #, kde-format
 msgid "Show uses"
-msgstr ""
+msgstr "Montri uzojn"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:190
 #, kde-format
 msgid "Ruby Kernel"
-msgstr ""
+msgstr "Ruby Kernel"
 
 #: duchain/navigation/includenavigationcontext.cpp:40
 #, kde-format
 msgctxt "Count of files this header was included into"
 msgid "Required by"
-msgstr ""
+msgstr "Bezonata de"
 
 #: duchain/types/classtype.cpp:91
 #, kde-format
 msgid "%1 of %2"
-msgstr ""
+msgstr "%1 el %2"
 
 #. i18n: ectx: Menu (navigation)
 #: kdevrubysupport.rc:5
 #, kde-format
 msgctxt "@title:menu"
 msgid "Navigation"
-msgstr ""
+msgstr "Navigado"
 
 #. i18n: ectx: Menu (rails_navigation)
 #: kdevrubysupport.rc:8
 #, kde-format
 msgctxt "@title:menu"
 msgid "Rails Navigation"
-msgstr ""
+msgstr "Rails-Navigado"
 
 #. i18n: ectx: Menu (run)
 #: kdevrubysupport.rc:16
@@ -148,67 +151,64 @@ msgstr "&Ruli"
 #, kde-format
 msgctxt "@title:menu"
 msgid "Code"
-msgstr ""
+msgstr "Kodo"
 
 #: launcher.cpp:103
 #, kde-format
 msgid "Run Current File"
-msgstr ""
+msgstr "Ruli Aktualan Dosieron"
 
 #: launcher.cpp:108
 #, kde-format
 msgid "Run Current Test Function"
-msgstr ""
+msgstr "Ruli Aktualan Testfunkcion"
 
 #: launcher.cpp:171
 #, kde-format
 msgid "Current Ruby File"
-msgstr ""
+msgstr "Aktuala Ruby-Dosiero"
 
 #: launcher.cpp:200
 #, kde-format
 msgid "Current Ruby Test Function"
-msgstr ""
+msgstr "Aktuala Ruby-Testfunkcio"
 
 #: rails/dataprovider.cpp:98
 #, kde-format
 msgid "View for:"
-msgstr ""
+msgstr "Rigardi por:"
 
 #: rails/dataprovider.cpp:100
 #, kde-format
 msgid "Test for:"
-msgstr ""
+msgstr "Testi por:"
 
 #: rails/support.cpp:58 rails/switchers.cpp:296
 #, kde-format
 msgid "Rails Views"
-msgstr ""
+msgstr "Rails-Vidoj"
 
 #: rails/support.cpp:62 rails/switchers.cpp:309
 #, kde-format
 msgid "Rails Tests"
-msgstr ""
+msgstr "Rails-Testoj"
 
 #: rails/support.cpp:70
 #, kde-format
 msgid "Switch To Controller"
-msgstr ""
+msgstr "Ŝanĝi al Controller"
 
 #: rails/support.cpp:76
 #, kde-format
 msgid "Switch To Model"
-msgstr ""
+msgstr "Ŝanĝi al Modelo"
 
 #: rails/support.cpp:82
 #, kde-format
 msgid "Switch To View"
-msgstr ""
+msgstr "Ŝanĝi al Vido"
 
 #: rails/support.cpp:88
 #, kde-format
 msgid "Switch To Test"
-msgstr ""
-
-#~ msgid "Could not open file '%1'"
-#~ msgstr "Ne eblis malfermi dosieron '%1'"
+msgstr "Ŝanĝi al Testo"
