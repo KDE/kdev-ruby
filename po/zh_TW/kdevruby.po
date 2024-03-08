@@ -2,123 +2,123 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Frank Weng (a.k.a. Franklin) <franklin at goodhorse dot idv dot tw>, 2009.
+# SPDX-FileCopyrightText: 2024 Kisaragi Hiu <mail@kisaragi-hiu.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: kdevruby\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2023-11-05 12:28+0000\n"
-"PO-Revision-Date: 2009-06-06 11:02+0800\n"
-"Last-Translator: Frank Weng (a.k.a. Franklin) <franklin at goodhorse dot idv "
-"dot tw>\n"
-"Language-Team: Chinese Traditional <zh-l10n@lists.linux.org.tw>\n"
+"PO-Revision-Date: 2024-03-07 20:16+0900\n"
+"Last-Translator: Kisaragi Hiu <mail@kisaragi-hiu.com>\n"
+"Language-Team: Traditional Chinese <zh-l10n@lists.slat.org>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 0.3\n"
+"X-Generator: Lokalize 24.04.70\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: completion/context.cpp:418
 #, kde-format
 msgid "insert Shebang line"
-msgstr ""
+msgstr "插入 Shebang 行"
 
 #: completion/context.cpp:419
 #, kde-format
 msgid "insert encoding line"
-msgstr ""
+msgstr "插入編碼行"
 
 #: completion/context.cpp:495
 #, kde-format
 msgid "Ruby Keyword"
-msgstr ""
+msgstr "Ruby 關鍵字"
 
 #: completion/context.cpp:509
 #, kde-format
 msgid "Ruby Builtins"
-msgstr ""
+msgstr "Ruby 內建"
 
 #: completion/items/normalitem.cpp:68
 #, kde-format
 msgid "module"
-msgstr ""
+msgstr "模組"
 
 #: completion/items/normalitem.cpp:70
 #, kde-format
 msgid "class"
-msgstr ""
+msgstr "類別"
 
 #: duchain/builders/contextbuilder.cpp:256
 #, kde-format
 msgid "LoadError: cannot load such file: %1"
-msgstr ""
+msgstr "LoadError：無法載入該檔案：%1"
 
 #: duchain/builders/declarationbuilder.cpp:131
 #, kde-format
 msgid "TypeError: wrong argument type (expected Class)"
-msgstr ""
+msgstr "TypeError：錯誤參數類型（預期為類別）"
 
 #: duchain/builders/declarationbuilder.cpp:419
 #, kde-format
 msgid "Return statement not within function declaration"
-msgstr ""
+msgstr "Return 敘述不在函式宣告內"
 
 #: duchain/builders/declarationbuilder.cpp:566
 #, kde-format
 msgid "undefined method `%1'"
-msgstr ""
+msgstr "未定義的方法 `%1'"
 
 #: duchain/builders/declarationbuilder.cpp:605
 #, kde-format
 msgid "TypeError: wrong argument type (expected Module)"
-msgstr ""
+msgstr "TypeError：錯誤參數類型（預期為模組）"
 
 #: duchain/builders/declarationbuilder.cpp:972
 #, kde-format
 msgid "TypeError: %1 is not a %2"
-msgstr ""
+msgstr "TypeError：%1 不是一個 %2"
 
 #: duchain/builders/declarationbuilder.cpp:1058
 #: duchain/builders/declarationbuilder.cpp:1063
 #, kde-format
 msgid "wrong number of arguments (%1 for %2) (ArgumentError)"
-msgstr ""
+msgstr "引數數量錯誤（%1，需為 %2）(ArgumentError)"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:53
 #, kde-format
 msgid "<br /> lost declaration <br />"
-msgstr ""
+msgstr "<br /> 缺乏宣告 <br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:58
 #, kde-format
 msgid "Back to %1<br />"
-msgstr ""
+msgstr "返回到 %1<br />"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:85
 #, kde-format
 msgid "Access: %1 "
-msgstr ""
+msgstr "存取：%1 "
 
 #: duchain/navigation/declarationnavigationcontext.cpp:92
 #, kde-format
 msgid "Def.: "
-msgstr ""
+msgstr "定義："
 
 #: duchain/navigation/declarationnavigationcontext.cpp:95
 #, kde-format
 msgid "Show uses"
-msgstr ""
+msgstr "顯示使用"
 
 #: duchain/navigation/declarationnavigationcontext.cpp:190
 #, kde-format
 msgid "Ruby Kernel"
-msgstr ""
+msgstr "Ruby 核心"
 
 #: duchain/navigation/includenavigationcontext.cpp:40
 #, kde-format
 msgctxt "Count of files this header was included into"
 msgid "Required by"
-msgstr ""
+msgstr "由誰所需要"
 
 #: duchain/types/classtype.cpp:91
 #, kde-format
@@ -130,84 +130,84 @@ msgstr ""
 #, kde-format
 msgctxt "@title:menu"
 msgid "Navigation"
-msgstr ""
+msgstr "導覽"
 
 #. i18n: ectx: Menu (rails_navigation)
 #: kdevrubysupport.rc:8
 #, kde-format
 msgctxt "@title:menu"
 msgid "Rails Navigation"
-msgstr ""
+msgstr "Rails 導覽"
 
 #. i18n: ectx: Menu (run)
 #: kdevrubysupport.rc:16
 #, kde-format
 msgid "&Run"
-msgstr ""
+msgstr "執行(&R)"
 
 #. i18n: ectx: Menu (code)
 #: kdevrubysupport.rc:21
 #, kde-format
 msgctxt "@title:menu"
 msgid "Code"
-msgstr ""
+msgstr "程式碼"
 
 #: launcher.cpp:103
 #, kde-format
 msgid "Run Current File"
-msgstr ""
+msgstr "執行目前檔案"
 
 #: launcher.cpp:108
 #, kde-format
 msgid "Run Current Test Function"
-msgstr ""
+msgstr "執行目前測試函數"
 
 #: launcher.cpp:171
 #, kde-format
 msgid "Current Ruby File"
-msgstr ""
+msgstr "目前 Ruby 檔案"
 
 #: launcher.cpp:200
 #, kde-format
 msgid "Current Ruby Test Function"
-msgstr ""
+msgstr "目前 Ruby 測試函數"
 
 #: rails/dataprovider.cpp:98
 #, kde-format
 msgid "View for:"
-msgstr ""
+msgstr "為誰檢視："
 
 #: rails/dataprovider.cpp:100
 #, kde-format
 msgid "Test for:"
-msgstr ""
+msgstr "為誰測試："
 
 #: rails/support.cpp:58 rails/switchers.cpp:296
 #, kde-format
 msgid "Rails Views"
-msgstr ""
+msgstr "Rails 檢視"
 
 #: rails/support.cpp:62 rails/switchers.cpp:309
 #, kde-format
 msgid "Rails Tests"
-msgstr ""
+msgstr "Rails 測試"
 
 #: rails/support.cpp:70
 #, kde-format
 msgid "Switch To Controller"
-msgstr ""
+msgstr "切換到控制器"
 
 #: rails/support.cpp:76
 #, kde-format
 msgid "Switch To Model"
-msgstr ""
+msgstr "切換到模型"
 
 #: rails/support.cpp:82
 #, kde-format
 msgid "Switch To View"
-msgstr ""
+msgstr "切換到檢視"
 
 #: rails/support.cpp:88
 #, kde-format
 msgid "Switch To Test"
-msgstr ""
+msgstr "切換到測試"
