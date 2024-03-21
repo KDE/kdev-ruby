@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: kdevruby\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2023-11-05 12:28+0000\n"
-"PO-Revision-Date: 2024-03-07 20:16+0900\n"
+"PO-Revision-Date: 2024-03-20 18:25+0900\n"
 "Last-Translator: Kisaragi Hiu <mail@kisaragi-hiu.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@lists.slat.org>\n"
 "Language: zh_TW\n"
@@ -123,7 +123,7 @@ msgstr "由誰所需要"
 #: duchain/types/classtype.cpp:91
 #, kde-format
 msgid "%1 of %2"
-msgstr ""
+msgstr "%2 的 %1"
 
 #. i18n: ectx: Menu (navigation)
 #: kdevrubysupport.rc:5
