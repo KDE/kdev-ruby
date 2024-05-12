@@ -138,7 +138,7 @@ msgstr "%1 de %2"
 #, kde-format
 msgctxt "@title:menu"
 msgid "Navigation"
-msgstr "Navegació"
+msgstr "Navegueu"
 
 #. i18n: ectx: Menu (rails_navigation)
 #: kdevrubysupport.rc:8
