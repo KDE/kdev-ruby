@@ -7,4 +7,4 @@ Dependencies:
     'frameworks/extra-cmake-modules': '@stable'
     'frameworks/ki18n': '@stable'
     'frameworks/ktexteditor': '@stable'
-    'kdevelop/kdevelop': '@latest'
+    'kdevelop/kdevelop': '@stable'
