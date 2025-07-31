@@ -8,3 +8,6 @@ Dependencies:
     'frameworks/ki18n': '@stable'
     'frameworks/ktexteditor': '@stable'
     'kdevelop/kdevelop': '@stable'
+
+Options:
+  require-passing-tests-on: ['@all']
