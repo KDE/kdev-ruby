@@ -1,6 +1,7 @@
 # KDE Config File
 [General]
 Name=RubyGem
+Name[ar]=RubyGem
 Name[ca]=RubyGem
 Name[ca@valencia]=RubyGem
 Name[cs]=RubyGem
@@ -33,6 +34,7 @@ Name[zh_CN]=RubyGem
 Name[zh_TW]=RubyGem
 Category=Ruby
 Comment=Generate a simple RubyGem
+Comment[ar]=إنشاء RubyGem بسيط
 Comment[ca]=Genera una RubyGem senzilla
 Comment[ca@valencia]=Genera una RubyGem senzilla
 Comment[cs]=Vygenerovat jednoduchý RubyGem
