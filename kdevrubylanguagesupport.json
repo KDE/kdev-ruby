@@ -1,6 +1,7 @@
 {
     "KPlugin": {
         "Description": "Ruby Language Support",
+        "Description[ar]": "إتاحة اللغة روبي",
         "Description[ca@valencia]": "Implementació del llenguatge Ruby",
         "Description[ca]": "Implementació del llenguatge Ruby",
         "Description[cs]": "Podpora jazyka Ruby",
@@ -35,6 +36,7 @@
         "Icon": "application-x-ruby",
         "Id": "KDevRubySupport",
         "Name": "Ruby Support",
+        "Name[ar]": "إتاحة روبي",
         "Name[ca@valencia]": "Implementació de Ruby",
         "Name[ca]": "Implementació del Ruby",
         "Name[cs]": "Podpora Ruby",
